@@ -1,50 +1,82 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualize rules and results &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-    <script src="_static/js/theme.js"></script>
+    <title>Visualize rules and results &#8212; Ex-Fuzzy  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Computing fuzzy partitions" href="precom.html" />
-    <link rel="prev" title="Optimizing a Fuzzy rule base for a classification problem" href="step3.html" /> 
-</head>
+    <link rel="prev" title="Optimizing a Fuzzy rule base for a classification problem" href="step3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  </head><body>
+  
 
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
           
-          
-          <a href="index.html" class="icon icon-home">
-            Ex-Fuzzy
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+
+          <div class="body" role="main">
+            
+  <section id="visualize-rules-and-results">
+<span id="step4"></span><h1>Visualize rules and results<a class="headerlink" href="#visualize-rules-and-results" title="Permalink to this heading">¶</a></h1>
+<p>Ex-Fuzzy can also visualize the fuzzy sets and the rules obtained after the training process.
+The easiest way to do this is using the <code class="docutils literal notranslate"><span class="pre">eval_tools.eval_fuzzy_model</span></code> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">eval_tools</span>
+<span class="n">eval_tools</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span>
+                        <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+<p>This function prints the performance of the model, prints the rules on screen and plot the rules as graphs.</p>
+<section id="visualize-rules">
+<h2>Visualize Rules<a class="headerlink" href="#visualize-rules" title="Permalink to this heading">¶</a></h2>
+<p>You can visualize each consequent rules as a network, so that the interactions between the antecedents can be seen.</p>
+<a class="reference internal image-reference" href="_images/red_fuzzy.png"><img alt="_images/red_fuzzy.png" src="_images/red_fuzzy.png" style="width: 200px;" /></a>
+<p>If the number of linguistic variables is three, they also get automatically colored. It is also possible to export them to the gephi software.</p>
+</section>
+<section id="visualize-fuzzy-sets">
+<h2>Visualize Fuzzy Sets<a class="headerlink" href="#visualize-fuzzy-sets" title="Permalink to this heading">¶</a></h2>
+<p>Each fuzzy set is also visualized according to its own kind. The same linguistic variable can be visualized using T1, IV and GT2 fuzzy sets:</p>
+<a class="reference internal image-reference" href="_images/ejemplo_t1.png"><img alt="_images/ejemplo_t1.png" src="_images/ejemplo_t1.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/ejemplo_t2.png"><img alt="_images/ejemplo_t2.png" src="_images/ejemplo_t2.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/example_gt2.png"><img alt="_images/example_gt2.png" src="_images/example_gt2.png" style="width: 200px;" /></a>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Ex-Fuzzy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="step1.html">Creating fuzzy sets and fuzzy variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="step2.html">Using Fuzzy Rules</a></li>
@@ -64,84 +96,51 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="step3.html" title="previous chapter">Optimizing a Fuzzy rule base for a classification problem</a></li>
+      <li>Next: <a href="precom.html" title="next chapter">Computing fuzzy partitions</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Ex-Fuzzy</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Visualize rules and results</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/step4.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="visualize-rules-and-results">
-<span id="step4"></span><h1>Visualize rules and results<a class="headerlink" href="#visualize-rules-and-results" title="Permalink to this heading"></a></h1>
-<p>Ex-Fuzzy can also visualize the fuzzy sets and the rules obtained after the training process.
-The easiest way to do this is using the <code class="docutils literal notranslate"><span class="pre">eval_tools.eval_fuzzy_model</span></code> function:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">eval_tools</span>
-<span class="n">eval_tools</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span>
-                        <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This function prints the performance of the model, prints the rules on screen and plot the rules as graphs.</p>
-<section id="visualize-rules">
-<h2>Visualize Rules<a class="headerlink" href="#visualize-rules" title="Permalink to this heading"></a></h2>
-<p>You can visualize each consequent rules as a network, so that the interactions between the antecedents can be seen.</p>
-<a class="reference internal image-reference" href="_images/red_fuzzy.png"><img alt="_images/red_fuzzy.png" src="_images/red_fuzzy.png" style="width: 200px;" /></a>
-<p>If the number of linguistic variables is three, they also get automatically colored. It is also possible to export them to the gephi software.</p>
-</section>
-<section id="visualize-fuzzy-sets">
-<h2>Visualize Fuzzy Sets<a class="headerlink" href="#visualize-fuzzy-sets" title="Permalink to this heading"></a></h2>
-<p>Each fuzzy set is also visualized according to its own kind. The same linguistic variable can be visualized using T1, IV and GT2 fuzzy sets:</p>
-<a class="reference internal image-reference" href="_images/ejemplo_t1.png"><img alt="_images/ejemplo_t1.png" src="_images/ejemplo_t1.png" style="width: 200px;" /></a>
-<a class="reference internal image-reference" href="_images/ejemplo_t2.png"><img alt="_images/ejemplo_t2.png" src="_images/ejemplo_t2.png" style="width: 200px;" /></a>
-<a class="reference internal image-reference" href="_images/example_gt2.png"><img alt="_images/example_gt2.png" src="_images/example_gt2.png" style="width: 200px;" /></a>
-</section>
-</section>
-
-
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="step3.html" class="btn btn-neutral float-left" title="Optimizing a Fuzzy rule base for a classification problem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="precom.html" class="btn btn-neutral float-right" title="Computing fuzzy partitions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Javier Fumanal Idocin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/step4.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
 
-  <hr/>
+    
 
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+    
+  </body>
 </html>
