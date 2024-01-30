@@ -1,0 +1,15 @@
+.. _extending:
+
+Extending Ex-Fuzzy
+=======================================
+
+Some of the default behaviour/components can be easily extended to support more fuzzy/explainability tools. 
+The whole library is programmed using object orientation, so that the simplest thing to suplant some methods is
+to create classes that inherit from the correspondent classes. This is an easy way to implement additional to additional kinds of fuzzy sets.
+
+In the same way, other search algorithms could be used insead of the genetic search as long as they follow ``pymoo:problem`` interface.
+
+In order to change the behaviour of the precomputed partition, this functions can be easily replaced by others, becaouse the format
+of their outputs is just list of objects from this library, like ``fs.FS()`` or ``fs.fuzzyVariable()``. 
+
+As long as their membership values are numerical or IV/2-tuple, new fuzzy sets can be easily supported using the ``fs.FUZZY_SET`` enum. So that the rest of the methods will expect a numeric value as the mmebership value (``fs.FUZZY_SET.t1``) or a IV/tuple (``fs.FUZZY_SET.t2``)

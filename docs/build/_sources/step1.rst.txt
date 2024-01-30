@@ -1,0 +1,52 @@
+.. _step1:
+
+Creating fuzzy sets and fuzzy variables
+=======================================
+
+-----------------
+Fuzzy Sets
+-----------------
+Ex-Fuzzy supports different kinds of fuzzy sets, but the procedure to use them all is the same.
+Fuzzy sets have a name, a domain range and a membership function::
+    
+    import ex_fuzzy.fuzzy_sets as fs
+
+    cold = fs.FS('Cold', [0, 0, 5, 15] , [0,40])
+
+This code creates a fuzzy set named "Cold", with a trapezoidal membership function and a domain that ranges from 0 to 40 degrees.
+A fuzzy membership can be computed easily using the newly-created fuzzy set::
+
+    cold(8.2)
+
+This would be the code to do the same thing using interval-valued fuzzy sets::
+
+    cold2 = fs.IVFS('Cold', [0, 0, 5, 10], [0, 0, 5, 15], [0,40], 0.8)
+
+This code would create an interval-valued fuzzy set defined using a lower and upper membership function, 
+the same domain and name as before, and a maximum certainty of 0.8 for the lower membership.
+The membership is computed just as an ordinary fuzzy set::
+
+    cold2(8.2)
+
+We could use any of these kinds of fuzzy sets (or even general-type 2 fuzzy sets) to construct all the linguistic variables
+for our temperature domain::
+
+    cold = fs.FS('Cold', [0, 0, 5, 15] , [0,40])
+    warm = fs.FS('Warm', [15, 20, 25, 30] , [0,40])
+    hot = fs.FS('Hot', [25, 30, 40, 40] , [0,40])
+
+-----------------
+Fuzzy Variables
+-----------------
+Once we have the linguistic variables, we can construct a fuzzy variable. A fuzzy variable consists of a list of fuzzy sets
+of the same kind and a proper name::
+
+    temperature = fs.fuzzyVariable('Temperature', [cold, warm, hot])
+
+We do not need to specify domain or fuzzy set type, because the ``fuzzyVariable`` class deduces it from the fuzzy sets given in the list. 
+We can use a ``fuzzyVariable`` object to compute the memberships for a value to all the linguistic variables in the fuzzy variable::
+
+    temperature(8.2)
+
+Once we have defined the fuzzy variables, we can use them to construct a fuzzy rule base. This step is described :ref:`step2`.
+

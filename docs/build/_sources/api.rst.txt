@@ -1,0 +1,16 @@
+API
+===
+
+
+.. toctree:: 
+   function_resume/fuzzy_sets
+   function_resume/rules
+   function_resume/eval_rules
+   function_resume/eval_tools
+   function_resume/evolutionary_fit
+   function_resume/centroid
+   function_resume/utils
+   function_resume/persistence
+
+   
+   

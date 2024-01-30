@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.centroid &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.centroid</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ex_fuzzy.centroid</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the source file that contains functions to compute centroids for the case of IV fuzzy sets,</span>
+<span class="sd">which are commonly used when using the IV-T2 fuzzy sets.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="y_compute"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.y_compute">[docs]</a><span class="k">def</span> <span class="nf">y_compute</span><span class="p">(</span><span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the ponderated centroid with normalized weighting.</span>
+
+<span class="sd">    :param z: Vector of the referencial values.</span>
+<span class="sd">    :param w: Vector of the fuzzy memberships.</span>
+<span class="sd">    :return: The ponderated sum.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">@</span> <span class="n">w</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compute_centroid_t2_l"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.compute_centroid_t2_l">[docs]</a><span class="k">def</span> <span class="nf">compute_centroid_t2_l</span><span class="p">(</span><span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">memberships</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the Karnik and Mendel algorithm to find the centroid of an IV fuzzy set.</span>
+
+<span class="sd">    :param z: Vector of the referencial values.</span>
+<span class="sd">    :param memberships: vector of the fuzzy memberships.</span>
+<span class="sd">    :return: The centroid.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">centros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">memberships</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">centros</span>
+
+    <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+    <span class="n">yhat_2</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="n">yhat</span> <span class="o">!=</span> <span class="n">yhat_2</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">((</span><span class="n">z</span> <span class="o">-</span> <span class="n">yhat</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">centros</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># k_vector = np.argwhere((z - yhat) &gt; 0)</span>
+        <span class="c1"># k = k_vector[0][0] + 1</span>
+        <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">memberships</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][:</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">:]</span> <span class="o">=</span> <span class="n">memberships</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">k</span><span class="p">:]</span>
+
+        <span class="n">yhat_2</span> <span class="o">=</span> <span class="n">yhat</span>
+        <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">yhat</span></div>
+
+
+<div class="viewcode-block" id="compute_centroid_t2_r"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.compute_centroid_t2_r">[docs]</a><span class="k">def</span> <span class="nf">compute_centroid_t2_r</span><span class="p">(</span><span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">memberships</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set.</span>
+
+<span class="sd">    :param z: Vector of the referencial values.</span>
+<span class="sd">    :param memberships: vector of the fuzzy memberships.</span>
+<span class="sd">    :return: The lowest membership of the centroid.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">centros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">memberships</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">centros</span>
+
+    <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+    <span class="n">yhat_2</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="n">yhat</span> <span class="o">!=</span> <span class="n">yhat_2</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">((</span><span class="n">z</span> <span class="o">-</span> <span class="n">yhat</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">centros</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">memberships</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">memberships</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">yhat_2</span> <span class="o">=</span> <span class="n">yhat</span>
+        <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">yhat</span></div>
+
+
+<div class="viewcode-block" id="consequent_centroid_r"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.consequent_centroid_r">[docs]</a><span class="k">def</span> <span class="nf">consequent_centroid_r</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">centroids_r</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set.</span>
+
+<span class="sd">    :param antecedent_memberships: M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</span>
+<span class="sd">    :param centroids_r: M sized vector. Contains the referencial values.</span>
+<span class="sd">    :return: the IV centroid.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">memberships_left</span> <span class="o">=</span> <span class="n">antecedent_memberships</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">memberships_right</span> <span class="o">=</span> <span class="n">antecedent_memberships</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">initial_f</span> <span class="o">=</span> <span class="p">(</span><span class="n">memberships_left</span> <span class="o">+</span> <span class="n">memberships_right</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">centroids_r</span><span class="p">,</span> <span class="n">initial_f</span><span class="p">)</span>
+    <span class="n">yhat2</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="n">yhat</span> <span class="o">!=</span> <span class="n">yhat2</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r_R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">((</span><span class="n">yhat</span> <span class="o">-</span> <span class="n">centroids_r</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">r_R</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">centroids_r</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">r_R</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">r_R</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">new_memberships</span> <span class="o">=</span> <span class="n">initial_f</span>
+        <span class="n">new_memberships</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">memberships_left</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">new_memberships</span><span class="p">[</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">memberships_right</span><span class="p">[</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">yhat2</span> <span class="o">=</span> <span class="n">yhat</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_memberships</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">yhat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">centroids_r</span><span class="p">,</span> <span class="n">new_memberships</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">yhat2</span></div>
+
+
+<div class="viewcode-block" id="consequent_centroid_l"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.consequent_centroid_l">[docs]</a><span class="k">def</span> <span class="nf">consequent_centroid_l</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="p">,</span> <span class="n">centroids_l</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set.</span>
+
+<span class="sd">    :param antecedent_memberships: M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</span>
+<span class="sd">    :param centroids_r: M sized vector. Contains the referencial values.</span>
+<span class="sd">    :return: the IV centroid.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">memberships_left</span> <span class="o">=</span> <span class="n">antecedent_memberships</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">memberships_right</span> <span class="o">=</span> <span class="n">antecedent_memberships</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">initial_f</span> <span class="o">=</span> <span class="p">(</span><span class="n">memberships_left</span> <span class="o">+</span> <span class="n">memberships_right</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># (memberships_right * centroids_r) / np.sum(memberships_right)</span>
+    <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">centroids_l</span><span class="p">,</span> <span class="n">initial_f</span><span class="p">)</span>
+    <span class="n">yhat2</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+
+    <span class="c1">#R = np.where(yhat - centroids_r)[0]</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">yhat</span> <span class="o">!=</span> <span class="n">yhat2</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r_R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">((</span><span class="n">yhat</span> <span class="o">-</span> <span class="n">centroids_l</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">r_R</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">centroids_l</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">r_R</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">r_R</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">new_memberships</span> <span class="o">=</span> <span class="n">initial_f</span>
+        <span class="n">new_memberships</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">memberships_right</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">new_memberships</span><span class="p">[</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">memberships_left</span><span class="p">[</span><span class="n">r_R</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">yhat2</span> <span class="o">=</span> <span class="n">yhat</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_memberships</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">yhat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yhat</span> <span class="o">=</span> <span class="n">y_compute</span><span class="p">(</span><span class="n">centroids_l</span><span class="p">,</span> <span class="n">new_memberships</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">yhat2</span></div>
+
+
+<div class="viewcode-block" id="compute_centroid_iv"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.compute_centroid_iv">[docs]</a><span class="k">def</span> <span class="nf">compute_centroid_iv</span><span class="p">(</span><span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">memberships</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes Karnik and Mendel algorithm to find the centroid of a iv fuzzy set. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,))</span>
+    <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_centroid_t2_l</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">memberships</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_centroid_t2_r</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">memberships</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="consequent_centroid"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.consequent_centroid">[docs]</a><span class="k">def</span> <span class="nf">consequent_centroid</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="p">,</span> <span class="n">centroids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes Karnik and Mendel algorithm? to find the centroid of a consequent iv fuzzy set given the centroids of the antecedents. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">centroids_l</span> <span class="o">=</span> <span class="n">centroids</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">centroids_r</span> <span class="o">=</span> <span class="n">centroids</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,))</span>
+
+    <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">consequent_centroid_l</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="p">,</span> <span class="n">centroids_l</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">consequent_centroid_r</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="p">,</span> <span class="n">centroids_r</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="center_of_masses"><a class="viewcode-back" href="../../function_resume/centroid.html#ex_fuzzy.centroid.center_of_masses">[docs]</a><span class="k">def</span> <span class="nf">center_of_masses</span><span class="p">(</span><span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">memberships</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the center of masses of a t1 membership function.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">@</span> <span class="n">memberships</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">memberships</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

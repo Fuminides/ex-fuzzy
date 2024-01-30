@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.temporal &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.temporal</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ex_fuzzy.temporal</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Expansion of the base fuzzy sets, adding temporal fuzzy sets.</span>
+
+<span class="sd">Contains functions to model the temporal fuzzy sets, temporal fuzzy variables and temporal rule bases.</span>
+<span class="sd">It also contains functions to evaluate the fuzzy rulebases obtained.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">matthews_corrcoef</span>
+<span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.ga</span> <span class="kn">import</span> <span class="n">GA</span>
+<span class="kn">from</span> <span class="nn">pymoo.core.problem</span> <span class="kn">import</span> <span class="n">Problem</span>
+<span class="kn">from</span> <span class="nn">pymoo.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span> <span class="nn">pymoo.operators.sampling.rnd</span> <span class="kn">import</span> <span class="n">IntegerRandomSampling</span>
+<span class="kn">from</span> <span class="nn">pymoo.operators.crossover.sbx</span> <span class="kn">import</span> <span class="n">SBX</span>
+<span class="kn">from</span> <span class="nn">pymoo.operators.mutation.pm</span> <span class="kn">import</span> <span class="n">PolynomialMutation</span>
+<span class="kn">from</span> <span class="nn">pymoo.core.variable</span> <span class="kn">import</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">pymoo.core.problem</span> <span class="kn">import</span> <span class="n">StarmapParallelization</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">maintenance</span> <span class="k">as</span> <span class="n">mnt</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span> <span class="k">as</span> <span class="n">rl</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">evolutionary_fit</span> <span class="k">as</span> <span class="n">evf</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">vis_rules</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">eval_rules</span> <span class="k">as</span> <span class="n">evr</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+    <span class="kn">import</span> <span class="nn">maintenance</span> <span class="k">as</span> <span class="nn">mnt</span>
+    <span class="kn">import</span> <span class="nn">rules</span> <span class="k">as</span> <span class="nn">rl</span>
+    <span class="kn">import</span> <span class="nn">evolutionary_fit</span> <span class="k">as</span> <span class="nn">evf</span>
+    <span class="kn">import</span> <span class="nn">vis_rules</span>
+    <span class="kn">import</span> <span class="nn">eval_rules</span> <span class="k">as</span> <span class="nn">evr</span>
+
+
+<span class="n">TMP_FUZZY_SETS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span>
+    <span class="s2">&quot;NEW_FUZZY_SETS&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">&#39;temporal&#39;</span><span class="p">,</span> <span class="s1">&#39;temporal_t2&#39;</span><span class="p">,</span> <span class="s1">&#39;temporal_gt2&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">NEW_FUZZY_SETS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span>
+    <span class="s2">&quot;FUZZY_SETS&quot;</span><span class="p">,</span>
+    <span class="p">[(</span><span class="n">es</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">es</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">es</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">es</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="n">TMP_FUZZY_SETS</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span> <span class="o">=</span> <span class="n">NEW_FUZZY_SETS</span>
+<span class="c1">### DEFINE THE FUZZY SET ####</span>
+<div class="viewcode-block" id="temporalFS"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFS">[docs]</a><span class="k">class</span> <span class="nc">temporalFS</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to implement temporal fuzzy sets.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">std_fuzzy_set</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">,</span> <span class="n">conditional_variable</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a temporal fuzzy set.</span>
+
+<span class="sd">        :param std_fuzzy_set: FS. Standard fuzzy set that contains the non-temporal aware memberhsip function.</span>
+<span class="sd">        :param conditional_variable: np.array. The variable that expresses the different temporal moments. Shape (time discrete moments, ).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">mnt</span><span class="o">.</span><span class="n">save_usage_flag</span><span class="p">:</span>
+            <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">FuzzySets</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">std_set</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmp_function</span> <span class="o">=</span> <span class="n">conditional_variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membership_parameters</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">membership_parameters</span>
+        <span class="k">elif</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_upper</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">secondMF_upper</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_lower</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">secondMF_lower</span>
+        <span class="k">elif</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secondary_memberships</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">secondary_memberships</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">alpha_cuts</span>
+
+
+<div class="viewcode-block" id="temporalFS.membership"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership of each sample and in each time for the fs.</span>
+
+<span class="sd">        :param input: array temporal_time x samples.</span>
+<span class="sd">        :time: int. Time moment to compute the membership. If none, looks for a fixed time</span>
+<span class="sd">        :return: array temporal_time x samples.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Temporal fuzzy set has no fixed time. Please, fix a time or provide a time to compute the membership.&#39;</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_set</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmp_function</span><span class="p">[</span><span class="n">time</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="temporalFS.type"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the type of the fuzzy set. (temporal)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">temporal</span></div>
+    
+
+<div class="viewcode-block" id="temporalFS.inside_type"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.inside_type">[docs]</a>    <span class="k">def</span> <span class="nf">inside_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the type of the og fuzzy set computed before the time dependency.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span></div>
+    
+
+<div class="viewcode-block" id="temporalFS.fix_time"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.fix_time">[docs]</a>    <span class="k">def</span> <span class="nf">fix_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fixes the time of the temporal fuzzy set.</span>
+
+<span class="sd">        :param time: int. Time moment to fix.</span>
+<span class="sd">        :return: FS. Fuzzy set with the fixed time.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span></div></div>
+
+
+
+<span class="c1">#### DEFINE THE FUZZY VARIABLE ####</span>
+<div class="viewcode-block" id="temporalFuzzyVariable"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable">[docs]</a><span class="k">class</span> <span class="nc">temporalFuzzyVariable</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to implement a temporal fuzzy variable.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fuzzy_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">temporalFS</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a temporal fuzzy variable.</span>
+
+<span class="sd">        :param str: name of the variable.</span>
+<span class="sd">        :param fuzzy_sets: list of the fuzzy sets pre-time dependencies.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fuzzy_sets</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="temporalFuzzyVariable.fix_time"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.fix_time">[docs]</a>    <span class="k">def</span> <span class="nf">fix_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fixes the time of the temporal fuzzy variable.</span>
+
+<span class="sd">        :param time: int. Time moment to fix.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span></div>
+
+
+<div class="viewcode-block" id="temporalFuzzyVariable.compute_memberships"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.compute_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership to each of the FS in the fuzzy variables.</span>
+
+<span class="sd">        :param x: numeric value or array. Computes the membership to each of the IVFS in the fuzzy variables.</span>
+<span class="sd">        :param time: int. Time moment to compute the membership.</span>
+<span class="sd">        :return: list of floats. Membership to each of the FS in the fuzzy variables.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Temporal fuzzy variable has no fixed time. Please, fix a time or provide a time to compute the membership.&#39;</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">fuzzy_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">time</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+
+<div class="viewcode-block" id="temporalFuzzyVariable.n_time_moments"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.n_time_moments">[docs]</a>    <span class="k">def</span> <span class="nf">n_time_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of time moments of the temporal fuzzy variable.</span>
+
+<span class="sd">        :return: int. Number of time moments of the temporal fuzzy variable.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tmp_function</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+
+
+<span class="c1">#### DEFINE THE RULE BASE WITH TEMPORAL DEPENDENCIES ####</span>
+<div class="viewcode-block" id="temporalMasterRuleBase"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase">[docs]</a><span class="k">class</span> <span class="nc">temporalMasterRuleBase</span><span class="p">(</span><span class="n">rl</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class is a temporal extension of the MasterRuleBase class. It includes a list of</span>
+<span class="sd">    rule bases for each time step.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">rl</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">],</span> <span class="n">time_step_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor of the temporalMasterRuleBase class.</span>
+
+<span class="sd">        :param rule_base: list of rule bases.</span>
+<span class="sd">        :param time_steps: number of time steps.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rule_base</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span> <span class="o">=</span> <span class="n">rule_base</span>
+
+        <span class="k">if</span> <span class="n">time_step_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_step_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_steps</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_step_names</span> <span class="o">=</span> <span class="n">time_step_names</span>
+        
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">mrb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule_base</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mrb</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">antecedent</span> <span class="ow">in</span> <span class="n">rb</span><span class="o">.</span><span class="n">antecedents</span><span class="p">:</span>
+                    <span class="n">antecedent</span><span class="o">.</span><span class="n">fix_time</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">rule_base</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">antecedents</span>
+                     
+
+<div class="viewcode-block" id="temporalMasterRuleBase.add_rule"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.add_rule">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">rl</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">,</span> <span class="n">consequent</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a rule to the rule base of the given consequent.</span>
+
+<span class="sd">        :param rule: rule to add.</span>
+<span class="sd">        :param consequent: index of the rule base to add the rule.</span>
+<span class="sd">        :param time_step: time step of the rule base to add the rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">[</span><span class="n">time_step</span><span class="p">][</span><span class="n">consequent</span><span class="p">]</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.get_rulebase_matrix"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_rulebase_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebase_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with the rulebases for each antecedent in matrix format.</span>
+
+<span class="sd">        :return: list with the rulebases for each antecedent in matrix format.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">get_rulebase_matrix</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.get_scores"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the dominance score for each rule in all the rulebases.</span>
+
+<span class="sd">        :return: array with the dominance score for each rule in all the rulebases.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rule_bases</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">:</span>    
+            <span class="k">for</span> <span class="n">rb</span> <span class="ow">in</span> <span class="n">rule_bases</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rb</span><span class="o">.</span><span class="n">scores</span><span class="p">())</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.compute_firing_strenghts"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.compute_firing_strenghts">[docs]</a>    <span class="k">def</span> <span class="nf">compute_firing_strenghts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the firing strength of each rule for each sample.</span>
+
+<span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the firing strength of each rule for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">time_moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">time_moments</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">time_moment</span><span class="p">,</span> <span class="n">rule_bases</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">):</span>
+            <span class="n">actual_moment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">time_moments</span><span class="p">,</span> <span class="n">time_moment</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rule_bases</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">rule_bases</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                    <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rule_bases</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">actual_moment</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">rule_bases</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+                    <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rule_bases</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">actual_moment</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_bases</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">actual_moment</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Firing strengths shape: samples x rules</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.winning_rule_predict"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.winning_rule_predict">[docs]</a>    <span class="k">def</span> <span class="nf">winning_rule_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the winning rule for each sample. Takes into account dominance scores if already computed.</span>
+
+<span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the winning rule for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">consequents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">mrb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mrb</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rb</span><span class="p">:</span>
+                    <span class="n">consequents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jx</span><span class="p">)</span>
+
+        <span class="c1"># consequents = sum([[ix]*len(self[ix].get_rules())</span>
+        <span class="c1">#                  for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning</span>
+        <span class="n">firing_strengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_firing_strenghts</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">firing_strengths</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()</span> <span class="o">*</span> <span class="n">firing_strengths</span>
+
+
+        <span class="n">winning_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">consequents</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="n">winning_rules</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.add_rule_base"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.add_rule_base">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">rl</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a rule base to the list of rule bases.</span>
+
+<span class="sd">        :param rule_base: rule base to add.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">[</span><span class="n">time</span><span class="p">]</span><span class="o">.</span><span class="n">add_rule_base</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.print_rules"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.print_rules">[docs]</a>    <span class="k">def</span> <span class="nf">print_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_rules</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print all the rules for all the consequents.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">zx</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;Rules for time step: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step_names</span><span class="p">[</span><span class="n">zx</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;----------------</span><span class="se">\n</span><span class="s1">&#39;</span> 
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">ruleBase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+                <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;Consequent: &#39;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">consequent_names</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">res</span> <span class="o">+=</span> <span class="n">ruleBase</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;----------------</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="n">return_rules</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.get_rules"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_rules">[docs]</a>    <span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">rl</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with all the rules.</span>
+
+<span class="sd">        :return: list with all the rules.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">rule</span> <span class="k">for</span> <span class="n">mruleBase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">mruleBase</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()]</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.fuzzy_type"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the correspoing type of the RuleBase using the enum type in the fuzzy_sets module.</span>
+
+<span class="sd">        :return: the corresponding fuzzy set type of the RuleBase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.purge_rules"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.purge_rules">[docs]</a>    <span class="k">def</span> <span class="nf">purge_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Delete the roles with a dominance score lower than the tolerance.</span>
+
+<span class="sd">        :param tolerance: tolerance to delete the rules.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">mruleBase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">:</span>
+            <span class="n">mruleBase</span><span class="o">.</span><span class="n">purge_rules</span><span class="p">(</span><span class="n">tolerance</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rl</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding time rulebase.</span>
+
+<span class="sd">        :param item: index of the rulebase.</span>
+<span class="sd">        :return: the corresponding rulebase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of rule bases.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="temporalMasterRuleBase.get_consequents"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_consequents">[docs]</a>    <span class="k">def</span> <span class="nf">get_consequents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with the consequents of each rule base.</span>
+
+<span class="sd">        :return: list with the consequents of each rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">get_consequents</span><span class="p">()</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">)],</span> <span class="p">[])</span></div>
+    
+
+<div class="viewcode-block" id="temporalMasterRuleBase.get_rulebases"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_rulebases">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">rl</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with all the rules.</span>
+
+<span class="sd">        :return: list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rule_bases</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">ruleBase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_mrule_bases</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">ruleBase</span><span class="p">:</span>
+                <span class="n">rule_bases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">rule_bases</span></div>
+    
+
+    <span class="k">def</span> <span class="nf">_winning_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">temporal_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the winning rule for each sample. Takes into account dominance scores if already computed.</span>
+
+<span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the winning rule for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="n">firing_strengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_firing_strenghts</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">temporal_moments</span><span class="p">)</span>
+
+        <span class="n">association_degrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()</span> <span class="o">*</span> <span class="n">firing_strengths</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">):</span>
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">winning_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">winning_rules</span></div>
+        
+
+<span class="c1">#### DEFINE THE FUZZY CLASSIFIER USING TEMPORAL FUZZY SETS ####</span>
+<div class="viewcode-block" id="TemporalFuzzyRulesClassifier"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier">[docs]</a><span class="k">class</span> <span class="nc">TemporalFuzzyRulesClassifier</span><span class="p">(</span><span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class that is used as a classifier for a fuzzy rule based system with time dependencies. Supports precomputed and optimization of the linguistic variables.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">nRules</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="n">nAnts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">fuzzy_type</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">n_linguist_variables</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linguistic_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">domain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_class</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precomputed_rules</span><span class="p">:</span> <span class="n">rl</span><span class="o">.</span><span class="n">MasterRuleBase</span> <span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">runner</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Inits the optimizer with the corresponding parameters.</span>
+
+<span class="sd">        :param nRules: number of rules to optimize.</span>
+<span class="sd">        :param nAnts: max number of antecedents to use.</span>
+<span class="sd">        :param fuzzy type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.</span>
+<span class="sd">        :param tolerance: tolerance for the dominance score of the rules.</span>
+<span class="sd">        :param n_linguist_variables: number of linguistic variables per antecedent.</span>
+<span class="sd">        :param verbose: if True, prints the progress of the optimization.</span>
+<span class="sd">        :param linguistic_variables: list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.</span>
+<span class="sd">        :param domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.</span>
+
+<span class="sd">        kwargs:</span>
+<span class="sd">            - n_classes: number of classes to predict. Default deduces from data.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nRules</span><span class="p">,</span> <span class="n">nAnts</span><span class="p">,</span> <span class="n">fuzzy_type</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">n_linguist_variables</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">linguistic_variables</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">n_class</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="nf">_contruct_tempRuleBase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problems</span><span class="p">,</span> <span class="n">best_individuals</span><span class="p">):</span>
+        <span class="n">ruleBase_temp</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">problem</span><span class="p">,</span> <span class="n">subject</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">problems</span><span class="p">,</span> <span class="n">best_individuals</span><span class="p">):</span>
+            <span class="n">ruleBase_time_moment</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">_construct_ruleBase</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> 
+                                                                <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">)</span>
+            <span class="n">ruleBase_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ruleBase_time_moment</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ruleBase_temp</span>
+
+
+    <span class="k">def</span> <span class="nf">_fix_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lvs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">temporalFuzzyVariable</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fixes the time of the temporal fuzzy variables.</span>
+
+<span class="sd">        :param lvs: list of temporal fuzzy variables.</span>
+<span class="sd">        :param time: integer. Time moment to fix.</span>
+<span class="sd">        :return: None. The time is fixed.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">lv</span> <span class="ow">in</span> <span class="n">lvs</span><span class="p">:</span>
+            <span class="n">lv</span><span class="o">.</span><span class="n">fix_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TemporalFuzzyRulesClassifier.fit"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_gen</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">pop_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fits a fuzzy rule based classifier using a genetic algorithm to the given data.</span>
+
+<span class="sd">        :param X: numpy array samples x features</span>
+<span class="sd">        :param y: labels. integer array samples (x 1)</span>
+<span class="sd">        :param n_gen: integer. Number of generations to run the genetic algorithm.</span>
+<span class="sd">        :param pop_size: integer. Population size for each gneration.</span>
+<span class="sd">        :param time_moments: array of integers. Time moments associated to each sample (when temporal dependencies are present)</span>
+<span class="sd">        :return: None. The classifier is fitted to the data.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">problems</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">time_moments</span><span class="p">))):</span>
+            <span class="n">X_problem</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">]</span>
+            <span class="n">y_problem</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">]</span>
+            <span class="n">time_moments_problem</span> <span class="o">=</span> <span class="n">time_moments</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">]</span> 
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># If Fuzzy variables need to be optimized.</span>
+                <span class="n">problem</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">FitRuleBase</span><span class="p">(</span><span class="n">X_problem</span><span class="p">,</span> <span class="n">y_problem</span><span class="p">,</span> <span class="n">nRules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nRules</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+                                    <span class="n">n_linguist_variables</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_linguist_variables</span><span class="p">,</span> <span class="n">fuzzy_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="n">time_moments</span><span class="o">=</span><span class="n">time_moments_problem</span><span class="p">,</span>
+                                    <span class="n">n_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_class</span><span class="p">,</span> <span class="n">thread_runner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_runner</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">copy</span>
+                <span class="n">time_lvs</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span> <span class="k">for</span> <span class="n">aux</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fix_time</span><span class="p">(</span><span class="n">time_lvs</span><span class="p">,</span> <span class="n">ix</span><span class="p">)</span>
+                <span class="c1"># If Fuzzy variables are already precomputed.       </span>
+                <span class="n">problem</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">FitRuleBase</span><span class="p">(</span><span class="n">X_problem</span><span class="p">,</span> <span class="n">y_problem</span><span class="p">,</span> <span class="n">nRules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nRules</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span><span class="p">,</span>
+                                    <span class="n">linguist_variables</span><span class="o">=</span><span class="n">time_lvs</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span> <span class="n">time_moments</span><span class="o">=</span><span class="n">time_moments_problem</span><span class="p">,</span>
+                                    <span class="n">n_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> <span class="n">thread_runner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_runner</span><span class="p">)</span>
+            
+            <span class="n">problems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+
+        
+
+        <span class="n">best_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">performance</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">problem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">problems</span><span class="p">):</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">GA</span><span class="p">(</span>
+            <span class="n">pop_size</span><span class="o">=</span><span class="n">pop_size</span><span class="p">,</span>
+            <span class="n">sampling</span><span class="o">=</span><span class="n">IntegerRandomSampling</span><span class="p">(),</span>
+            <span class="n">crossover</span><span class="o">=</span><span class="n">SBX</span><span class="p">(</span><span class="n">prob</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">3.0</span><span class="p">),</span>
+            <span class="n">mutation</span><span class="o">=</span><span class="n">PolynomialMutation</span><span class="p">(</span><span class="n">eta</span><span class="o">=</span><span class="mf">7.0</span><span class="p">),</span>
+            <span class="n">eliminate_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">checkpoints</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=================================================&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;n_gen  |  n_eval  |     f_avg     |     f_min    &#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=================================================&#39;</span><span class="p">)</span>
+                <span class="n">algorithm</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span> <span class="n">termination</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;n_gen&#39;</span><span class="p">,</span> <span class="n">n_gen</span><span class="p">))</span> <span class="c1"># 33? Soon...</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_gen</span><span class="p">):</span>
+                    <span class="n">algorithm</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">algorithm</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-6s</span><span class="s1"> | </span><span class="si">%-8s</span><span class="s1"> | </span><span class="si">%-8s</span><span class="s1"> | </span><span class="si">%-8s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">n_gen</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">n_eval</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">pop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">8</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">pop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="mi">8</span><span class="p">)))</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="o">%</span> <span class="n">checkpoints</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;checkpoint_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">n_gen</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                            <span class="n">pop</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">pop</span>
+                            <span class="n">fitness_last_gen</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+                            <span class="n">best_solution_arg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">fitness_last_gen</span><span class="p">)</span>
+                            <span class="n">best_individual</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)[</span><span class="n">best_solution_arg</span><span class="p">,</span> <span class="p">:]</span>
+
+                            <span class="n">rule_base</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">_construct_ruleBase</span><span class="p">(</span>
+                                <span class="n">best_individual</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">)</span>
+                            <span class="n">eval_performance</span> <span class="o">=</span> <span class="n">evr</span><span class="o">.</span><span class="n">evalRuleBase</span><span class="p">(</span>
+                                <span class="n">rule_base</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+                            
+                            <span class="n">eval_performance</span><span class="o">.</span><span class="n">add_full_evaluation</span><span class="p">()</span>  
+                            <span class="c1"># self.rename_fuzzy_variables() This wont work on checkpoints!</span>
+                            <span class="n">rule_base</span><span class="o">.</span><span class="n">purge_rules</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">)</span>
+                            <span class="n">checkpoint_rules</span> <span class="o">=</span> <span class="n">rule_base</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">checkpoint_rules</span><span class="p">)</span>     
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span>
+                            <span class="n">algorithm</span><span class="p">,</span>
+                            <span class="c1"># termination,</span>
+                            <span class="p">(</span><span class="s2">&quot;n_gen&quot;</span><span class="p">,</span> <span class="n">n_gen</span><span class="p">),</span>
+                            <span class="n">copy_algorithm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+            <span class="n">pop</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">pop</span>
+            <span class="n">fitness_last_gen</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+            <span class="n">best_solution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">fitness_last_gen</span><span class="p">)</span>
+            <span class="n">best_individual</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)[</span><span class="n">best_solution</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">best_individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_individual</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Rule based fit for time &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; completed.&#39;</span><span class="p">)</span>
+
+        
+            <span class="bp">self</span><span class="o">.</span><span class="n">performance</span><span class="p">[</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">fitness_last_gen</span><span class="p">[</span><span class="n">best_solution</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">var_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+        
+        <span class="n">ruleBase_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contruct_tempRuleBase</span><span class="p">(</span><span class="n">problems</span><span class="p">,</span> <span class="n">best_individuals</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span> <span class="o">=</span> <span class="n">temporalMasterRuleBase</span><span class="p">(</span><span class="n">ruleBase_temp</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span> <span class="o">=</span> <span class="n">evr</span><span class="o">.</span><span class="n">evalRuleBase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span><span class="o">.</span><span class="n">add_full_evaluation</span><span class="p">()</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">rename_fuzzy_variables</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">purge_rules</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TemporalFuzzyRulesClassifier.forward"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the predicted class for each sample.</span>
+
+<span class="sd">        :param X: np array samples x features.</span>
+<span class="sd">        :param time_moments: list of integers. Time moments associated to each sample (when temporal dependencies are present)</span>
+<span class="sd">        :return: np array samples (x 1) with the predicted class.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">values</span>  <span class="c1"># If X was a numpy array</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TemporalFuzzyRulesClassifier.plot_fuzzy_variables"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.plot_fuzzy_variables">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fuzzy_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Plot the fuzzy partitions in each fuzzy variable.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">fuzzy_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">antecedents</span>
+
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">fv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">):</span>
+            <span class="n">vis_rules</span><span class="o">.</span><span class="n">plot_fuzzy_variable</span><span class="p">(</span><span class="n">fv</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TemporalFuzzyRulesClassifier.get_rulebase"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.get_rulebase">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the rulebase obtained after fitting the classifier to the data.</span>
+
+<span class="sd">        :return: a matrix format for the rulebase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_rulebase_matrix</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="eval_temporal_fuzzy_model"><a class="viewcode-back" href="../../function_resume/temporal.html#ex_fuzzy.temporal.eval_temporal_fuzzy_model">[docs]</a><span class="k">def</span> <span class="nf">eval_temporal_fuzzy_model</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">:</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                     <span class="n">X_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">test_time_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_rules</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_accuracy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_matthew</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function that evaluates a fuzzy rule based model. It also plots the rules and the fuzzy partitions.</span>
+
+<span class="sd">    :param fl_classifier: Fuzzy rule based model.</span>
+<span class="sd">    :param X_train: Training data.</span>
+<span class="sd">    :param y_train: Training labels.</span>
+<span class="sd">    :param X_test: Test data.</span>
+<span class="sd">    :param y_test: Test labels.</span>
+<span class="sd">    :param plot_rules: If True, it plots the rules.</span>
+<span class="sd">    :param print_rules: If True, it prints the rules.</span>
+<span class="sd">    :param plot_partitions: If True, it plots the fuzzy partitions.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">print_accuracy</span><span class="p">:</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ACCURACY&#39;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Train performance: &#39;</span> <span class="o">+</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">)))))</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test performance: &#39;</span> <span class="o">+</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">test_time_moments</span><span class="p">)))))</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">print_matthew</span><span class="p">:</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MATTHEW CORRCOEF&#39;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Train performance: &#39;</span> <span class="o">+</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">matthews_corrcoef</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">))))</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test performance: &#39;</span> <span class="o">+</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">matthews_corrcoef</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">test_time_moments</span><span class="p">))))</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">time_moments</span><span class="p">):</span>
+      <span class="k">try</span><span class="p">:</span>
+            <span class="n">X_aux</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">X_aux_test</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:]</span>
+      <span class="k">except</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">indexing</span><span class="o">.</span><span class="n">InvalidIndexError</span><span class="p">:</span>
+            <span class="n">X_aux</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">X_aux_test</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">test_time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:]</span>
+
+      <span class="n">y_aux</span> <span class="o">=</span> <span class="n">y_train</span><span class="p">[</span><span class="n">time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">]</span>
+      <span class="n">y_aux_test</span> <span class="o">=</span> <span class="n">y_test</span><span class="p">[</span><span class="n">test_time_moments</span> <span class="o">==</span> <span class="n">ix</span><span class="p">]</span>
+
+      <span class="k">if</span> <span class="n">print_matthew</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MOMENT &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MATTHEW CORRCOEF&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Train performance: &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">matthews_corrcoef</span><span class="p">(</span><span class="n">y_aux</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X_aux</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ix</span><span class="p">]</span> <span class="o">*</span> <span class="n">X_aux</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test performance: &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">matthews_corrcoef</span><span class="p">(</span><span class="n">y_aux_test</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X_aux_test</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ix</span><span class="p">]</span> <span class="o">*</span> <span class="n">X_aux_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_rules</span><span class="p">:</span>
+        <span class="n">vis_rules</span><span class="o">.</span><span class="n">visualize_rulebase</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">print_rules</span> <span class="ow">or</span> <span class="n">return_rules</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_partitions</span><span class="p">:</span>
+        <span class="n">fl_classifier</span><span class="o">.</span><span class="n">plot_fuzzy_variables</span><span class="p">()</span>
+      
+    <span class="k">if</span> <span class="n">return_rules</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

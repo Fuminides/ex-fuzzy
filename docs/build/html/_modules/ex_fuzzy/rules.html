@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.rules &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.rules</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ex_fuzzy.rules</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a the source file that contains the Rule, RuleBase and MasterRuleBase classes to perform fuzzy inference.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">centroid</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+    <span class="kn">import</span> <span class="nn">centroid</span>
+
+
+<div class="viewcode-block" id="RuleError"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleError">[docs]</a><span class="k">class</span> <span class="nc">RuleError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Exception raised when a rule is not well defined.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor of the RuleError class.</span>
+
+<span class="sd">        :param message: message of the error.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">_myprod</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Proxy function to change the product operation interface</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span>
+
+
+<div class="viewcode-block" id="Rule"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.Rule">[docs]</a><span class="k">class</span> <span class="nc">Rule</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class of Rule designed to work with one single rule. It contains the whole inference functionally in itself.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a rule with the given antecedents and consequent.</span>
+
+<span class="sd">        :param antecedents: list of fuzzy sets.</span>
+<span class="sd">        :param consequent: fuzzy set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">antecedents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="n">consequent</span>
+
+<div class="viewcode-block" id="Rule.membership"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.Rule.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership of one input to the antecedents of the rule.</span>
+
+<span class="sd">        :param x: input to compute the membership.</span>
+<span class="sd">        :param tnorm: t-norm to use in the inference process.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">antecedent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">antecedent</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">tnorm</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">antecedent</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="Rule.consequent_centroid"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.Rule.consequent_centroid">[docs]</a>    <span class="k">def</span> <span class="nf">consequent_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the centroid of the consequent using a Karnik and Mendel algorithm.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_consequent</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">consequent_domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span><span class="o">.</span><span class="n">domain</span>
+            <span class="n">domain_linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.05</span><span class="p">)</span>
+            <span class="n">consequent_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span>
+                <span class="n">domain_linspace</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">centroid_consequent</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">compute_centroid_fs</span><span class="p">(</span>
+                <span class="n">domain_linspace</span><span class="p">,</span> <span class="n">consequent_memberships</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_consequent</span></div></div>
+
+
+<div class="viewcode-block" id="RuleSimple"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleSimple">[docs]</a><span class="k">class</span> <span class="nc">RuleSimple</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class designed to represent rules in its simplest form to optimize the computation in a rulebase.</span>
+
+<span class="sd">    It indicates the antecedent values using a vector coded in this way:</span>
+<span class="sd">        ith entry: -1 means this variable is not used. 0-N indicates that the variable linguistic used for the ith input is that one.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a rule with the given antecedents and consequent.</span>
+
+<span class="sd">        :param antecedents: list of integers indicating the linguistic variable used for each input.</span>
+<span class="sd">        :param consequent: integer indicating the linguistic variable used for the consequent.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">consequent</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the antecedent value for the given index.</span>
+
+<span class="sd">        :param ix: index of the antecedent to return.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the antecedent value for the given index.</span>
+
+<span class="sd">        :param ix: index of the antecedent to set.</span>
+<span class="sd">        :param value: value to set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a string representation of the rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;Rule: antecedents: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; consequent: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consequent</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of antecedents in the rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns True if the two rules are equal.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">antecedents</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">consequent</span>
+    
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the hash of the rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="RuleBase"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase">[docs]</a><span class="k">class</span> <span class="nc">RuleBase</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class optimized to work with multiple rules at the same time. Right now supports only one consequent. (Solution: use one rulebase per consequent to study)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a rulebase with the given antecedents, rules and consequent.</span>
+
+<span class="sd">        :param antecedents: list of fuzzy sets.</span>
+<span class="sd">        :param rules: list of rules.</span>
+<span class="sd">        :param consequent: fuzzy set.</span>
+<span class="sd">        :param tnorm: t-norm to use in the inference process.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_rule_duplicates</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">antecedents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="n">consequent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span> <span class="o">=</span> <span class="n">tnorm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">consequent</span><span class="o">.</span><span class="n">linguistic_variable_names</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">vl_consequent</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">consequent</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">consequent_domain</span> <span class="o">=</span> <span class="n">vl_consequent</span><span class="o">.</span><span class="n">domain</span>
+            <span class="n">domain_linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.05</span><span class="p">)</span>
+            <span class="n">consequent_memberships</span> <span class="o">=</span> <span class="n">vl_consequent</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">domain_linspace</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">compute_centroid_iv</span><span class="p">(</span>
+                <span class="n">domain_linspace</span><span class="p">,</span> <span class="n">consequent_memberships</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+            <span class="n">consequent_ix</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">consequent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">[</span><span class="n">consequent_ix</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_duplicates</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="RuleBase.get_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_rules">[docs]</a>    <span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the list of rules in the rulebase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.add_rule"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.add_rule">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_rule</span><span class="p">:</span> <span class="n">RuleSimple</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a new rule to the rulebase.</span>
+<span class="sd">        :param new_rule: rule to add.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_rule</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.add_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.add_rules">[docs]</a>    <span class="k">def</span> <span class="nf">add_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a list of new rules to the rulebase.</span>
+
+<span class="sd">        :param new_rules: list of rules to add.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">+=</span> <span class="n">new_rules</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.remove_rule"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.remove_rule">[docs]</a>    <span class="k">def</span> <span class="nf">remove_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Removes the rule in the given index.</span>
+<span class="sd">        :param ix: index of the rule to remove.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.remove_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.remove_rules">[docs]</a>    <span class="k">def</span> <span class="nf">remove_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delete_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Removes the rules in the given list of indexes.</span>
+
+<span class="sd">        :param delete_list: list of indexes of the rules to remove.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="p">[</span><span class="n">rule</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span> <span class="k">if</span> <span class="n">ix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">delete_list</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.get_rulebase_matrix"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_rulebase_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebase_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a matrix with the antecedents values for each rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.get_scores"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns an array with the dominance score for each rule.</span>
+<span class="sd">        (Must been already computed by an evalRule object)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">,</span> <span class="p">)))</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">score</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+    <span class="k">def</span> <span class="nf">delete_rule_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_rules</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">]):</span>
+        <span class="c1"># Delete the rules that are duplicated in the rule list</span>
+        <span class="n">unique</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_rules</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">unique</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">unique</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span> <span class="o">=</span> <span class="n">ix</span>
+
+        <span class="n">new_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">list_rules</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unique</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        
+        <span class="k">return</span> <span class="n">new_list</span>
+
+        
+
+<div class="viewcode-block" id="RuleBase.compute_antecedents_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_antecedents_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_antecedents_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list of of dictionaries that contains the memberships for each x value to the ith antecedents, nth linguistic variable.</span>
+<span class="sd">        x must be a vector (only one sample)</span>
+
+<span class="sd">        :param x: vector with the values of the inputs.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cache_antecedent_memberships</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">antecedent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">):</span>
+                <span class="n">cache_antecedent_memberships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">antecedent</span><span class="o">.</span><span class="n">compute_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]))</span>
+
+            <span class="k">return</span> <span class="n">cache_antecedent_memberships</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">),</span> <span class="mi">2</span><span class="p">))]</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.compute_rule_antecedent_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_rule_antecedent_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the antecedent truth value of an input array.</span>
+
+<span class="sd">        Return an array in shape samples x rules (x 2) (last is iv dimension)</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :param scaled: if True, the memberships are scaled according to their sums for each sample.</span>
+<span class="sd">        :return: array with the memberships of the antecedents for each rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">antecedents_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_antecedents_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+            <span class="n">rule_antecedents</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span>
+            <span class="n">initiated</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule_antecedents</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">vl</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">initiated</span><span class="p">:</span>
+                        <span class="n">membership</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">antecedents_memberships</span><span class="p">[</span><span class="n">ix</span><span class="p">])[</span><span class="n">vl</span><span class="p">]</span>
+                        <span class="n">initiated</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">membership</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span><span class="p">(</span><span class="n">membership</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span>
+                            <span class="n">antecedents_memberships</span><span class="p">[</span><span class="n">ix</span><span class="p">])[</span><span class="n">vl</span><span class="p">])</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[:,</span> <span class="n">jx</span><span class="p">]</span> <span class="o">=</span> <span class="n">membership</span>
+            <span class="k">except</span> <span class="ne">UnboundLocalError</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># All the antecedents are dont care.</span>
+
+        <span class="k">if</span> <span class="n">scaled</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                <span class="n">non_zero_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">]</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                <span class="n">non_zero_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">non_zero_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">):</span>
+                    <span class="n">relevant_res</span> <span class="o">=</span> <span class="n">res</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:]</span>
+
+                    <span class="n">non_zero_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">relevant_res</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="n">relevant_res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">relevant_res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> \
+                        <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">relevant_res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">non_zero_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">relevant_res</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="n">relevant_res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">relevant_res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> \
+                        <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">relevant_res</span><span class="p">[</span><span class="n">non_zero_rows</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                    <span class="n">res</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">relevant_res</span>
+                    
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.print_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.print_rules">[docs]</a>    <span class="k">def</span> <span class="nf">print_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_rules</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print the rules from the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">all_rules</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+            <span class="n">initiated</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">str_rule</span> <span class="o">=</span> <span class="s1">&#39;IF &#39;</span>
+            <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">vl_ix</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span><span class="p">):</span>
+                <span class="n">antecedent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">antecedent</span><span class="o">.</span><span class="n">linguistic_variable_names</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">rule</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">initiated</span><span class="p">:</span>
+                        <span class="n">str_rule</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">antecedent</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; IS &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="n">vl_ix</span><span class="p">])</span>
+                        <span class="n">initiated</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">str_rule</span> <span class="o">+=</span> <span class="s1">&#39; AND &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">antecedent</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> \
+                            <span class="s1">&#39; IS &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="n">vl_ix</span><span class="p">])</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">score</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+                <span class="n">str_rule</span> <span class="o">+=</span> <span class="s1">&#39; WITH DS &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+                <span class="c1"># If the classification scores have been computed, print them.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">str_rule</span> <span class="o">+=</span> <span class="s1">&#39;, ACC &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">accuracy</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">str_rule</span> <span class="o">+=</span> <span class="s1">&#39; THEN consequent vl is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">consequent</span><span class="p">)</span>
+            
+            <span class="n">all_rules</span> <span class="o">+=</span> <span class="n">str_rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">return_rules</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">all_rules</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">all_rules</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.inference"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.inference">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the fuzzy output of the fl inference system.</span>
+
+<span class="sd">        Return an array in shape samples x 2 (last is iv dimension)</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the memberships of the consequents for each rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.forward"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.forward">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the deffuzified output of the fl inference system.</span>
+
+<span class="sd">        Return a vector of size (samples, )</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the deffuzified output.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.fuzzy_type"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.fuzzy_type">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding type of the RuleBase using the enum type in the fuzzy_sets module.</span>
+
+<span class="sd">        :return: the type of fuzzy set used in the RuleBase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of rules in the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RuleBase.prune_bad_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.prune_bad_rules">[docs]</a>    <span class="k">def</span> <span class="nf">prune_bad_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Delete the rules from the rule base that do not have a dominance score superior to the threshold or have 0 accuracy in the training set.</span>
+
+<span class="sd">        :param tolerance: threshold for the dominance score.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">delete_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">score</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">):</span>
+                    <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="n">tolerance</span> <span class="ow">or</span> <span class="n">rule</span><span class="o">.</span><span class="n">accuracy</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">delete_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Dominance scores not computed for this rulebase&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_rules</span><span class="p">(</span><span class="n">delete_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RuleBase.scores"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.scores">[docs]</a>    <span class="k">def</span> <span class="nf">scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the dominance score for each rule.</span>
+
+<span class="sd">        :return: array with the dominance score for each rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RuleSimple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding rulebase.</span>
+
+<span class="sd">        :param item: index of the rule.</span>
+<span class="sd">        :return: the corresponding rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">RuleSimple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the corresponding rule.</span>
+
+<span class="sd">        :param key: index of the rule.</span>
+<span class="sd">        :param value: new rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns an iterator for the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a string with the rules in the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">str_res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="n">str_res</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">str_res</span>
+    
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns True if the two rule bases are equal.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">rules</span>
+    
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the hash of the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds two rule bases.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">RuleBase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">rules</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span><span class="p">)</span>
+    
+
+<div class="viewcode-block" id="RuleBase.n_linguist_variables"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.n_linguist_variables">[docs]</a>    <span class="k">def</span> <span class="nf">n_linguist_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of linguistic variables in the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)</span></div></div>
+
+    
+<div class="viewcode-block" id="RuleBaseT2"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2">[docs]</a><span class="k">class</span> <span class="nc">RuleBaseT2</span><span class="p">(</span><span class="n">RuleBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class optimized to work with multiple rules at the same time. Supports only one consequent. </span>
+<span class="sd">    (Use one rulebase per consequent to study classification problems. Check MasterRuleBase class for more documentation)</span>
+
+<span class="sd">    This class supports iv approximation for t2 fs.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor of the RuleBaseT2 class.</span>
+
+<span class="sd">        :param antecedents: list of fuzzy variables that are the antecedents of the rules.</span>
+<span class="sd">        :param rules: list of rules.</span>
+<span class="sd">        :param consequent: fuzzy variable that is the consequent of the rules.</span>
+<span class="sd">        :param tnorm: t-norm used to compute the fuzzy output.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_rule_duplicates</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">antecedents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="n">consequent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span> <span class="o">=</span> <span class="n">tnorm</span>
+
+        <span class="k">if</span> <span class="n">consequent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">consequent</span><span class="o">.</span><span class="n">linguistic_variable_names</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">vl_consequent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">consequent</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">):</span>
+                <span class="n">consequent_domain</span> <span class="o">=</span> <span class="n">vl_consequent</span><span class="o">.</span><span class="n">domain</span>
+                <span class="n">domain_linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                    <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.05</span><span class="p">)</span>
+                <span class="n">consequent_memberships</span> <span class="o">=</span> <span class="n">vl_consequent</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span>
+                    <span class="n">domain_linspace</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">compute_centroid_iv</span><span class="p">(</span>
+                    <span class="n">domain_linspace</span><span class="p">,</span> <span class="n">consequent_memberships</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="c1"># If 0, we are classifying and we do not need the consequent centroids.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+                    <span class="n">consequent_ix</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">consequent</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">[</span><span class="n">consequent_ix</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="RuleBaseT2.inference"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.inference">[docs]</a>    <span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the iv output of the t2 inference system.</span>
+
+<span class="sd">        Return an array in shape samples x 2 (last is iv dimension)</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the memberships of the consequents for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">antecedent_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">consequent_centroid</span><span class="p">(</span>
+                <span class="n">antecedent_memberships</span><span class="p">[</span><span class="n">sample</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="RuleBaseT2.forward"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the deffuzified output of the t2 inference system.</span>
+
+<span class="sd">        Return a vector of size (samples, )</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the deffuzified output for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RuleBaseT2.fuzzy_type"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the correspoing type of the RuleBase using the enum type in the fuzzy_sets module.</span>
+
+<span class="sd">        :return: the corresponding fuzzy set type of the RuleBase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span></div></div>
+
+
+<div class="viewcode-block" id="RuleBaseGT2"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2">[docs]</a><span class="k">class</span> <span class="nc">RuleBaseGT2</span><span class="p">(</span><span class="n">RuleBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class optimized to work with multiple rules at the same time. Supports only one consequent. </span>
+<span class="sd">    (Use one rulebase per consequent to study classification problems. Check MasterRuleBase class for more documentation)</span>
+
+<span class="sd">    This class supports gt2 fs. (ONLY FOR CLASSIFICATION PROBLEMS)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor of the RuleBaseGT2 class.</span>
+
+<span class="sd">        :param antecedents: list of fuzzy variables that are the antecedents of the rules.</span>
+<span class="sd">        :param rules: list of rules.</span>
+<span class="sd">        :param consequent: fuzzy variable that is the consequent of the rules.</span>
+<span class="sd">        :param tnorm: t-norm used to compute the fuzzy output.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_rule_duplicates</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">antecedents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="n">consequent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span> <span class="o">=</span> <span class="n">tnorm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span> <span class="o">=</span> <span class="n">antecedents</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">alpha_cuts</span>
+
+
+<div class="viewcode-block" id="RuleBaseGT2.inference"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.inference">[docs]</a>    <span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the output of the gt2 inference system.</span>
+
+<span class="sd">        Return an array in shape samples x alpha_cuts</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the memberships of the consequents for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">antecedent_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">consequent_centroid</span><span class="p">(</span>
+                <span class="n">antecedent_memberships</span><span class="p">[</span><span class="n">sample</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_alpha_reduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the type reduction to reduce the alpha cuts to one value.</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the memberships of the consequents for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">formtatted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">formtatted</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RuleBaseGT2.forward"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the deffuzified output of the t2 inference system.</span>
+
+<span class="sd">        Return a vector of size (samples, )</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the deffuzified output for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RuleBaseGT2.fuzzy_type"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the correspoing type of the RuleBase using the enum type in the fuzzy_sets module.</span>
+
+<span class="sd">        :return: the corresponding fuzzy set type of the RuleBase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span></div>
+
+
+<div class="viewcode-block" id="RuleBaseGT2.compute_rule_antecedent_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.compute_rule_antecedent_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership for the antecedents performing the alpha_cut reduction.</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :param scaled: if True, the memberships are scaled to sum 1 in each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">antecedent_membership</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scaled</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alpha_reduction</span><span class="p">(</span><span class="n">antecedent_membership</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RuleBaseGT2.alpha_compute_rule_antecedent_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.alpha_compute_rule_antecedent_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">alpha_compute_rule_antecedent_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership for the antecedents for all the alpha cuts.</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :param scaled: if True, the memberships are scaled to sum 1 in each sample.</span>
+<span class="sd">        :return: array with the memberships of the antecedents for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scaled</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RuleBaseT1"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1">[docs]</a><span class="k">class</span> <span class="nc">RuleBaseT1</span><span class="p">(</span><span class="n">RuleBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class optimized to work with multiple rules at the same time. Supports only one consequent.</span>
+<span class="sd">    (Use one rulebase per consequent to study classification problems. Check MasterRuleBase class for more documentation)</span>
+
+<span class="sd">    This class supports t1 fs.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor of the RuleBaseT1 class.</span>
+
+<span class="sd">        :param antecedents: list of fuzzy variables that are the antecedents of the rules.</span>
+<span class="sd">        :param rules: list of rules.</span>
+<span class="sd">        :param consequent: fuzzy variable that is the consequent of the rules. ONLY on regression problems.</span>
+<span class="sd">        :param tnorm: t-norm used to compute the fuzzy output.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_rule_duplicates</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">antecedents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="n">consequent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span> <span class="o">=</span> <span class="n">tnorm</span>
+
+        <span class="k">if</span> <span class="n">consequent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">consequent</span><span class="o">.</span><span class="n">linguistic_variable_names</span><span class="p">()),</span> <span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">vl_consequent</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">consequent</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="n">consequent_domain</span> <span class="o">=</span> <span class="n">vl_consequent</span><span class="o">.</span><span class="n">domain</span>
+                <span class="n">domain_linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                    <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">consequent_domain</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.05</span><span class="p">)</span>
+                <span class="n">consequent_memberships</span> <span class="o">=</span> <span class="n">vl_consequent</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span>
+                    <span class="n">domain_linspace</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">center_of_masses</span><span class="p">(</span>
+                    <span class="n">domain_linspace</span><span class="p">,</span> <span class="n">consequent_memberships</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="p">))</span>
+            <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
+                <span class="n">consequent_ix</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">consequent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids</span><span class="p">[</span><span class="n">consequent_ix</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="RuleBaseT1.inference"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1.inference">[docs]</a>    <span class="k">def</span> <span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the output of the t1 inference system.</span>
+
+<span class="sd">        Return an array in shape samples.</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the output of the inference system for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">antecedent_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">antecedent_memberships</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">centroid</span><span class="o">.</span><span class="n">center_of_masses</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">consequent_centroids_rules</span><span class="p">,</span> <span class="n">antecedent_memberships</span><span class="p">[</span><span class="n">sample</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="RuleBaseT1.forward"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Same as inference() in the t1 case.</span>
+
+<span class="sd">        Return a vector of size (samples, )</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the deffuzified output for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RuleBaseT1.fuzzy_type"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the correspoing type of the RuleBase using the enum type in the fuzzy_sets module.</span>
+
+<span class="sd">        :return: the corresponding fuzzy set type of the RuleBase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span></div></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase">[docs]</a><span class="k">class</span> <span class="nc">MasterRuleBase</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This Class encompasses a list of rule bases where each one corresponds to a different class.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleBase</span><span class="p">],</span> <span class="n">consequent_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor of the MasterRuleBase class.</span>
+
+<span class="sd">        :param rule_base: list of rule bases.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RuleError</span><span class="p">(</span><span class="s1">&#39;No rule bases given!&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span> <span class="o">=</span> <span class="n">rule_base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">rule_base</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">antecedents</span>
+
+        <span class="k">if</span> <span class="n">consequent_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span> <span class="o">=</span> <span class="n">consequent_names</span>
+
+
+<div class="viewcode-block" id="MasterRuleBase.rename_cons"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.rename_cons">[docs]</a>    <span class="k">def</span> <span class="nf">rename_cons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consequent_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Renames the consequents of the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span> <span class="o">=</span> <span class="n">consequent_names</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.add_rule"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.add_rule">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">RuleSimple</span><span class="p">,</span> <span class="n">consequent</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a rule to the rule base of the given consequent.</span>
+
+<span class="sd">        :param rule: rule to add.</span>
+<span class="sd">        :param consequent: index of the rule base to add the rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">[</span><span class="n">consequent</span><span class="p">]</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span></div>
+    
+
+<div class="viewcode-block" id="MasterRuleBase.get_consequents"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_consequents">[docs]</a>    <span class="k">def</span> <span class="nf">get_consequents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with the consequents of each rule base.</span>
+
+<span class="sd">        :return: list with the consequents of each rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([[</span><span class="n">ix</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">)],</span> <span class="p">[])</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.get_rulebase_matrix"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rulebase_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebase_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with the rulebases for each antecedent in matrix format.</span>
+
+<span class="sd">        :return: list with the rulebases for each antecedent in matrix format.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">get_rulebase_matrix</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.get_scores"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the dominance score for each rule in all the rulebases.</span>
+
+<span class="sd">        :return: array with the dominance score for each rule in all the rulebases.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rb</span><span class="o">.</span><span class="n">scores</span><span class="p">())</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.compute_firing_strenghts"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.compute_firing_strenghts">[docs]</a>    <span class="k">def</span> <span class="nf">compute_firing_strenghts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the firing strength of each rule for each sample.</span>
+
+<span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the firing strength of each rule for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">)):</span>
+            <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+
+        <span class="c1"># Firing strengths shape: samples x rules</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_winning_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the winning rule for each sample. Takes into account dominance scores if already computed.</span>
+
+<span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the winning rule for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="n">firing_strengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_firing_strenghts</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">association_degrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()</span> <span class="o">*</span> <span class="n">firing_strengths</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">):</span>
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">winning_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">winning_rules</span>
+    
+    
+<div class="viewcode-block" id="MasterRuleBase.winning_rule_predict"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.winning_rule_predict">[docs]</a>    <span class="k">def</span> <span class="nf">winning_rule_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the winning rule for each sample. Takes into account dominance scores if already computed.</span>
+
+<span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the winning rule for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">consequents</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([[</span><span class="n">ix</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">))],</span> <span class="p">[])</span>  <span class="c1"># The sum is for flatenning the list</span>
+        <span class="n">winning_rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_winning_rules</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">consequents</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="n">winning_rules</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.add_rule_base"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.add_rule_base">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">RuleBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a rule base to the list of rule bases.</span>
+
+<span class="sd">        :param rule_base: rule base to add.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span><span class="p">):</span>
+            <span class="c1"># We did not give proper names to the consequents</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">))]</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.print_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.print_rules">[docs]</a>    <span class="k">def</span> <span class="nf">print_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_rules</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print all the rules for all the consequents.</span>
+
+<span class="sd">        :param autoprint: if True, the rules are printed. If False, the rules are returned as a string.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">ruleBase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">):</span>    
+            <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;Rules for consequent: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span><span class="p">[</span><span class="n">ix</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            
+            <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;----------------</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="n">ruleBase</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        
+        
+        <span class="k">if</span> <span class="n">return_rules</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.get_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rules">[docs]</a>    <span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with all the rules.</span>
+
+<span class="sd">        :return: list with all the rules.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">rule</span> <span class="k">for</span> <span class="n">ruleBase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">ruleBase</span><span class="o">.</span><span class="n">rules</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.fuzzy_type"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the correspoing type of the RuleBase using the enum type in the fuzzy_sets module.</span>
+
+<span class="sd">        :return: the corresponding fuzzy set type of the RuleBase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.purge_rules"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.purge_rules">[docs]</a>    <span class="k">def</span> <span class="nf">purge_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Delete the roles with a dominance score lower than the tolerance.</span>
+
+<span class="sd">        :param tolerance: tolerance to delete the rules.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">ruleBase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">:</span>
+            <span class="n">ruleBase</span><span class="o">.</span><span class="n">prune_bad_rules</span><span class="p">(</span><span class="n">tolerance</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RuleBase</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding rulebase.</span>
+
+<span class="sd">        :param item: index of the rulebase.</span>
+<span class="sd">        :return: the corresponding rulebase.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of rule bases.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a string with the rules for each consequent.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns True if the two rule bases are equal.</span>
+
+<span class="sd">        :param __value: object to compare.</span>
+<span class="sd">        :return: True if the two rule bases are equal.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__value</span><span class="p">,</span> <span class="n">MasterRuleBase</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span> <span class="o">==</span> <span class="n">__value</span><span class="o">.</span><span class="n">rule_bases</span>
+        
+    
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Gives the prediction for each sample (same as winning_rule_predict)</span>
+
+<span class="sd">        :param X: array of dims: samples x features.</span>
+<span class="sd">        :return: vector of predictions, size: samples,</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        
+        
+<div class="viewcode-block" id="MasterRuleBase.get_rulebases"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rulebases">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleBase</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list with all the rules.</span>
+
+<span class="sd">        :return: list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span></div>
+
+
+<div class="viewcode-block" id="MasterRuleBase.n_linguist_variables"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.n_linguist_variables">[docs]</a>    <span class="k">def</span> <span class="nf">n_linguist_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of linguistic variables in the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+    
+
+<div class="viewcode-block" id="MasterRuleBase.get_antecedents"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_antecedents">[docs]</a>    <span class="k">def</span> <span class="nf">get_antecedents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the antecedents of the rule base.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span></div></div>
+
+
+<div class="viewcode-block" id="list_rules_to_matrix"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.list_rules_to_matrix">[docs]</a><span class="k">def</span> <span class="nf">list_rules_to_matrix</span><span class="p">(</span><span class="n">rule_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a matrix out of the rule list.</span>
+
+<span class="sd">    :param rule_list: list of rules.</span>
+<span class="sd">    :return: matrix with the antecedents of the rules.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No rules to list!&#39;</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">rule_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule_list</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

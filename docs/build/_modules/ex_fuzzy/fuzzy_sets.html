@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.fuzzy_sets &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.fuzzy_sets</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ex_fuzzy.fuzzy_sets</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a the source file that contains the class of GT2 fuzzy set and its most direct applications, </span>
+<span class="sd">like computing the FM function, etc.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="sd">&#39;&#39;&#39; Enum that defines the fuzzy set types.&#39;&#39;&#39;</span>
+<span class="n">FUZZY_SETS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span>
+    <span class="s1">&#39;fuzzy_type&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;t1&#39;</span><span class="p">,</span> <span class="s1">&#39;t2&#39;</span><span class="p">,</span> <span class="s1">&#39;gt2&#39;</span><span class="p">,</span> <span class="s1">&#39;temporal&#39;</span><span class="p">,</span> <span class="s1">&#39;temporal_t2&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="trapezoidal_membership"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.trapezoidal_membership">[docs]</a><span class="k">def</span> <span class="nf">trapezoidal_membership</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">10E-5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Trapezoidal membership functions.</span>
+
+<span class="sd">    :param x: input values in the fuzzy set referencial domain.</span>
+<span class="sd">    :param params:  four numbers that comprises the start and end of the trapezoid.</span>
+<span class="sd">    :param epsilon: small float number for numerical stability. Adjust accordingly only if there are NaN issues.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">params</span>
+
+    <span class="c1"># Special case: a singleton trapezoid</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="n">a</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">+=</span> <span class="n">epsilon</span>
+    <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">+=</span> <span class="n">epsilon</span>
+
+    <span class="n">aux1</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">aux2</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">aux1</span><span class="p">,</span> <span class="n">aux2</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">__gaussian2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Gaussian membership functions.</span>
+
+<span class="sd">    :param mean:  real number, mean of the gaussian function.</span>
+<span class="sd">    :param amplitude: real number.</span>
+<span class="sd">    :param standard_deviation: std of the gaussian function.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mean</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">standard_deviation</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="k">return</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">standard_deviation</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FS"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS">[docs]</a><span class="k">class</span> <span class="nc">FS</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class that defines the most basic fuzzy sets (also known as Type 1 fuzzy sets or Zadeh sets).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">membership_parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a fuzzy set.</span>
+
+<span class="sd">        :param name: string.</span>
+<span class="sd">        :param secondMF_lower: four real numbers. Parameters of the lower trapezoid/gaussian function.</span>
+<span class="sd">        :param secondMF_upper: four real numbers. Parameters of the upper trapezoid/gaussian function.</span>
+<span class="sd">        :param domain: list of two numbers. Limits of the domain if the fuzzy set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membership_parameters</span> <span class="o">=</span> <span class="n">membership_parameters</span>
+
+
+<div class="viewcode-block" id="FS.membership"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership of a point or a vector.</span>
+
+<span class="sd">        :param x: input values in the fuzzy set referencial domain.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">trapezoidal_membership</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_parameters</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FS.type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding fuzzy set type according to FUZZY_SETS enum.</span>
+
+<span class="sd">        :return: FUZZY_SETS enum.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Calling the Fuzzy set returns its membership.</span>
+
+<span class="sd">        :param x: input values in the fuzzy set referencial domain.</span>
+<span class="sd">        :return: membership of the fuzzy set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IVFS"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS">[docs]</a><span class="k">class</span> <span class="nc">IVFS</span><span class="p">(</span><span class="n">FS</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to define a iv fuzzy set.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secondMF_lower</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">secondMF_upper</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> 
+                <span class="n">domain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">lower_height</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a IV fuzzy set.</span>
+
+<span class="sd">        :param name: string.</span>
+<span class="sd">        :param secondMF_lower: four real numbers. Parameters of the lower trapezoid/gaussian function.</span>
+<span class="sd">        :param secondMF_upper: four real numbers. Parameters of the upper trapezoid/gaussian function.</span>
+<span class="sd">        :param domain: list of two numbers. Limits of the domain if the fuzzy set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span>
+
+        <span class="k">assert</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;First term membership incoherent&#39;</span>
+        <span class="k">assert</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">secondMF_lower</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;Lower memberships incoherent. &#39;</span>
+        <span class="k">assert</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">secondMF_upper</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;Upper memberships incoherent.&#39;</span>
+        <span class="k">assert</span> <span class="n">secondMF_lower</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">secondMF_upper</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;Final term memberships incoherent.&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_lower</span> <span class="o">=</span> <span class="n">secondMF_lower</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_upper</span> <span class="o">=</span> <span class="n">secondMF_upper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_height</span> <span class="o">=</span> <span class="n">lower_height</span>
+
+
+<div class="viewcode-block" id="IVFS.membership"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the iv-membership of a point or a vector.</span>
+
+<span class="sd">        :param x: input values in the fuzzy set referencial domain.</span>
+<span class="sd">        :return: iv-membership of the fuzzy set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">trapezoidal_membership</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_lower</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lower_height</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">trapezoidal_membership</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_upper</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">lower</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">lower</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IVFS.type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding fuzzy set type according to FUZZY_SETS enum: (t2)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span></div></div>
+
+
+<div class="viewcode-block" id="GT2"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2">[docs]</a><span class="k">class</span> <span class="nc">GT2</span><span class="p">(</span><span class="n">FS</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to define a gt2 fuzzy set.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">MAX_RES_SUPPORT</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Number of decimals supported in the secondary</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secondary_memberships</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">FS</span><span class="p">],</span> 
+                <span class="n">domain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">significant_decimals</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+                <span class="n">alpha_cuts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> 
+                <span class="n">unit_resolution</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a GT2 fuzzy set.</span>
+
+<span class="sd">        :param name: string.</span>
+<span class="sd">        :param secondary_memberships: list of fuzzy sets. Secondary membership that maps original domain to [0, 1]</span>
+<span class="sd">        :param secondMF_upper: four real numbers. Parameters of the upper trapezoid/gaussian function.</span>
+<span class="sd">        :param domain: list of two numbers. Limits of the domain if the fuzzy set.</span>
+<span class="sd">        :param alpha_cuts: list of real numbers. Alpha cuts of the fuzzy set.</span>
+<span class="sd">        :param unit_resolution: real number. Resolution of the primary membership function.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secondary_memberships</span> <span class="o">=</span> <span class="n">secondary_memberships</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span> <span class="o">=</span> <span class="n">alpha_cuts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iv_secondary_memberships</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit_resolution</span> <span class="o">=</span> <span class="n">unit_resolution</span>
+        <span class="n">og_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary_memberships</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">significant_decimals</span> <span class="o">=</span> <span class="n">significant_decimals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain_init</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">og_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">significant_decimals</span><span class="p">)</span>
+
+        <span class="n">formatted_keys</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;%.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">significant_decimals</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span> <span class="o">%</span>
+                          <span class="n">xz</span> <span class="k">for</span> <span class="n">xz</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary_memberships</span><span class="o">.</span><span class="n">keys</span><span class="p">()))]</span>
+        <span class="k">for</span> <span class="n">og_key</span><span class="p">,</span> <span class="n">formatted_key</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">og_keys</span><span class="p">,</span> <span class="n">formatted_keys</span><span class="p">):</span>
+            <span class="n">secondary_memberships</span><span class="p">[</span><span class="n">formatted_key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_memberships</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                <span class="n">og_key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_unit_domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_resolution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_resolution</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">alpha_cut</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">alpha_cuts</span><span class="p">):</span>
+            <span class="n">level_memberships</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">array_level_memberships</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">secondary_memberships</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">secondary_memberships</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="n">alpha_primary_memberships</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_unit_domain</span><span class="p">)</span>
+                <span class="n">alpha_membership</span> <span class="o">=</span> <span class="n">alpha_primary_memberships</span> <span class="o">&gt;=</span> <span class="n">alpha_cut</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_unit_domain</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span>
+                        <span class="n">alpha_membership</span><span class="p">)[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_unit_domain</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span>
+                        <span class="n">alpha_membership</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>  <span class="c1"># If no numbers are bigger than alpha, then it is because of rounding errors near 0. So, we fix this manually.</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="n">alpha_cut_interval</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+
+                <span class="n">level_memberships</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha_cut_interval</span>
+                <span class="n">array_level_memberships</span><span class="p">[</span><span class="n">jx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha_cut_interval</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">iv_secondary_memberships</span><span class="p">[</span><span class="n">alpha_cut</span><span class="p">]</span> <span class="o">=</span> <span class="n">array_level_memberships</span>
+
+
+<div class="viewcode-block" id="GT2.membership"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the alpha cut memberships of a point.</span>
+
+<span class="sd">        :param x: input values in the fuzzy set referencial domain.</span>
+<span class="sd">        :return: np array samples x alpha_cuts x 2</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="c1"># locate the x in the secondary membership</span>
+        <span class="n">formatted_x</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">significant_decimals</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_init</span>
+
+        <span class="c1"># Once the x is located we compute the function for each alpha cut</span>
+        <span class="n">alpha_cut_memberships</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">):</span>
+            <span class="n">ivfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iv_secondary_memberships</span><span class="p">[</span><span class="n">alpha</span><span class="p">][</span><span class="n">formatted_x</span><span class="p">]))</span>
+            <span class="n">alpha_cut_memberships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">ivfs</span><span class="p">))</span>
+
+        <span class="n">alpha_cut_memberships</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha_cut_memberships</span><span class="p">)</span>
+
+        <span class="c1"># So that the result is samples x alpha_cuts x 2</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">alpha_cut_memberships</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GT2.type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span></div>
+    
+
+    <span class="k">def</span> <span class="nf">_alpha_reduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the type reduction to reduce the alpha cuts to one value.</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the memberships of the consequents for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">formatted</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">)</span>
+    
+
+<div class="viewcode-block" id="GT2.alpha_reduction"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2.alpha_reduction">[docs]</a>    <span class="k">def</span> <span class="nf">alpha_reduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the type reduction to reduce the alpha cuts to one value.</span>
+
+<span class="sd">        :param x: array with the values of the inputs.</span>
+<span class="sd">        :return: array with the memberships of the consequents for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alpha_reduction</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
+        
+
+<div class="viewcode-block" id="gaussianIVFS"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS">[docs]</a><span class="k">class</span> <span class="nc">gaussianIVFS</span><span class="p">(</span><span class="n">IVFS</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to define a iv fuzzy set with gaussian membership.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="gaussianIVFS.membership"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the gaussian iv-membership of a point or a vector.</span>
+
+<span class="sd">        :param input: input values in the fuzzy set referencial domain.</span>
+<span class="sd">        :return: np array samples x 2</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">__gaussian2</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_lower</span><span class="p">)</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">__gaussian2</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_upper</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="gaussianIVFS.type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the type of the fuzzy set. (t1)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span></div></div>
+
+
+<div class="viewcode-block" id="temporalFS"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFS">[docs]</a><span class="k">class</span> <span class="nc">temporalFS</span><span class="p">(</span><span class="n">FS</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to implement temporal fuzzy sets.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">std_fuzzy_set</span><span class="p">:</span> <span class="n">FS</span><span class="p">,</span> <span class="n">conditional_variable</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a temporal fuzzy set.</span>
+
+<span class="sd">        :param std_fuzzy_set: FS. Standard fuzzy set that contains the non-temporal aware memberhsip function.</span>
+<span class="sd">        :param conditional_variable: np.array. The variable that expresses the different temporal moments. Shape (time discrete moments, ).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std_set</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmp_function</span> <span class="o">=</span> <span class="n">conditional_variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membership_parameters</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">membership_parameters</span>
+        <span class="k">elif</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_upper</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">secondMF_upper</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secondMF_lower</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">secondMF_lower</span>
+        <span class="k">elif</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secondary_memberships</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">secondary_memberships</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span> <span class="o">=</span> <span class="n">std_fuzzy_set</span><span class="o">.</span><span class="n">alpha_cuts</span>
+
+
+<div class="viewcode-block" id="temporalFS.membership"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFS.membership">[docs]</a>    <span class="k">def</span> <span class="nf">membership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership of each sample and in each time for the fs.</span>
+
+<span class="sd">        :param input: array temporal_time x samples.</span>
+<span class="sd">        :time: int. Time moment to compute the membership. If none, looks for a fixed time</span>
+<span class="sd">        :return: array temporal_time x samples.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Temporal fuzzy set has no fixed time. Please, fix a time or provide a time to compute the membership.&#39;</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_set</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmp_function</span><span class="p">[</span><span class="n">time</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="temporalFS.type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFS.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the type of the fuzzy set. (temporal)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">temporal</span></div>
+    
+
+<div class="viewcode-block" id="temporalFS.inside_type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFS.inside_type">[docs]</a>    <span class="k">def</span> <span class="nf">inside_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the type of the og fuzzy set computed before the time dependency.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_set</span><span class="o">.</span><span class="n">type</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="temporalFS.fix_time"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFS.fix_time">[docs]</a>    <span class="k">def</span> <span class="nf">fix_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fixes the time of the temporal fuzzy set.</span>
+
+<span class="sd">        :param time: int. Time moment to fix.</span>
+<span class="sd">        :return: FS. Fuzzy set with the fixed time.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span></div></div>
+
+
+<div class="viewcode-block" id="fuzzyVariable"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable">[docs]</a><span class="k">class</span> <span class="nc">fuzzyVariable</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to implement a fuzzy Variable. Contains a series of fuzzy sets and computes the memberships to all of them.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fuzzy_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FS</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a fuzzy variable.</span>
+
+<span class="sd">        :param name: string. Name of the fuzzy variable.</span>
+<span class="sd">        :param fuzzy_sets: list of IVFS. Each of the fuzzy sets that comprises the linguist variables of the fuzzy variable.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fuzzy_sets</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="fuzzyVariable.linguistic_variable_names"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variable_names">[docs]</a>    <span class="k">def</span> <span class="nf">linguistic_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the name of the linguistic variables.</span>
+
+<span class="sd">        :return: list of strings.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="fuzzyVariable.get_linguistic_variables"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_linguistic_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FS</span><span class="p">]:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the name of the linguistic variables.</span>
+
+<span class="sd">        :return: list of strings.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span></div>
+
+
+<div class="viewcode-block" id="fuzzyVariable.compute_memberships"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.compute_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership to each of the FS in the fuzzy variables.</span>
+
+<span class="sd">        :param x: numeric value or array. Computes the membership to each of the FS in the fuzzy variables.</span>
+<span class="sd">        :return: list of floats. Membership to each of the FS in the fuzzy variables.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">fuzzy_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="fuzzyVariable.domain"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.domain">[docs]</a>    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the domain of the fuzzy variable.</span>
+
+<span class="sd">        :return: list of floats.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">domain</span></div>
+
+
+<div class="viewcode-block" id="fuzzyVariable.fuzzy_type"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FUZZY_SETS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the fuzzy type of the domain</span>
+
+<span class="sd">        :return: the type of the fuzzy set present in the fuzzy variable.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_type</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding fs.</span>
+
+<span class="sd">        :param item: int. Index of the FS.</span>
+<span class="sd">        :return: FS. The corresponding FS.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">elem</span><span class="p">:</span> <span class="n">FS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the corresponding fs.</span>
+
+<span class="sd">        :param item: int. Index of the FS.</span>
+<span class="sd">        :param elem: FS. The FS to set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">elem</span>
+    
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FS</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the corresponding fs.</span>
+
+<span class="sd">        :param item: int. Index of the FS.</span>
+<span class="sd">        :return: FS. The corresponding FS.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">fs</span>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of linguistic variables.</span>
+
+<span class="sd">        :return: int. Number of linguistic variables.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership to each of the FS in the fuzzy variables.</span>
+
+<span class="sd">        :param x: numeric value or array. Computes the membership to each of the IVFS in the fuzzy variables.</span>
+<span class="sd">        :return: list of floats. Membership to each of the FS in the fuzzy variables.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temporalFuzzyVariable"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFuzzyVariable">[docs]</a><span class="k">class</span> <span class="nc">temporalFuzzyVariable</span><span class="p">(</span><span class="n">fuzzyVariable</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Class to implement a temporal fuzzy variable.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fuzzy_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">temporalFS</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a temporal fuzzy variable.</span>
+
+<span class="sd">        :param str: name of the variable.</span>
+<span class="sd">        :param fuzzy_sets: list of the fuzzy sets pre-time dependencies.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fuzzy_sets</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="temporalFuzzyVariable.fix_time"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFuzzyVariable.fix_time">[docs]</a>    <span class="k">def</span> <span class="nf">fix_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fixes the time of the temporal fuzzy variable.</span>
+
+<span class="sd">        :param time: int. Time moment to fix.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span></div>
+
+
+<div class="viewcode-block" id="temporalFuzzyVariable.compute_memberships"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFuzzyVariable.compute_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the membership to each of the FS in the fuzzy variables.</span>
+
+<span class="sd">        :param x: numeric value or array. Computes the membership to each of the IVFS in the fuzzy variables.</span>
+<span class="sd">        :param time: int. Time moment to compute the membership.</span>
+<span class="sd">        :return: list of floats. Membership to each of the FS in the fuzzy variables.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Temporal fuzzy variable has no fixed time. Please, fix a time or provide a time to compute the membership.&#39;</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">fuzzy_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">time</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+
+<div class="viewcode-block" id="temporalFuzzyVariable.n_time_moments"><a class="viewcode-back" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.temporalFuzzyVariable.n_time_moments">[docs]</a>    <span class="k">def</span> <span class="nf">n_time_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the number of time moments of the temporal fuzzy variable.</span>
+
+<span class="sd">        :return: int. Number of time moments of the temporal fuzzy variable.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linguistic_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tmp_function</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

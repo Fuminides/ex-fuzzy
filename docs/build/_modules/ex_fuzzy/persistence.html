@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.persistence &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.persistence</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ex_fuzzy.persistence</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Load the rules of a fuzzy rules system using plain text format.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+    <span class="kn">import</span> <span class="nn">rules</span>
+
+
+<div class="viewcode-block" id="load_fuzzy_rules"><a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_rules">[docs]</a><span class="k">def</span> <span class="nf">load_fuzzy_rules</span><span class="p">(</span><span class="n">rules_printed</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fuzzy_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Load the rules from a string. Only for non-temporal fuzzy sets.</span>
+<span class="sd">    </span>
+<span class="sd">    :param rules_printed: string with the rules. Follows the specification given by the same printing method of rules.MasterRuleBase</span>
+<span class="sd">    :param fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">consequent</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">linguistic_variables_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">linguistic_variable</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">linguistic_variable</span> <span class="ow">in</span> <span class="n">fuzzy_variables</span><span class="p">]</span>
+    <span class="n">value_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fuzzy_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">fz_type</span> <span class="o">=</span> <span class="n">fuzzy_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span>
+    <span class="n">consequent_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">rules_printed</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;IF&#39;</span><span class="p">):</span>
+            <span class="c1">#Is a rule</span>
+            <span class="n">antecedents</span> <span class="p">,</span> <span class="n">consequent_ds</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;WITH&#39;</span><span class="p">)</span>
+            <span class="n">consequent_ds</span> <span class="o">=</span> <span class="n">consequent_ds</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">init_rule_antecedents</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">),))</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># -1 is dont care</span>
+            
+            <span class="k">for</span> <span class="n">antecedent</span> <span class="ow">in</span> <span class="n">antecedents</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;AND&#39;</span><span class="p">):</span>
+                <span class="n">antecedent</span> <span class="o">=</span> <span class="n">antecedent</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;IF&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">antecedent_name</span><span class="p">,</span> <span class="n">antecedent_value</span> <span class="o">=</span> <span class="n">antecedent</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;IS&#39;</span><span class="p">)</span>
+                <span class="n">antecedent_name</span> <span class="o">=</span> <span class="n">antecedent_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">antecedent_value</span> <span class="o">=</span> <span class="n">antecedent_value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">antecedent_index</span> <span class="o">=</span> <span class="n">linguistic_variables_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">antecedent_name</span><span class="p">)</span>
+                <span class="n">antecedent_value_index</span> <span class="o">=</span> <span class="n">value_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">antecedent_value</span><span class="p">)</span>
+
+                <span class="n">init_rule_antecedents</span><span class="p">[</span><span class="n">antecedent_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">antecedent_value_index</span>
+                
+            <span class="n">rule_simple</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">(</span><span class="n">init_rule_antecedents</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">rule_simple</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">consequent_ds</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="c1"># We remove the &#39;DS &#39; and the last space</span>
+            <span class="n">reconstructed_rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_simple</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Rules&#39;</span><span class="p">):</span>
+            <span class="c1">#New consequent</span>
+            <span class="n">consequent_name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">consequent_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">consequent_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">consequent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fz_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                    <span class="n">rule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBaseT1</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">,</span> <span class="n">reconstructed_rules</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">fz_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                    <span class="n">rule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBaseT2</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">,</span> <span class="n">reconstructed_rules</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">fz_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+                    <span class="n">rule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBaseGT2</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">,</span> <span class="n">reconstructed_rules</span><span class="p">)</span>
+                                    
+            <span class="k">if</span> <span class="n">consequent</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">mrule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">([</span><span class="n">rule_base</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">consequent</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">mrule_base</span><span class="o">.</span><span class="n">add_rule_base</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span>
+
+            <span class="n">reconstructed_rules</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">consequent</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+    <span class="c1"># We add the last rule base</span>
+    <span class="k">if</span> <span class="n">fz_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+        <span class="n">rule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBaseT1</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">,</span> <span class="n">reconstructed_rules</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fz_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+        <span class="n">rule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBaseT2</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">,</span> <span class="n">reconstructed_rules</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fz_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+        <span class="n">rule_base</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBaseGT2</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">,</span> <span class="n">reconstructed_rules</span><span class="p">)</span>
+        
+    <span class="n">mrule_base</span><span class="o">.</span><span class="n">add_rule_base</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span> 
+    <span class="n">mrule_base</span><span class="o">.</span><span class="n">rename_cons</span><span class="p">(</span><span class="n">consequent_names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mrule_base</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

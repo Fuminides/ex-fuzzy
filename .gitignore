@@ -1,0 +1,8 @@
+/legacy
+*.pyc
+Results/*
+ex_Fuzzy.egg-info/*
+build/*
+*.gexf
+*.log
+checkpoint*

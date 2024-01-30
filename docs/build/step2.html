@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Using Fuzzy Rules &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optimizing a Fuzzy rule base for a classification problem" href="step3.html" />
+    <link rel="prev" title="Creating fuzzy sets and fuzzy variables" href="step1.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using Fuzzy Rules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fuzzy-rules">Fuzzy Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rule-bases">Rule Bases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#master-rule-bases">Master Rule Bases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Using Fuzzy Rules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/step2.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="using-fuzzy-rules">
+<span id="step2"></span><h1>Using Fuzzy Rules<a class="headerlink" href="#using-fuzzy-rules" title="Permalink to this headline"></a></h1>
+<section id="fuzzy-rules">
+<h2>Fuzzy Rules<a class="headerlink" href="#fuzzy-rules" title="Permalink to this headline"></a></h2>
+<p>Fuzzy rules can be used to solve both regression and classification problems.</p>
+<p>The most straightforward way to construct a rule is to give a series of antecedents and a consequent.
+For the case of classification, the consequent will be a class, and for regression, a fuzzy set.
+Following the temperature example. Suppose we have these fuzzy sets as consequents to module
+the use of air conditioner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate_small</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Small&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>  <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">activate_medium</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Small&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>  <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">activate_large</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Small&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>  <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">activate</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s1">&#39;Activate&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">activate_small</span><span class="p">,</span> <span class="n">activate_medium</span><span class="p">,</span> <span class="n">activate_large</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We can construct a rule for regression using the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.Rule</span></code> class.
+For example, the rule IF temperature IS hot THEN conditioner IS large can be implemented as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.rules</span> <span class="k">as</span> <span class="nn">frule</span>
+<span class="n">frule</span><span class="o">.</span><span class="n">Rule</span><span class="p">([</span><span class="n">hot</span><span class="p">],</span> <span class="n">activate_large</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we can use the <code class="docutils literal notranslate"><span class="pre">membership</span></code> method to obtain the degree of truth for a value in a rule, and the <code class="docutils literal notranslate"><span class="pre">centroid</span></code> method to
+compute the centroid of the consequent.</p>
+<p>This implementation, however, can be problematic when there is a considerable number of rules with repeated antecedents,
+because we do not want to compute the degree of truth for a value for the same antecedents over and over. So, instead
+of using the <code class="docutils literal notranslate"><span class="pre">Rule</span></code> class, it is more practical to use <code class="docutils literal notranslate"><span class="pre">RuleBase</span></code> and <code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> classes.</p>
+</section>
+<section id="rule-bases">
+<h2>Rule Bases<a class="headerlink" href="#rule-bases" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> is a class that simplifies the way in which rules are expressed. Its antecedents are expressed as a list, denoting the
+linguistic variable relevant to the rule. The previous rule would be expressed as a <code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> as this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_rule</span> <span class="o">=</span> <span class="n">frule</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The length of the first list is the number of antecedents, and the second argument denotes the fuzzy set “activates_large”.
+<code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> is used by <code class="docutils literal notranslate"><span class="pre">RuleBase</span></code> class to efficiently compute the degrees of truth for all the antecedents for all the data,
+and then use them when necessary. In order to create one rule base, we need the list of all the fuzzy variables to use, the consequent
+and the rules expressed as <code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_rulebase</span> <span class="o">=</span> <span class="n">frule</span><span class="o">.</span><span class="n">RuleBaseT1</span><span class="p">([</span><span class="n">temperature</span><span class="p">],</span> <span class="p">[</span><span class="n">my_rule</span><span class="p">],</span> <span class="n">activate</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is quite a simple case because we are using only one fuzzy variable and one rule, but the process is the same for more rules and variables.
+Then, we can use “my_rule” using the <code class="docutils literal notranslate"><span class="pre">inference</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_rulebase</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="mf">8.2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which will return the defuzzified result of the fuzzy inference process. The process is the same for the rest of the fuzzy sets, but other
+classes are required: <code class="docutils literal notranslate"><span class="pre">RuleBaseT2</span></code>, <code class="docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code>.</p>
+</section>
+<section id="master-rule-bases">
+<h2>Master Rule Bases<a class="headerlink" href="#master-rule-bases" title="Permalink to this headline"></a></h2>
+<p>Master Rules bases are required in a classification problem. The way in which Ex-Fuzzy handles classification problems is by using one Rule Base
+per consequent. So, the <code class="docutils literal notranslate"><span class="pre">rules.MasterRuleBase</span></code> class is used to handle the rule bases created for each class. An object of this class is created using
+a list of rule bases, and its main method is <code class="docutils literal notranslate"><span class="pre">rules.MasterRuleBase.winning_rule_predict()</span></code> which returns the class obtained from the rule with highest association degree.</p>
+<p>The next step is <a class="reference internal" href="step3.html#step3"><span class="std std-ref">Optimizing a Fuzzy rule base for a classification problem</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="step1.html" class="btn btn-neutral float-left" title="Creating fuzzy sets and fuzzy variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="step3.html" class="btn btn-neutral float-right" title="Optimizing a Fuzzy rule base for a classification problem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
