@@ -64,5 +64,5 @@ Ex-Fuzzy uses three different criteria.
 2. Less antecedents: the less antecedents per rule, the better.
 3. Less rules: rule bases with less rules are prefered.
     
-.. _references::
-    [Fach23] Fumanal-Idocin, J., Andreu-Perez, J., Cord, O., Hagras, H., & Bustince, H. (2023). Artxai: Explainable artificial intelligence curates deep representation learning for artistic images using fuzzy techniques. IEEE Transactions on Fuzzy Systems.
+
+[Fach23] Fumanal-Idocin, J., Andreu-Perez, J., Cord, O., Hagras, H., & Bustince, H. (2023). Artxai: Explainable artificial intelligence curates deep representation learning for artistic images using fuzzy techniques. IEEE Transactions on Fuzzy Systems.
