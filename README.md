@@ -54,7 +54,7 @@ Find all the information about ex-fuzzy in the github repository page:
 
 [https://github.com/Fuminides/ex-fuzzy](https://github.com/Fuminides/ex-fuzzy)
 
-## Try the demos
+## Try the demos!
 
 The Demos folder contains a series of demos to try different features of the ex-fuzzy library. These are presented in two different formats: jupyter notebooks and python modules, which are stored under the demos_module folder. You dont need to install the library to execute them.
 
