@@ -39,7 +39,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
     '''
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0,
-                 n_linguist_variables: int = 0, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
+                 n_linguist_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase =None, runner: int=1) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
@@ -68,12 +68,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         else:
             self.nRules = nRules
             self.nAnts = nAnts
-            
+            self.classes_ = n_class
 
         self.custom_loss = None
         self.verbose = verbose
         self.tolerance = tolerance
-        self.classes_ = n_class
+        
 
         if runner > 1:
             pool = ThreadPool(runner)
