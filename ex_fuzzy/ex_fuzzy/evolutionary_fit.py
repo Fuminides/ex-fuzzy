@@ -114,7 +114,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.custom_loss = loss_function
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30, checkpoints:int=10, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None):
+    def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30, checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None):
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 

@@ -22,8 +22,15 @@ import ex_fuzzy.evolutionary_fit as GA
 import ex_fuzzy.utils as utils
 import ex_fuzzy.eval_tools as eval_tools
 
+# In case you run this without installing the package, you need to add the path to the package
+
+# This is for launching from root folder path
+sys.path.append('./ex_fuzzy/')
+sys.path.append('./ex_fuzzy/ex_fuzzy/')
+
+# This is for launching from Demos folder
 sys.path.append('../ex_fuzzy/')
-sys.path.append('../../ex_fuzzy/')
+sys.path.append('../ex_fuzzy/ex_fuzzy/')
 
 
 def load_occupancy(path='./Demos/occupancy_data/'):
