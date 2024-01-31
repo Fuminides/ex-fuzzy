@@ -188,7 +188,7 @@ class RuleFineTuneClassifier(ClassifierMixin):
 
         self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints, candidate_rules=candidate_rules)
         self.phase1_rules = self.fl_classifier1.rule_base
-        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules, n_runner=n_runner)
+        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules)
 
 
     def predict(self, X: np.array) -> np.array:
