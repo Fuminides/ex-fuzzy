@@ -21,7 +21,7 @@ Code is designed so that some parts can be easily extendable, so that some use c
 
 ex-Fuzzy is built taking into account the actual machine-learing frameworks used in Python. Training amd sing a rule base classifier works exactly as sci-kit learn classifier. Parameters such as the number of rules or antecedents are also built 
 
-### Visualization
+### Visualize the results
 
 Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules or print them on screen.
 
@@ -53,6 +53,12 @@ You can install ex-Fuzzy using pip, from the PyPi repository, with the following
 Find all the information about ex-fuzzy in the github repository page:
 
 [https://github.com/Fuminides/ex-fuzzy](https://github.com/Fuminides/ex-fuzzy)
+
+## Documentation
+
+The documentation for ex-Fuzzy is available in: 
+
+[https://fuminides.github.io/ex-fuzzy/](https://fuminides.github.io/ex-fuzzy/)
 
 ## Try the demos!
 
