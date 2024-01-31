@@ -15,7 +15,9 @@ TODO: finish the example.
 
 """
 import sys
-sys.path.append('./ex_fuzzy/ex_fuzzy/') 
+sys.path.append('../ex_fuzzy/')
+sys.path.append('../../ex_fuzzy/')
+
 
 import numpy as np
 

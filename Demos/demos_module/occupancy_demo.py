@@ -22,6 +22,9 @@ import ex_fuzzy.evolutionary_fit as GA
 import ex_fuzzy.utils as utils
 import ex_fuzzy.eval_tools as eval_tools
 
+sys.path.append('../ex_fuzzy/')
+sys.path.append('../../ex_fuzzy/')
+
 
 def load_occupancy(path='./Demos/occupancy_data/'):
     train_data = pd.read_csv(path + 'datatraining.txt', index_col=0)

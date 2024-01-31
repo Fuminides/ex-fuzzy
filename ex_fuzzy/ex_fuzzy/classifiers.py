@@ -102,7 +102,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
             mnt.usage_data[mnt.usage_categories.Classification]['double_go'] += 1
 
 
-        self.fl_classifier1 = evf.BaseFuzzyRulesClassifier(nRules=nRules* 1, linguistic_variables=linguistic_variables, nAnts=nAnts, # We give this one more number rules so that then the second optimization has a bigger search space
+        self.fl_classifier1 = evf.BaseFuzzyRulesClassifier(nRules=nRules* expansion_factor, linguistic_variables=linguistic_variables, nAnts=nAnts, # We give this one more number rules so that then the second optimization has a bigger search space
                                             fuzzy_type=fuzzy_type, verbose=verbose, tolerance=tolerance, runner=runner, n_class=n_class) 
         self.fl_classifier2 = evf.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=linguistic_variables, nAnts=nAnts, 
                                             fuzzy_type=fuzzy_type, verbose=verbose, tolerance=tolerance, runner=runner, n_class=n_class)
@@ -110,7 +110,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
         self.tolerance = tolerance
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, checkpoints:int=0, n_runner:int=1):
+    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, checkpoints:int=0):
         '''
         Trains the model with the given data.
 
@@ -123,7 +123,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
         '''
         self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints)
         self.phase1_rules = self.fl_classifier1.rule_base
-        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules, n_runner=n_runner)
+        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules)
         
 
     def predict(self, X: np.array) -> np.array:

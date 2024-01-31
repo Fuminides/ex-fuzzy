@@ -13,7 +13,10 @@ We also show the GA to optimize the rules obtained in classification.
 
 """
 import sys
-sys.path.append('./ex_fuzzy/')
+
+sys.path.append('../ex_fuzzy/')
+sys.path.append('../../ex_fuzzy/')
+
 import numpy as np
 import ex_fuzzy.rules as rules
 import ex_fuzzy.eval_rules as evr

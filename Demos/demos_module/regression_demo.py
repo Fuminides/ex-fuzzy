@@ -11,6 +11,10 @@ This is a the source file that contains a demo for a tip computation example, wh
 a t2 reasoning approach.
 
 """
+import sys
+sys.path.append('../ex_fuzzy/')
+sys.path.append('../../ex_fuzzy/')
+
 import numpy as np
 
 import ex_fuzzy.fuzzy_sets as t2
