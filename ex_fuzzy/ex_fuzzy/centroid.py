@@ -121,7 +121,7 @@ def consequent_centroid_r(antecedent_memberships: np.array, centroids_r: np.arra
 def consequent_centroid_l(antecedent_memberships: np.array, centroids_l: np.array) -> float:
     '''
     Computes the Karnik and Mendel algorithm to find the left component of a centroid of an IV fuzzy set
-    using the centroids of the consequents and the antecedents memeberships.
+    using the centroids of the consequents and the antecedent memberships.
 
     :param antecedent_memberships: M x 2 matrix. M rules and iv dimension (2). Vector of memberships.
     :param centroids_r: M sized vector. Contains the referencial values.

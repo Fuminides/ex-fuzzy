@@ -440,7 +440,9 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
         kwargs:
             - n_classes: number of classes to predict. Default deduces from data.
         '''
-        super().__init__(nRules, nAnts, fuzzy_type, tolerance, n_linguist_variables, verbose, linguistic_variables, domain, n_class)
+        super().__init__(nRules=nRules, nAnts=nAnts, fuzzy_type=fuzzy_type, tolerance=tolerance, 
+                         n_linguist_variables=n_linguist_variables, verbose=verbose, linguistic_variables=linguistic_variables, 
+                         domain=domain, n_class=n_class, precomputed_rules=precomputed_rules, runner=runner)
     
 
     def _contruct_tempRuleBase(self, problems, best_individuals):
@@ -466,7 +468,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
             lv.fix_time(time)
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=50, pop_size:int=10, time_moments: np.array=None, checkpoints:int=10):
+    def fit(self, X: np.array, y: np.array, n_gen:int=50, pop_size:int=10, time_moments: np.array=None, checkpoints:int=0):
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -481,12 +483,11 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
         for ix in range(len(np.unique(time_moments))):
             X_problem = X[time_moments == ix]
             y_problem = y[time_moments == ix]
-            time_moments_problem = time_moments[time_moments == ix] 
             
             if self.lvs is None:
                 # If Fuzzy variables need to be optimized.
                 problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance,
-                                    n_linguist_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, time_moments=time_moments_problem,
+                                    n_linguist_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, 
                                     n_classes=self.n_class, thread_runner=self.thread_runner)
             else:
                 import copy
@@ -494,7 +495,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
                 self._fix_time(time_lvs, ix)
                 # If Fuzzy variables are already precomputed.       
                 problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts,
-                                    linguist_variables=time_lvs, domain=self.domain, tolerance=self.tolerance, time_moments=time_moments_problem,
+                                    linguistic_variables=time_lvs, domain=self.domain, tolerance=self.tolerance, 
                                     n_classes=self.classes_, thread_runner=self.thread_runner)
             
             problems.append(problem)
@@ -614,6 +615,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
         :return: a matrix format for the rulebase.
         '''
         return self.rule_base.get_rulebase_matrix()
+
 
 def eval_temporal_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.array, y_train: np.array,
                      X_test: np.array, y_test: np.array, time_moments: list[int] = None, test_time_moments: list[int] = None,

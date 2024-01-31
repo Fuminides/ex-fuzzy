@@ -15,7 +15,8 @@ except ImportError:
 
 
 def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.array, y_train: np.array,
-                     X_test: np.array, y_test: np.array, plot_rules=True, print_rules=True, plot_partitions=True, return_rules=False, print_accuracy=True, print_matthew=True) -> None:
+                     X_test: np.array, y_test: np.array, plot_rules=True, print_rules=True, plot_partitions=True, 
+                     return_rules=False, print_accuracy=True, print_matthew=True, export_path:str=None) -> None:
     '''
     Function that evaluates a fuzzy rule based model. It also plots the rules and the fuzzy partitions.
 
@@ -52,7 +53,7 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.ar
       print('------------')
 
     if plot_rules:
-        vis_rules.visualize_rulebase(fl_classifier.rule_base, export_path='Demos')
+        vis_rules.visualize_rulebase(fl_classifier.rule_base, export_path=export_path)
     if print_rules or return_rules:
         res = fl_classifier.print_rules(return_rules)
 

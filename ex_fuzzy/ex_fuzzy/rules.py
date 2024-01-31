@@ -294,7 +294,7 @@ class RuleBase():
                 return [np.zeros((x.shape[0], len(self.alpha_cuts), 2))]
 
 
-    def compute_rule_antecedent_memberships(self, x: np.array, scaled=True) -> np.array:
+    def compute_rule_antecedent_memberships(self, x: np.array, scaled=False) -> np.array:
         '''
         Computes the antecedent truth value of an input array.
 
@@ -619,6 +619,7 @@ class RuleBaseT2(RuleBase):
         :return: array with the deffuzified output for each sample.
         '''
         return np.mean(self.inference(x))
+
 
     def fuzzy_type(self) -> fs.FUZZY_SETS:
         '''

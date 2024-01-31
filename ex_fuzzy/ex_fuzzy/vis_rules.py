@@ -2,6 +2,7 @@
 """
 This is a the source file that contains the functions necessary to visualize the set of rules.
 """
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -152,7 +153,7 @@ def connect_master_rulebase(mrule_base: rules.MasterRuleBase) -> list[list[np.ar
     return res
 
 
-def visualize_rulebase(mrule_base: rules.MasterRuleBase, export_path: str = None) -> None:
+def visualize_rulebase(mrule_base: rules.MasterRuleBase, export_path: str=None) -> None:
     '''
     Visualize a rule base using low, medium and high partitions with 1 rule in common -> 1 edge connections.
 
@@ -218,8 +219,8 @@ def visualize_rulebase(mrule_base: rules.MasterRuleBase, export_path: str = None
         fig.show()
 
         if export_path is not None:
-            nx.write_gexf(G_final, export_path +
-                          '/consequent_' + str(ix) + '.gexf')
+            nx.write_gexf(G_final, os.path.join(export_path,
+                          'consequent_' + str(ix) + '.gexf'))
 
 
 def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:

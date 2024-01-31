@@ -75,5 +75,5 @@ rule_list =[
 ]
 
 inference_module = rules.RuleBaseT2([food, service], rule_list, tip)
-input = np.array([4,8.5]).reshape((1,2))
+input = np.array([4,2.5]).reshape((1,2))
 print(inference_module.inference(input))

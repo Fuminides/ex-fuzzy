@@ -114,7 +114,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.custom_loss = loss_function
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30, checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None):
+    def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
+            checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None):
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -122,7 +123,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param y: labels. integer array samples (x 1)
         :param n_gen: integer. Number of generations to run the genetic algorithm.
         :param pop_size: integer. Population size for each gneration.
-        :param time_moments: array of integers. Time moments associated to each sample (when temporal dependencies are present)
         :param checkpoints: integer. Number of checkpoints to save the best rulebase found so far.
         :param candidate_rules: if these rules exist, the optimization process will choose the best rules from this set. If None (default) the rules will be generated from scratch.
         :return: None. The classifier is fitted to the data.
@@ -256,6 +256,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.nRules = len(rule_base.get_rules())
         self.nAnts = len(rule_base.get_rules()[0].antecedents)
         self.n_class = len(rule_base)
+        self.classes_ = rule_base.consequent_names()
         
 
     def forward(self, X: np.array) -> np.array:
