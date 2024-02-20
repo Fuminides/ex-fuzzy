@@ -98,7 +98,7 @@ def t1_simple_partition(x: np.array) -> np.array:
 
 def t1_three_partition(x: np.array) -> np.array:
     '''
-    Partitions the fuzzy variable in four trapezoidal memberships.
+    Partitions the fuzzy variable in three trapezoidal memberships.
 
     :param x: numpy array, vector of shape (samples, ).
     :return: numpy array, vector of shape (variables, 3, 4).
@@ -286,12 +286,13 @@ def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=1) -> list[fs.
     return res
 
 
-def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS) -> list[fs.fuzzyVariable]:
+def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorical_mask: np.array=None) -> list[fs.fuzzyVariable]:
     '''
     Returns a list of linguistic variables according to the kind of fuzzy specified.
 
     :param X: numpy array|pandas dataframe, shape samples x features.
     :param fz_type_studied: fuzzy set type studied.
+    :param categorial_mask: a boolean mask vector that indicates for each variables if its categorical or not.
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
@@ -304,8 +305,41 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS) -> list[fs
     elif fz_type_studied == fs.FUZZY_SETS.gt2:
         precomputed_partitions = gt2_fuzzy_partitions_dataset(X)
 
+    if categorical_mask is not None:
+        for ix, elem in enumerate(categorical_mask):
+            if elem:
+                if isinstance(X, pd.DataFrame):
+                    name = X.columns[ix]
+                else:
+                    name = str(ix)
+                cat_var = construct_crips_categorical_partition(X[:, ix], name)
+
+                precomputed_partitions[ix] = cat_var
+
     return precomputed_partitions
 
+
+def construct_crips_categorical_partition(x: np.array, name: str):
+    '''
+    Creates a fuzzy variable for a categorical feature. 
+
+    :param x: array with values of the categorical variable.
+    :param name of the fuzzy variable.
+    :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest)
+    '''
+    possible_values = np.unique(x)
+    possible_fuzzy_values = np.arange(len(possible_values))
+
+    epsilon = 1e-5
+    fuzzy_sets = []
+
+    # Create a fuzzy sets for each possible value
+    for ix, value in enumerate(possible_values):
+        aux = fs.FS(str(value), [possible_fuzzy_values[ix] - epsilon, possible_fuzzy_values[ix], possible_fuzzy_values[ix], possible_fuzzy_values[ix] + epsilon], [0, len(possible_fuzzy_values)])
+        fuzzy_sets.append(aux)
+
+    return fs.fuzzyVariable(name, fuzzy_sets)
+    
 
 def construct_conditional_frequencies(X: np.array, discrete_time_labels: list[int], initial_ffss: list[fs.FS]):
     '''

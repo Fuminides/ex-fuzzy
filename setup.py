@@ -19,7 +19,7 @@ MAINTAINER_EMAIL = "javierfumanalidocin@gmail.com"
 URL = ""
 LICENSE = "GPL-3.0"
 DOWNLOAD_URL = ""
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 INSTALL_REQUIRES = ["numpy", "networkx", "matplotlib", "pymoo", "pandas", "scikit-learn"]
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",

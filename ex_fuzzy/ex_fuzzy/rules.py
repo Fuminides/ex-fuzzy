@@ -266,7 +266,6 @@ class RuleBase():
         new_list = [list_rules[x] for x in unique.values()]
         
         return new_list
-
         
 
     def compute_antecedents_memberships(self, x: np.array) -> list[dict]:
