@@ -312,7 +312,7 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
                     name = X.columns[ix]
                 else:
                     name = str(ix)
-                cat_var = construct_crisp_categorical_partition(X[:, ix], name, fz_type_studied)
+                cat_var = construct_crisp_categorical_partition(np.array(X)[:, ix], name, fz_type_studied)
 
                 precomputed_partitions[ix] = cat_var
 
