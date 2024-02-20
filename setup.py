@@ -16,10 +16,10 @@ DISTNAME = "ex_fuzzy"
 DESCRIPTION = "Library to perform explainable AI using fuzzy logic."
 MAINTAINER = "Javier Fumanal Idocin"
 MAINTAINER_EMAIL = "javierfumanalidocin@gmail.com"
-URL = ""
+URL = "https://github.com/Fuminides/ex-fuzzy"
 LICENSE = "GPL-3.0"
-DOWNLOAD_URL = ""
-VERSION = "1.0.2"
+DOWNLOAD_URL = "https://pypi.org/project/ex-fuzzy/"
+VERSION = "1.0.3"
 INSTALL_REQUIRES = ["numpy", "networkx", "matplotlib", "pymoo", "pandas", "scikit-learn"]
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",

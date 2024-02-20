@@ -52,7 +52,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param verbose: if True, prints the progress of the optimization.
         :param linguistic_variables: list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.
         :param domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
-        :param n_class: number of classes in the problem. If None (default) the classifier will compute it empirically.
+        :param n_class: names of the classes in the problem. If None (default) the classifier will compute it empirically.
         :param precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
         :param runner: number of threads to use. If None (default) the classifier will use 1 thread.
         '''
@@ -803,6 +803,7 @@ class FitRuleBase(Problem):
             init_rule_antecedents = np.zeros(
                 (self.X.shape[1],)) - 1  # -1 is dont care
             for jx, ant in enumerate(chosen_ants):
+                antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
             consequent_idx = x[fourth_pointer + aux_pointer]
@@ -818,6 +819,7 @@ class FitRuleBase(Problem):
             third_pointer = 2 * self.nAnts * self.nRules
             aux_pointer = 0
             antecedents = []
+
             for fuzzy_variable in range(self.X.shape[1]):
                 linguistic_variables = []
 

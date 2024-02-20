@@ -274,6 +274,7 @@ class RuleBase():
         x must be a vector (only one sample)
 
         :param x: vector with the values of the inputs.
+        :return: a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.
         '''
         if len(self.rules) > 0:
             cache_antecedent_memberships = []

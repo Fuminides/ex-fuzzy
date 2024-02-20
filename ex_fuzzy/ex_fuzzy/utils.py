@@ -312,14 +312,14 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
                     name = X.columns[ix]
                 else:
                     name = str(ix)
-                cat_var = construct_crips_categorical_partition(X[:, ix], name)
+                cat_var = construct_crisp_categorical_partition(X[:, ix], name, fz_type_studied)
 
                 precomputed_partitions[ix] = cat_var
 
     return precomputed_partitions
 
 
-def construct_crips_categorical_partition(x: np.array, name: str):
+def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studied: fs.FUZZY_SETS):
     '''
     Creates a fuzzy variable for a categorical feature. 
 
@@ -335,7 +335,13 @@ def construct_crips_categorical_partition(x: np.array, name: str):
 
     # Create a fuzzy sets for each possible value
     for ix, value in enumerate(possible_values):
-        aux = fs.FS(str(value), [possible_fuzzy_values[ix] - epsilon, possible_fuzzy_values[ix], possible_fuzzy_values[ix], possible_fuzzy_values[ix] + epsilon], [0, len(possible_fuzzy_values)])
+        mem_function = [possible_fuzzy_values[ix] - epsilon, possible_fuzzy_values[ix], possible_fuzzy_values[ix], possible_fuzzy_values[ix] + epsilon]
+
+        if fz_type_studied == fs.FUZZY_SETS.t1:
+            aux = fs.FS(str(value), mem_function, [0, len(possible_fuzzy_values)])
+        elif fz_type_studied == fs.FUZZY_SETS.t2 or fz_type_studied == fs.FUZZY_SETS.gt2:
+            aux = fs.IVFS(str(value), mem_function, mem_function, [0, len(possible_fuzzy_values)])
+
         fuzzy_sets.append(aux)
 
     return fs.fuzzyVariable(name, fuzzy_sets)
