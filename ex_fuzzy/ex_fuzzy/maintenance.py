@@ -35,20 +35,6 @@ def rename_dict_usage_categories():
     usage_data = new_usage
 
 
-@atexit.register
-def save_usage():
-    # Saves the usage in the corresponding file
-    path_usage_data = _os.path.join(path_usage_data_folder, 'usage_data_' + str(number_files) + '.txt')
-    rename_dict_usage_categories()
-    import json
-    # Save the usage as a json
-    with open(_os.path.join(directory, path_usage_data), 'w') as f:
-        json.dump(usage_data, f)
-    
-    # Send the data to the developers
-    # send_data()
-
-
 def send_data():
     # Send the data to the developers using a sfpt server (TODO)
     import paramiko
@@ -138,7 +124,18 @@ if save_usage_flag:
     logger.addHandler(f_handler)
 
     # Create usage reports
-    
+    @atexit.register
+    def save_usage():
+        # Saves the usage in the corresponding file
+        path_usage_data = _os.path.join(path_usage_data_folder, 'usage_data_' + str(number_files) + '.txt')
+        rename_dict_usage_categories()
+        import json
+        # Save the usage as a json
+        with open(_os.path.join(directory, path_usage_data), 'w') as f:
+            json.dump(usage_data, f)
+        
+        # Send the data to the developers
+        # send_data()
     # Create usage data dictionary
     usage_data = instance_dict_usage()
 
