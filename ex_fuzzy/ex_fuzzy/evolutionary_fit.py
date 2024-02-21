@@ -240,7 +240,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.rule_base, np.array(X), y)
 
         self.eval_performance.add_full_evaluation()  
-        self.rename_fuzzy_variables()
+        if self.lvs is None:
+            self.rename_fuzzy_variables()
         self.eval_performance.add_classification_metrics()
         self.rule_base.purge_rules(self.tolerance)
         
