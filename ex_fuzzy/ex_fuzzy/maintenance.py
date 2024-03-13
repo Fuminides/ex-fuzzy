@@ -157,6 +157,6 @@ def main():
 
         atexit.register(save_usage)
 
-
+save_usage_flag = False
 if __name__ == '__main__':
     pass
