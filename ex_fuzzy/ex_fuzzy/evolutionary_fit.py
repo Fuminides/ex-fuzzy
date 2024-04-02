@@ -257,7 +257,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.nRules = len(rule_base.get_rules())
         self.nAnts = len(rule_base.get_rules()[0].antecedents)
         self.n_class = len(rule_base)
-        self.classes_ = rule_base.consequent_names()
+        self.classes_ = rule_base.consequent_names
         
 
     def forward(self, X: np.array) -> np.array:
