@@ -109,6 +109,42 @@ class FS():
         return self.membership(x)
 
 
+class categoricalFS(FS):
+
+    def __init__(self, name: str, category: list[str]) -> None:
+        '''
+        Creates a categorical fuzzy set. It gives 1 to the category and 0 to the rest.
+        Use it when the variable is categorical and the categories are known, so that rule inference systems
+        can naturally support both crisp and fuzzy variables.
+
+        :param name: string.
+        :param categories: list of strings. Possible categories.
+        '''
+        self.name = name
+        self.category = category
+
+        if mnt.save_usage_flag:
+            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
+
+
+    def membership(self, x: np.array) -> np.array:
+        '''
+        Computes the membership of a point or vector of elements.
+
+        :param x: input values in the referencial domain.
+        '''
+        res = np.equal(x, self.category).astype(float)
+
+        return res
+
+
+    def type(self) -> FUZZY_SETS:
+        '''
+        Returns the corresponding fuzzy set type according to FUZZY_SETS enum.
+        '''
+        return FUZZY_SETS.t1
+
+
 class IVFS(FS):
     '''
     Class to define a iv fuzzy set.
@@ -166,6 +202,48 @@ class IVFS(FS):
         Returns the corresponding fuzzy set type according to FUZZY_SETS enum: (t2)
         '''
         return FUZZY_SETS.t2
+
+
+class categoricalIVFS(IVFS):
+    '''
+    Class to define a iv fuzzy set with categorical membership.
+    '''
+
+    def __init__(self, name: str, category) -> None:
+        '''
+        Creates a categorical iv fuzzy set. It gives 1 to the category and 0 to the rest.
+        Use it when the variable is categorical and the categories are known, so that rule inference systems
+        can naturally support both crisp and fuzzy variables.
+
+        :param name: string.
+        :param categories: list of strings. Possible categories.
+        :param domain: list of two numbers. Limits of the domain if the fuzzy set.
+        '''
+        self.name = name
+        self.category = category
+
+        if mnt.save_usage_flag:
+            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
+
+
+    def membership(self, x: np.array) -> np.array:
+        '''
+        Computes the membership of a point or vector of elements.
+
+        :param x: input values in the referencial domain.
+        '''
+        res = np.equal(x, self.category).astype(float)
+        res = np.stack([res, res], axis=-1)
+        
+        return res
+
+
+    def type(self) -> FUZZY_SETS:
+        '''
+        Returns the corresponding fuzzy set type according to FUZZY_SETS enum.
+        '''
+        return FUZZY_SETS.t2
+    
 
 
 class GT2(FS):

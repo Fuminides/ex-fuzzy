@@ -298,14 +298,22 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
         mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
         mnt.usage_data[mnt.usage_categories.FuzzySets][fz_type_studied.name] += 1
 
+    # Get the X dataframe without the categorical variables
+    if categorical_mask is not None:
+        X_numerical = X.loc[:, np.array(~categorical_mask)]
+    else:
+        X_numerical = X
+
     if fz_type_studied == fs.FUZZY_SETS.t1:
-        precomputed_partitions = t1_fuzzy_partitions_dataset(X)
+        precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical)
     elif fz_type_studied == fs.FUZZY_SETS.t2:
-        precomputed_partitions = t2_fuzzy_partitions_dataset(X)
+        precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical)
     elif fz_type_studied == fs.FUZZY_SETS.gt2:
-        precomputed_partitions = gt2_fuzzy_partitions_dataset(X)
+        precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical)
+
 
     if categorical_mask is not None:
+        categorical_partition = {}
         for ix, elem in enumerate(categorical_mask):
             if elem:
                 if isinstance(X, pd.DataFrame):
@@ -314,12 +322,23 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
                     name = str(ix)
                 cat_var = construct_crisp_categorical_partition(np.array(X)[:, ix], name, fz_type_studied)
 
-                precomputed_partitions[ix] = cat_var
+                categorical_partition[X.columns[ix]] = cat_var
+
+        # Reorder the partitions so that they follow the same order as in the original X
+        precomputed_partitions_aux = []
+        for ix, elem in enumerate(categorical_mask):
+            if elem:
+                precomputed_partitions_aux.append(categorical_partition[X.columns[ix]])
+            else:
+                precomputed_partitions_aux.append(precomputed_partitions.pop(0))
+
+        precomputed_partitions = precomputed_partitions_aux
 
     return precomputed_partitions
 
 
-def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studied: fs.FUZZY_SETS):
+
+def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studied: fs.FUZZY_SETS) -> fs.fuzzyVariable:
     '''
     Creates a fuzzy variable for a categorical feature. 
 
@@ -335,12 +354,11 @@ def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studie
 
     # Create a fuzzy sets for each possible value
     for ix, value in enumerate(possible_values):
-        mem_function = [possible_fuzzy_values[ix] - epsilon, possible_fuzzy_values[ix], possible_fuzzy_values[ix], possible_fuzzy_values[ix] + epsilon]
 
         if fz_type_studied == fs.FUZZY_SETS.t1:
-            aux = fs.FS(str(value), mem_function, [0, len(possible_fuzzy_values)])
+            aux = fs.categoricalFS(str(value), value)
         elif fz_type_studied == fs.FUZZY_SETS.t2 or fz_type_studied == fs.FUZZY_SETS.gt2:
-            aux = fs.IVFS(str(value), mem_function, mem_function, [0, len(possible_fuzzy_values)])
+            aux = fs.categoricalIVFS(str(value), np.unique(x))
 
         fuzzy_sets.append(aux)
 

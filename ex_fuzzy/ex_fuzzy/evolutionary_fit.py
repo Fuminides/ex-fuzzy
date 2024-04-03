@@ -603,8 +603,21 @@ class FitRuleBase(Problem):
                 fuzzy_type, n_linguist_variables)
 
         if self.domain is None:
-            self.min_bounds = np.min(self.X, axis=0)
-            self.max_bounds = np.max(self.X, axis=0)
+            # If all the variables are numerical, then we can compute the min/max of the domain.
+            if np.all([np.issubdtype(self.X[:, ix].dtype, np.number) for ix in range(self.X.shape[1])]):
+                self.min_bounds = np.min(self.X, axis=0)
+                self.max_bounds = np.max(self.X, axis=0)
+            else:
+                self.min_bounds = np.zeros(self.X.shape[1])
+                self.max_bounds = np.zeros(self.X.shape[1])
+
+                for ix in range(self.X.shape[1]):
+                    if np.issubdtype(self.X[:, ix].dtype, np.number):
+                        self.min_bounds[ix] = np.min(self.X[:, ix])
+                        self.max_bounds[ix] = np.max(self.X[:, ix])
+                    else:
+                        self.min_bounds[ix] = 0
+                        self.max_bounds[ix] = len(np.unique(self.X[:, ix]))
         else:
             self.min_bounds, self.max_bounds = self.domain
 

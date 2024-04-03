@@ -13,7 +13,7 @@ usage_categories = Enum('uses', ['FuzzySets', 'Funcs', 'Persistence', 'Visualiza
 
 def instance_dict_usage():
     # Inits the categories to track
-    return {usage_categories.FuzzySets: {'t1':0 , 't2': 0, 'gt2': 0, 'temporal': 0, 'temporal_t2': 0},
+    return {usage_categories.FuzzySets: {'t1':0 , 't2': 0, 'gt2': 0, 'temporal': 0, 'temporal_t2': 0, 'categorical': 0},
                 usage_categories.Funcs: {'fit': 0, 'precompute_labels': 0, 'opt_labels':0},
                 usage_categories.Persistence : {'persistence_write': 0,
                     'persistence_read': 0},
