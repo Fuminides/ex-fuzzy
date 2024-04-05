@@ -53,6 +53,4 @@ You can install ex-Fuzzy using pip, from the PyPi repository, with the following
 ## Contributors
 Javier Fumanal Idocin, Javier Andreu-Perez
 
-All rights reserved, 2021-2024
-
-
+This project is licensed under the terms of the AGLP v3 license, 2021-2024
