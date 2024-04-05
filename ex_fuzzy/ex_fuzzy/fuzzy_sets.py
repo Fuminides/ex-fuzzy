@@ -76,6 +76,7 @@ class FS():
         '''
         if mnt.save_usage_flag:
             mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
+            
         self.name = name
         self.domain = domain
         self.membership_parameters = membership_parameters

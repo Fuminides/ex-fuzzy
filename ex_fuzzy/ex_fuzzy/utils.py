@@ -572,7 +572,7 @@ def extend_fuzzy_sets_enum(new_fuzzy_sets_enum: fs.FUZZY_SETS) -> list[fs.FUZZY_
     fs.FUZZY_SETS = NEW_FUZZY_SETS
 
 
-def mcc_loss(ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.99, beta:float=0.0125, gamma:float=0.0125) -> float:
+def mcc_loss(ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.99, beta:float=0.0125, gamma:float=0.0125, precomputed_truth=None) -> float:
 
         '''
         Fitness function for the optimization problem. Uses only the MCC, ignores the size penalization terms.
@@ -587,7 +587,7 @@ def mcc_loss(ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, 
         :param gamma: ignored.
         :return: float. Fitness value.
         '''
-        ev_object = evr.evalRuleBase(ruleBase, X, y)
+        ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=precomputed_truth)
         ev_object.add_rule_weights()
 
         score_acc = ev_object.classification_eval()
