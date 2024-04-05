@@ -52,8 +52,7 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.ar
             str(matthews_corrcoef(y_test, fl_classifier.predict(X_test))))
       print('------------')
 
-    if plot_rules:
-        vis_rules.visualize_rulebase(fl_classifier.rule_base, export_path=export_path)
+
     if print_rules or return_rules:
         res = fl_classifier.print_rules(return_rules)
 
@@ -63,6 +62,11 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.ar
     if plot_partitions:
         fl_classifier.plot_fuzzy_variables()
 
+    if plot_rules:
+        vis_rules.visualize_rulebase(fl_classifier.rule_base, export_path=export_path)
+        
     if return_rules:
         return res
+    
+    
     
