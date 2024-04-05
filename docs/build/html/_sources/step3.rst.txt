@@ -40,7 +40,7 @@ in the evaluation part of this section::
 
     import ex_fuzzy.evolutionary_fit as GA
 
-    fl_classifier = GA.FuzzyRulesClassifier(nRules=10, nAnts=4, n_linguist_variables=3,
+    fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, nAnts=4, n_linguist_variables=3,
                                                  fuzzy_type=fs.FUZZY_SETS.t2, tolerance=0.001)
 
 These instructions will optimize the linguistic variables in each fuzzy variable, using IV fuzzy sets, using three linguistic variables and ten rules with up to four antecedents.
@@ -64,5 +64,5 @@ Ex-Fuzzy uses three different criteria.
 2. Less antecedents: the less antecedents per rule, the better.
 3. Less rules: rule bases with less rules are prefered.
     
-.. _references::
-    [Fach23] Fumanal-Idocin, J., Andreu-Perez, J., Cord, O., Hagras, H., & Bustince, H. (2023). Artxai: Explainable artificial intelligence curates deep representation learning for artistic images using fuzzy techniques. IEEE Transactions on Fuzzy Systems.
+
+[Fach23] Fumanal-Idocin, J., Andreu-Perez, J., Cord, O., Hagras, H., & Bustince, H. (2023). Artxai: Explainable artificial intelligence curates deep representation learning for artistic images using fuzzy techniques. IEEE Transactions on Fuzzy Systems.

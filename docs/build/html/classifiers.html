@@ -1,79 +1,50 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced classifiers &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
-    <title>Advanced classifiers &#8212; Ex-Fuzzy  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="api.html" />
-    <link rel="prev" title="Persistence" href="persistence.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Persistence" href="persistence.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
-
-          <div class="body" role="main">
-            
-  <section id="advanced-classifiers">
-<span id="classifiers"></span><h1>Advanced classifiers<a class="headerlink" href="#advanced-classifiers" title="Permalink to this heading">¶</a></h1>
-<p>Besides <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</span></code>, it is possible to use the classifiers in the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers</span></code> module,
-which contains classifiers that take the base classifier and combine it with other techniques. There are two main additions to the base classification
-class: rule mining using support, confidence and lift measures; and using a double genetic tuning, so that first a large number of rules can be
-considered as potential good rules, and then the second optimization step choose the best combination of them.</p>
-<p>The three kind of classifiers are:</p>
-<ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers.RuleMineClassifier</span></code>: first mines the rules by checking all the possible combinations of antecedents. It looks for rules that present a minumum of the quality measures, (support, confidence and lift) and then uses them as candidate rules to find an optimal subset of them.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers.FuzzyRulesClassifier</span></code>: performs a double genetic optimization. First, it finds a good rule base and then it uses it as the initial population for another round of genetic optimization.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers.RuleFineTuneClassifier</span></code>: combines both previous approaches. First, searchs for all rules that hold the quality metrics. Then, uses them as candidate rules and finds a good subset of them. Finally, uses that rulebase as initial population for another round of genetic optimization, which gives the final result.</p></li>
-</ol>
-<section id="support-confidence-and-lift">
-<h2>Support, Confidence and lift<a class="headerlink" href="#support-confidence-and-lift" title="Permalink to this heading">¶</a></h2>
-<ol class="arabic simple">
-<li><p>Support: The definition of support is the percentage of appearance of the antecedent of a rule in the whole dataset. We compute it as the average of the membership values of that antecedent in each sample for the dataset. The membership for each sample to that antecedent is computed  using the minimum t-norm in this case.</p></li>
-<li><p>Confidence: is the ratio between the support of an antecedent for a particular class and for the whole dataset.</p></li>
-<li><p>Lift: is the ratio between the confidence and the expected confidence. It is computed as the ratio between the confidence of the rule and the percentage of samples of the rule class in the dataset.</p></li>
-</ol>
-</section>
-</section>
-
-
-          </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Ex-Fuzzy</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
+          <a href="index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="step1.html">Creating fuzzy sets and fuzzy variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="step2.html">Using Fuzzy Rules</a></li>
@@ -92,51 +63,81 @@ considered as potential good rules, and then the second optimization step choose
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="persistence.html" title="previous chapter">Persistence</a></li>
-      <li>Next: <a href="api.html" title="next chapter">API</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Javier Fumanal Idocin.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/classifiers.rst.txt"
-          rel="nofollow">Page source</a>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Advanced classifiers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/classifiers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="advanced-classifiers">
+<span id="classifiers"></span><h1>Advanced classifiers<a class="headerlink" href="#advanced-classifiers" title="Permalink to this heading"></a></h1>
+<p>Besides <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</span></code>, it is possible to use the classifiers in the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers</span></code> module,
+which contains classifiers that take the base classifier and combine it with other techniques. There are two main additions to the base classification
+class: rule mining using support, confidence and lift measures; and using a double genetic tuning, so that first a large number of rules can be
+considered as potential good rules, and then the second optimization step choose the best combination of them.</p>
+<p>The three kind of classifiers are:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers.RuleMineClassifier</span></code>: first mines the rules by checking all the possible combinations of antecedents. It looks for rules that present a minumum of the quality measures, (support, confidence and lift) and then uses them as candidate rules to find an optimal subset of them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers.FuzzyRulesClassifier</span></code>: performs a double genetic optimization. First, it finds a good rule base and then it uses it as the initial population for another round of genetic optimization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers.RuleFineTuneClassifier</span></code>: combines both previous approaches. First, searchs for all rules that hold the quality metrics. Then, uses them as candidate rules and finds a good subset of them. Finally, uses that rulebase as initial population for another round of genetic optimization, which gives the final result.</p></li>
+</ol>
+<section id="support-confidence-and-lift">
+<h2>Support, Confidence and lift<a class="headerlink" href="#support-confidence-and-lift" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Support: The definition of support is the percentage of appearance of the antecedent of a rule in the whole dataset. We compute it as the average of the membership values of that antecedent in each sample for the dataset. The membership for each sample to that antecedent is computed  using the minimum t-norm in this case.</p></li>
+<li><p>Confidence: is the ratio between the support of an antecedent for a particular class and for the whole dataset.</p></li>
+<li><p>Lift: is the ratio between the confidence and the expected confidence. It is computed as the ratio between the confidence of the rule and the percentage of samples of the rule class in the dataset.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="persistence.html" class="btn btn-neutral float-left" title="Persistence" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
-    
+  <hr/>
 
-    
-  </body>
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

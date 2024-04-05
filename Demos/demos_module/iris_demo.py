@@ -42,7 +42,7 @@ import ex_fuzzy.vis_rules as vis_rules
 
 runner = 1 # 1: single thread, 2+: corresponding multi-thread
 
-n_gen = 30
+n_gen = 50
 n_pop = 50
     
 nRules = 15
@@ -64,7 +64,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 
 # We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
 fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts, 
-                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
+                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=False, tolerance=tolerance, runner=runner)
 # fl_classifier.customized_loss(utils.mcc_loss)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=1)
 print(vis_rules.rules_to_latex(fl_classifier.rule_base))

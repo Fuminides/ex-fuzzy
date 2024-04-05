@@ -225,6 +225,7 @@ def t2_fuzzy_partitions_dataset(x0: np.array) -> list[fs.fuzzyVariable]:
     :param x: numpy array|pandas dataframe, shape samples x features.
     :return: list of fuzzy variables.
     '''
+    tripartition_names = ['Low', 'Medium', 'High']
     try:
         fv_names = x0.columns
         x = x0.values
@@ -237,7 +238,7 @@ def t2_fuzzy_partitions_dataset(x0: np.array) -> list[fs.fuzzyVariable]:
     fz_memberships = t2_simple_partition(x)
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
-        fzs = [fs.IVFS(str(ix), fz_memberships[fz_parameter, ix, :, 0], fz_memberships[fz_parameter, ix, :, 1], [
+        fzs = [fs.IVFS(tripartition_names[ix], fz_memberships[fz_parameter, ix, :, 0], fz_memberships[fz_parameter, ix, :, 1], [
                        mins[fz_parameter], maxs[fz_parameter]], lower_height=0.8) for ix in range(fz_memberships.shape[1])]
         res.append(fs.fuzzyVariable(fv_names[fz_parameter], fzs))
 
@@ -337,19 +338,16 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
     return precomputed_partitions
 
 
-
 def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studied: fs.FUZZY_SETS) -> fs.fuzzyVariable:
     '''
     Creates a fuzzy variable for a categorical feature. 
 
     :param x: array with values of the categorical variable.
     :param name of the fuzzy variable.
+    :param fz_type_studied: fuzzy set type studied.
     :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest)
     '''
     possible_values = np.unique(x)
-    possible_fuzzy_values = np.arange(len(possible_values))
-
-    epsilon = 1e-5
     fuzzy_sets = []
 
     # Create a fuzzy sets for each possible value

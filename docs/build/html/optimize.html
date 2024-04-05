@@ -1,84 +1,50 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genetic algorithm details &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
-    <title>Genetic algorithm details &#8212; Ex-Fuzzy  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="General Type 2" href="gt2.html" />
-    <link rel="prev" title="Computing fuzzy partitions" href="precom.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Computing fuzzy partitions" href="precom.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
-
-          <div class="body" role="main">
-            
-  <section id="genetic-algorithm-details">
-<span id="ga"></span><h1>Genetic algorithm details<a class="headerlink" href="#genetic-algorithm-details" title="Permalink to this heading">¶</a></h1>
-<p>The genetic algorithm searchs for the optimal rule base for a problem. The criteria used to determine optimal is the one mentioned in <a class="reference internal" href="step3.html#step3"><span class="std std-ref">Optimizing a Fuzzy rule base for a classification problem</span></a>:</p>
-<ol class="arabic simple">
-<li><p>Matthew Correlation Coefficient: it is a metric that ranges from [-1, 1] that measures the quality of a classification performance. It less sensible to imbalance classification than the standard accuracy.</p></li>
-<li><p>Less antecedents: the less antecedents per rule, the better. We compute this using the average number of antecedents per rule. We to normalize this by dividing the number of antecedents per rule by the maximum allowed in the optimization)</p></li>
-<li><p>Less rules: rule bases with less rules are prefered. We normalize this by dividing the number of rules present in the database with dominance score bigger than the minimum threshold by the possible number of rules allowed in the optimization.</p></li>
-</ol>
-<p>It is possible to use previously computed rulesin order to fine tune them. There are two ways to do this using the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</span></code>:</p>
-<ol class="arabic simple">
-<li><p>Use the previously computed rules as the initial population for a new optimization problem. In that case, you can pass that rules to the <code class="docutils literal notranslate"><span class="pre">initial_rules</span></code> parameter the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.MasterRuleBase</span></code> object.</p></li>
-<li><p>Look for more efficient subsets of rules in the previously computed rules. In this case the genetic optimization will use those rules as the search space itself, and will try to optimize the best subset of them.  In that case, you can pass that rules to the <code class="docutils literal notranslate"><span class="pre">candidate_rules</span></code> parameter the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.MasterRuleBase</span></code> object.</p></li>
-</ol>
-<section id="limitations-of-the-optimization-process">
-<h2>Limitations of the optimization process<a class="headerlink" href="#limitations-of-the-optimization-process" title="Permalink to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>General Type 2 requires precomputed fuzzy partitions.</p></li>
-<li><p>When optimizing IV fuzzy partitions: Not all possible shapes of trapezoids all supported. Optimized trapezoids will always have max memberships for the lower and upper bounds in the same points. Height of the lower membership is optimized by scaling. Upper membership always reaches 1 at some point.</p></li>
-</ul>
-</section>
-<section id="fitness-function">
-<h2>Fitness function<a class="headerlink" href="#fitness-function" title="Permalink to this heading">¶</a></h2>
-<p>By default, the fitness function is the convex combination of the Matthew Correlation Coefficient (95%), to the rule size preference (2.5%) and to the rule antecedent size preference (2.5%).
-For more information about changing this fitness function check <a class="reference internal" href="extending.html#extending"><span class="std std-ref">Extending Ex-Fuzzy</span></a>.</p>
-</section>
-</section>
-
-
-          </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Ex-Fuzzy</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
+          <a href="index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="step1.html">Creating fuzzy sets and fuzzy variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="step2.html">Using Fuzzy Rules</a></li>
@@ -98,51 +64,86 @@ For more information about changing this fitness function check <a class="refere
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="precom.html" title="previous chapter">Computing fuzzy partitions</a></li>
-      <li>Next: <a href="gt2.html" title="next chapter">General Type 2</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Javier Fumanal Idocin.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/optimize.rst.txt"
-          rel="nofollow">Page source</a>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Genetic algorithm details</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/optimize.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="genetic-algorithm-details">
+<span id="ga"></span><h1>Genetic algorithm details<a class="headerlink" href="#genetic-algorithm-details" title="Permalink to this heading"></a></h1>
+<p>The genetic algorithm searchs for the optimal rule base for a problem. The criteria used to determine optimal is the one mentioned in <a class="reference internal" href="step3.html#step3"><span class="std std-ref">Optimizing a Fuzzy rule base for a classification problem</span></a>:</p>
+<ol class="arabic simple">
+<li><p>Matthew Correlation Coefficient: it is a metric that ranges from [-1, 1] that measures the quality of a classification performance. It less sensible to imbalance classification than the standard accuracy.</p></li>
+<li><p>Less antecedents: the less antecedents per rule, the better. We compute this using the average number of antecedents per rule. We to normalize this by dividing the number of antecedents per rule by the maximum allowed in the optimization)</p></li>
+<li><p>Less rules: rule bases with less rules are prefered. We normalize this by dividing the number of rules present in the database with dominance score bigger than the minimum threshold by the possible number of rules allowed in the optimization.</p></li>
+</ol>
+<p>It is possible to use previously computed rulesin order to fine tune them. There are two ways to do this using the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</span></code>:</p>
+<ol class="arabic simple">
+<li><p>Use the previously computed rules as the initial population for a new optimization problem. In that case, you can pass that rules to the <code class="docutils literal notranslate"><span class="pre">initial_rules</span></code> parameter the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.MasterRuleBase</span></code> object.</p></li>
+<li><p>Look for more efficient subsets of rules in the previously computed rules. In this case the genetic optimization will use those rules as the search space itself, and will try to optimize the best subset of them.  In that case, you can pass that rules to the <code class="docutils literal notranslate"><span class="pre">candidate_rules</span></code> parameter the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.MasterRuleBase</span></code> object.</p></li>
+</ol>
+<section id="limitations-of-the-optimization-process">
+<h2>Limitations of the optimization process<a class="headerlink" href="#limitations-of-the-optimization-process" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>General Type 2 requires precomputed fuzzy partitions.</p></li>
+<li><p>When optimizing IV fuzzy partitions: Not all possible shapes of trapezoids all supported. Optimized trapezoids will always have max memberships for the lower and upper bounds in the same points. Height of the lower membership is optimized by scaling. Upper membership always reaches 1 at some point.</p></li>
+</ul>
+</section>
+<section id="fitness-function">
+<h2>Fitness function<a class="headerlink" href="#fitness-function" title="Permalink to this heading"></a></h2>
+<p>By default, the fitness function is the convex combination of the Matthew Correlation Coefficient (95%), to the rule size preference (2.5%) and to the rule antecedent size preference (2.5%).
+For more information about changing this fitness function check <a class="reference internal" href="extending.html#extending"><span class="std std-ref">Extending Ex-Fuzzy</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="precom.html" class="btn btn-neutral float-left" title="Computing fuzzy partitions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gt2.html" class="btn btn-neutral float-right" title="General Type 2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
-    
+  <hr/>
 
-    
-  </body>
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

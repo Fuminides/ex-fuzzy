@@ -1,185 +1,50 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>T2 Centroid compute &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
 
-    <title>T2 Centroid compute &#8212; Ex-Fuzzy  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Temporal fuzzy sets" href="temporal.html" />
-    <link rel="prev" title="Partition utils" href="utils.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Partition utils" href="utils.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
-
-          <div class="body" role="main">
-            
-  <section id="module-ex_fuzzy.centroid">
-<span id="t2-centroid-compute"></span><h1>T2 Centroid compute<a class="headerlink" href="#module-ex_fuzzy.centroid" title="Permalink to this heading">¶</a></h1>
-<p>This is the source file that contains functions to compute centroids for the case of IV fuzzy sets,
-which are commonly used when using the IV-T2 fuzzy sets.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.center_of_masses">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">center_of_masses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#center_of_masses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.center_of_masses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the ponderated centroid with normalized weighting.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
-<li><p><strong>w</strong> – Vector of the fuzzy memberships.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The ponderated sum.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.compute_centroid_iv">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">compute_centroid_iv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#compute_centroid_iv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.compute_centroid_iv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes Karnik and Mendel algorithm to find the centroid of a iv fuzzy set.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
-<li><p><strong>memberships</strong> – vector of the fuzzy memberships.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The centroid.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.compute_centroid_t2_l">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">compute_centroid_t2_l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#compute_centroid_t2_l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.compute_centroid_t2_l" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the Karnik and Mendel algorithm to find the centroid of an IV fuzzy set.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
-<li><p><strong>memberships</strong> – vector of the fuzzy memberships.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The centroid.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.compute_centroid_t2_r">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">compute_centroid_t2_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#compute_centroid_t2_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.compute_centroid_t2_r" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
-<li><p><strong>memberships</strong> – vector of the fuzzy memberships.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The lowest membership of the centroid.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.consequent_centroid">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">consequent_centroid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedent_memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#consequent_centroid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.consequent_centroid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes Karnik and Mendel algorithm to find the centroid of a consequent iv fuzzy set given the centroids of the consequents
-and the antecedents memberships.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedent_memberships</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</p></li>
-<li><p><strong>centroids</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of centroids.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The centroid.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.consequent_centroid_l">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">consequent_centroid_l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedent_memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#consequent_centroid_l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.consequent_centroid_l" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the Karnik and Mendel algorithm to find the left component of a centroid of an IV fuzzy set
-using the centroids of the consequents and the antecedents memeberships.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedent_memberships</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</p></li>
-<li><p><strong>centroids_r</strong> – M sized vector. Contains the referencial values.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the IV centroid.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.centroid.consequent_centroid_r">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">consequent_centroid_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedent_memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#consequent_centroid_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.consequent_centroid_r" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set
-using the centroids of the consequents and the antecedents memeberships.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedent_memberships</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</p></li>
-<li><p><strong>centroids_r</strong> – M sized vector. Contains the referencial values.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the IV centroid.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-
-
-          </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">Ex-Fuzzy</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
+          <a href="../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../step2.html">Using Fuzzy Rules</a></li>
@@ -210,53 +75,188 @@ using the centroids of the consequents and the antecedents memeberships.</p>
 </li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../api.html">API</a><ul>
-      <li>Previous: <a href="utils.html" title="previous chapter">Partition utils</a></li>
-      <li>Next: <a href="temporal.html" title="next chapter">Temporal fuzzy sets</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Javier Fumanal Idocin.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/function_resume/centroid.rst.txt"
-          rel="nofollow">Page source</a>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active">T2 Centroid compute</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/function_resume/centroid.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ex_fuzzy.centroid">
+<span id="t2-centroid-compute"></span><h1>T2 Centroid compute<a class="headerlink" href="#module-ex_fuzzy.centroid" title="Permalink to this heading"></a></h1>
+<p>This is the source file that contains functions to compute centroids for the case of IV fuzzy sets,
+which are commonly used when using the IV-T2 fuzzy sets.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.center_of_masses">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">center_of_masses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#center_of_masses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.center_of_masses" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the ponderated centroid with normalized weighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
+<li><p><strong>w</strong> – Vector of the fuzzy memberships.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ponderated sum.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.compute_centroid_iv">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">compute_centroid_iv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#compute_centroid_iv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.compute_centroid_iv" title="Permalink to this definition"></a></dt>
+<dd><p>Computes Karnik and Mendel algorithm to find the centroid of a iv fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
+<li><p><strong>memberships</strong> – vector of the fuzzy memberships.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.compute_centroid_t2_l">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">compute_centroid_t2_l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#compute_centroid_t2_l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.compute_centroid_t2_l" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the Karnik and Mendel algorithm to find the centroid of an IV fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
+<li><p><strong>memberships</strong> – vector of the fuzzy memberships.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.compute_centroid_t2_r">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">compute_centroid_t2_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#compute_centroid_t2_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.compute_centroid_t2_r" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> – Vector of the referencial values.</p></li>
+<li><p><strong>memberships</strong> – vector of the fuzzy memberships.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The lowest membership of the centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.consequent_centroid">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">consequent_centroid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedent_memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#consequent_centroid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.consequent_centroid" title="Permalink to this definition"></a></dt>
+<dd><p>Computes Karnik and Mendel algorithm to find the centroid of a consequent iv fuzzy set given the centroids of the consequents
+and the antecedents memberships.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>antecedent_memberships</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</p></li>
+<li><p><strong>centroids</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of centroids.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.consequent_centroid_l">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">consequent_centroid_l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedent_memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#consequent_centroid_l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.consequent_centroid_l" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the Karnik and Mendel algorithm to find the left component of a centroid of an IV fuzzy set
+using the centroids of the consequents and the antecedent memberships.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>antecedent_memberships</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</p></li>
+<li><p><strong>centroids_r</strong> – M sized vector. Contains the referencial values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the IV centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.centroid.consequent_centroid_r">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.centroid.</span></span><span class="sig-name descname"><span class="pre">consequent_centroid_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedent_memberships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/centroid.html#consequent_centroid_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.centroid.consequent_centroid_r" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set
+using the centroids of the consequents and the antecedents memeberships.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>antecedent_memberships</strong> – M x 2 matrix. M rules and iv dimension (2). Vector of memberships.</p></li>
+<li><p><strong>centroids_r</strong> – M sized vector. Contains the referencial values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the IV centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="utils.html" class="btn btn-neutral float-left" title="Partition utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="temporal.html" class="btn btn-neutral float-right" title="Temporal fuzzy sets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
-    
+  <hr/>
 
-    
-  </body>
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

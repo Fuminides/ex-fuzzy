@@ -14,6 +14,25 @@ except ImportError:
     import centroid
 
 
+def compute_antecedents_memberships(antecedents: list[fs.fuzzyVariable], x: np.array) -> list[dict]:
+        '''
+        Returns a list of of dictionaries that contains the memberships for each x value to the ith antecedents, nth linguistic variable.
+        x must be a vector (only one sample)
+
+        :param x: vector with the values of the inputs.
+        :return: a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.
+        '''
+        x = np.array(x)
+        cache_antecedent_memberships = []
+
+        for ix, antecedent in enumerate(antecedents):
+            cache_antecedent_memberships.append(
+                antecedent.compute_memberships(x[:, ix]))
+
+        return cache_antecedent_memberships
+
+        
+            
 class RuleError(Exception):
     '''
     Exception raised when a rule is not well defined.
@@ -294,7 +313,7 @@ class RuleBase():
                 return [np.zeros((x.shape[0], len(self.alpha_cuts), 2))]
 
 
-    def compute_rule_antecedent_memberships(self, x: np.array, scaled=False) -> np.array:
+    def compute_rule_antecedent_memberships(self, x: np.array, scaled=False, antecedents_memberships:list[np.array]=None) -> np.array:
         '''
         Computes the antecedent truth value of an input array.
 
@@ -312,20 +331,31 @@ class RuleBase():
             res = np.zeros(
                 (x.shape[0], len(self.rules), len(self.alpha_cuts), 2))
 
-        antecedents_memberships = self.compute_antecedents_memberships(x)
-
+        if antecedents_memberships is None:
+            antecedents_memberships = self.compute_antecedents_memberships(x)
+        
         for jx, rule in enumerate(self.rules):
             rule_antecedents = rule.antecedents
-            initiated = False
-            for ix, vl in enumerate(rule_antecedents):
-                if vl >= 0:
-                    if not initiated:
-                        membership = list(antecedents_memberships[ix])[vl]
-                        initiated = True
-                    else:
-                        membership = self.tnorm(membership, list(
-                            antecedents_memberships[ix])[vl])
 
+            if self.fuzzy_type() == fs.FUZZY_SETS.t1:
+                membership = np.zeros((x.shape[0], len(rule_antecedents)))
+            elif self.fuzzy_type() == fs.FUZZY_SETS.t2:
+                membership = np.zeros((x.shape[0], len(rule_antecedents), 2))
+
+            
+            for ix, vl in enumerate(rule_antecedents):
+                n_nonvl = 0
+                if vl >= 0:
+                    membership_antecedent = list(antecedents_memberships[ix])[vl]
+                    membership[:, ix] = membership_antecedent
+                    n_nonvl += 1
+                else:
+                    membership[:, ix] = 1.0
+
+            if n_nonvl == 0:
+                membership[:, ix] = 0.0
+
+            membership = self.tnorm(membership, axis=1)
             try:
                 res[:, jx] = membership
             except UnboundLocalError:
@@ -553,7 +583,7 @@ class RuleBaseT2(RuleBase):
     This class supports iv approximation for t2 fs.
     '''
 
-    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=_myprod) -> None:
+    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=np.prod) -> None:
         '''
         Constructor of the RuleBaseT2 class.
 
@@ -638,7 +668,7 @@ class RuleBaseGT2(RuleBase):
     This class supports gt2 fs. (ONLY FOR CLASSIFICATION PROBLEMS)
     '''
 
-    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=_myprod) -> None:
+    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=np.prod) -> None:
         '''
         Constructor of the RuleBaseGT2 class.
 
@@ -737,7 +767,7 @@ class RuleBaseT1(RuleBase):
     This class supports t1 fs.
     '''
 
-    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=_myprod) -> None:
+    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=np.prod) -> None:
         '''
         Constructor of the RuleBaseT1 class.
 
@@ -830,7 +860,7 @@ class MasterRuleBase():
         self.antecedents = rule_base[0].antecedents
 
         if consequent_names is None:
-            self.consequent_names = [str(ix) for ix in range(len(self.rule_bases))]
+            self.consequent_names = [ix for ix in range(len(self.rule_bases))]
         else:
             self.consequent_names = consequent_names
 
@@ -858,7 +888,7 @@ class MasterRuleBase():
 
         :return: list with the consequents of each rule base.
         '''
-        return sum([[ix]*len(x) for ix, x in enumerate(self.rule_bases)], [])
+        return sum([[self.consequent_names[ix]]*len(x) for ix, x in enumerate(self.rule_bases)], [])
 
 
     def get_rulebase_matrix(self) -> list[np.array]:
@@ -885,22 +915,23 @@ class MasterRuleBase():
         return np.concatenate(res, axis=0)
 
 
-    def compute_firing_strenghts(self, X) -> np.array:
+    def compute_firing_strenghts(self, X, precomputed_truth=None) -> np.array:
         '''
         Computes the firing strength of each rule for each sample.
 
         :param X: array with the values of the inputs.
+        :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
         :return: array with the firing strength of each rule for each sample.
         '''
         aux = []
         for ix in range(len(self.rule_bases)):
-            aux.append(self[ix].compute_rule_antecedent_memberships(X))
+            aux.append(self[ix].compute_rule_antecedent_memberships(X, antecedents_memberships=precomputed_truth))
 
         # Firing strengths shape: samples x rules
         return np.concatenate(aux, axis=1)
 
 
-    def _winning_rules(self, X: np.array) -> np.array:
+    def _winning_rules(self, X: np.array, precomputed_truth=None) -> np.array:
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
 
@@ -908,7 +939,7 @@ class MasterRuleBase():
         :return: array with the winning rule for each sample.
         '''
         
-        firing_strengths = self.compute_firing_strenghts(X)
+        firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
 
         association_degrees = self.get_scores() * firing_strengths
 
@@ -922,16 +953,17 @@ class MasterRuleBase():
         return winning_rules
     
     
-    def winning_rule_predict(self, X: np.array) -> np.array:
+    def winning_rule_predict(self, X: np.array, precomputed_truth=None) -> np.array:
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
 
         :param X: array with the values of the inputs.
+        :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
         :return: array with the winning rule for each sample.
         '''
-        consequents = sum([[ix]*len(self[ix].rules)
+        consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
-        winning_rules = self._winning_rules(X)
+        winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth)
 
         return np.array([consequents[ix] for ix in winning_rules])
 
@@ -946,7 +978,7 @@ class MasterRuleBase():
 
         if len(self.rule_bases) != len(self.consequent_names):
             # We did not give proper names to the consequents
-            self.consequent_names = [str(ix) for ix in range(len(self.rule_bases))]
+            self.consequent_names = [ix for ix in range(len(self.rule_bases))]
 
 
     def print_rules(self, return_rules=False) -> None:
@@ -1065,7 +1097,7 @@ class MasterRuleBase():
         Returns the antecedents of the rule base.
         '''
         return self.antecedents
-
+    
 
 def list_rules_to_matrix(rule_list: list[RuleSimple]) -> np.array:
     '''

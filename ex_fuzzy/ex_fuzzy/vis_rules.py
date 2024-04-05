@@ -126,15 +126,18 @@ def connect_rulebase(rulebase: rules.RuleBase) -> list[np.array]:
     antecedents_names = [
         x.name + ' ' + y for x in rulebase.antecedents for y in rulebase.antecedents[0].linguistic_variable_names()]
 
-    while rule_matrix.shape[0] > 0:
-        rules_to_viz = rule_matrix[choose_popular_rules(rule_matrix), :]
-        rule_matrix = rule_matrix[(
-            1 - choose_popular_rules(rule_matrix)).astype(bool), :]
+    try:
+        while rule_matrix.shape[0] > 0:
+            rules_to_viz = rule_matrix[choose_popular_rules(rule_matrix), :]
+            rule_matrix = rule_matrix[(
+                1 - choose_popular_rules(rule_matrix)).astype(bool), :]
 
-        graph_rule = create_graph_connection(rules_to_viz, len(
-            rulebase.antecedents[0].linguistic_variable_names()))
-        res.append(pd.DataFrame(
-            graph_rule, columns=antecedents_names, index=antecedents_names))
+            graph_rule = create_graph_connection(rules_to_viz, len(
+                rulebase.antecedents[0].linguistic_variable_names()))
+            res.append(pd.DataFrame(
+                graph_rule, columns=antecedents_names, index=antecedents_names))
+    except:
+        print('Error in the visualization of the rule base, probably because the rulebase is too small')
 
     return res
 

@@ -1,199 +1,50 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rule Mining methods &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
 
-    <title>Rule Mining methods &#8212; Ex-Fuzzy  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Advanced Classifiers" href="classifiers.html" />
-    <link rel="prev" title="Evolutionary Algorithms to Fit the rules" href="evolutionary_fit.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Evolutionary Algorithms to Fit the rules" href="evolutionary_fit.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
-
-          <div class="body" role="main">
-            
-  <section id="module-ex_fuzzy.rule_mining">
-<span id="rule-mining-methods"></span><h1>Rule Mining methods<a class="headerlink" href="#module-ex_fuzzy.rule_mining" title="Permalink to this heading">¶</a></h1>
-<p>Module to perform rule mining in a pandas dataframe or numpy array. The methods use the support of the different itemsets to look for good 
-rule candidates. It can be used then by a Genetic optimizator from evolutionary_fit module to search the optimal combination of them.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.generate_rules_from_itemsets">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">generate_rules_from_itemsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">itemsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><span class="pre">ex_fuzzy.rules.RuleSimple</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#generate_rules_from_itemsets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.generate_rules_from_itemsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a list of itemsets, it creates the rules for each one and returns a list of rules containing them.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>itemsets</strong> – list of tuple (antecedent, linguistic variable value)</p></li>
-<li><p><strong>nAnts</strong> – number of possible antecedents.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the rules for ech itemset.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.mine_rulebase_support">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">mine_rulebase_support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#mine_rulebase_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.mine_rulebase_support" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search the data for associations that are frequent given a list of fuzzy variables for each antecedent.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_variables</strong> – list of the fuzzy variables for each of the input variables.</p></li>
-<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
-<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.multiclass_mine_rulebase">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">multiclass_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#multiclass_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.multiclass_mine_rulebase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent. Computes a different ruleBase for each 
-class and then uses them to form a MasterRuleBase.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_variables</strong> – list of the fuzzy variables for each of the input variables.</p></li>
-<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
-<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
-<li><p><strong>confidence_threshold</strong> – minimum confidence value.</p></li>
-<li><p><strong>lift_threshold</strong> – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.prune_rules_confidence_lift">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">prune_rules_confidence_lift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#prune_rules_confidence_lift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.prune_rules_confidence_lift" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes the rules from the rule base that do not meet a minimum value for confidence and lift measures.</p>
-<p>Confidence is the ratio of rules that have a particular antecedent and consequent, and those that only have the antecedent.
-Lift is ratio between confidence and expected confidence, which is the percentage of class samples in the original data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – data to mine. samples x features.</p></li>
-<li><p><strong>y</strong> – class vector.</p></li>
-<li><p><strong>rules</strong> – MasterRuleBase object with the rules to prune.</p></li>
-<li><p><strong>fuzzy_variables</strong> – a list of the fuzzy variables per antecedent.</p></li>
-<li><p><strong>confidence_threshold</strong> – minimum confidence required to the rules.</p></li>
-<li><p><strong>lift_threshold</strong> – minimum lift required to the rules.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.rule_search">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">rule_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#rule_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.rule_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the apriori algorithm for the given dataframe and threshold the support.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – Dataframe of shape: samples x features</p></li>
-<li><p><strong>variables</strong> (<em>fuzzy</em>) – dict that maps each feature name with a fuzzy variable.</p></li>
-<li><p><strong>support_threshold</strong> – minimum support to consider frequent an itemset.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>all the frequent itemsets as a list.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.simple_mine_rulebase">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">simple_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#simple_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.simple_mine_rulebase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search the data for associations that are frequent. Computes the fuzzy variables using a 3 label partition (low, medium, high).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_type</strong> – fuzzy type to use.</p></li>
-<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
-<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">simple_multiclass_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#simple_multiclass_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent. 
-Computes a different ruleBase for each class and then uses them to form a MasterRuleBase.</p>
-<p>Computes the fuzzy variables using a 3 label partition (low, medium, high).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_type</strong> – fuzzy type to use.</p></li>
-<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
-<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-
-
-          </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">Ex-Fuzzy</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
+          <a href="../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../step2.html">Using Fuzzy Rules</a></li>
@@ -224,53 +75,202 @@ Computes a different ruleBase for each class and then uses them to form a Master
 </li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../api.html">API</a><ul>
-      <li>Previous: <a href="evolutionary_fit.html" title="previous chapter">Evolutionary Algorithms to Fit the rules</a></li>
-      <li>Next: <a href="classifiers.html" title="next chapter">Advanced Classifiers</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Javier Fumanal Idocin.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/function_resume/rule_mining.rst.txt"
-          rel="nofollow">Page source</a>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active">Rule Mining methods</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/function_resume/rule_mining.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ex_fuzzy.rule_mining">
+<span id="rule-mining-methods"></span><h1>Rule Mining methods<a class="headerlink" href="#module-ex_fuzzy.rule_mining" title="Permalink to this heading"></a></h1>
+<p>Module to perform rule mining in a pandas dataframe or numpy array. The methods use the support of the different itemsets to look for good 
+rule candidates. It can be used then by a Genetic optimizator from evolutionary_fit module to search the optimal combination of them.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.generate_rules_from_itemsets">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">generate_rules_from_itemsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">itemsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><span class="pre">ex_fuzzy.rules.RuleSimple</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#generate_rules_from_itemsets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.generate_rules_from_itemsets" title="Permalink to this definition"></a></dt>
+<dd><p>Given a list of itemsets, it creates the rules for each one and returns a list of rules containing them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>itemsets</strong> – list of tuple (antecedent, linguistic variable value)</p></li>
+<li><p><strong>nAnts</strong> – number of possible antecedents.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the rules for ech itemset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.mine_rulebase_support">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">mine_rulebase_support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#mine_rulebase_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.mine_rulebase_support" title="Permalink to this definition"></a></dt>
+<dd><p>Search the data for associations that are frequent given a list of fuzzy variables for each antecedent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_variables</strong> – list of the fuzzy variables for each of the input variables.</p></li>
+<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.multiclass_mine_rulebase">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">multiclass_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#multiclass_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.multiclass_mine_rulebase" title="Permalink to this definition"></a></dt>
+<dd><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent. Computes a different ruleBase for each 
+class and then uses them to form a MasterRuleBase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_variables</strong> – list of the fuzzy variables for each of the input variables.</p></li>
+<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
+<li><p><strong>confidence_threshold</strong> – minimum confidence value.</p></li>
+<li><p><strong>lift_threshold</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.prune_rules_confidence_lift">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">prune_rules_confidence_lift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#prune_rules_confidence_lift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.prune_rules_confidence_lift" title="Permalink to this definition"></a></dt>
+<dd><p>Removes the rules from the rule base that do not meet a minimum value for confidence and lift measures.</p>
+<p>Confidence is the ratio of rules that have a particular antecedent and consequent, and those that only have the antecedent.
+Lift is ratio between confidence and expected confidence, which is the percentage of class samples in the original data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – data to mine. samples x features.</p></li>
+<li><p><strong>y</strong> – class vector.</p></li>
+<li><p><strong>rules</strong> – MasterRuleBase object with the rules to prune.</p></li>
+<li><p><strong>fuzzy_variables</strong> – a list of the fuzzy variables per antecedent.</p></li>
+<li><p><strong>confidence_threshold</strong> – minimum confidence required to the rules.</p></li>
+<li><p><strong>lift_threshold</strong> – minimum lift required to the rules.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.rule_search">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">rule_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#rule_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.rule_search" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the apriori algorithm for the given dataframe and threshold the support.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Dataframe of shape: samples x features</p></li>
+<li><p><strong>variables</strong> (<em>fuzzy</em>) – dict that maps each feature name with a fuzzy variable.</p></li>
+<li><p><strong>support_threshold</strong> – minimum support to consider frequent an itemset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>all the frequent itemsets as a list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.simple_mine_rulebase">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">simple_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#simple_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.simple_mine_rulebase" title="Permalink to this definition"></a></dt>
+<dd><p>Search the data for associations that are frequent. Computes the fuzzy variables using a 3 label partition (low, medium, high).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_type</strong> – fuzzy type to use.</p></li>
+<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">simple_multiclass_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#simple_multiclass_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase" title="Permalink to this definition"></a></dt>
+<dd><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent. 
+Computes a different ruleBase for each class and then uses them to form a MasterRuleBase.</p>
+<p>Computes the fuzzy variables using a 3 label partition (low, medium, high).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_type</strong> – fuzzy type to use.</p></li>
+<li><p><strong>support_threshold</strong> – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> – maximum number of antecedents per rule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="evolutionary_fit.html" class="btn btn-neutral float-left" title="Evolutionary Algorithms to Fit the rules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classifiers.html" class="btn btn-neutral float-right" title="Advanced Classifiers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
-    
+  <hr/>
 
-    
-  </body>
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

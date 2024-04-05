@@ -18,7 +18,7 @@ class evalRuleBase():
     Class to evaluate a set of rules given a evaluation dataset.
     '''
 
-    def __init__(self, mrule_base: rules.MasterRuleBase, X: np.array, y: np.array, time_moments: np.array=None) -> None:
+    def __init__(self, mrule_base: rules.MasterRuleBase, X: np.array, y: np.array, time_moments: np.array=None, precomputed_truth=None) -> None:
         '''
         Creates the object with the rulebase to evaluate and the data to use in the evaluation.
 
@@ -34,6 +34,7 @@ class evalRuleBase():
         self.time_moments = time_moments
 
         self.consequents = mrule_base.get_consequents()
+        self.precomputed_truth = precomputed_truth
 
 
     def compute_pattern_support(self) -> np.array:
@@ -46,7 +47,7 @@ class evalRuleBase():
         '''
         if self.time_moments is None:
             antecedent_memberships = self.mrule_base.compute_firing_strenghts(
-                self.X)
+                self.X, precomputed_truth=self.precomputed_truth)
         else:
             antecedent_memberships = self.mrule_base.compute_firing_strenghts(
                 self.X, self.time_moments)
@@ -61,7 +62,7 @@ class evalRuleBase():
             res = np.zeros((len(patterns), 2))
 
         for ix, pattern in enumerate(patterns):
-            consequent_match = self.y == self.consequents[ix]
+            consequent_match = np.equal(self.y , self.consequents[ix])
             pattern_firing_strength = antecedent_memberships[:, ix]
 
             if pattern_firing_strength[consequent_match].shape[0] > 0:
@@ -132,10 +133,10 @@ class evalRuleBase():
         '''
         if self.time_moments is None:
             antecedent_memberships = self.mrule_base.compute_firing_strenghts(
-            self.X)
+            self.X, precomputed_truth=self.precomputed_truth)
         else:
             antecedent_memberships = self.mrule_base.compute_firing_strenghts(
-            self.X, self.time_moments)
+            self.X, self.time_moments, precomputed_truth=self.precomputed_truth)
 
         patterns = self._get_all_rules()
 
@@ -286,8 +287,8 @@ class evalRuleBase():
             self.add_rule_weights()
 
         if self.time_moments is None:
-            winning_rules = self.mrule_base._winning_rules(actual_X)
-            preds = self.mrule_base.winning_rule_predict(actual_X)
+            winning_rules = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth)
+            preds = self.mrule_base.winning_rule_predict(actual_X, precomputed_truth=self.precomputed_truth)
         else:
             winning_rules = self.mrule_base._winning_rules(actual_X, self.time_moments)
             preds = self.mrule_base.winning_rule_predict(actual_X, self.time_moments)

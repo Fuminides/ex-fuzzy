@@ -234,7 +234,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         self.rule_base = problem._construct_ruleBase(
         best_individual, self.fuzzy_type)
-        self.rule_base.rename_cons(self.classes_)
 
         self.eval_performance = evr.evalRuleBase(
         self.rule_base, np.array(X), y)
@@ -365,6 +364,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.beta_ = beta
         self.gamma_ = gamma
 
+
+
 class ExploreRuleBases(Problem):
     '''
     Class to model as pymoo problem the fitting of a rulebase to a set of data given a series of candidate rules for a classification problem using Evolutionary strategies
@@ -482,7 +483,7 @@ class ExploreRuleBases(Problem):
         try:
             ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
 
-            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance)
+            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self._precomputed_truth)
             
 
             out["F"] = 1 - score
@@ -535,19 +536,21 @@ class FitRuleBase(Problem):
         self.fuzzy_type = fuzzy_type
         self.n_lv_possible = n_linguist_variables
         self.domain = domain
-        
+        self._precomputed_truth = None
 
-    def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable]):
+    def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable], X: np.array):
         '''
         Inits the corresponding fields if linguistic partitions for each variable are given.
 
         :param linguistic_variables: list of fuzzyVariables type.
+        :param X: np array samples x features.
         '''
         self.lvs = linguist_variables
         self.vl_names = self.lvs[0].linguistic_variable_names()
         self.n_lv_possible = len(self.lvs[0])
         self.fuzzy_type = self.lvs[0].fs_type
         self.domain = None
+        self._precomputed_truth = rules.compute_antecedents_memberships(linguist_variables, X)
 
     vl_names = [  # Linguistic variable names preestated for some specific cases.
         [],
@@ -587,6 +590,7 @@ class FitRuleBase(Problem):
             self.tolerance = 0.001
 
         self.y = y
+        self.classes_names = np.unique(y)
         self.nRules = nRules
         self.nAnts = nAnts
         self.nCons = 1  # This is fixed to MISO rules.
@@ -597,7 +601,7 @@ class FitRuleBase(Problem):
             self.n_classes = len(np.unique(y))
 
         if linguistic_variables is not None:
-            self._init_precomputed_vl(linguistic_variables)
+            self._init_precomputed_vl(linguistic_variables, X)
         else:
             self._init_optimize_vl(
                 fuzzy_type, n_linguist_variables)
@@ -817,7 +821,11 @@ class FitRuleBase(Problem):
             init_rule_antecedents = np.zeros(
                 (self.X.shape[1],)) - 1  # -1 is dont care
             for jx, ant in enumerate(chosen_ants):
-                antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
+                if self.lvs is not None:
+                    antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
+                else:
+                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible - 1)
+
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
             consequent_idx = x[fourth_pointer + aux_pointer]
@@ -879,9 +887,11 @@ class FitRuleBase(Problem):
             
 
             if i == 0:
-                res = rules.MasterRuleBase([rule_base])
+                res = rules.MasterRuleBase([rule_base], self.classes_names)
             else:
                 res.add_rule_base(rule_base)
+
+        res.rename_cons(self.classes_names)
 
         return res
 
@@ -896,23 +906,30 @@ class FitRuleBase(Problem):
         ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
 
         if len(ruleBase.get_rules()) > 0:
-            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self.gamma_)
+            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self.gamma_, self._precomputed_truth)
         else:
             score = 0.0
         
         out["F"] = 1 - score
     
 
-    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.975, beta:float=0.0125, gamma:float=0.0125) -> float:
+    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.975, beta:float=0.0125, gamma:float=0.0125, precomputed_truth:np.array=None) -> float:
         '''
         Fitness function for the optimization problem.
         :param ruleBase: RuleBase object
         :param X: array of train samples. X shape = (n_samples, n_features)
         :param y: array of train labels. y shape = (n_samples,)
         :param tolerance: float. Tolerance for the size evaluation.
+        :param alpha: float. Weight for the accuracy term.
+        :param beta: float. Weight for the average rule size term.
+        :param gamma: float. Weight for the number of rules term.
+        :param precomputed_truth: np array. If given, it will be used as the truth values for the evaluation.
         :return: float. Fitness value.
         '''
-        ev_object = evr.evalRuleBase(ruleBase, X, y)
+        if precomputed_truth is None:
+            precomputed_truth = rules.compute_antecedents_memberships(ruleBase.antecedents, X)
+
+        ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=precomputed_truth)
         ev_object.add_full_evaluation()
         ruleBase.purge_rules(tolerance)
 

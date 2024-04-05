@@ -1,36 +1,86 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.rules &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ex_fuzzy.rules &#8212; Ex-Fuzzy  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.rules</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for ex_fuzzy.rules</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -48,6 +98,25 @@
     <span class="kn">import</span> <span class="nn">centroid</span>
 
 
+<div class="viewcode-block" id="compute_antecedents_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.compute_antecedents_memberships">[docs]</a><span class="k">def</span> <span class="nf">compute_antecedents_memberships</span><span class="p">(</span><span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list of of dictionaries that contains the memberships for each x value to the ith antecedents, nth linguistic variable.</span>
+<span class="sd">        x must be a vector (only one sample)</span>
+
+<span class="sd">        :param x: vector with the values of the inputs.</span>
+<span class="sd">        :return: a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">cache_antecedent_memberships</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">antecedent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">antecedents</span><span class="p">):</span>
+            <span class="n">cache_antecedent_memberships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">antecedent</span><span class="o">.</span><span class="n">compute_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">cache_antecedent_memberships</span></div>
+
+        
+            
 <div class="viewcode-block" id="RuleError"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleError">[docs]</a><span class="k">class</span> <span class="nc">RuleError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Exception raised when a rule is not well defined.</span>
@@ -300,7 +369,6 @@
         <span class="n">new_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">list_rules</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unique</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
         
         <span class="k">return</span> <span class="n">new_list</span>
-
         
 
 <div class="viewcode-block" id="RuleBase.compute_antecedents_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_antecedents_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_antecedents_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
@@ -309,6 +377,7 @@
 <span class="sd">        x must be a vector (only one sample)</span>
 
 <span class="sd">        :param x: vector with the values of the inputs.</span>
+<span class="sd">        :return: a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">cache_antecedent_memberships</span> <span class="o">=</span> <span class="p">[]</span>
@@ -328,7 +397,7 @@
                 <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">),</span> <span class="mi">2</span><span class="p">))]</span></div>
 
 
-<div class="viewcode-block" id="RuleBase.compute_rule_antecedent_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_rule_antecedent_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="RuleBase.compute_rule_antecedent_memberships"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_rule_antecedent_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">antecedents_memberships</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the antecedent truth value of an input array.</span>
 
@@ -346,20 +415,22 @@
             <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_cuts</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
 
-        <span class="n">antecedents_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_antecedents_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
+        <span class="k">if</span> <span class="n">antecedents_memberships</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">antecedents_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_antecedents_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        
         <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">):</span>
             <span class="n">rule_antecedents</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span>
-            <span class="n">initiated</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">membership</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_antecedents</span><span class="p">)))</span>
+
+            
             <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule_antecedents</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">vl</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">initiated</span><span class="p">:</span>
-                        <span class="n">membership</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">antecedents_memberships</span><span class="p">[</span><span class="n">ix</span><span class="p">])[</span><span class="n">vl</span><span class="p">]</span>
-                        <span class="n">initiated</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">membership</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span><span class="p">(</span><span class="n">membership</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span>
-                            <span class="n">antecedents_memberships</span><span class="p">[</span><span class="n">ix</span><span class="p">])[</span><span class="n">vl</span><span class="p">])</span>
+                    <span class="n">membership_antecedent</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">antecedents_memberships</span><span class="p">[</span><span class="n">ix</span><span class="p">])[</span><span class="n">vl</span><span class="p">]</span>
+                    <span class="n">membership</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">membership_antecedent</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">membership</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 
+            <span class="n">membership</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnorm</span><span class="p">(</span><span class="n">membership</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">res</span><span class="p">[:,</span> <span class="n">jx</span><span class="p">]</span> <span class="o">=</span> <span class="n">membership</span>
             <span class="k">except</span> <span class="ne">UnboundLocalError</span><span class="p">:</span>
@@ -587,7 +658,7 @@
 <span class="sd">    This class supports iv approximation for t2 fs.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Constructor of the RuleBaseT2 class.</span>
 
@@ -654,6 +725,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
 
+
 <div class="viewcode-block" id="RuleBaseT2.fuzzy_type"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.fuzzy_type">[docs]</a>    <span class="k">def</span> <span class="nf">fuzzy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the correspoing type of the RuleBase using the enum type in the fuzzy_sets module.</span>
@@ -671,7 +743,7 @@
 <span class="sd">    This class supports gt2 fs. (ONLY FOR CLASSIFICATION PROBLEMS)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Constructor of the RuleBaseGT2 class.</span>
 
@@ -770,7 +842,7 @@
 <span class="sd">    This class supports t1 fs.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">_myprod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">],</span> <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleSimple</span><span class="p">],</span> <span class="n">consequent</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tnorm</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Constructor of the RuleBaseT1 class.</span>
 
@@ -918,16 +990,17 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MasterRuleBase.compute_firing_strenghts"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.compute_firing_strenghts">[docs]</a>    <span class="k">def</span> <span class="nf">compute_firing_strenghts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="MasterRuleBase.compute_firing_strenghts"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.compute_firing_strenghts">[docs]</a>    <span class="k">def</span> <span class="nf">compute_firing_strenghts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the firing strength of each rule for each sample.</span>
 
 <span class="sd">        :param X: array with the values of the inputs.</span>
+<span class="sd">        :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)</span>
 <span class="sd">        :return: array with the firing strength of each rule for each sample.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">)):</span>
-            <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+            <span class="n">aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">compute_rule_antecedent_memberships</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">antecedents_memberships</span><span class="o">=</span><span class="n">precomputed_truth</span><span class="p">))</span>
 
         <span class="c1"># Firing strengths shape: samples x rules</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
@@ -1117,80 +1190,31 @@
 
 </pre></div>
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">Ex-Fuzzy</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Javier Fumanal Idocin.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

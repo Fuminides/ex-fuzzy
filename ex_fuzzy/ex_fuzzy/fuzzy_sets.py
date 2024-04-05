@@ -45,7 +45,7 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
     aux1 = (x - a) / (b - a)
     aux2 = (d - x) / (d - c)
 
-    return np.maximum(np.minimum(np.minimum(aux1, aux2), 1), 0)
+    return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)
 
 
 def __gaussian2(x, params: list[float]) -> np.array:
@@ -111,7 +111,7 @@ class FS():
 
 class categoricalFS(FS):
 
-    def __init__(self, name: str, category: list[str]) -> None:
+    def __init__(self, name: str, category) -> None:
         '''
         Creates a categorical fuzzy set. It gives 1 to the category and 0 to the rest.
         Use it when the variable is categorical and the categories are known, so that rule inference systems
