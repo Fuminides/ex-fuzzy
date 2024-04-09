@@ -49,6 +49,20 @@ You can install ex-Fuzzy using pip, from the PyPi repository, with the following
 
 `pip install ex-fuzzy`
 
+## Preprint and Citation
+
+You can check our preprint in SSRN in the following link:
+
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4766235
+
+To cite the library please use the preprint until the final paper is accepted:
+```
+@article{fumanalex,
+  title={Ex-Fuzzy: A Library for Symbolic Explainable AI Through Fuzzy Logic Programming},
+  author={Fumanal Idocin, Javier and Andreu-Perez, Javier},
+  journal={SSNR}
+}
+```
 
 ## Contributors
 Javier Fumanal Idocin, Javier Andreu-Perez
