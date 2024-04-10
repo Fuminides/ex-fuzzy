@@ -811,12 +811,12 @@ class RuleBaseT1(RuleBase):
         :param x: array with the values of the inputs.
         :return: array with the output of the inference system for each sample.
         '''
-        res = np.zeros((x.shape[0], 2))
+        res = np.zeros((x.shape[0]))
 
         antecedent_memberships = self.compute_rule_antecedent_memberships(x)
 
         for sample in range(antecedent_memberships.shape[0]):
-            res[sample, :] = centroid.center_of_masses(
+            res[sample] = centroid.center_of_masses(
                 self.consequent_centroids_rules, antecedent_memberships[sample])
 
         return res
