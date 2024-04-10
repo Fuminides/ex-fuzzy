@@ -189,7 +189,7 @@ class RuleBase():
         self.tnorm = tnorm
         self.consequent_centroids = np.zeros(
             (len(consequent.linguistic_variable_names()), 2))
-        for ix, (name, vl_consequent) in enumerate(consequent.linguistic_variables.items()):
+        for ix, vl_consequent in enumerate(consequent.linguistic_variables):
             consequent_domain = vl_consequent.domain
             domain_linspace = np.arange(
                 consequent_domain[0], consequent_domain[1], 0.05)
@@ -786,7 +786,7 @@ class RuleBaseT1(RuleBase):
             self.consequent_centroids = np.zeros(
                 (len(consequent.linguistic_variable_names()), ))
 
-            for ix, (name, vl_consequent) in enumerate(consequent.linguistic_variables.items()):
+            for ix, vl_consequent in enumerate(consequent.linguistic_variables):
                 consequent_domain = vl_consequent.domain
                 domain_linspace = np.arange(
                     consequent_domain[0], consequent_domain[1], 0.05)
