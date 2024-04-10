@@ -159,7 +159,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguist_variables()
-            problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), cancidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules)
+            problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), candidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules)
 
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
@@ -372,7 +372,7 @@ class ExploreRuleBases(Problem):
     Supports type 1 and t2.
     '''
 
-    def __init__(self, X: np.array, y: np.array, nRules: int, n_classes: int, cancidate_rules: rules.MasterRuleBase, thread_runner: StarmapParallelization=None, tolerance:float = 0.01) -> None:
+    def __init__(self, X: np.array, y: np.array, nRules: int, n_classes: int, candidate_rules: rules.MasterRuleBase, thread_runner: StarmapParallelization=None, tolerance:float = 0.01) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -389,12 +389,13 @@ class ExploreRuleBases(Problem):
             self.var_names = [str(ix) for ix in range(X.shape[1])]
 
         self.tolerance = tolerance
-        self.fuzzy_type = cancidate_rules.fuzzy_type()
+        self.fuzzy_type = candidate_rules.fuzzy_type()
         self.y = y
         self.nCons = 1  # This is fixed to MISO rules.
         self.n_classes = n_classes
-        self.candidate_rules = cancidate_rules
+        self.candidate_rules = candidate_rules
         self.nRules = nRules
+        self._precomputed_truth = rules.compute_antecedents_memberships(candidate_rules.get_antecedents(), X)
 
         self.vl_names = self.candidate_rules[0].antecedents[0].linguistic_variable_names()
         self.fuzzy_type = self.candidate_rules[0].antecedents[0].fuzzy_type()
@@ -483,7 +484,7 @@ class ExploreRuleBases(Problem):
         try:
             ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
 
-            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self._precomputed_truth)
+            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, precomputed_truth=self._precomputed_truth)
             
 
             out["F"] = 1 - score
@@ -491,7 +492,7 @@ class ExploreRuleBases(Problem):
             out["F"] = 1
 
     
-    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.95, beta:float=0.025, gamma:float=0.025) -> float:
+    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.95, beta:float=0.025, gamma:float=0.025, precomputed_truth=None) -> float:
         '''
         Fitness function for the optimization problem.
         :param ruleBase: RuleBase object
@@ -500,7 +501,7 @@ class ExploreRuleBases(Problem):
         :param tolerance: float. Tolerance for the size evaluation.
         :return: float. Fitness value.
         '''
-        ev_object = evr.evalRuleBase(ruleBase, X, y)
+        ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=precomputed_truth)
         ev_object.add_rule_weights()
 
         score_acc = ev_object.classification_eval()

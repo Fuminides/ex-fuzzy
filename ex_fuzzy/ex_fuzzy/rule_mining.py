@@ -50,10 +50,9 @@ def rule_search(data: pd.DataFrame, fuzzy_variables: dict[fs.fuzzyVariable], sup
     :param support_threshold: minimum support to consider frequent an itemset.
     :return: all the frequent itemsets as a list.
     '''
-    n_linguist_variables = len(fuzzy_variables[0])
     list_possible_vars = []
-    for ix in range(len(fuzzy_variables)):
-        list_possible_vars.append([(ix, ax) for ax in range(n_linguist_variables)])
+    for ix, fuzzy_variable in enumerate(fuzzy_variables):
+        list_possible_vars.append([(ix, ax) for ax in range(len(fuzzy_variable))])
 
     memberships = [fuzzy_variables[ix](data.iloc[:, ix].values) for ix in range(data.shape[1])]
     freq_itemsets = []
