@@ -8,3 +8,4 @@ from . import vis_rules
 from . import utils
 from . import persistence
 from . import maintenance
+from . import classifiers
