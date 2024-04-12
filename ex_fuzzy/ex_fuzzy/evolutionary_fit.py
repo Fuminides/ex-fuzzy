@@ -40,7 +40,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0,
                  n_linguist_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
-                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase =None, runner: int=1) -> None:
+                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
 
@@ -100,9 +100,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.n_linguist_variables = n_linguist_variables
             self.domain = domain
 
-        self.alpha_ = 0.950
-        self.beta_ = 0.025
-        self.gamma_ = 0.025
+        self.alpha_ = 0.0
+        self.beta_ = 0.0
 
     def customized_loss(self, loss_function):
         '''
@@ -115,7 +114,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
 
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
-            checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None):
+            checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -150,12 +149,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguist_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, gamma=self.gamma_)
+                                    alpha=self.alpha_, beta=self.beta_)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, gamma=self.gamma_)
+                                    alpha=self.alpha_, beta=self.beta_)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguist_variables()
@@ -213,6 +212,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         algorithm,
                         # termination,
                         ("n_gen", n_gen),
+                        seed=random_state,
                         copy_algorithm=False,
                         save_history=False,
                         verbose=self.verbose)
@@ -351,18 +351,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         return self.rule_base.get_rulebase_matrix()
     
 
-    def reparametrice_loss(self, alpha:float, beta:float, gamma:float) -> None:
+    def reparametrice_loss(self, alpha:float, beta:float) -> None:
         '''
         Changes the parameters in the loss function. 
 
         :note: Does not check for convexity preservation. The user can play with these parameters as it wills.
         :param alpha: controls the MCC term.
         :param beta: controls the average rule size loss.
-        :param gamma: controls the number of rules loss.
         '''
         self.alpha_ = alpha
         self.beta_ = beta
-        self.gamma_ = gamma
 
 
 
@@ -492,7 +490,7 @@ class ExploreRuleBases(Problem):
             out["F"] = 1
 
     
-    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.95, beta:float=0.025, gamma:float=0.025, precomputed_truth=None) -> float:
+    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.0, beta:float=0.0, precomputed_truth=None) -> float:
         '''
         Fitness function for the optimization problem.
         :param ruleBase: RuleBase object
@@ -508,7 +506,7 @@ class ExploreRuleBases(Problem):
         score_rules_size = ev_object.size_antecedents_eval(tolerance)
         score_nrules = ev_object.effective_rulesize_eval(tolerance)
 
-        score = score_acc * alpha + (1 - alpha) * (score_rules_size * beta + score_nrules * gamma)
+        score = score_acc + score_rules_size * alpha + score_nrules * beta
 
         return score
     
@@ -564,7 +562,7 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguist_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
-                 tolerance:float=0.01, alpha:float=0.950, beta:float=0.025, gamma:float=0.025) -> None:
+                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -671,7 +669,6 @@ class FitRuleBase(Problem):
         self.single_gen_size = nVar
         self.alpha_ = alpha
         self.beta_ = beta
-        self.gamma_ = gamma
 
         if thread_runner is not None:
             super().__init__(
@@ -907,14 +904,14 @@ class FitRuleBase(Problem):
         ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
 
         if len(ruleBase.get_rules()) > 0:
-            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self.gamma_, self._precomputed_truth)
+            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self._precomputed_truth)
         else:
             score = 0.0
         
         out["F"] = 1 - score
     
 
-    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.975, beta:float=0.0125, gamma:float=0.0125, precomputed_truth:np.array=None) -> float:
+    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.0, beta:float=0.0, precomputed_truth:np.array=None) -> float:
         '''
         Fitness function for the optimization problem.
         :param ruleBase: RuleBase object
@@ -923,7 +920,6 @@ class FitRuleBase(Problem):
         :param tolerance: float. Tolerance for the size evaluation.
         :param alpha: float. Weight for the accuracy term.
         :param beta: float. Weight for the average rule size term.
-        :param gamma: float. Weight for the number of rules term.
         :param precomputed_truth: np array. If given, it will be used as the truth values for the evaluation.
         :return: float. Fitness value.
         '''
@@ -939,7 +935,7 @@ class FitRuleBase(Problem):
             score_rules_size = ev_object.size_antecedents_eval(tolerance)
             score_nrules = ev_object.effective_rulesize_eval(tolerance)
 
-            score = score_acc * alpha + score_rules_size * beta + score_nrules * gamma
+            score = score_acc + score_rules_size * alpha + score_nrules * beta
         else:
             score = 0.0
             

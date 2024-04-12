@@ -961,6 +961,10 @@ class MasterRuleBase():
         :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
         :return: array with the winning rule for each sample.
         '''
+        # Raise an error if there no rules
+        if len(self.get_rules()) == 0:
+            raise RuleError('No rules to predict!')
+        
         consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
         winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth)

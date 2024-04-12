@@ -48,16 +48,19 @@ class RuleMineClassifier(ClassifierMixin):
         self.tolerance = tolerance
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50):
+    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, **kwargs) -> None:
         '''
         Trains the model with the given data.
 
         :param X: samples to train.
         :param y: labels for each sample.
+        :param n_gen: number of generations to compute in the genetic optimization.
+        :param pop_size: number of subjects per generation.
+        :param kwargs: additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.
         '''
         fuzzy_vars = utils.construct_partitions(X, self.fuzzy_type)
         candidate_rules = rm.multiclass_mine_rulebase(X, y, fuzzy_vars, self.tolerance, max_depth=self.nAnts)
-        self.fl_classifier.fit(X, y, checkpoints=0, candidate_rules=candidate_rules, n_gen=n_gen, pop_size=pop_size)
+        self.fl_classifier.fit(X, y, checkpoints=0, candidate_rules=candidate_rules, n_gen=n_gen, pop_size=pop_size, **kwargs)
 
 
     def predict(self, X: np.array) -> np.array:
@@ -110,7 +113,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
         self.tolerance = tolerance
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, checkpoints:int=0):
+    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, checkpoints:int=0, **kwargs) -> None:
         '''
         Trains the model with the given data.
 
@@ -119,11 +122,11 @@ class FuzzyRulesClassifier(ClassifierMixin):
         :param n_gen: number of generations to compute in the genetic optimization.
         :param pop_size: number of subjects per generation.
         :param checkpoints: if bigger than 0, will save the best subject per x generations in a text file.
-        :param n_runner: number of threds to use.
+        :param kwargs: additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.
         '''
-        self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints)
+        self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints, **kwargs)
         self.phase1_rules = self.fl_classifier1.rule_base
-        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules)
+        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules, **kwargs)
         
 
     def predict(self, X: np.array) -> np.array:
@@ -173,7 +176,7 @@ class RuleFineTuneClassifier(ClassifierMixin):
         self.tolerance = tolerance
 
 
-    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, checkpoints:int=0, n_runner:int=1):
+    def fit(self, X: np.array, y: np.array, n_gen:int=30, pop_size:int=50, checkpoints:int=0, **kwargs) -> None:
         '''
         Trains the model with the given data.
 
@@ -182,13 +185,13 @@ class RuleFineTuneClassifier(ClassifierMixin):
         :param n_gen: number of generations to compute in the genetic optimization.
         :param pop_size: number of subjects per generation.
         :param checkpoints: if bigger than 0, will save the best subject per x generations in a text file.
-        :param n_runner: number of threds to use.
+        :param kwargs: additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.
         '''
         candidate_rules = rm.multiclass_mine_rulebase(X, y, self.fl_classifier1.lvs, self.tolerance)
 
-        self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints, candidate_rules=candidate_rules)
+        self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints, candidate_rules=candidate_rules, **kwargs)
         self.phase1_rules = self.fl_classifier1.rule_base
-        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules)
+        self.fl_classifier2.fit(X, y, n_gen, pop_size, checkpoints, initial_rules=self.phase1_rules, **kwargs)
 
 
     def predict(self, X: np.array) -> np.array:
