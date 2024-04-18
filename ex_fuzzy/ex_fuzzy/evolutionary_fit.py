@@ -38,7 +38,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
     Class that is used as a classifier for a fuzzy rule based system. Supports precomputed and optimization of the linguistic variables.
     '''
 
-    def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0,
+    def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguist_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1) -> None:
         '''
@@ -70,7 +70,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.nRules = nRules
             self.nAnts = nAnts
             self.nclasses_ = n_class
-            self.classes_names = None
+            self.classes_names = list(class_names)
 
         self.custom_loss = None
         self.verbose = verbose
