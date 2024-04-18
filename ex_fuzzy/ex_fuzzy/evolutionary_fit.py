@@ -63,12 +63,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.nRules = len(precomputed_rules.get_rules())
             self.nAnts = len(precomputed_rules.get_rules()[0].antecedents)
             self.n_class = len(precomputed_rules)
-            self.classes_ = precomputed_rules.consequent_names
+            self.nclasses_ = len(precomputed_rules.consequent_names)
+            self.classes_names = precomputed_rules.consequent_names
             self.rule_base = precomputed_rules
         else:
             self.nRules = nRules
             self.nAnts = nAnts
-            self.classes_ = n_class
+            self.nclasses_ = n_class
+            self.classes_names = None
 
         self.custom_loss = None
         self.verbose = verbose
@@ -129,13 +131,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         if mnt.save_usage_flag:
             mnt.usage_data[mnt.usage_categories.Funcs]['fit'] += 1
             
-        if self.classes_ is None:
-            if isinstance(y, pd.Series):
-                self.classes_ = [str(aux) for aux in y.unique()]
-                # Convert the names in the label vector to integer classes
-                y = np.array(y.replace(self.classes_, np.arange(len(self.classes_))))
-            else:
-                self.classes_ = [str(aux) for aux in np.unique(y)]
+        if self.classes_names is None:
+            self.classes_names = [aux for aux in np.unique(y)]
+        
+        if isinstance(y[0], str):
+            y = np.array([self.classes_names.index(str(aux)) for aux in y])
             
         if candidate_rules is None:
             if initial_rules is not None:
@@ -203,7 +203,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         eval_performance.add_full_evaluation()  
                         # self.rename_fuzzy_variables() This wont work on checkpoints!
                         rule_base.purge_rules(self.tolerance)
-                        rule_base.rename_cons(self.classes_)
+                        rule_base.rename_cons(self.nclasses_)
                         checkpoint_rules = rule_base.print_rules(True)
                         f.write(checkpoint_rules)     
 
@@ -234,6 +234,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         self.rule_base = problem._construct_ruleBase(
         best_individual, self.fuzzy_type)
+        self.rule_base.rename_cons(self.classes_names)
 
         self.eval_performance = evr.evalRuleBase(
         self.rule_base, np.array(X), y)
@@ -256,7 +257,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.nRules = len(rule_base.get_rules())
         self.nAnts = len(rule_base.get_rules()[0].antecedents)
         self.n_class = len(rule_base)
-        self.classes_ = rule_base.consequent_names
+        self.nclasses_ = rule_base.consequent_names
         
 
     def forward(self, X: np.array) -> np.array:

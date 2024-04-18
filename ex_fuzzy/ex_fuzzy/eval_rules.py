@@ -34,7 +34,12 @@ class evalRuleBase():
         self.time_moments = time_moments
 
         self.consequents = mrule_base.get_consequents()
+        self.consequents_names = mrule_base.get_consequents_names()
         self.precomputed_truth = precomputed_truth
+
+        if isinstance(y[0], str):
+            self.y = np.array([list(self.consequents_names).index(str(y)) for y in y])
+
 
 
     def compute_pattern_support(self) -> np.array:
@@ -148,7 +153,7 @@ class evalRuleBase():
             res = np.zeros((len(patterns), 2))
 
         for ix, pattern in enumerate(patterns):
-            antecedent_consequent_match = self.y == self.consequents[ix]
+            antecedent_consequent_match = np.equal(self.y, self.consequents[ix])
             pattern_firing_strength = antecedent_memberships[:, ix]
             dem = np.sum(pattern_firing_strength)
             if dem == 0:

@@ -31,10 +31,12 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.ar
     :return: None
     '''
     # Get the unique classes from the classifier
-    unique_classes = fl_classifier.classes_
-    # Convert the names from the labels to the corresponding class
-    y_train = np.array([list(unique_classes).index(str(y)) for y in y_train])
-    y_test = np.array([list(unique_classes).index(str(y)) for y in y_test])
+    unique_classes = fl_classifier.classes_names
+
+    # Convert the names from the labels to the corresponding class if necessary
+    if isinstance(y_train[0], str):
+      y_train = np.array([list(unique_classes).index(str(y)) for y in y_train])
+      y_test = np.array([list(unique_classes).index(str(y)) for y in y_test])
     
     if print_accuracy:
       print('------------')

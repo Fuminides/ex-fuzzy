@@ -888,8 +888,17 @@ class MasterRuleBase():
 
         :return: list with the consequents of each rule base.
         '''
-        return sum([[self.consequent_names[ix]]*len(x) for ix, x in enumerate(self.rule_bases)], [])
+        return sum([[ix]*len(x) for ix, x in enumerate(self.rule_bases)], [])
 
+
+    def get_consequents_names(self) -> list[str]:
+        '''
+        Returns a list with the names of the consequents.
+
+        :return: list with the names of the consequents.
+        '''
+        return self.consequent_names
+    
 
     def get_rulebase_matrix(self) -> list[np.array]:
         '''
@@ -965,7 +974,7 @@ class MasterRuleBase():
         if len(self.get_rules()) == 0:
             raise RuleError('No rules to predict!')
         
-        consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
+        consequents = sum([[ix]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
         winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth)
 
