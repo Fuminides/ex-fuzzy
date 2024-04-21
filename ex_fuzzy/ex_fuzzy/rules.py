@@ -1112,6 +1112,36 @@ class MasterRuleBase():
         return self.antecedents
     
 
+def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedents: list[fs.fuzzyVariable], rule_weights: np.array, class_names: list=None) -> RuleBase:
+    '''
+    Constructs a rule base from a matrix of rules.
+
+    :param rule_matrix: matrix with the rules.
+    :param consequents: array with the consequents per rule.
+    :param antecedents: list of fuzzy variables.
+    :param class_names: list with the names of the classes.
+    '''
+    rule_lists = {ix:[] for ix in range(len(np.unique(consequents)))}
+
+    for ix, consequent in enumerate(consequents):
+        rule_object = RuleSimple(rule_matrix[ix])
+        rule_object.score = rule_weights[ix]
+        rule_lists[consequent].append(rule_object)
+
+    for ix, consequent in enumerate(np.unique(consequents)):
+        rule_base = RuleBaseT1(antecedents, rule_lists[ix])
+        
+        if ix == 0:
+            res = MasterRuleBase([rule_base], np.unique(consequents))
+        else:
+            res.add_rule_base(rule_base)
+
+    if class_names is not None:
+        res.rename_cons(class_names)
+
+    return res
+
+
 def list_rules_to_matrix(rule_list: list[RuleSimple]) -> np.array:
     '''
     Returns a matrix out of the rule list.
