@@ -759,6 +759,7 @@ class RuleBaseGT2(RuleBase):
         return super().compute_rule_antecedent_memberships(x, scaled)
 
 
+
 class RuleBaseT1(RuleBase):
     '''
     Class optimized to work with multiple rules at the same time. Supports only one consequent.
@@ -840,6 +841,7 @@ class RuleBaseT1(RuleBase):
         :return: the corresponding fuzzy set type of the RuleBase.
         '''
         return fs.FUZZY_SETS.t1
+
 
 
 class MasterRuleBase():
@@ -1124,9 +1126,10 @@ def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedent
     rule_lists = {ix:[] for ix in range(len(np.unique(consequents)))}
 
     for ix, consequent in enumerate(consequents):
-        rule_object = RuleSimple(rule_matrix[ix])
-        rule_object.score = rule_weights[ix]
-        rule_lists[consequent].append(rule_object)
+        if not np.equal(rule_matrix, -1).all():
+            rule_object = RuleSimple(rule_matrix[ix])
+            rule_object.score = rule_weights[ix]
+            rule_lists[consequent].append(rule_object)
 
     for ix, consequent in enumerate(np.unique(consequents)):
         rule_base = RuleBaseT1(antecedents, rule_lists[ix])
