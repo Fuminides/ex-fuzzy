@@ -30,7 +30,7 @@ Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules
 <p align="center">
   <img src="https://user-images.githubusercontent.com/12574757/210235257-17b22ede-762b-406c-880a-497e06964f17.png" width="350" title="Fuzzy graph">
   <img src="https://user-images.githubusercontent.com/12574757/210235264-be98fff9-d1b6-4f3b-8b93-b11e0466a48c.png" width="350" title="Type 1 example">
-  <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/0a3f4508-6ab8-40b5-938b-d89b619c53a3" width="350" title="Type 2 example">
+  <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/0a3f4508-6ab8-40b5-938b-d89b619c53a3" width="450" title="Type 2 example">
   <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/b356a09f-4c66-45c9-8362-ebdbda684669" width="350" title="General Type 2 example">
   
 </p>
