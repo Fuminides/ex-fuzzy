@@ -1114,7 +1114,7 @@ class MasterRuleBase():
         return self.antecedents
     
 
-def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedents: list[fs.fuzzyVariable], rule_weights: np.array, class_names: list=None) -> RuleBase:
+def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedents: list[fs.fuzzyVariable], rule_weights: np.array, class_names: list=None) -> MasterRuleBase:
     '''
     Constructs a rule base from a matrix of rules.
 
