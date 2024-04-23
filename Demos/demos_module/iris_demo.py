@@ -48,13 +48,16 @@ n_pop = 50
 nRules = 15
 nAnts = 4
 vl = 3
-tolerance = 0.01
-fz_type_studied = fs.FUZZY_SETS.t2
+tolerance = 0.1
+fz_type_studied = fs.FUZZY_SETS.gt2
 
 # Import some data to play with
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = iris.target
+# Convert the numeric targets to class names
+# y = [iris.target_names[i] for i in y]
+class_names = list(iris.target_names)
 
 # Compute the fuzzy partitions using 3 quartiles
 precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
@@ -63,11 +66,11 @@ precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 
 # We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts, 
-                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=False, tolerance=tolerance, runner=runner)
-# fl_classifier.customized_loss(utils.mcc_loss)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts, class_names=class_names,
+                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
+fl_classifier.customized_loss(utils.mcc_loss)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0)
-print(vis_rules.rules_to_latex(fl_classifier.rule_base))
+# print(vis_rules.rules_to_latex(fl_classifier.rule_base))
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
                         plot_rules=True, print_rules=True, plot_partitions=True, return_rules=True)
 

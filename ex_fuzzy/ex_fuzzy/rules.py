@@ -341,6 +341,9 @@ class RuleBase():
                 membership = np.zeros((x.shape[0], len(rule_antecedents)))
             elif self.fuzzy_type() == fs.FUZZY_SETS.t2:
                 membership = np.zeros((x.shape[0], len(rule_antecedents), 2))
+            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:
+                membership = np.zeros(
+                    (x.shape[0], len(rule_antecedents), len(self.alpha_cuts), 2))
 
             
             for ix, vl in enumerate(rule_antecedents):
@@ -737,23 +740,26 @@ class RuleBaseGT2(RuleBase):
         return fs.FUZZY_SETS.gt2
 
 
-    def compute_rule_antecedent_memberships(self, x: np.array, scaled=True) -> np.array:
+    def compute_rule_antecedent_memberships(self, x: np.array, scaled=True, antecedents_memberships=None) -> np.array:
         '''
         Computes the membership for the antecedents performing the alpha_cut reduction.
 
         :param x: array with the values of the inputs.
         :param scaled: if True, the memberships are scaled to sum 1 in each sample.
+        :param antecedents_memberships: precomputed antecedent memberships. Not supported for GT2.
+        :return: array with the memberships of the antecedents for each sample.
         '''
         antecedent_membership = super().compute_rule_antecedent_memberships(x, scaled)
         return self._alpha_reduction(antecedent_membership)
 
 
-    def alpha_compute_rule_antecedent_memberships(self, x: np.array, scaled=True) -> np.array:
+    def alpha_compute_rule_antecedent_memberships(self, x: np.array, scaled=True, antecedents_memberships=None) -> np.array:
         '''
         Computes the membership for the antecedents for all the alpha cuts.
 
         :param x: array with the values of the inputs.
         :param scaled: if True, the memberships are scaled to sum 1 in each sample.
+        :param antecedents_memberships: precomputed antecedent memberships. Not supported for GT2.
         :return: array with the memberships of the antecedents for each sample.
         '''
         return super().compute_rule_antecedent_memberships(x, scaled)
