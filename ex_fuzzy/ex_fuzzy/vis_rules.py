@@ -154,7 +154,7 @@ def connect_master_rulebase(mrule_base: rules.MasterRuleBase) -> list[list[np.ar
         try:
             res.append(connect_rulebase(rule_base))
         except:
-            print('Error in the visualization of the rule base: "' + mrule_base.get_consequents_names()[ix] + '", probably because there are no rules in the rule base.')
+            print('Error in the visualization of the rule base: "' + str(mrule_base.get_consequents_names()[ix]) + '", probably because there are no rules in the rule base.')
 
     return res
 
