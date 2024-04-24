@@ -56,7 +56,7 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.ar
 
 
     if print_rules or return_rules:
-        res = fl_classifier.print_rules(return_rules)
+        res = fl_classifier.print_rules(True)
 
         if print_rules:
             print(res)

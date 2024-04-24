@@ -70,7 +70,13 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.nRules = nRules
             self.nAnts = nAnts
             self.nclasses_ = n_class
-            self.classes_names = list(class_names)
+            if not (class_names is None):
+                if isinstance(class_names, np.ndarray):
+                    self.classes_names = list(class_names)
+                else:
+                    self.classes_names = class_names
+            else:
+                self.classes_names = class_names
 
         self.custom_loss = None
         self.verbose = verbose

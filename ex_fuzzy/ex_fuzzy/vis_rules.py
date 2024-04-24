@@ -150,8 +150,11 @@ def connect_master_rulebase(mrule_base: rules.MasterRuleBase) -> list[list[np.ar
     :return: List of list of pandas dataframes with the connections in adjacency matrix format.
     '''
     res = []
-    for rule_base in mrule_base.rule_bases:
-        res.append(connect_rulebase(rule_base))
+    for ix, rule_base in enumerate(mrule_base.rule_bases):
+        try:
+            res.append(connect_rulebase(rule_base))
+        except:
+            print('Error in the visualization of the rule base: "' + mrule_base.get_consequents_names()[ix] + '", probably because there are no rules in the rule base.')
 
     return res
 

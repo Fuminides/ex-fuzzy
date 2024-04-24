@@ -36,20 +36,18 @@ import ex_fuzzy.fuzzy_sets as fs
 import ex_fuzzy.evolutionary_fit as GA
 import ex_fuzzy.utils as  utils
 import ex_fuzzy.eval_tools as eval_tools
-import ex_fuzzy.persistence as persistence
-import ex_fuzzy.vis_rules as vis_rules
 
 
 runner = 1 # 1: single thread, 2+: corresponding multi-thread
 
-n_gen = 50
+n_gen = 10
 n_pop = 50
     
 nRules = 15
 nAnts = 4
 vl = 3
-tolerance = 0.1
-fz_type_studied = fs.FUZZY_SETS.gt2
+tolerance = 0.7
+fz_type_studied = fs.FUZZY_SETS.t2
 
 # Import some data to play with
 iris = datasets.load_iris()
