@@ -1132,7 +1132,7 @@ def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedent
     rule_lists = {ix:[] for ix in range(len(np.unique(consequents)))}
 
     for ix, consequent in enumerate(consequents):
-        if not np.equal(rule_matrix, -1).all():
+        if not np.equal(rule_matrix[ix], -1).all():
             rule_object = RuleSimple(rule_matrix[ix])
             rule_object.score = rule_weights[ix]
             rule_lists[consequent].append(rule_object)
