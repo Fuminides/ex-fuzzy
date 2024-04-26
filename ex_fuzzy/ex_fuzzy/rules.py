@@ -1130,7 +1130,7 @@ def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedent
     :param class_names: list with the names of the classes.
     '''
     rule_lists = {ix:[] for ix in range(len(np.unique(consequents)))}
-
+    fs_studied = antecedents[0].fuzzy_type()
     for ix, consequent in enumerate(consequents):
         if not np.equal(rule_matrix[ix], -1).all():
             rule_object = RuleSimple(rule_matrix[ix])
@@ -1138,7 +1138,12 @@ def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedent
             rule_lists[consequent].append(rule_object)
 
     for ix, consequent in enumerate(np.unique(consequents)):
-        rule_base = RuleBaseT1(antecedents, rule_lists[ix])
+        if fs_studied == fs.FUZZY_SETS.t1:
+            rule_base = RuleBaseT1(antecedents, rule_lists[ix])
+        elif fs_studied == fs.FUZZY_SETS.t2:
+            rule_base = RuleBaseT2(antecedents, rule_lists[ix])
+        elif fs_studied == fs.FUZZY_SETS.gt2:
+            rule_base = RuleBaseGT2(antecedents, rule_lists[ix])
         
         if ix == 0:
             res = MasterRuleBase([rule_base], np.unique(consequents))

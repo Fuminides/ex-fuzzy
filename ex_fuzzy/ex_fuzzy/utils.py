@@ -64,8 +64,6 @@ def t1_simple_partition(x: np.array) -> np.array:
     :param x: numpy array, vector of shape (samples, ).
     :return: numpy array, vector of shape (variables, 4, 4).
     '''
-    
-
     n_partitions = 4
     trap_memberships_size = 4
     quantile_numbers = fixed_quantile_compute(x)
@@ -299,6 +297,12 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
         mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
         mnt.usage_data[mnt.usage_categories.FuzzySets][fz_type_studied.name] += 1
 
+    if isinstance(X, pd.DataFrame):
+        feat_names = X.columns
+        X = X.values
+    else:
+        feat_names = [str(ix) for ix in range(X.shape[1])]
+
     # Get the X dataframe without the categorical variables
     if categorical_mask is not None:
         X_numerical = X.loc[:, np.array(~categorical_mask)]
@@ -334,6 +338,10 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
                 precomputed_partitions_aux.append(precomputed_partitions.pop(0))
 
         precomputed_partitions = precomputed_partitions_aux
+
+    
+    for ix, partition in enumerate(precomputed_partitions):
+        partition.name = feat_names[ix]
 
     return precomputed_partitions
 
