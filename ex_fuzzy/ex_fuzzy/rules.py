@@ -119,6 +119,7 @@ class RuleSimple():
         '''
         self.antecedents = list(map(int, antecedents))
         self.consequent = int(consequent)
+        self.score = 1.0
 
 
     def __getitem__(self, ix):
