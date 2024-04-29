@@ -187,21 +187,23 @@ class RuleBase():
         self.antecedents = antecedents
         self.consequent = consequent
         self.tnorm = tnorm
-        self.consequent_centroids = np.zeros(
-            (len(consequent.linguistic_variable_names()), 2))
-        for ix, vl_consequent in enumerate(consequent.linguistic_variables):
-            consequent_domain = vl_consequent.domain
-            domain_linspace = np.arange(
-                consequent_domain[0], consequent_domain[1], 0.05)
-            consequent_memberships = vl_consequent.membership(domain_linspace)
 
-            self.consequent_centroids[ix, :] = centroid.compute_centroid_iv(
-                domain_linspace, consequent_memberships)
+        if consequent is not None:
+            self.consequent_centroids = np.zeros(
+                (len(consequent.linguistic_variable_names()), 2))
+            for ix, vl_consequent in enumerate(consequent.linguistic_variables):
+                consequent_domain = vl_consequent.domain
+                domain_linspace = np.arange(
+                    consequent_domain[0], consequent_domain[1], 0.05)
+                consequent_memberships = vl_consequent.membership(domain_linspace)
 
-        self.consequent_centroids_rules = np.zeros((len(self.rules), 2))
-        for ix, rule in enumerate(self.rules):
-            consequent_ix = rule.consequent
-            self.consequent_centroids_rules[ix] = self.consequent_centroids[consequent_ix]
+                self.consequent_centroids[ix, :] = centroid.compute_centroid_iv(
+                    domain_linspace, consequent_memberships)
+
+            self.consequent_centroids_rules = np.zeros((len(self.rules), 2))
+            for ix, rule in enumerate(self.rules):
+                consequent_ix = rule.consequent
+                self.consequent_centroids_rules[ix] = self.consequent_centroids[consequent_ix]
 
         self.delete_duplicates()
 
