@@ -495,8 +495,12 @@ class RuleBase():
                 if (self.fuzzy_type() == fs.FUZZY_SETS.t2) or (self.fuzzy_type() == fs.FUZZY_SETS.gt2):
                     score = np.mean(score)
 
-                if score < tolerance or rule.accuracy == 0.0:
-                    delete_list.append(ix)
+                try:
+                    if score < tolerance or rule.accuracy == 0.0:
+                        delete_list.append(ix)
+                except AttributeError:
+                    if score < tolerance:
+                        delete_list.append(ix)
         except AttributeError:
             assert False, 'Dominance scores not computed for this rulebase'
 
