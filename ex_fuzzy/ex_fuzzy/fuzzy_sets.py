@@ -12,6 +12,12 @@ try:
 except:
     import maintenance as mnt
 
+# You dont require torch to use this module, however, we need to import it to give support in case you feed these methods with torch tensors.
+try:
+    import torch
+except:
+    pass
+
 
 ''' Enum that defines the fuzzy set types.'''
 class FUZZY_SETS(enum.Enum):
@@ -22,6 +28,7 @@ class FUZZY_SETS(enum.Enum):
 
     def __eq__(self, __value: object) -> bool:
         return self.value == __value.value
+
 
 def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> np.array:
     '''
@@ -35,7 +42,12 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
 
     # Special case: a singleton trapezoid
     if a == d:
-        return np.equal(a, x).astype(float)
+        # If they are numpy arrays, we need to use the numpy function
+        if isinstance(x, np.ndarray):
+            return np.equal(a, x).astype(float)
+        elif is instance(x, torch.Tensor):
+            return torch.eq(a, x).float()
+            
 
     if b == a:
         b += epsilon
@@ -45,7 +57,10 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
     aux1 = (x - a) / (b - a)
     aux2 = (d - x) / (d - c)
 
-    return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)
+    if isinstance(x, np.ndarray):
+        return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)
+    elif isinstance(x, torch.Tensor):
+        return torch.clamp(torch.min(aux1, aux2), 0.0, 1.0)
 
 
 def __gaussian2(x, params: list[float]) -> np.array:
