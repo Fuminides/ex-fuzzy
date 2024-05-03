@@ -4,6 +4,7 @@ like computing the FM function, etc.
 
 """
 import enum
+from typing import Generator
 
 import numpy as np
 
@@ -45,7 +46,7 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
         # If they are numpy arrays, we need to use the numpy function
         if isinstance(x, np.ndarray):
             return np.equal(a, x).astype(float)
-        elif is instance(x, torch.Tensor):
+        elif isinstance(x, torch.Tensor):
             return torch.eq(a, x).float()
             
 
@@ -504,7 +505,7 @@ class fuzzyVariable():
         self.linguistic_variables[item] = elem
     
 
-    def __iter__(self) -> FS:
+    def __iter__(self) -> Generator[FS, None, None]:
         '''
         Returns the corresponding fs.
 
