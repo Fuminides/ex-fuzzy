@@ -150,7 +150,10 @@ class categoricalFS(FS):
 
         :param x: input values in the referencial domain.
         '''
-        res = np.equal(x, self.category).astype(float)
+        if isinstance(x, np.ndarray):
+            res = np.equal(x, self.category).astype(float)
+        elif isinstance(x, torch.Tensor):
+            res = torch.eq(x, self.category).float()
 
         return res
 

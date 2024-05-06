@@ -305,7 +305,7 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
 
     # Get the X dataframe without the categorical variables
     if categorical_mask is not None:
-        X_numerical = X.loc[:, np.array(~categorical_mask)]
+        X_numerical = X[:, np.logical_not(categorical_mask)]
     else:
         X_numerical = X
 
@@ -327,13 +327,18 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
                     name = str(ix)
                 cat_var = construct_crisp_categorical_partition(np.array(X)[:, ix], name, fz_type_studied)
 
-                categorical_partition[X.columns[ix]] = cat_var
+                categorical_partition[name] = cat_var
 
         # Reorder the partitions so that they follow the same order as in the original X
         precomputed_partitions_aux = []
         for ix, elem in enumerate(categorical_mask):
+            if isinstance(X, pd.DataFrame):
+                name = X.columns[ix]
+            else:
+                name = str(ix)
+
             if elem:
-                precomputed_partitions_aux.append(categorical_partition[X.columns[ix]])
+                precomputed_partitions_aux.append(categorical_partition[name])
             else:
                 precomputed_partitions_aux.append(precomputed_partitions.pop(0))
 
