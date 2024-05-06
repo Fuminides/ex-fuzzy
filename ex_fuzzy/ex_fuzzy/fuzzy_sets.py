@@ -7,6 +7,7 @@ import enum
 from typing import Generator
 
 import numpy as np
+import imp
 
 try:
     from . import maintenance as mnt
@@ -16,8 +17,9 @@ except:
 # You dont require torch to use this module, however, we need to import it to give support in case you feed these methods with torch tensors.
 try:
     import torch
+    torch_available = True
 except:
-    pass
+    torch_available = False
 
 
 ''' Enum that defines the fuzzy set types.'''
@@ -46,8 +48,9 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
         # If they are numpy arrays, we need to use the numpy function
         if isinstance(x, np.ndarray):
             return np.equal(a, x).astype(float)
-        elif isinstance(x, torch.Tensor):
-            return torch.eq(a, x).float()
+        if torch_available:
+            if isinstance(x, torch.Tensor):
+                return torch.eq(a, x).float()
             
 
     if b == a:
@@ -152,8 +155,9 @@ class categoricalFS(FS):
         '''
         if isinstance(x, np.ndarray):
             res = np.equal(x, self.category).astype(float)
-        elif isinstance(x, torch.Tensor):
-            res = torch.eq(x, self.category).float()
+        if torch_available:
+            if isinstance(x, torch.Tensor):
+                res = torch.eq(x, self.category).float()
 
         return res
 
