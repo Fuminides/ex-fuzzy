@@ -7,7 +7,6 @@ import enum
 from typing import Generator
 
 import numpy as np
-import imp
 
 try:
     from . import maintenance as mnt
