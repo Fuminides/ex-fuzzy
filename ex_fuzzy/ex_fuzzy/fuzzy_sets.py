@@ -46,7 +46,7 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
     if a == d:
         # If they are numpy arrays, we need to use the numpy function
         if isinstance(x, np.ndarray):
-            return np.equal(a, x).astype(float)
+            return np.equal(x, a).astype(float)
         if torch_available:
             if isinstance(x, torch.Tensor):
                 return torch.eq(x, a).float()
