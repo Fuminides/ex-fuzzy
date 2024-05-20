@@ -837,7 +837,7 @@ class FitRuleBase(Problem):
             assert consequent_idx < self.n_classes, "Consequent class is not valid. Something in the gene is wrong."
             aux_pointer += 1
  
-            if consequent_idx != -1:
+            if consequent_idx != -1 and np.any(init_rule_antecedents != -1):
                 rule_list[consequent_idx].append(
                     rules.RuleSimple(init_rule_antecedents, 0))
 
