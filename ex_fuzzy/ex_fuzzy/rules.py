@@ -348,9 +348,8 @@ class RuleBase():
                 membership = np.zeros(
                     (x.shape[0], len(rule_antecedents), len(self.alpha_cuts), 2))
 
-            
+            n_nonvl = 0
             for ix, vl in enumerate(rule_antecedents):
-                n_nonvl = 0
                 if vl >= 0:
                     membership_antecedent = list(antecedents_memberships[ix])[vl]
                     membership[:, ix] = membership_antecedent
