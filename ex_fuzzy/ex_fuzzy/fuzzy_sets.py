@@ -7,6 +7,7 @@ import enum
 from typing import Generator
 
 import numpy as np
+import pandas as pd
 
 try:
     from . import maintenance as mnt
@@ -154,10 +155,15 @@ class categoricalFS(FS):
         '''
         if isinstance(x, np.ndarray):
             res = np.equal(x, self.category).astype(float)
-        if torch_available:
-            if isinstance(x, torch.Tensor):
-                res = torch.eq(x, self.category).float()
-
+        elif isinstance(x, torch.Tensor):
+            res = torch.eq(x, self.category).float()
+        elif isinstance(x, list):
+            res = [1.0 if elem == self.category else 0.0 for elem in x]
+        elif isinstance(x, float) or isinstance(x, int):
+            res = 1.0 if x == self.category else 0.0
+        elif isinstance(x, pd.Series):
+            res = x.apply(lambda elem: 1.0 if elem == self.category else 0.0)
+            
         return res
 
 
