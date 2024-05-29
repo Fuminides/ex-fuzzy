@@ -319,7 +319,7 @@ class evalRuleBase():
         '''
         from sklearn.metrics import matthews_corrcoef
         self.add_rule_weights()
-        preds = self.mrule_base.winning_rule_predict(self.X)
+        preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
 
         return matthews_corrcoef(self.y, preds)
 

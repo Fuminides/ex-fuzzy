@@ -94,6 +94,53 @@ def t1_simple_partition(x: np.array) -> np.array:
     return partition_parameters
 
 
+def compute_quantiles(x, n_partitions):
+    '''
+    Computes the quantiles needed for n-partition fuzzy membership.
+    
+    :param x: numpy array, vector of shape (samples, ).
+    :param n_partitions: int, number of partitions.
+    :return: numpy array, quantiles for partitioning.
+    '''
+    quantiles = np.linspace(0, 100, n_partitions + 2)
+    return np.percentile(x, quantiles, axis=0)
+
+
+def t1_n_partition_parameters(x, n_partitions):
+    '''
+    Partitions the fuzzy variable in n trapezoidal memberships.
+
+    :param x: numpy array, matrix of shape (samples, variables).
+    :param n_partitions: int, number of partitions.
+    :return: numpy array, tensor of shape (variables, n_partitions, 4) containing the trapezoidal parameters.
+    '''
+    trap_memberships_size = 4
+    n_variables = x.shape[1]
+    quantile_numbers = compute_quantiles(x, n_partitions)
+    
+    # Initialize the array for partition parameters
+    partition_parameters = np.zeros((n_variables, n_partitions, trap_memberships_size))
+
+    for partition in range(n_partitions):
+        if partition == 0:  # First partition
+            partition_parameters[:, partition, 0] = quantile_numbers[0, :]
+            partition_parameters[:, partition, 1] = quantile_numbers[0, :]
+            partition_parameters[:, partition, 2] = quantile_numbers[1, :]
+            partition_parameters[:, partition, 3] = quantile_numbers[2, :]
+        elif partition == n_partitions - 1:  # Last partition
+            partition_parameters[:, partition, 0] = quantile_numbers[partition, :]
+            partition_parameters[:, partition, 1] = quantile_numbers[partition + 1, :]
+            partition_parameters[:, partition, 2] = quantile_numbers[partition + 2, :]
+            partition_parameters[:, partition, 3] = quantile_numbers[partition + 2, :]
+        else:  # Intermediate partitions
+            partition_parameters[:, partition, 0] = quantile_numbers[partition, :]
+            partition_parameters[:, partition, 1] = (quantile_numbers[partition, :] + quantile_numbers[partition + 1, :] ) / 2
+            partition_parameters[:, partition, 2] = (quantile_numbers[partition + 1, :] + quantile_numbers[partition + 2, :] ) / 2
+            partition_parameters[:, partition, 3] = quantile_numbers[partition + 2, :]
+
+    return partition_parameters
+
+
 def t1_three_partition(x: np.array) -> np.array:
     '''
     Partitions the fuzzy variable in three trapezoidal memberships.
@@ -129,21 +176,23 @@ def t1_three_partition(x: np.array) -> np.array:
     return partition_parameters
 
 
-def t2_simple_partition(x: np.array) -> np.array:
+def t2_n_partition_parameters(x, n_partitions):
     '''
-    Partitions the fuzzy variable in three trapezoidal memberships.
+    Partitions the fuzzy variable in n trapezoidal memberships.
 
-    :param x: numpy array, vector of shape (samples, ).
-    :return: numpy array, vector of shape (variables, 3, 4, 2).
+    :param x: numpy array, matrix of shape (samples, variables).
+    :param n_partitions: int, number of partitions.
+    :return: numpy array, tensor of shape (variables, n_partitions, 4, 2) containing the trapezoidal parameters.
     '''
-    n_partitions = 3
     trap_memberships_size = 4
-    quantile_numbers = partition3_quantile_compute(x)
+    n_variables = x.shape[1]
+    quantile_numbers = compute_quantiles(x, n_partitions)
+    
+    # Initialize the array for partition parameters
+    partition_parameters = np.zeros((n_variables, n_partitions, trap_memberships_size, 2))
 
-    partition_parameters = np.zeros(
-        (x.shape[1], n_partitions, trap_memberships_size, 2))
     for partition in range(n_partitions):
-        if partition == 0:
+        if partition == 0:  # First partition
             partition_parameters[:, partition, 0, 1] = quantile_numbers[0]
             partition_parameters[:, partition, 1, 1] = quantile_numbers[0]
             partition_parameters[:, partition, 2, 1] = quantile_numbers[1]
@@ -154,48 +203,49 @@ def t2_simple_partition(x: np.array) -> np.array:
             partition_parameters[:, partition, 2, 0] = quantile_numbers[1]
             partition_parameters[:, partition, 3, 0] = quantile_numbers[1] + \
                 0.9 * (quantile_numbers[2] - quantile_numbers[1])
+        elif partition == n_partitions - 1:  # Last partition
+            partition_parameters[:, partition, 0, 1] = quantile_numbers[partition]
+            partition_parameters[:, partition, 1, 1] = quantile_numbers[partition + 1]
+            partition_parameters[:, partition, 2, 1] = quantile_numbers[partition + 2]
+            partition_parameters[:, partition, 3, 1] = quantile_numbers[partition + 2]
 
-        elif partition == 1:
-            partition_parameters[:, partition, 0, 1] = quantile_numbers[1]
-            partition_parameters[:, partition, 1, 1] = (
-                quantile_numbers[1] + quantile_numbers[2]) / 2
-            partition_parameters[:, partition, 2, 1] = (
-                quantile_numbers[2] + quantile_numbers[3]) / 2
-            partition_parameters[:, partition, 3, 1] = quantile_numbers[3]
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[partition] + \
+                0.1 * (quantile_numbers[partition + 1] - quantile_numbers[partition])
+            partition_parameters[:, partition, 1, 0] = quantile_numbers[partition + 1]
+            partition_parameters[:, partition, 2, 0] = quantile_numbers[partition + 2]
+            partition_parameters[:, partition, 3, 0] = quantile_numbers[partition + 2]
+        else:  # Intermediate partitions
+            partition_parameters[:, partition, 0, 1] = quantile_numbers[partition]
+            partition_parameters[:, partition, 1, 1] = (quantile_numbers[partition] + quantile_numbers[partition + 1]) / 2
+            partition_parameters[:, partition, 2, 1] = (quantile_numbers[partition + 1] + quantile_numbers[partition + 2]) / 2
+            partition_parameters[:, partition, 3, 1] = quantile_numbers[partition + 2]
 
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[1] + \
-                0.1 * (quantile_numbers[2] - quantile_numbers[1])
-            partition_parameters[:, partition, 1, 0] = (
-                quantile_numbers[1] + quantile_numbers[2]) / 2
-            partition_parameters[:, partition, 2, 0] = (
-                quantile_numbers[3] + quantile_numbers[2]) / 2
-            partition_parameters[:, partition, 3, 0] = quantile_numbers[2] + \
-                0.9 * (quantile_numbers[3] - quantile_numbers[2])
-
-        else:
-            partition_parameters[:, partition, 0, 1] = quantile_numbers[2]
-            partition_parameters[:, partition, 1, 1] = quantile_numbers[3]
-            partition_parameters[:, partition, 2, 1] = quantile_numbers[4]
-            partition_parameters[:, partition, 3, 1] = quantile_numbers[4]
-
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[2] + \
-                0.1 * (quantile_numbers[3] - quantile_numbers[2])
-            partition_parameters[:, partition, 1, 0] = quantile_numbers[3]
-            partition_parameters[:, partition, 2, 0] = quantile_numbers[4]
-            partition_parameters[:, partition, 3, 0] = quantile_numbers[4]
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[partition] + \
+                0.1 * (quantile_numbers[partition + 1] - quantile_numbers[partition])
+            partition_parameters[:, partition, 1, 0] = (quantile_numbers[partition] + quantile_numbers[partition + 1]) / 2
+            partition_parameters[:, partition, 2, 0] = (quantile_numbers[partition + 1] + quantile_numbers[partition + 2]) / 2
+            partition_parameters[:, partition, 3, 0] = quantile_numbers[partition + 2] + \
+                0.9 * (quantile_numbers[partition + 3] - quantile_numbers[partition + 2])
 
     return partition_parameters
 
 
-def t1_fuzzy_partitions_dataset(x0: np.array) -> list[fs.fuzzyVariable]:
+def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3) -> list[fs.fuzzyVariable]:
     '''
     Partitions the dataset features into different fuzzy variables. Parameters are prefixed.
     Use it for simple testing and initial solution.
 
     :param x: numpy array|pandas dataframe, shape samples x features.
+    :param n_partition: number of partitions to use in the fuzzy variables.
     :return: list of fuzzy variables.
     '''
-    tripartition_names = ['Low', 'Medium', 'High']
+    if n_partition == 3:
+        partition_names = ['Low', 'Medium', 'High']
+    elif n_partition == 5:
+        partition_names = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
+    else:
+        partition_names = [str(ix) for ix in range(n_partition)]
+
     try:
         fv_names = x0.columns
         x = x0.values
@@ -205,25 +255,32 @@ def t1_fuzzy_partitions_dataset(x0: np.array) -> list[fs.fuzzyVariable]:
 
     mins = np.min(x, axis=0)
     maxs = np.max(x, axis=0)
-    fz_memberships = t1_three_partition(x)
+    fz_memberships = t1_n_partition_parameters(x, n_partitions=n_partition)
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
-        fzs = [fs.FS(tripartition_names[ix], fz_memberships[fz_parameter, ix, :], [
+        fzs = [fs.FS(partition_names[ix], fz_memberships[fz_parameter, ix, :], [
                      mins[fz_parameter], maxs[fz_parameter]]) for ix in range(fz_memberships.shape[1])]
         res.append(fs.fuzzyVariable(fv_names[fz_parameter], fzs))
 
     return res
 
 
-def t2_fuzzy_partitions_dataset(x0: np.array) -> list[fs.fuzzyVariable]:
+def t2_fuzzy_partitions_dataset(x0: np.array, n_partition=3) -> list[fs.fuzzyVariable]:
     '''
     Partitions the dataset features into different fuzzy variables using iv fuzzy sets. Parameters are prefixed.
     Use it for simple testing and initial solution.
 
     :param x: numpy array|pandas dataframe, shape samples x features.
+    :param n_partition: number of partitions to use in the fuzzy variables.
     :return: list of fuzzy variables.
     '''
-    tripartition_names = ['Low', 'Medium', 'High']
+    if n_partition == 3:
+        partition_names = ['Low', 'Medium', 'High']
+    elif n_partition == 5:
+        partition_names = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
+    else:
+        partition_names = [str(ix) for ix in range(n_partition)]
+
     try:
         fv_names = x0.columns
         x = x0.values
@@ -233,23 +290,24 @@ def t2_fuzzy_partitions_dataset(x0: np.array) -> list[fs.fuzzyVariable]:
 
     mins = np.min(x, axis=0)
     maxs = np.max(x, axis=0)
-    fz_memberships = t2_simple_partition(x)
+    fz_memberships = t2_n_partition_parameters(x, n_partition)
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
-        fzs = [fs.IVFS(tripartition_names[ix], fz_memberships[fz_parameter, ix, :, 0], fz_memberships[fz_parameter, ix, :, 1], [
+        fzs = [fs.IVFS(partition_names[ix], fz_memberships[fz_parameter, ix, :, 0], fz_memberships[fz_parameter, ix, :, 1], [
                        mins[fz_parameter], maxs[fz_parameter]], lower_height=0.8) for ix in range(fz_memberships.shape[1])]
         res.append(fs.fuzzyVariable(fv_names[fz_parameter], fzs))
 
     return res
 
 
-def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=1) -> list[fs.fuzzyVariable]:
+def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=2, n_partition=3) -> list[fs.fuzzyVariable]:
     '''
     Partitions the dataset features into different fuzzy variables using gt2 fuzzy sets. Parameters are prefixed.
     Use it for simple testing and initial solution.
 
     :param x: numpy array|pandas dataframe, shape samples x features.
-    :param resolution_exp: exponent of the resolution of the partition. Default is -2, which means 0.01. (Number of significant decimals)
+    :param resolution_exp: exponent of the resolution of the partition. Default is 2, which means 0.01. (Number of significant decimals)
+    :param n_partition: number of partitions to use in the fuzzy variables.
     :return: list of fuzzy variables.
     '''
     try:
@@ -261,7 +319,7 @@ def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=1) -> list[fs.
 
     mins = np.min(x, axis=0)
     maxs = np.max(x, axis=0)
-    iv_simple_partition = t2_fuzzy_partitions_dataset(x)
+    iv_simple_partition = t2_fuzzy_partitions_dataset(x, n_partition=n_partition)
     resolution = 10.0**-np.abs(resolution_exp)
     res = []
     # We iterate through all possible variables
@@ -285,13 +343,14 @@ def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=1) -> list[fs.
     return res
 
 
-def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorical_mask: np.array=None) -> list[fs.fuzzyVariable]:
+def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3) -> list[fs.fuzzyVariable]:
     '''
     Returns a list of linguistic variables according to the kind of fuzzy specified.
 
     :param X: numpy array|pandas dataframe, shape samples x features.
     :param fz_type_studied: fuzzy set type studied.
     :param categorial_mask: a boolean mask vector that indicates for each variables if its categorical or not.
+    :param n_partitions: number of partitions to use in the fuzzy set.
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
@@ -310,11 +369,11 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS, categorica
         X_numerical = X
 
     if fz_type_studied == fs.FUZZY_SETS.t1:
-        precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical)
+        precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical, n_partitions)
     elif fz_type_studied == fs.FUZZY_SETS.t2:
-        precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical)
+        precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions)
     elif fz_type_studied == fs.FUZZY_SETS.gt2:
-        precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical)
+        precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions)
 
 
     if categorical_mask is not None:
