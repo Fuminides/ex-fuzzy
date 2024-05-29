@@ -60,11 +60,14 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
 
     aux1 = (x - a) / (b - a)
     aux2 = (d - x) / (d - c)
+    try:
+        if isinstance(x, torch.Tensor):
+            return torch.clamp(torch.min(aux1, aux2), 0.0, 1.0) 
+    except NameError:
+        pass
 
     if isinstance(x, np.ndarray):
-        return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)
-    elif isinstance(x, torch.Tensor):
-        return torch.clamp(torch.min(aux1, aux2), 0.0, 1.0)
+        return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)        
     elif isinstance(x, list):
         return [np.clip(min(aux1, aux2), 0.0, 1.0) for elem in x]
     else: # Single value

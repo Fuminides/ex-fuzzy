@@ -47,7 +47,7 @@ nRules = 10
 nAnts = 3
 vl = 5
 tolerance = 0.0000
-fz_type_studied = fs.FUZZY_SETS.t1
+fz_type_studied = fs.FUZZY_SETS.t2
 
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
