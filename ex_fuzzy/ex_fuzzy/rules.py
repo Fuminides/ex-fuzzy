@@ -46,6 +46,8 @@ class RuleError(Exception):
         '''
         super().__init__(message)
 
+
+
 def _myprod(x: np.array, y: np.array) -> np.array:
     '''
     Proxy function to change the product operation interface
@@ -68,6 +70,7 @@ class Rule():
         self.antecedents = antecedents
         self.consequent = consequent
 
+
     def membership(self, x: np.array, tnorm=_myprod) -> np.array:
         '''
         Computes the membership of one input to the antecedents of the rule.
@@ -82,6 +85,7 @@ class Rule():
                 res = tnorm(res, antecedent.membership(x))
 
         return res
+
 
     def consequent_centroid(self) -> np.array:
         '''
@@ -100,6 +104,7 @@ class Rule():
                 domain_linspace, consequent_memberships)
 
             return self.centroid_consequent
+
 
 
 class RuleSimple():
@@ -167,6 +172,7 @@ class RuleSimple():
         Returns the hash of the rule.
         '''
         return hash(str(self))
+
 
 
 class RuleBase():
@@ -577,11 +583,12 @@ class RuleBase():
         return RuleBase(self.antecedents, self.rules + other.rules, self.consequent, self.tnorm)
     
 
-    def n_linguist_variables(self) -> int:
+    def n_linguistic_variables(self) -> int:
         '''
         Returns the number of linguistic variables in the rule base.
         '''
-        return len(self.antecedents)
+        return [len(amt) for amt in self.antecedents]
+
 
     
 class RuleBaseT2(RuleBase):
@@ -1112,11 +1119,11 @@ class MasterRuleBase():
         return self.rule_bases
 
 
-    def n_linguist_variables(self) -> int:
+    def n_linguistic_variables(self) -> list[int]:
         '''
         Returns the number of linguistic variables in the rule base.
         '''
-        return len(self.antecedents[0])
+        return [len(amt) for amt in self.antecedents]
     
 
     def get_antecedents(self) -> list[fs.fuzzyVariable]:

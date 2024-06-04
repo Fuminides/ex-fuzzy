@@ -39,7 +39,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
     '''
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
-                 n_linguist_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
+                 n_linguistic_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
@@ -94,8 +94,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
             # If the linguistic variables are precomputed then we act accordingly
             self.lvs = linguistic_variables
-            self.n_linguist_variables = len(
-                self.lvs[0].linguistic_variable_names())
+            self.n_linguist_variables = [len(lv.linguistic_variable_names()) for lv in self.lvs]
             self.domain = None
             self.fuzzy_type = self.lvs[0].fuzzy_type()
         else:
@@ -105,7 +104,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             # If not, then we need the parameters sumistered by the user.
             self.lvs = None
             self.fuzzy_type = fuzzy_type
-            self.n_linguist_variables = n_linguist_variables
+            self.n_linguist_variables = n_linguistic_variables
             self.domain = domain
 
         self.alpha_ = 0.0
@@ -146,7 +145,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         if candidate_rules is None:
             if initial_rules is not None:
                 self.fuzzy_type = initial_rules.fuzzy_type()
-                self.n_linguist_variables = initial_rules.n_linguist_variables()
+                self.n_linguist_variables = initial_rules.n_linguistic_variables()
                 self.domain = [fv.domain for fv in initial_rules[0].antecedents]
                 self.nRules = len(initial_rules.get_rules())
                 self.nAnts = len(initial_rules.get_rules()[0].antecedents)
@@ -154,7 +153,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             if self.lvs is None:
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
-                                    n_linguist_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
+                                    n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_)
             else:
                 # If Fuzzy variables are already precomputed.
@@ -163,7 +162,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                                     alpha=self.alpha_, beta=self.beta_)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
-            self.n_linguist_variables = candidate_rules.n_linguist_variables()
+            self.n_linguist_variables = candidate_rules.n_linguistic_variables()
             problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), candidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules)
 
         if self.custom_loss is not None:
@@ -402,7 +401,6 @@ class ExploreRuleBases(Problem):
         self.nRules = nRules
         self._precomputed_truth = rules.compute_antecedents_memberships(candidate_rules.get_antecedents(), X)
 
-        self.vl_names = self.candidate_rules[0].antecedents[0].linguistic_variable_names()
         self.fuzzy_type = self.candidate_rules[0].antecedents[0].fuzzy_type()
 
         self.min_bounds = np.min(self.X, axis=0)
@@ -534,10 +532,8 @@ class FitRuleBase(Problem):
         :param domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
         '''
         self.lvs = None
-        try:
-            self.vl_names = FitRuleBase.vl_names[n_linguist_variables]
-        except IndexError:
-            self.vl_names = [str(ix) for ix in range(n_linguist_variables)]
+        self.vl_names = [FitRuleBase.vl_names[n_linguist_variables[nn]] if n_linguist_variables[nn] < 6 else list(map(str, np.arange(nn))) for nn in range(len(n_linguist_variables))]
+        
 
         self.fuzzy_type = fuzzy_type
         self.n_lv_possible = n_linguist_variables
@@ -552,13 +548,13 @@ class FitRuleBase(Problem):
         :param X: np array samples x features.
         '''
         self.lvs = linguist_variables
-        self.vl_names = self.lvs[0].linguistic_variable_names()
-        self.n_lv_possible = len(self.lvs[0])
+        self.vl_names = [lv.linguistic_variable_names() for lv in self.lvs]
+        self.n_lv_possible = [len(lv.linguistic_variable_names()) for lv in self.lvs]
         self.fuzzy_type = self.lvs[0].fs_type
         self.domain = None
         self._precomputed_truth = rules.compute_antecedents_memberships(linguist_variables, X)
 
-    vl_names = [  # Linguistic variable names preestated for some specific cases.
+    vl_names = [  # Linguistic variable names prenamed for some specific cases.
         [],
         [],
         ['Low', 'High'],
@@ -568,7 +564,7 @@ class FitRuleBase(Problem):
     ]
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
-                 linguistic_variables:list[fs.fuzzyVariable]=None, n_linguist_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
+                 linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
                  tolerance:float=0.01, alpha:float=0.0, beta:float=0.0) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
@@ -609,8 +605,10 @@ class FitRuleBase(Problem):
         if linguistic_variables is not None:
             self._init_precomputed_vl(linguistic_variables, X)
         else:
+            if isinstance(n_linguistic_variables, int):
+                n_linguistic_variables = [n_linguistic_variables] * self.X.shape[1]
             self._init_optimize_vl(
-                fuzzy_type, n_linguist_variables)
+                fuzzy_type, n_linguistic_variables)
 
         if self.domain is None:
             # If all the variables are numerical, then we can compute the min/max of the domain.
@@ -637,7 +635,7 @@ class FitRuleBase(Problem):
         possible_antecedent_bounds = np.array(
             [[0, self.X.shape[1] - 1]] * self.nAnts * self.nRules)  
         vl_antecedent_bounds = np.array(
-            [[-1, self.n_lv_possible - 1]] * self.nAnts * self.nRules) # -1 means not caring
+            [[-1, self.n_lv_possible[ax] - 1] for ax in range(self.nAnts)] * self.nRules) # -1 means not caring
         antecedent_bounds = np.concatenate(
             (possible_antecedent_bounds, vl_antecedent_bounds))
         vars_antecedent = {ix: Integer(
@@ -645,16 +643,16 @@ class FitRuleBase(Problem):
         aux_counter = len(vars_antecedent)
 
         if self.lvs is None:
-            assert self.n_lv_possible >= 1, 'At least 1 possible value for a linguistic variable is required.'
 
             self.feature_domain_bounds = np.array(
                 [[0, 99] for ix in range(self.X.shape[1])])
             size_multiplier = 4 if self.fuzzy_type == fs.FUZZY_SETS.t1 else 8
             membership_bounds = np.concatenate(
-                [self.feature_domain_bounds] * self.n_lv_possible * size_multiplier)
-            vars_memeberships = {
+                [[self.feature_domain_bounds[ixx]] * size_multiplier * self.n_lv_possible[ixx] for ixx in range(len(self.n_lv_possible))])
+            
+            vars_memberships = {
                 aux_counter + ix: Integer(bounds=membership_bounds[ix]) for ix in range(len(membership_bounds))}
-            aux_counter += len(vars_memeberships)
+            aux_counter += len(vars_memberships)
 
         final_consequent_bounds = np.array(
             [[-1, self.n_classes - 1]] * self.nRules)
@@ -663,7 +661,7 @@ class FitRuleBase(Problem):
 
         if self.lvs is None:
             vars = {key: val for d in [
-                vars_antecedent, vars_memeberships, vars_consequent] for key, val in d.items()}
+                vars_antecedent, vars_memberships, vars_consequent] for key, val in d.items()}
             varbound = np.concatenate(
                 (antecedent_bounds, membership_bounds, final_consequent_bounds), axis=0)
         else:
@@ -799,7 +797,7 @@ class FitRuleBase(Problem):
         if self.lvs is None:
             # If memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules + \
-                self.X.shape[1] * self.n_lv_possible * mf_size
+                sum(self.n_lv_possible) * mf_size
         else:
             # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
@@ -829,7 +827,7 @@ class FitRuleBase(Problem):
                 if self.lvs is not None:
                     antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
                 else:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible - 1)
+                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible[ant] - 1)
 
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
@@ -850,7 +848,7 @@ class FitRuleBase(Problem):
             for fuzzy_variable in range(self.X.shape[1]):
                 linguistic_variables = []
 
-                for linguistic_variable in range(self.n_lv_possible):
+                for linguistic_variable in range(self.n_lv_possible[fuzzy_variable]):
                     parameter_pointer = third_pointer + aux_pointer
                     fz_parameters_idx = x[parameter_pointer:parameter_pointer + mf_size]
                     fz_parameters = self.antecedents_referencial[fuzzy_variable][fz_parameters_idx]
@@ -864,10 +862,10 @@ class FitRuleBase(Problem):
                               fz_parameters[3], np.min(fz_parameters[4:6])]
                         height = fz_parameters[6] / np.max(fz_parameters)
 
-                        ivfs = fs.IVFS(self.vl_names[linguistic_variable], ml, mu,
+                        ivfs = fs.IVFS(self.vl_names[fuzzy_variable][linguistic_variable], ml, mu,
                                        (min_domain[fuzzy_variable], max_domain[fuzzy_variable]), lower_height=height)
                     else:
-                        ivfs = fs.FS(self.vl_names[linguistic_variable], np.sort(fz_parameters[0:4]),
+                        ivfs = fs.FS(self.vl_names[fuzzy_variable][linguistic_variable], np.sort(fz_parameters[0:4]),
                                      (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
                     linguistic_variables.append(ivfs)
 

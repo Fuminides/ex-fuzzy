@@ -99,7 +99,7 @@ temp_partitions = utils.create_tempVariables(X_total_array, time_moments, precom
 X_train = X_train.drop(columns=['date'])
 X_test = X_test.drop(columns=['date'])
 fl_classifier = temporal.TemporalFuzzyRulesClassifier(nRules=nRules, nAnts=nAnts, 
-    linguistic_variables=temp_partitions, n_linguist_variables=3,
+    linguistic_variables=temp_partitions, n_linguistic_variables=3,
     fuzzy_type=fz_type_studied, verbose=True, tolerance=0.001, n_class=2)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=pop_size, time_moments=train_time_moments, checkpoints=0)
 

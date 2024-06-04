@@ -117,7 +117,7 @@ precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
 
 # Standard loss experiments
 fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts,
-                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=False, tolerance=tolerance)
+                                            n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=False, tolerance=tolerance)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop)
 
 eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
@@ -130,7 +130,7 @@ for eps in epsilon:
 
 
 fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts,
-                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=False, tolerance=tolerance)
+                                            n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=False, tolerance=tolerance)
 fl_classifier.customized_loss(new_loss)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop)
 

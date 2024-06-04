@@ -441,7 +441,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
             - n_classes: number of classes to predict. Default deduces from data.
         '''
         super().__init__(nRules=nRules, nAnts=nAnts, fuzzy_type=fuzzy_type, tolerance=tolerance, 
-                         n_linguist_variables=n_linguist_variables, verbose=verbose, linguistic_variables=linguistic_variables, 
+                         n_linguistic_variables=n_linguist_variables, verbose=verbose, linguistic_variables=linguistic_variables, 
                          domain=domain, n_class=n_class, precomputed_rules=precomputed_rules, runner=runner)
     
 
@@ -487,7 +487,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
             if self.lvs is None:
                 # If Fuzzy variables need to be optimized.
                 problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance,
-                                    n_linguist_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, 
+                                    n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, 
                                     n_classes=self.n_class, thread_runner=self.thread_runner)
             else:
                 import copy

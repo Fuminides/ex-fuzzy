@@ -55,14 +55,14 @@ y = pd.Series(iris.target)
 class_names = y.unique()
 
 # Compute the fuzzy partitions using n linguistic variables
-precomputed_partitions = utils.construct_partitions(X, fz_type_studied, n_partitions=vl)
+precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl)
 
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 
 # We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts, class_names=class_names,
-                                            n_linguist_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions_vl, nAnts=nAnts, class_names=class_names,
+                                            n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
 
 # fl_classifier.customized_loss(utils.mcc_loss) Use this to change the loss function, but be sure to look at the API first
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0)
