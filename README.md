@@ -53,7 +53,7 @@ You can install ex-Fuzzy using pip, from the PyPi repository, with the following
 
 You can check our preprint in SSRN in the following link:
 
-[https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4766235
+[https://www.sciencedirect.com/science/article/pii/S0925231224008191
 ](https://www.sciencedirect.com/science/article/pii/S0925231224008191)
 
 To cite the library please use the preprint until the final paper is accepted:
