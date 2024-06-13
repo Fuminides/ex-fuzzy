@@ -65,7 +65,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 # We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
 fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts, 
                                             n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
-fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=1)
+fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=30)
 
 # Evaluate the performance of the rule base
 eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
@@ -74,11 +74,11 @@ eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test,
 # Use the rule base as a candidate to further optimize the rules
 frbc = fl_classifier.rule_base
 
-refined_classifier = GA.BaseFuzzyRulesClassifier(verbose=True, tolerance=tolerance, runner=runner, linguistic_variables=None)
+refined_classifier = GA.BaseFuzzyRulesClassifier(verbose=True, tolerance=tolerance, runner=runner, linguistic_variables=precomputed_partitions)
 refined_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, initial_rules=frbc)
 
 # Evaluate the performance of the rule base
-eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
+eval_tools.eval_fuzzy_model(refined_classifier, X_train, y_train, X_test, y_test, 
                         plot_rules=False, print_rules=True, plot_partitions=False)
 
 print('Done')

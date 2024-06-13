@@ -244,7 +244,7 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
         return np.concatenate(res, axis=0)
 
 
-    def compute_firing_strenghts(self, X: np.array, time_moments: list[int]) -> np.array:
+    def compute_firing_strenghts(self, X: np.array, time_moments: list[int], precomputed_truth=None) -> np.array:
         '''
         Computes the firing strength of each rule for each sample.
 
@@ -314,9 +314,12 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
             res += 'Rules for time step: ' + self.time_step_names[zx] + '\n'
             res += '----------------\n' 
             for ix, ruleBase in enumerate(time):
-                res += 'Consequent: ' + time.consequent_names[ix] + '\n'
-                res += ruleBase.print_rules(True)
-                res += '\n'
+                try:
+                    res += 'Consequent: ' + str(time.consequent_names[ix]) + '\n'
+                    res += ruleBase.print_rules(True)
+                    res += '\n'
+                except IndexError:
+                    pass # We did not have rules for this consequent
             res += '----------------\n'
 
         if return_rules:
@@ -423,7 +426,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
     '''
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = None, tolerance: float = 0.0,
-                 n_linguist_variables: int = 0, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
+                 n_linguistic_variables: int = 0, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rl.MasterRuleBase =None, runner: int=1) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
@@ -432,7 +435,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
         :param nAnts: max number of antecedents to use.
         :param fuzzy type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.
         :param tolerance: tolerance for the dominance score of the rules.
-        :param n_linguist_variables: number of linguistic variables per antecedent.
+        :param n_linguistic_variables: number of linguistic variables per antecedent.
         :param verbose: if True, prints the progress of the optimization.
         :param linguistic_variables: list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.
         :param domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
@@ -441,7 +444,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
             - n_classes: number of classes to predict. Default deduces from data.
         '''
         super().__init__(nRules=nRules, nAnts=nAnts, fuzzy_type=fuzzy_type, tolerance=tolerance, 
-                         n_linguistic_variables=n_linguist_variables, verbose=verbose, linguistic_variables=linguistic_variables, 
+                         n_linguistic_variables=n_linguistic_variables, verbose=verbose, linguistic_variables=linguistic_variables, 
                          domain=domain, n_class=n_class, precomputed_rules=precomputed_rules, runner=runner)
     
 
@@ -496,7 +499,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
                 # If Fuzzy variables are already precomputed.       
                 problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts,
                                     linguistic_variables=time_lvs, domain=self.domain, tolerance=self.tolerance, 
-                                    n_classes=self.classes_, thread_runner=self.thread_runner)
+                                    n_classes=self.nclasses_, thread_runner=self.thread_runner)
             
             problems.append(problem)
 

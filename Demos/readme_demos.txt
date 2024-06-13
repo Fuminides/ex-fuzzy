@@ -8,5 +8,6 @@ The list of demos is the following:
 4. precandidate_rules_demo: a classification example where we first fit a fuzzy classifier as usual, and then, we look for the optimal subset of those rules.
 5. regression_demo: an example of a regression problem using inerval-type 2 fuzzy sets.
 6. occupancy_demo_temporal: an example of the use of temporal fuzzy sets.
+7. iris_demo_advanced_classifiers: in this example we show an the different training procedures that can be found in classifiers.py file.
 
 

@@ -139,6 +139,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         if self.classes_names is None:
             self.classes_names = [aux for aux in np.unique(y)]
         
+        if self.nclasses_ is None:
+            self.nclasses_ = len(self.classes_names)
+
         if isinstance(y[0], str):
             y = np.array([self.classes_names.index(str(aux)) for aux in y])
             
@@ -208,7 +211,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         eval_performance.add_full_evaluation()  
                         # self.rename_fuzzy_variables() This wont work on checkpoints!
                         rule_base.purge_rules(self.tolerance)
-                        rule_base.rename_cons(self.nclasses_)
+                        rule_base.rename_cons(self.classes_names)
                         checkpoint_rules = rule_base.print_rules(True)
                         f.write(checkpoint_rules)     
 
@@ -261,8 +264,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.rule_base = rule_base
         self.nRules = len(rule_base.get_rules())
         self.nAnts = len(rule_base.get_rules()[0].antecedents)
-        self.n_class = len(rule_base)
-        self.nclasses_ = rule_base.consequent_names
+        self.nclasses_ = len(rule_base)
         
 
     def forward(self, X: np.array) -> np.array:
@@ -318,9 +320,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             fuzzy_variables = self.rule_base.rule_bases[ix].antecedents
 
             for jx, fv in enumerate(fuzzy_variables):
-                # I feel so extraordinary, lifes got a hold on me...
                 new_order_values = []
-                possible_names = FitRuleBase.vl_names[self.n_linguist_variables]
+                possible_names = FitRuleBase.vl_names[self.n_linguist_variables[jx]]
 
                 for zx, fuzzy_set in enumerate(fv.linguistic_variables):
                     studied_fz = fuzzy_set.type()

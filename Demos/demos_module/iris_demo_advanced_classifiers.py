@@ -64,16 +64,14 @@ precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 
 # Create the RuleMine classifier
-fl_classifier = classifiers.RuleMineClassifier(nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, linguistic_variables=precomputed_partitions,
-                                               verbose=True, tolerance=tolerance, runner=threads)
+fl_classifier = classifiers.RuleMineClassifier(nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, linguistic_variables=precomputed_partitions, verbose=True, tolerance=tolerance, runner=threads)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop)
 
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier.internal_classifier(), X_train, y_train, X_test, y_test, 
                         plot_rules=False, print_rules=True, plot_partitions=False, return_rules=True)
 
 # Create the FuzzyRules classifier
-fl_classifier = classifiers.FuzzyRulesClassifier(nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, linguistic_variables=precomputed_partitions,
-                                               verbose=True, tolerance=tolerance, runner=threads)
+fl_classifier = classifiers.FuzzyRulesClassifier(nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, linguistic_variables=precomputed_partitions, verbose=True, tolerance=tolerance, runner=threads)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop)
 
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier.internal_classifier(), X_train, y_train, X_test, y_test, 
@@ -81,8 +79,7 @@ str_rules = eval_tools.eval_fuzzy_model(fl_classifier.internal_classifier(), X_t
 
 
 # Create the RuleFineTuneClassifier classifier
-fl_classifier = classifiers.RuleFineTuneClassifier(nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, linguistic_variables=precomputed_partitions,
-                                               verbose=True, tolerance=tolerance, runner=threads)
+fl_classifier = classifiers.RuleFineTuneClassifier(nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, linguistic_variables=precomputed_partitions, verbose=True, tolerance=tolerance, runner=threads)
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop)
 
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier.internal_classifier(), X_train, y_train, X_test, y_test, 
