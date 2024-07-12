@@ -49,7 +49,7 @@ You can install ex-Fuzzy using pip, from the PyPi repository, with the following
 
 `pip install ex-fuzzy`
 
-## Preprint and Citation
+## Citation
 
 You can check our paper in [Neurocomputing](https://www.sciencedirect.com/science/article/pii/S0925231224008191).
 
