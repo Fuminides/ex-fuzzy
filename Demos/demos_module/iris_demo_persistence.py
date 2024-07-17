@@ -30,7 +30,6 @@ sys.path.append('./ex_fuzzy/ex_fuzzy/')
 sys.path.append('../ex_fuzzy/')
 sys.path.append('../ex_fuzzy/ex_fuzzy/')
 
-
 import ex_fuzzy.fuzzy_sets as fs
 import ex_fuzzy.evolutionary_fit as GA
 import ex_fuzzy.utils as  utils
@@ -38,18 +37,28 @@ import ex_fuzzy.eval_tools as eval_tools
 import ex_fuzzy.persistence as persistence
 import ex_fuzzy.vis_rules as vis_rules
 
-fz_type_studied = fs.FUZZY_SETS.t1
-
 # Import some data to play with
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = iris.target
 
+# Split the data into a training set and a test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
+
+fz_type_studied = fs.FUZZY_SETS.t1
+
 # Compute the fuzzy partitions using 3 quartiles
 precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
 
-# Split the data into a training set and a test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=None, nAnts=3, n_linguistic_variables=5, fuzzy_type=fz_type_studied, verbose=True, tolerance=0.01, runner=1)
+
+fl_classifier.fit(X_train, y_train)
+
+str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
+                        plot_rules=False, print_rules=True, plot_partitions=False, return_rules=True)
+
+with open('iris_rules.txt', 'w') as f:
+    f.write(str_rules)
 
 # Load rules from a plain text file
 with open('iris_rules.txt', 'r') as f:
@@ -63,5 +72,3 @@ fl_classifier2 = GA.BaseFuzzyRulesClassifier(precomputed_rules=mrule_base)
 
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier2, X_train, y_train, X_test, y_test, 
                         plot_rules=True, print_rules=True, plot_partitions=True, return_rules=True)
-
-print('Done')
