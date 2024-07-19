@@ -45,7 +45,7 @@ def __look_periods(states: list[np.array], min_period_len=2) -> list[np.array]:
     return None
 
 
-def __look_attractors(states: list[np.array]) -> [bool, np.array]:
+def __look_attractors(states: list[np.array]) -> list[bool, np.array]:
     '''Checks if all the states in the list are the same'''
     attractors = []
     for state in states:
@@ -57,7 +57,7 @@ def __look_attractors(states: list[np.array]) -> [bool, np.array]:
     return True, attractors[0]
     
 
-def look_pattern_states(fcm: FuzzyCognitiveMap, sim_steps: int, pattern_len: 50, max_period_size: 50) -> [np.array]:
+def look_pattern_states(fcm: FuzzyCognitiveMap, sim_steps: int, pattern_len: 50, max_period_size: 50) -> list[np.array]:
     '''Looks for the pattern states of the FCM when simulation is prolongued.
     
     
@@ -81,7 +81,7 @@ def look_pattern_states(fcm: FuzzyCognitiveMap, sim_steps: int, pattern_len: 50,
     return period
 
 
-def study_attractors_FCM(fcm: FuzzyCognitiveMap, max_steps: int, random_inits: int=10) -> [np.array]:
+def study_attractors_FCM(fcm: FuzzyCognitiveMap, max_steps: int, random_inits: int=10) -> list[np.array]:
     '''Looks for the attractor states of the FCM when simulation is prolongued.
     
     
