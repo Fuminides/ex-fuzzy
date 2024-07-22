@@ -14,6 +14,9 @@ except ImportError:
     import centroid
 
 
+    
+
+
 def compute_antecedents_memberships(antecedents: list[fs.fuzzyVariable], x: np.array) -> list[dict]:
         '''
         Returns a list of of dictionaries that contains the memberships for each x value to the ith antecedents, nth linguistic variable.
@@ -406,35 +409,12 @@ class RuleBase():
     def print_rules(self, return_rules:bool=False) -> None:
         '''
         Print the rules from the rule base.
+
+        :param return_rules: if True, the rules are returned as a string.
         '''
         all_rules = ''
         for ix, rule in enumerate(self.rules):
-            initiated = False
-            str_rule = 'IF '
-            for jx, vl_ix in enumerate(rule.antecedents):
-                antecedent = self.antecedents[jx]
-                keys = antecedent.linguistic_variable_names()
-
-                if rule[jx] != -1:
-                    if not initiated:
-                        str_rule += str(antecedent.name) + ' IS ' + str(keys[vl_ix])
-                        initiated = True
-                    else:
-                        str_rule += ' AND ' + str(antecedent.name) + \
-                            ' IS ' + str(keys[vl_ix])
-
-            try:
-                score = rule.score if self.fuzzy_type() == fs.FUZZY_SETS.t1 else np.mean(rule.score)
-                str_rule += ' WITH DS ' + str(score)
-
-                # If the classification scores have been computed, print them.
-                try:
-                    str_rule += ', ACC ' + str(rule.accuracy)
-
-                except AttributeError:
-                    pass
-            except AttributeError:
-                str_rule += ' THEN consequent vl is ' + str(rule.consequent)
+            str_rule = generate_rule_string(rule, self.antecedents)
             
             all_rules += str_rule + '\n'
 
@@ -442,6 +422,8 @@ class RuleBase():
             print(all_rules)
         else:
             return all_rules
+
+    
 
 
     @abc.abstractmethod
@@ -1184,3 +1166,42 @@ def list_rules_to_matrix(rule_list: list[RuleSimple]) -> np.array:
 
     return res
 
+
+
+def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
+    '''
+    Generates a string with the rule.
+
+    :param rule: rule to generate the string.
+    '''
+    initiated = False
+    str_rule = 'IF '
+    for jx, vl_ix in enumerate(antecedents):
+        antecedent = antecedents[jx]
+        keys = antecedent.linguistic_variable_names()
+
+        if rule[jx] != -1:
+            if not initiated:
+                str_rule += str(antecedent.name) + ' IS ' + str(keys[rule[jx]])
+                initiated = True
+            else:
+                str_rule += ' AND ' + str(antecedent.name) + \
+                        ' IS ' + str(keys[rule[jx]])
+
+    try:
+        score = rule.score if antecedents[0].fuzzy_type() == fs.FUZZY_SETS.t1 else np.mean(rule.score)
+        str_rule += ' WITH DS ' + str(score)
+
+            # If the classification scores have been computed, print them.
+        try:
+            str_rule += ', ACC ' + str(rule.accuracy)
+
+        except AttributeError:
+            pass
+    except AttributeError:
+        try:
+            str_rule += ' THEN consequent vl is ' + str(rule.consequent)
+        except AttributeError:
+            pass
+    
+    return str_rule

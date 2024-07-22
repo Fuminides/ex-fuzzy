@@ -37,6 +37,19 @@ def concatenate_dicts(dict1, dict2):
     
     return dict1
 
+
+def str_rule_as_list(rule:str):
+    rule = rule.replace('[', '')
+    rule = rule.replace(']', '')
+    rule = rule.replace('(', '')
+    rule = rule.replace(')', '')
+    rule = rule.replace('.', '')
+    
+    rule = rule.split()
+
+    return [int(rr) for rr in rule]
+
+
 class pattern_stabilizer():
 
     def __init__(self,  X, y, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
@@ -173,15 +186,19 @@ class pattern_stabilizer():
 
     def get_patterns_scores(self, n=30):
         rule_bases, accuracies = self.generate_solutions(n)
-
+        self.n = n
         for ix, mrule_base in enumerate(rule_bases):
             if ix == 0:
                 class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base)
             else:
                 class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base, class_patterns, patterns_dss, class_vars)
             
+        # Sort the patterns by the number of appearances
+        for ix in range(len(class_patterns)):
+            class_patterns[ix] = dict(sorted(class_patterns[ix].items(), key=lambda item: item[1], reverse=True))
+            patterns_dss[ix] = dict(sorted(patterns_dss[ix].items(), key=lambda item: item[1], reverse=True))
 
-        return class_patterns, patterns_dss, class_vars, accuracies
+        return class_patterns, patterns_dss, class_vars, accuracies, rule_bases
 
 
     @staticmethod
@@ -192,6 +209,33 @@ class pattern_stabilizer():
             matrix[ix, :] = pattern
         
         return matrix
+    
+    def text_report(self, class_patterns: dict, patterns_dss: dict, class_vars: dict, accuracies: list, rule_bases: list,
+                    rule_cutoff: int = 5):
+        consequents_names = self.classes_names
+        print(f'Pattern stability report for {self.n} generated solutions')
+        print('Average accuracy: %.2f\pm%.2f' % (np.mean(accuracies), np.std(accuracies)))
+        print('-------------')
+
+        for ix in range(len(class_patterns)):
+            class_pattern_ix = class_patterns[ix]
+            rules_array_format = [str_rule_as_list(key) for key in class_pattern_ix.keys()]
+            patterns_dss_ix = patterns_dss[ix]
+            class_vars_ix = class_vars[ix]
+
+            print(f'Class {consequents_names[ix]}')
+            print(f'Number of unique patterns: {len(class_pattern_ix)}')
+            for jx, rule in enumerate(class_pattern_ix.keys()):
+                if jx < rule_cutoff:
+                    rule_print_format = rl.generate_rule_string(rules_array_format[jx], rule_bases[ix].antecedents)
+                    print(f'Pattern {rule_print_format} appears {class_pattern_ix[str(rule)]} times with a Dominance Score of {patterns_dss_ix[str(rule)]}')
+                else:
+                    break
+            print()
+    
+    def stability_report(self, n=10):
+        class_patterns, patterns_dss, class_vars, accuracies, rule_bases = self.get_patterns_scores(n)
+        print(self.text_report(class_patterns, patterns_dss, class_vars, accuracies, rule_bases))
     
 
 
