@@ -1,0 +1,13 @@
+Rules for consequent: setosa
+----------------
+IF sepal length (cm) IS High AND sepal width (cm) IS High WITH DS 0.0, ACC 1.0
+
+Rules for consequent: versicolor
+----------------
+IF petal length (cm) IS Medium WITH DS 0.8498017751239918, ACC 0.8055555555555556
+
+Rules for consequent: virginica
+----------------
+IF sepal length (cm) IS High AND petal length (cm) IS High WITH DS 0.6950385361245087, ACC 0.9333333333333333
+IF sepal length (cm) IS Medium AND petal length (cm) IS High WITH DS 0.1484230055658628, ACC 1.0
+

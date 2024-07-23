@@ -60,18 +60,11 @@ precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_par
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 pts = pattern_stability.pattern_stabilizer(X_train, y_train, nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, tolerance=tolerance, class_names=class_names, n_linguistic_variables=vl, verbose=True, linguistic_variables=precomputed_partitions_vl, runner=runner)
-
-# We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions_vl, nAnts=nAnts, class_names=class_names, n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
-
-# fl_classifier.customized_loss(utils.mcc_loss) Use this to change the loss function, but be sure to look at the API first
-fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0)
-# print(vis_rules.rules_to_latex(fl_classifier.rule_base))
-str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
-                        plot_rules=True, print_rules=True, plot_partitions=True, return_rules=True)
-rule_matrix = fl_classifier.rule_base.get_rulebase_matrix()
-# Save the rules as a plain text file
-with open('rules_iris_t2.txt', 'w') as f:
-    f.write(str_rules)
-
-print('Done')
+print(pts.stability_report(20))
+pts.pie_chart_class(0)
+pts.pie_chart_class(1)
+pts.pie_chart_class(2)
+pts.pie_chart_var(0)
+pts.pie_chart_var(1)
+pts.pie_chart_var(2)
+print('Done!')
