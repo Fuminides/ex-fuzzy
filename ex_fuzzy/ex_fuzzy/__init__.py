@@ -9,3 +9,4 @@ from . import utils
 from . import persistence
 from . import maintenance
 from . import classifiers
+from . import pattern_stability
