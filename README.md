@@ -35,12 +35,24 @@ Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules
   
 </p>
 
+### Test your results
+
+ex-Fuzzy lets you study how reliable are your rules and their variable usage. You can easily repeat the experiments for statistical quantification of the results and then study the patterns obtained.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4e57469d-6cc6-4a9c-a256-dba052a91045" height="360" title="Usage per class">
+  <img src="https://github.com/user-attachments/assets/819f0988-deeb-4c8d-8cca-d8dd75e437f7" height="360" title="Usage per variable">
+</p>
+
+
+
 ## Dependencies
 
 - Numpy
 - Pandas
 - Matplotlib
 - Networkx
+
 - Pymoo
 
 ## Installation
