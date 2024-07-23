@@ -45,6 +45,15 @@ ex-Fuzzy lets you study how reliable are your rules and their variable usage. Yo
 </p>
 
 
+## Try some demos! <img src="https://colab.research.google.com/img/colab_favicon_256px.png" height="40">
+You can find them on Google colab:
+
+- [Basic classification demo](https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing)
+- [Using a custom loss function](https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing)
+- [Loading a text rule file](https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing)
+- [Using a good set of rules for initial population](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing)
+- [Temporal fuzzy sets demo](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing)
+- [Rule mining classifiers](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing)
 
 ## Dependencies
 
