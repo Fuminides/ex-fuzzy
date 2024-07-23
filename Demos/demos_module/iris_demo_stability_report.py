@@ -60,5 +60,11 @@ precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_par
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 pts = pattern_stability.pattern_stabilizer(X_train, y_train, nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, tolerance=tolerance, class_names=class_names, n_linguistic_variables=vl, verbose=True, linguistic_variables=precomputed_partitions_vl, runner=runner)
-pts.stability_report(10)
+print(pts.stability_report(20))
+pts.pie_chart_class(0)
+pts.pie_chart_class(1)
+pts.pie_chart_class(2)
+pts.pie_chart_var(0)
+pts.pie_chart_var(1)
+pts.pie_chart_var(2)
 print('Done!')
