@@ -316,7 +316,7 @@ class pattern_stabilizer():
         return self.text_report(class_patterns, patterns_dss, class_vars, accuracies, rule_bases)
     
 
-    def pie_chart_basic(self, var_ix, class_ix):
+    def pie_chart_basic(self, var_ix: int, class_ix: int):
         '''
         Generates a pie chart for the variable usage in the rule bases.
         
@@ -340,7 +340,7 @@ class pattern_stabilizer():
         plt.show()
 
     
-    def pie_chart_var(self, var_ix):
+    def pie_chart_var(self, var_ix: int):
         '''
         Generates a pie chart for the variable usage in the rule bases.
 
@@ -368,11 +368,12 @@ class pattern_stabilizer():
         plt.show()
 
     
-    def pie_chart_class(self, class_ix):
+    def pie_chart_class(self, class_ix: int, var_list:list[int] = None):
         '''
         Generates a pie chart for the variable usage in the rule bases.
 
         :param class_ix: int. The index of the class to analyze.
+        :param var_list: list[int]. The list of variables to analyze. If None (default) all variables will be analyzed.
         '''
         antecedents = self.rule_bases[0][0].antecedents
         colors = self.gen_colormap(antecedents)
@@ -381,17 +382,18 @@ class pattern_stabilizer():
         fig1.suptitle(f'Class {self.classes_names[class_ix]} variable usage in the rulebases')
 
         for var_ix in range(len(self.rule_bases[0])):
-            labels = []
-            sizes = []
-            var = self.class_vars[class_ix][var_ix]
-            ax1[var_ix].set_title(f'Variable {antecedents[var_ix].name}')
-            for key in var.keys():
-                if key != -1 and var[key] > 0:
-                    labels.append(antecedents[var_ix][key].name)
-                    sizes.append(var[key])
-        
-            ax1[var_ix].pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=[colors[v] for v in labels])
-            ax1[var_ix].axis('equal')
+            if var_list is not None and var_ix in var_list:
+                labels = []
+                sizes = []
+                var = self.class_vars[class_ix][var_ix]
+                ax1[var_ix].set_title(f'Variable {antecedents[var_ix].name}')
+                for key in var.keys():
+                    if key != -1 and var[key] > 0:
+                        labels.append(antecedents[var_ix][key].name)
+                        sizes.append(var[key])
+            
+                ax1[var_ix].pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=[colors[v] for v in labels])
+                ax1[var_ix].axis('equal')
 
         plt.show()
 
