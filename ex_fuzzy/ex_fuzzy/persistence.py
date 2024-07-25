@@ -35,7 +35,17 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
         if line.startswith('IF'):
             #Is a rule
             antecedents , consequent_ds = line.split('WITH')
+            # Try to look for weight and accuracy in the rule
+            rule_acc = None
+            rule_weight = None
+            for jx, stat in enumerate(consequent_ds.split(',')):
+                if 'ACC' in stat:
+                    rule_acc = stat.strip()
+                elif 'WGHT' in stat:
+                    rule_weight = stat.strip()
+                    
             consequent_ds = consequent_ds.split(',')[0].strip()
+
             init_rule_antecedents = np.zeros(
                 (len(fuzzy_variables),)) - 1  # -1 is dont care
             
@@ -50,6 +60,8 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                 init_rule_antecedents[antecedent_index] = antecedent_value_index
                 
             rule_simple = rules.RuleSimple(init_rule_antecedents, 0)
+            rule_simple.accuracy = float(rule_acc[3:].strip()) # We remove the 'ACC ' and the last space
+            rule_simple.weight = float(rule_weight[4:].strip())
             rule_simple.score = float(consequent_ds[3:].strip()) # We remove the 'DS ' and the last space
             reconstructed_rules.append(rule_simple)
 

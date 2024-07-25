@@ -7,3 +7,4 @@ build/*
 *.log
 checkpoint*
 *.pdf
+iris_rules.txt

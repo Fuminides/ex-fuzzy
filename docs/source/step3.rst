@@ -54,6 +54,8 @@ of generations and the population size::
 
 And then we can use forward or predict just as with a scikit-learn classifier.
 
+You can modulate the inference process regarding rule weights by using the ds_mode parameter in ``ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier``. If set to 0, the dominance scores are used as weights; if set to 1, the weights are all set to 1; and if set to 2, the dominance scores will be ignored and the weights will be set using the genetic optimization.
+
 -----------------
 Evaluation
 -----------------

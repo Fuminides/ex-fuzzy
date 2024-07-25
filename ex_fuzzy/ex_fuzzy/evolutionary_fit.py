@@ -39,8 +39,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
     '''
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
-                 n_linguistic_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
-                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1) -> None:
+                 n_linguistic_variables: list[int]|int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
+                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
 
@@ -55,6 +55,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param n_class: names of the classes in the problem. If None (default) the classifier will compute it empirically.
         :param precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
         :param runner: number of threads to use. If None (default) the classifier will use 1 thread.
+        :param ds_mode: mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         '''
         if mnt.save_usage_flag:
             mnt.usage_data[mnt.usage_categories.Funcs]['fit'] += 1
@@ -81,7 +82,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.custom_loss = None
         self.verbose = verbose
         self.tolerance = tolerance
-        
+        self.ds_mode = ds_mode
 
         if runner > 1:
             pool = ThreadPool(runner)
@@ -109,6 +110,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         self.alpha_ = 0.0
         self.beta_ = 0.0
+
 
     def customized_loss(self, loss_function):
         '''
@@ -154,15 +156,19 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 self.nAnts = len(initial_rules.get_rules()[0].antecedents)
 
             if self.lvs is None:
+                # Check if self.n_linguist_variables is a list or a single value.
+                if isinstance(self.n_linguist_variables, int):
+                    self.n_linguist_variables = [self.n_linguist_variables for _ in range(X.shape[1])]
+                
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_)
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_)
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
@@ -566,7 +572,7 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
-                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0) -> None:
+                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -579,6 +585,10 @@ class FitRuleBase(Problem):
         :param n_linguistic_variables: number of linguistic variables per antecedent.
         :param fuzzy_type: Define the fuzzy set or fuzzy set extension used as linguistic variable.
         :param domain: list with the upper and lower domains of each input variable. If None (as default) it will stablish the empirical min/max as the limits.
+        :param tolerance: float. Tolerance for the size evaluation.
+        :param alpha: float. Weight for the rulebase size term in the fitness function. (Penalizes number of rules)
+        :param beta: float. Weight for the average rule size term in the fitness function.
+        :param ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         '''
         try:
             self.var_names = list(X.columns)
@@ -597,6 +607,7 @@ class FitRuleBase(Problem):
         self.nRules = nRules
         self.nAnts = nAnts
         self.nCons = 1  # This is fixed to MISO rules.
+        self.ds_mode = ds_mode
 
         if n_classes is not None:
             self.n_classes = n_classes
@@ -670,6 +681,15 @@ class FitRuleBase(Problem):
                                        vars_consequent] for key, val in d.items()}
             varbound = np.concatenate(
                 (antecedent_bounds, final_consequent_bounds), axis=0)
+        
+        if self.ds_mode == 2:
+            weights_bounds = np.array([[0, 99] for ix in range(self.nRules)])
+
+            vars_weights = {max(vars.keys()) + 1 + ix: Integer(
+                bounds=weights_bounds[ix]) for ix in range(len(weights_bounds))}
+            vars = {key: val for d in [vars, vars_weights] for key, val in d.items()}
+            varbound = np.concatenate((varbound, weights_bounds), axis=0)
+
 
         nVar = len(varbound)
         self.single_gen_size = nVar
@@ -730,6 +750,12 @@ class FitRuleBase(Problem):
             # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
 
+        # Pointer to the fifth section of the gene: weights (if they exist)
+        if rule_base.ds_mode == 2:
+            fifth_pointer = fourth_pointer + self.nRules
+            for ix, rule in enumerate(rule_base.get_rules()):
+                gene[fifth_pointer + ix] = rule.weight
+
         # First and second sections of the gene: antecedents and linguistic variables
         for i0, rule in enumerate(rule_base.get_rules()):  # Reconstruct the rules
             first_pointer = i0 * self.nAnts
@@ -777,6 +803,7 @@ class FitRuleBase(Problem):
 
         :param x: gen of a rulebase. type: dict.
         :param fz_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
+        :param kwargs: additional parameters to pass to the rule
         :return: a rulebase object.
 
         kwargs:
@@ -793,7 +820,8 @@ class FitRuleBase(Problem):
         First: antecedents chosen by each rule. Size: nAnts * nRules
         Second: Variable linguistics used. Size: nAnts * nRules
         Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * self.n_linguistic_variables * 8|4 (2 trapezoidal memberships if t2)
-        Four: Consequent classes. Size: nRules (fixed to 4 right now)
+        Four: Consequent classes. Size: nRules
+        Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
         '''
         if self.lvs is None:
             # If memberships are optimized.
@@ -802,6 +830,9 @@ class FitRuleBase(Problem):
         else:
             # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
+
+        if self.ds_mode == 2:
+            fifth_pointer = fourth_pointer + self.nRules
 
         aux_pointer = 0
         min_domain = np.min(self.X, axis=0)
@@ -836,9 +867,20 @@ class FitRuleBase(Problem):
             assert consequent_idx < self.n_classes, "Consequent class is not valid. Something in the gene is wrong."
             aux_pointer += 1
  
+            if self.ds_mode == 2:
+                rule_weight = x[fifth_pointer + i0] / 100
+            else:
+                rule_weight = 1.0
+                
             if consequent_idx != -1 and np.any(init_rule_antecedents != -1):
+                rs_instance = rules.RuleSimple(init_rule_antecedents, 0)
+                if self.ds_mode == 1 or self.ds_mode == 2:
+                    rs_instance.weight = rule_weight
+
                 rule_list[consequent_idx].append(
-                    rules.RuleSimple(init_rule_antecedents, 0))
+                    rs_instance)
+
+            
 
         # If we optimize the membership functions
         if self.lvs is None:
@@ -878,6 +920,7 @@ class FitRuleBase(Problem):
             except:
                 antecedents = self.lvs
 
+
         for i in range(self.n_classes):
             if fz_type == fs.FUZZY_SETS.temporal:
                 fz_type = self.lvs[0][0].inside_type()
@@ -891,7 +934,7 @@ class FitRuleBase(Problem):
             
 
             if i == 0:
-                res = rules.MasterRuleBase([rule_base], self.classes_names)
+                res = rules.MasterRuleBase([rule_base], self.classes_names, ds_mode=self.ds_mode)
             else:
                 res.add_rule_base(rule_base)
 
@@ -907,7 +950,7 @@ class FitRuleBase(Problem):
 
         :param out: dict where the F field is the fitness. It is used from the outside.
         '''
-        ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
+        ruleBase = self._construct_ruleBase(x, self.fuzzy_type, ds_mode=self.ds_mode)
 
         if len(ruleBase.get_rules()) > 0:
             score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self._precomputed_truth)

@@ -41,6 +41,7 @@ import ex_fuzzy.vis_rules as vis_rules
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = iris.target
+n_linguistic_variables = 5
 
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
@@ -48,9 +49,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 fz_type_studied = fs.FUZZY_SETS.t1
 
 # Compute the fuzzy partitions using 3 quartiles
-precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
+precomputed_partitions = utils.construct_partitions(X, fz_type_studied, n_partitions=n_linguistic_variables)
 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=None, nAnts=3, n_linguistic_variables=5, fuzzy_type=fz_type_studied, verbose=True, tolerance=0.01, runner=1)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=precomputed_partitions, nAnts=3, n_linguistic_variables=n_linguistic_variables, fuzzy_type=fz_type_studied, verbose=True, tolerance=0.01, runner=1, ds_mode=2)
 
 fl_classifier.fit(X_train, y_train)
 
@@ -67,7 +68,7 @@ with open('iris_rules.txt', 'r') as f:
 # Persistence of the rules example
 mrule_base = persistence.load_fuzzy_rules(str_rules, precomputed_partitions)
 
-fl_classifier2 = GA.BaseFuzzyRulesClassifier(precomputed_rules=mrule_base)
+fl_classifier2 = GA.BaseFuzzyRulesClassifier(precomputed_rules=mrule_base, ds_mode=2)
 # fl_classifier2.load_master_rule_base(mrule_base) # (Another possibility)
 
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier2, X_train, y_train, X_test, y_test, 

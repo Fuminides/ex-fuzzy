@@ -128,6 +128,7 @@ class RuleSimple():
         self.antecedents = list(map(int, antecedents))
         self.consequent = int(consequent)
         self.score = 1.0
+        #self.weight = weight
 
 
     def __getitem__(self, ix):
@@ -281,6 +282,19 @@ class RuleBase():
         res = np.zeros((len(self.rules, )))
         for ix, rule in enumerate(self.rules):
             res[ix] = rule.score
+
+        return res
+    
+
+    def get_weights(self):
+        '''
+        Returns an array with the weights for each rule.
+        (Different from dominance scores: must been already computed by an optimization algorithm)
+
+        '''
+        res = np.zeros((len(self.rules, )))
+        for ix, rule in enumerate(self.rules):
+            res[ix] = rule.weight
 
         return res
 
@@ -850,7 +864,7 @@ class MasterRuleBase():
     This Class encompasses a list of rule bases where each one corresponds to a different class.
     '''
 
-    def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None) -> None:
+    def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0) -> None:
         '''
         Constructor of the MasterRuleBase class.
 
@@ -866,6 +880,7 @@ class MasterRuleBase():
             self.consequent_names = [ix for ix in range(len(self.rule_bases))]
         else:
             self.consequent_names = consequent_names
+        self.ds_mode = ds_mode
 
 
     def rename_cons(self, consequent_names: list[str]) -> None:
@@ -925,6 +940,21 @@ class MasterRuleBase():
         res = [x for x in res if len(x) > 0]
         
         return np.concatenate(res, axis=0)
+    
+
+    def get_weights(self) -> np.array:
+        '''
+        Returns the weights for each rule in all the rulebases.
+
+        :return: array with the weights for each rule in all the rulebases.
+        '''
+        res = []
+        for rb in self.rule_bases:
+            res.append(rb.get_weights())
+
+        res = [x for x in res if len(x) > 0]
+        
+        return np.concatenate(res, axis=0)
 
 
     def compute_firing_strenghts(self, X, precomputed_truth=None) -> np.array:
@@ -953,7 +983,12 @@ class MasterRuleBase():
         
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
 
-        association_degrees = self.get_scores() * firing_strengths
+        if self.ds_mode == 0:
+            association_degrees = self.get_scores() * firing_strengths
+        elif self.ds_mode == 1:
+            association_degrees = firing_strengths
+        elif self.ds_mode == 2:
+            association_degrees = self.get_weights() * firing_strengths
 
         if (self[0].fuzzy_type() == fs.FUZZY_SETS.t2) or (self[0].fuzzy_type() == fs.FUZZY_SETS.gt2):
             association_degrees = np.mean(association_degrees, axis=2)
@@ -1192,10 +1227,15 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
         score = rule.score if antecedents[0].fuzzy_type() == fs.FUZZY_SETS.t1 else np.mean(rule.score)
         str_rule += ' WITH DS ' + str(score)
 
-            # If the classification scores have been computed, print them.
+        # If the classification scores have been computed, print them.
         try:
             str_rule += ', ACC ' + str(rule.accuracy)
 
+        except AttributeError:
+            pass
+        # Check if they have weights
+        try:
+            str_rule += ', WGHT ' + str(rule.weight)
         except AttributeError:
             pass
     except AttributeError:
