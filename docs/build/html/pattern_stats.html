@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studying patterns &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Advanced classifiers" href="classifiers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Studying patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Studying patterns</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pattern_stats.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="studying-patterns">
+<span id="pattern-stats"></span><h1>Studying patterns<a class="headerlink" href="#studying-patterns" title="Permalink to this heading"></a></h1>
+<p>Due to the nature of the genetic optimization, we might obtain different rulebases for the same dataset if we run the experiment with different seeds. Due to the nature of rule-based reasoning, we can directly study how often some patterns appear and how useful variables are by directly analyzing the different rulebases and the way in which their rules use each variable.</p>
+<p>The module <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability</span></code> contains a series of functions to analyze the ocurrences of the patterns when the same experiment is run with different seeds. This module comes with the class <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer</span></code> whose initialization sets the parameters for the analysis. Then, the function <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.stability_report</span></code> can be used to run the experiments. Finally, use <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer.text_report</span></code> to obtain a text report of the rules obtained and how often they appeared in the experiments. Use <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_class</span></code> and <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_var</span></code> to obtain pie charts of the ocurrences of the variables per class according to the linguistic variables used.</p>
+<p>This is an example of a textual report:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Pattern</span> <span class="n">stability</span> <span class="n">report</span> <span class="k">for</span> <span class="mi">20</span> <span class="n">generated</span> <span class="n">solutions</span>
+<span class="n">Average</span> <span class="n">accuracy</span><span class="p">:</span> <span class="mf">0.89</span>\<span class="n">pm0</span><span class="mf">.07</span>
+<span class="o">-------------</span>
+<span class="n">Class</span> <span class="n">setosa</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">unique</span> <span class="n">patterns</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">High</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.80</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.6426666666666668</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Medium</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.30</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.157580748308667</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Medium</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.20</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.11489674513650276</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">petal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.15</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.8502504508114606</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.05</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.7395212506106495</span>
+
+<span class="n">Variable</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">Medium</span> <span class="n">appears</span> <span class="mf">0.50</span> <span class="n">times</span>
+<span class="n">Low</span> <span class="n">appears</span> <span class="mf">0.05</span> <span class="n">times</span>
+
+<span class="n">Variable</span> <span class="n">sepal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">High</span> <span class="n">appears</span> <span class="mf">0.80</span> <span class="n">times</span>
+
+<span class="n">Variable</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">Low</span> <span class="n">appears</span> <span class="mf">0.50</span> <span class="n">times</span>
+
+
+<span class="n">Class</span> <span class="n">versicolor</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">unique</span> <span class="n">patterns</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Medium</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">1.00</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.8733799262279169</span>
+
+<span class="n">Variable</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">Medium</span> <span class="n">appears</span> <span class="mf">1.00</span> <span class="n">times</span>
+
+
+<span class="n">Class</span> <span class="n">virginica</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">unique</span> <span class="n">patterns</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">High</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">High</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.80</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.7115082780467393</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">High</span> <span class="n">AND</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">High</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.15</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.2558635394456291</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Low</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.05</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.15428571428571428</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">Medium</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.05</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.04656319290465636</span>
+<span class="n">Pattern</span> <span class="n">IF</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span> <span class="n">IS</span> <span class="n">High</span> <span class="n">appears</span> <span class="ow">in</span> <span class="mf">0.05</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trials</span> <span class="k">with</span> <span class="n">a</span> <span class="n">Dominance</span> <span class="n">Score</span> <span class="n">of</span> <span class="mf">0.6360683760683757</span>
+
+<span class="n">Variable</span> <span class="n">sepal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">High</span> <span class="n">appears</span> <span class="mf">0.85</span> <span class="n">times</span>
+<span class="n">Medium</span> <span class="n">appears</span> <span class="mf">0.05</span> <span class="n">times</span>
+
+<span class="n">Variable</span> <span class="n">sepal</span> <span class="n">width</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">High</span> <span class="n">appears</span> <span class="mf">0.15</span> <span class="n">times</span>
+<span class="n">Low</span> <span class="n">appears</span> <span class="mf">0.05</span> <span class="n">times</span>
+
+<span class="n">Variable</span> <span class="n">petal</span> <span class="n">length</span> <span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">High</span> <span class="n">appears</span> <span class="mf">0.95</span> <span class="n">times</span>
+</pre></div>
+</div>
+<p>The pie charts look like this:</p>
+<a class="reference internal image-reference" href="_images/Class_usage_setosa.png"><img alt="_images/Class_usage_setosa.png" src="_images/Class_usage_setosa.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/Var_usage_per_class_petal.png"><img alt="_images/Var_usage_per_class_petal.png" src="_images/Var_usage_per_class_petal.png" style="width: 200px;" /></a>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classifiers.html" class="btn btn-neutral float-left" title="Advanced classifiers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

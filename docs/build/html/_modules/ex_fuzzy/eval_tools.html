@@ -115,10 +115,12 @@
 <span class="sd">    :return: None</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="c1"># Get the unique classes from the classifier</span>
-    <span class="n">unique_classes</span> <span class="o">=</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">classes_</span>
-    <span class="c1"># Convert the names from the labels to the corresponding class</span>
-    <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">unique_classes</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_train</span><span class="p">])</span>
-    <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">unique_classes</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_test</span><span class="p">])</span>
+    <span class="n">unique_classes</span> <span class="o">=</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">classes_names</span>
+
+    <span class="c1"># Convert the names from the labels to the corresponding class if necessary</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+      <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">unique_classes</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_train</span><span class="p">])</span>
+      <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">unique_classes</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_test</span><span class="p">])</span>
     
     <span class="k">if</span> <span class="n">print_accuracy</span><span class="p">:</span>
       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
@@ -136,10 +138,9 @@
             <span class="nb">str</span><span class="p">(</span><span class="n">matthews_corrcoef</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">))))</span>
       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">plot_rules</span><span class="p">:</span>
-        <span class="n">vis_rules</span><span class="o">.</span><span class="n">visualize_rulebase</span><span class="p">(</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">rule_base</span><span class="p">,</span> <span class="n">export_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">print_rules</span> <span class="ow">or</span> <span class="n">return_rules</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">fl_classifier</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">print_rules</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
@@ -147,8 +148,13 @@
     <span class="k">if</span> <span class="n">plot_partitions</span><span class="p">:</span>
         <span class="n">fl_classifier</span><span class="o">.</span><span class="n">plot_fuzzy_variables</span><span class="p">()</span>
 
+    <span class="k">if</span> <span class="n">plot_rules</span><span class="p">:</span>
+        <span class="n">vis_rules</span><span class="o">.</span><span class="n">visualize_rulebase</span><span class="p">(</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">rule_base</span><span class="p">,</span> <span class="n">export_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
+        
     <span class="k">if</span> <span class="n">return_rules</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span></div>
+    
+    
     
 </pre></div>
 

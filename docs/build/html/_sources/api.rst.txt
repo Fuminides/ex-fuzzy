@@ -16,6 +16,7 @@ API
    function_resume/utils
    function_resume/centroid
    function_resume/temporal
+   function_resume/pattern_stability
 
    
    

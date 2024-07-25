@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Studying patterns</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -199,11 +200,13 @@
         <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.compute_memberships">(ex_fuzzy.temporal.temporalFuzzyVariable method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence">compute_pattern_confidence() (ex_fuzzy.eval_rules.evalRuleBase method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support">compute_pattern_support() (ex_fuzzy.eval_rules.evalRuleBase method)</a>
+</li>
+      <li><a href="function_resume/utils.html#ex_fuzzy.utils.compute_quantiles">compute_quantiles() (in module ex_fuzzy.utils)</a>
 </li>
       <li><a href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_rule_antecedent_memberships">compute_rule_antecedent_memberships() (ex_fuzzy.rules.RuleBase method)</a>
 
@@ -230,6 +233,8 @@
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.construct_crisp_categorical_partition">construct_crisp_categorical_partition() (in module ex_fuzzy.utils)</a>
 </li>
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.construct_partitions">construct_partitions() (in module ex_fuzzy.utils)</a>
+</li>
+      <li><a href="function_resume/rules.html#ex_fuzzy.rules.construct_rule_base">construct_rule_base() (in module ex_fuzzy.rules)</a>
 </li>
       <li><a href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.create_graph_connection">create_graph_connection() (in module ex_fuzzy.vis_rules)</a>
 </li>
@@ -316,6 +321,13 @@
 
       <ul>
         <li><a href="function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets">module</a>
+</li>
+      </ul></li>
+      <li>
+    ex_fuzzy.pattern_stability
+
+      <ul>
+        <li><a href="function_resume/pattern_stability.html#module-ex_fuzzy.pattern_stability">module</a>
 </li>
       </ul></li>
       <li>
@@ -446,6 +458,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS">gaussianIVFS (class in ex_fuzzy.fuzzy_sets)</a>
 </li>
+      <li><a href="function_resume/rules.html#ex_fuzzy.rules.generate_rule_string">generate_rule_string() (in module ex_fuzzy.rules)</a>
+</li>
       <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets">generate_rules_from_itemsets() (in module ex_fuzzy.rule_mining)</a>
 </li>
       <li><a href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_antecedents">get_antecedents() (ex_fuzzy.rules.MasterRuleBase method)</a>
@@ -456,6 +470,8 @@
         <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_consequents">(ex_fuzzy.temporal.temporalMasterRuleBase method)</a>
 </li>
       </ul></li>
+      <li><a href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_consequents_names">get_consequents_names() (ex_fuzzy.rules.MasterRuleBase method)</a>
+</li>
       <li><a href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables">get_linguistic_variables() (ex_fuzzy.fuzzy_sets.fuzzyVariable method)</a>
 </li>
       <li><a href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase">get_rulebase() (ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier method)</a>
@@ -494,6 +510,12 @@
         <li><a href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_scores">(ex_fuzzy.rules.RuleBase method)</a>
 </li>
         <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_scores">(ex_fuzzy.temporal.temporalMasterRuleBase method)</a>
+</li>
+      </ul></li>
+      <li><a href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_weights">get_weights() (ex_fuzzy.rules.MasterRuleBase method)</a>
+
+      <ul>
+        <li><a href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_weights">(ex_fuzzy.rules.RuleBase method)</a>
 </li>
       </ul></li>
       <li><a href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2">GT2 (class in ex_fuzzy.fuzzy_sets)</a>
@@ -590,6 +612,8 @@
 </li>
         <li><a href="function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets">ex_fuzzy.fuzzy_sets</a>
 </li>
+        <li><a href="function_resume/pattern_stability.html#module-ex_fuzzy.pattern_stability">ex_fuzzy.pattern_stability</a>
+</li>
         <li><a href="function_resume/persistence.html#module-ex_fuzzy.persistence">ex_fuzzy.persistence</a>
 </li>
         <li><a href="function_resume/rule_mining.html#module-ex_fuzzy.rule_mining">ex_fuzzy.rule_mining</a>
@@ -613,10 +637,10 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.n_linguist_variables">n_linguist_variables() (ex_fuzzy.rules.MasterRuleBase method)</a>
+      <li><a href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.n_linguistic_variables">n_linguistic_variables() (ex_fuzzy.rules.MasterRuleBase method)</a>
 
       <ul>
-        <li><a href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.n_linguist_variables">(ex_fuzzy.rules.RuleBase method)</a>
+        <li><a href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.n_linguistic_variables">(ex_fuzzy.rules.RuleBase method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -747,13 +771,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.t1_fuzzy_partitions_dataset">t1_fuzzy_partitions_dataset() (in module ex_fuzzy.utils)</a>
 </li>
+      <li><a href="function_resume/utils.html#ex_fuzzy.utils.t1_n_partition_parameters">t1_n_partition_parameters() (in module ex_fuzzy.utils)</a>
+</li>
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.t1_simple_partition">t1_simple_partition() (in module ex_fuzzy.utils)</a>
 </li>
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.t1_three_partition">t1_three_partition() (in module ex_fuzzy.utils)</a>
 </li>
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.t2_fuzzy_partitions_dataset">t2_fuzzy_partitions_dataset() (in module ex_fuzzy.utils)</a>
 </li>
-      <li><a href="function_resume/utils.html#ex_fuzzy.utils.t2_simple_partition">t2_simple_partition() (in module ex_fuzzy.utils)</a>
+      <li><a href="function_resume/utils.html#ex_fuzzy.utils.t2_n_partition_parameters">t2_n_partition_parameters() (in module ex_fuzzy.utils)</a>
 </li>
       <li><a href="function_resume/utils.html#ex_fuzzy.utils.temporal_assemble">temporal_assemble() (in module ex_fuzzy.utils)</a>
 </li>
@@ -763,10 +789,10 @@
 </li>
       <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier">TemporalFuzzyRulesClassifier (class in ex_fuzzy.temporal)</a>
 </li>
-      <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable">temporalFuzzyVariable (class in ex_fuzzy.temporal)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable">temporalFuzzyVariable (class in ex_fuzzy.temporal)</a>
+</li>
       <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase">temporalMasterRuleBase (class in ex_fuzzy.temporal)</a>
 </li>
       <li><a href="function_resume/temporal.html#ex_fuzzy.temporal.TMP_FUZZY_SETS">TMP_FUZZY_SETS (in module ex_fuzzy.temporal)</a>

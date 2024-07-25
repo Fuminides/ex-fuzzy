@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Partition utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="centroid.html">T2 Centroid compute</a></li>
 <li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal fuzzy sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_stability.html">Pattern stability analysis</a></li>
 </ul>
 </li>
 </ul>
@@ -105,7 +106,7 @@
 <p>This is a the source file that contains the Rule, RuleBase and MasterRuleBase classes to perform fuzzy inference.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">MasterRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">ex_fuzzy.rules.RuleBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">MasterRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">ex_fuzzy.rules.RuleBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This Class encompasses a list of rule bases where each one corresponds to a different class.</p>
 <dl class="py method">
@@ -179,6 +180,17 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.get_consequents_names">
+<span class="sig-name descname"><span class="pre">get_consequents_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.get_consequents_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.get_consequents_names" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list with the names of the consequents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list with the names of the consequents.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.get_rulebase_matrix">
 <span class="sig-name descname"><span class="pre">get_rulebase_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.get_rulebase_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.get_rulebase_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a list with the rulebases for each antecedent in matrix format.</p>
@@ -223,8 +235,19 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.n_linguist_variables">
-<span class="sig-name descname"><span class="pre">n_linguist_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.n_linguist_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.n_linguist_variables" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.get_weights">
+<span class="sig-name descname"><span class="pre">get_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.get_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.get_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the weights for each rule in all the rulebases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array with the weights for each rule in all the rulebases.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.n_linguistic_variables">
+<span class="sig-name descname"><span class="pre">n_linguistic_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.n_linguistic_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.n_linguistic_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of linguistic variables in the rule base.</p>
 </dd></dl>
 
@@ -258,11 +281,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.winning_rule_predict">
-<span class="sig-name descname"><span class="pre">winning_rule_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.winning_rule_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.winning_rule_predict" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">winning_rule_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.winning_rule_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.winning_rule_predict" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the winning rule for each sample. Takes into account dominance scores if already computed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> – array with the values of the inputs.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – array with the values of the inputs.</p></li>
+<li><p><strong>precomputed_truth</strong> – if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>array with the winning rule for each sample.</p>
@@ -401,6 +427,13 @@ x must be a vector (only one sample)</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.get_weights">
+<span class="sig-name descname"><span class="pre">get_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.get_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.get_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Returns an array with the weights for each rule.
+(Different from dominance scores: must been already computed by an optimization algorithm)</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.inference">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.inference" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the fuzzy output of the fl inference system.</p>
@@ -416,8 +449,8 @@ x must be a vector (only one sample)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.n_linguist_variables">
-<span class="sig-name descname"><span class="pre">n_linguist_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.n_linguist_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.n_linguist_variables" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.n_linguistic_variables">
+<span class="sig-name descname"><span class="pre">n_linguistic_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.n_linguistic_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.n_linguistic_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of linguistic variables in the rule base.</p>
 </dd></dl>
 
@@ -425,6 +458,11 @@ x must be a vector (only one sample)</p>
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.print_rules">
 <span class="sig-name descname"><span class="pre">print_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.print_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.print_rules" title="Permalink to this definition"></a></dt>
 <dd><p>Print the rules from the rule base.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>return_rules</strong> – if True, the rules are returned as a string.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -478,13 +516,14 @@ x must be a vector (only one sample)</p>
 <p>This class supports gt2 fs. (ONLY FOR CLASSIFICATION PROBLEMS)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBaseGT2.alpha_compute_rule_antecedent_memberships">
-<span class="sig-name descname"><span class="pre">alpha_compute_rule_antecedent_memberships</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseGT2.alpha_compute_rule_antecedent_memberships"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseGT2.alpha_compute_rule_antecedent_memberships" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">alpha_compute_rule_antecedent_memberships</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antecedents_memberships</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseGT2.alpha_compute_rule_antecedent_memberships"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseGT2.alpha_compute_rule_antecedent_memberships" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the membership for the antecedents for all the alpha cuts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – array with the values of the inputs.</p></li>
 <li><p><strong>scaled</strong> – if True, the memberships are scaled to sum 1 in each sample.</p></li>
+<li><p><strong>antecedents_memberships</strong> – precomputed antecedent memberships. Not supported for GT2.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -495,14 +534,18 @@ x must be a vector (only one sample)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBaseGT2.compute_rule_antecedent_memberships">
-<span class="sig-name descname"><span class="pre">compute_rule_antecedent_memberships</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseGT2.compute_rule_antecedent_memberships"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseGT2.compute_rule_antecedent_memberships" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_rule_antecedent_memberships</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antecedents_memberships</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseGT2.compute_rule_antecedent_memberships"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseGT2.compute_rule_antecedent_memberships" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the membership for the antecedents performing the alpha_cut reduction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – array with the values of the inputs.</p></li>
 <li><p><strong>scaled</strong> – if True, the memberships are scaled to sum 1 in each sample.</p></li>
+<li><p><strong>antecedents_memberships</strong> – precomputed antecedent memberships. Not supported for GT2.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>array with the memberships of the antecedents for each sample.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -679,6 +722,33 @@ x must be a vector (only one sample)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rules.construct_rule_base">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">construct_rule_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antecedents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule_weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#construct_rule_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.construct_rule_base" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs a rule base from a matrix of rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rule_matrix</strong> – matrix with the rules.</p></li>
+<li><p><strong>consequents</strong> – array with the consequents per rule.</p></li>
+<li><p><strong>antecedents</strong> – list of fuzzy variables.</p></li>
+<li><p><strong>class_names</strong> – list with the names of the classes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rules.generate_rule_string">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">generate_rule_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><span class="pre">RuleSimple</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">antecedents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#generate_rule_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.generate_rule_string" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a string with the rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rule</strong> – rule to generate the string.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -25,5 +25,5 @@ Limitations of the optimization process
 Fitness function
 ----------------
 
-By default, the fitness function is the convex combination of the Matthew Correlation Coefficient (95%), to the rule size preference (2.5%) and to the rule antecedent size preference (2.5%). 
+By default, the fitness function is just Matthew Correlation Coefficient. You can add laplacian multiplier to penalize the number of rules and rule antecedent size preference. 
 For more information about changing this fitness function check :ref:`extending`.

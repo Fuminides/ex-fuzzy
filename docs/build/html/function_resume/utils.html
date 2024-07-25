@@ -71,6 +71,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Partition utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="centroid.html">T2 Centroid compute</a></li>
 <li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal fuzzy sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_stability.html">Pattern stability analysis</a></li>
 </ul>
 </li>
 </ul>
@@ -144,6 +145,23 @@ Returns an array where true values are those values contained between those two 
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.utils.compute_quantiles">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">compute_quantiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#compute_quantiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.compute_quantiles" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the quantiles needed for n-partition fuzzy membership.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – numpy array, vector of shape (samples, ).</p></li>
+<li><p><strong>n_partitions</strong> – int, number of partitions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy array, quantiles for partitioning.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.utils.construct_conditional_frequencies">
 <span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">construct_conditional_frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_time_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_ffss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><span class="pre">ex_fuzzy.fuzzy_sets.FS</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#construct_conditional_frequencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.construct_conditional_frequencies" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the conditional temporal function for a set of fuzzy sets according to their variation in time.</p>
@@ -171,12 +189,13 @@ Returns an array where true values are those values contained between those two 
 </dd>
 </dl>
 <p>:param name of the fuzzy variable.
+:param fz_type_studied: fuzzy set type studied.
 :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.utils.construct_partitions">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">construct_partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fz_type_studied</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#construct_partitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.construct_partitions" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">construct_partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fz_type_studied</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#construct_partitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.construct_partitions" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a list of linguistic variables according to the kind of fuzzy specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -184,6 +203,7 @@ Returns an array where true values are those values contained between those two 
 <li><p><strong>X</strong> – numpy array|pandas dataframe, shape samples x features.</p></li>
 <li><p><strong>fz_type_studied</strong> – fuzzy set type studied.</p></li>
 <li><p><strong>categorial_mask</strong> – a boolean mask vector that indicates for each variables if its categorical or not.</p></li>
+<li><p><strong>n_partitions</strong> – number of partitions to use in the fuzzy set.</p></li>
 </ul>
 </dd>
 </dl>
@@ -257,14 +277,15 @@ Quantiles: [0, 0.20, 0.30, 0.45, 0.55, 0.7, 0.8, 1]</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.utils.gt2_fuzzy_partitions_dataset">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">gt2_fuzzy_partitions_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_exp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#gt2_fuzzy_partitions_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.gt2_fuzzy_partitions_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">gt2_fuzzy_partitions_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_exp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#gt2_fuzzy_partitions_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.gt2_fuzzy_partitions_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Partitions the dataset features into different fuzzy variables using gt2 fuzzy sets. Parameters are prefixed.
 Use it for simple testing and initial solution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – numpy array|pandas dataframe, shape samples x features.</p></li>
-<li><p><strong>resolution_exp</strong> – exponent of the resolution of the partition. Default is -2, which means 0.01. (Number of significant decimals)</p></li>
+<li><p><strong>resolution_exp</strong> – exponent of the resolution of the partition. Default is 2, which means 0.01. (Number of significant decimals)</p></li>
+<li><p><strong>n_partition</strong> – number of partitions to use in the fuzzy variables.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -275,7 +296,7 @@ Use it for simple testing and initial solution.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.utils.mcc_loss">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">mcc_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruleBase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0125</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0125</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#mcc_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.mcc_loss" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">mcc_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruleBase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0125</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0125</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#mcc_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.mcc_loss" title="Permalink to this definition"></a></dt>
 <dd><p>Fitness function for the optimization problem. Uses only the MCC, ignores the size penalization terms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -326,15 +347,35 @@ Use it for simple testing and initial solution.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.utils.t1_fuzzy_partitions_dataset">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t1_fuzzy_partitions_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t1_fuzzy_partitions_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t1_fuzzy_partitions_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t1_fuzzy_partitions_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t1_fuzzy_partitions_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t1_fuzzy_partitions_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Partitions the dataset features into different fuzzy variables. Parameters are prefixed.
 Use it for simple testing and initial solution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – numpy array|pandas dataframe, shape samples x features.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – numpy array|pandas dataframe, shape samples x features.</p></li>
+<li><p><strong>n_partition</strong> – number of partitions to use in the fuzzy variables.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of fuzzy variables.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.utils.t1_n_partition_parameters">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t1_n_partition_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t1_n_partition_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t1_n_partition_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Partitions the fuzzy variable in n trapezoidal memberships.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – numpy array, matrix of shape (samples, variables).</p></li>
+<li><p><strong>n_partitions</strong> – int, number of partitions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy array, tensor of shape (variables, n_partitions, 4) containing the trapezoidal parameters.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -369,12 +410,15 @@ Use it for simple testing and initial solution.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.utils.t2_fuzzy_partitions_dataset">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t2_fuzzy_partitions_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t2_fuzzy_partitions_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t2_fuzzy_partitions_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t2_fuzzy_partitions_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t2_fuzzy_partitions_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t2_fuzzy_partitions_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Partitions the dataset features into different fuzzy variables using iv fuzzy sets. Parameters are prefixed.
 Use it for simple testing and initial solution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – numpy array|pandas dataframe, shape samples x features.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – numpy array|pandas dataframe, shape samples x features.</p></li>
+<li><p><strong>n_partition</strong> – number of partitions to use in the fuzzy variables.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of fuzzy variables.</p>
@@ -383,15 +427,18 @@ Use it for simple testing and initial solution.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ex_fuzzy.utils.t2_simple_partition">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t2_simple_partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t2_simple_partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t2_simple_partition" title="Permalink to this definition"></a></dt>
-<dd><p>Partitions the fuzzy variable in three trapezoidal memberships.</p>
+<dt class="sig sig-object py" id="ex_fuzzy.utils.t2_n_partition_parameters">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.utils.</span></span><span class="sig-name descname"><span class="pre">t2_n_partition_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_partitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/utils.html#t2_n_partition_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.utils.t2_n_partition_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Partitions the fuzzy variable in n trapezoidal memberships.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – numpy array, vector of shape (samples, ).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – numpy array, matrix of shape (samples, variables).</p></li>
+<li><p><strong>n_partitions</strong> – int, number of partitions.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>numpy array, vector of shape (variables, 3, 4, 2).</p>
+<dd class="field-even"><p>numpy array, tensor of shape (variables, n_partitions, 4, 2) containing the trapezoidal parameters.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -26,6 +26,7 @@ Check out the :doc:`usage` section for a few examples.
    extending
    persistence
    classifiers
+   pattern_stats
    api
 
 
