@@ -13,6 +13,7 @@ except ImportError:
     import fuzzy_sets as fs
     import centroid
 
+modifiers_names = {0.5: 'Somewhat', 1.0: '', 1.3: 'A little', 1.7: 'Slightly', 2.0: 'Very', 3.0: 'Extremely', 4.0: 'Very very'}
 
 def compute_antecedents_memberships(antecedents: list[fs.fuzzyVariable], x: np.array) -> list[dict]:
         '''
@@ -115,7 +116,7 @@ class RuleSimple():
         ith entry: -1 means this variable is not used. 0-N indicates that the variable linguistic used for the ith input is that one.
     '''
 
-    def __init__(self, antecedents: list[int], consequent: int=0) -> None:
+    def __init__(self, antecedents: list[int], consequent: int=0, modifiers: np.array=None) -> None:
         '''
         Creates a rule with the given antecedents and consequent.
 
@@ -125,6 +126,7 @@ class RuleSimple():
         self.antecedents = list(map(int, antecedents))
         self.consequent = int(consequent)
         self.score = 1.0
+        self.modifiers = modifiers
         #self.weight = weight
 
 
@@ -151,7 +153,29 @@ class RuleSimple():
         '''
         Returns a string representation of the rule.
         '''
-        return 'Rule: antecedents: ' + str(self.antecedents) + ' consequent: ' + str(self.consequent)
+        aux = 'Rule: antecedents: ' + str(self.antecedents) + ' consequent: ' + str(self.consequent)
+
+        try:
+            aux += ' modifiers: ' + str(self.modifiers)
+        except AttributeError:
+            pass
+        
+        try:
+            aux += ' score: ' + str(self.score)
+        except AttributeError:
+            pass
+
+        try:
+            aux += ' weight: ' + str(self.weight)
+        except AttributeError:
+            pass
+    
+        try:
+            aux += ' accuracy: ' + str(self.accuracy)
+        except AttributeError:
+            pass
+
+        return aux
     
 
     def __len__(self):
@@ -181,7 +205,7 @@ class RuleBase():
     Class optimized to work with multiple rules at the same time. Right now supports only one consequent. (Solution: use one rulebase per consequent to study)
     '''
 
-    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable = None, tnorm=np.prod) -> None:
+    def __init__(self, antecedents: list[fs.fuzzyVariable], rules: list[RuleSimple], consequent: fs.fuzzyVariable=None, tnorm=np.prod) -> None:
         '''
         Creates a rulebase with the given antecedents, rules and consequent.
 
@@ -189,6 +213,7 @@ class RuleBase():
         :param rules: list of rules.
         :param consequent: fuzzy set.
         :param tnorm: t-norm to use in the inference process.
+        :param fuzzy_modifiers: array with the fuzzy modifiers for each rule. If None, no modifiers are used. (Fuzzy modifiers are modifiers to the antecedent memberships, also known as linguistic hedges). Only exponentiation is supported. (x**a, being a the modifier in the matrix). Defaults to None. They can also be specified in the RuleSimple list of rules.
         '''
         rules = self.delete_rule_duplicates(rules)
         self.rules = rules
@@ -359,6 +384,10 @@ class RuleBase():
         
         for jx, rule in enumerate(self.rules):
             rule_antecedents = rule.antecedents
+            try:
+                fuzzy_modifier = rule.modifiers
+            except AttributeError:
+                fuzzy_modifier = None
 
             if self.fuzzy_type() == fs.FUZZY_SETS.t1:
                 membership = np.zeros((x.shape[0], len(rule_antecedents)))
@@ -372,7 +401,15 @@ class RuleBase():
             for ix, vl in enumerate(rule_antecedents):
                 if vl >= 0:
                     membership_antecedent = list(antecedents_memberships[ix])[vl]
-                    membership[:, ix] = membership_antecedent
+
+                    if fuzzy_modifier is not None:
+                        if fuzzy_modifier[ix] != -1:
+                            membership[:, ix] = membership_antecedent**fuzzy_modifier[ix]
+                        else:
+                            membership[:, ix] = membership_antecedent
+                    else:
+                        membership[:, ix] = membership_antecedent
+
                     n_nonvl += 1
                 else:
                     membership[:, ix] = 1.0
@@ -583,7 +620,6 @@ class RuleBase():
         return [len(amt) for amt in self.antecedents]
 
 
-    
 class RuleBaseT2(RuleBase):
     '''
     Class optimized to work with multiple rules at the same time. Supports only one consequent. 
@@ -692,6 +728,12 @@ class RuleBaseGT2(RuleBase):
         self.consequent = consequent
         self.tnorm = tnorm
         self.alpha_cuts = antecedents[0][0].alpha_cuts
+
+        try:
+            # We try to get the modifiers from the rules, else, we will use the ones given in the constructor.
+            self.fuzzy_modifiers = np.array([rule.modifiers for rule in rules])
+        except AttributeError:
+            self.fuzzy_modifier = fuzzy_modifiers
 
 
     def inference(self, x: np.array) -> np.array:
@@ -1202,26 +1244,39 @@ def list_rules_to_matrix(rule_list: list[RuleSimple]) -> np.array:
     return res
 
 
-
 def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
     '''
     Generates a string with the rule.
 
     :param rule: rule to generate the string.
+    :param antecedents: list of fuzzy variables.
+    :param modifiers: array with the modifiers for the antecedents.
     '''
     initiated = False
     str_rule = 'IF '
-    for jx, vl_ix in enumerate(antecedents):
-        antecedent = antecedents[jx]
+    for jx, antecedent in enumerate(antecedents):
         keys = antecedent.linguistic_variable_names()
 
         if rule[jx] != -1:
             if not initiated:
-                str_rule += str(antecedent.name) + ' IS ' + str(keys[rule[jx]])
                 initiated = True
             else:
-                str_rule += ' AND ' + str(antecedent.name) + \
-                        ' IS ' + str(keys[rule[jx]])
+                str_rule += ' AND '
+
+            str_rule += str(antecedent.name) + ' IS ' + str(keys[rule[jx]])
+            
+            try:
+                relevant_modifier = rule.modifiers[jx]
+                if relevant_modifier != 1:
+                    if relevant_modifier in modifiers_names.keys():
+                        str_mod = modifiers_names[relevant_modifier]
+                    else:
+                        str_mod = str(relevant_modifier)
+
+                    str_rule += ' (MOD ' + str_mod + ')'
+            except AttributeError:
+                pass
+
 
     try:
         score = rule.score if antecedents[0].fuzzy_type() == fs.FUZZY_SETS.t1 else np.mean(rule.score)

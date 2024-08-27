@@ -62,7 +62,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 pts = pattern_stability.pattern_stabilizer(X_train, y_train, nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, tolerance=tolerance, class_names=class_names, n_linguistic_variables=vl, verbose=True, linguistic_variables=precomputed_partitions_vl, runner=runner)
 
 # We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions_vl, nAnts=nAnts, class_names=class_names, n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner, ds_mode=2)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions_vl, nAnts=nAnts, class_names=class_names, n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner, ds_mode=0, fuzzy_modifiers=True)
 
 # fl_classifier.customized_loss(utils.mcc_loss) Use this to change the loss function, but be sure to look at the API first
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0)

@@ -8,3 +8,4 @@ build/*
 checkpoint*
 *.pdf
 iris_rules.txt
+rules_iris_t2.txt

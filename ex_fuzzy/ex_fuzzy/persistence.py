@@ -3,6 +3,9 @@ Load the rules of a fuzzy rules system using plain text format.
 
 '''
 import numpy as np
+import re
+
+modifier_string_pattern = r'\(MOD\s+(\w+)\)'
 
 try:
     from . import fuzzy_sets as fs
@@ -13,6 +16,14 @@ except ImportError:
     import fuzzy_sets as fs
     import rules
     import maintenance as mnt
+
+
+def _extract_mod_word(text):
+    pattern = r'\(MOD\s+(\w+)\)'
+    match = re.search(pattern, text)
+    if match:
+        return match.group(1)
+    return None
 
 
 def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterRuleBase:
@@ -45,12 +56,18 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                     rule_weight = stat.strip()
                     
             consequent_ds = consequent_ds.split(',')[0].strip()
-
+            modifiers = np.ones((len(fuzzy_variables),))
             init_rule_antecedents = np.zeros(
                 (len(fuzzy_variables),)) - 1  # -1 is dont care
             
-            for antecedent in antecedents.split('AND'):
+            for lx, antecedent in enumerate(antecedents.split('AND')):
                 antecedent = antecedent.replace('IF', '').strip()
+                if 'MOD' in antecedent:
+                    modifier_value = _extract_mod_word(antecedent)
+                    antecedent = antecedent.replace('(MOD .*)', '')
+                    if modifier_value in rules.modifiers_names.keys():
+                        modifiers[lx] = rules.modifiers_names[modifier_value]
+
                 antecedent_name, antecedent_value = antecedent.split('IS')
                 antecedent_name = antecedent_name.strip()
                 antecedent_value = antecedent_value.strip()
@@ -63,6 +80,9 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
             rule_simple.accuracy = float(rule_acc[3:].strip()) # We remove the 'ACC ' and the last space
             rule_simple.weight = float(rule_weight[4:].strip())
             rule_simple.score = float(consequent_ds[3:].strip()) # We remove the 'DS ' and the last space
+            if not np.all(modifiers == 1):
+                rule_simple.modifiers = modifiers
+            
             reconstructed_rules.append(rule_simple)
 
         elif line.startswith('Rules'):

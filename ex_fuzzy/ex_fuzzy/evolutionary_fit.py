@@ -40,7 +40,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: list[int]|int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
-                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0) -> None:
+                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, fuzzy_modifiers:bool=False) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
 
@@ -56,6 +56,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
         :param runner: number of threads to use. If None (default) the classifier will use 1 thread.
         :param ds_mode: mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
+        :param fuzzy_modifiers: if True, the classifier will use the modifiers in the optimization process.
         '''
         if mnt.save_usage_flag:
             mnt.usage_data[mnt.usage_categories.Funcs]['fit'] += 1
@@ -83,6 +84,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.verbose = verbose
         self.tolerance = tolerance
         self.ds_mode = ds_mode
+        self.fuzzy_modifiers = fuzzy_modifiers
 
         if runner > 1:
             pool = ThreadPool(runner)
@@ -163,12 +165,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode)
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode)
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
@@ -587,7 +589,7 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
-                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0) -> None:
+                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0, encode_mods: bool=False) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -604,6 +606,7 @@ class FitRuleBase(Problem):
         :param alpha: float. Weight for the rulebase size term in the fitness function. (Penalizes number of rules)
         :param beta: float. Weight for the average rule size term in the fitness function.
         :param ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
+        :param encode_mods: bool. If True, the optimization process will include the modifiers for the membership functions.
         '''
         try:
             self.var_names = list(X.columns)
@@ -623,6 +626,7 @@ class FitRuleBase(Problem):
         self.nAnts = nAnts
         self.nCons = 1  # This is fixed to MISO rules.
         self.ds_mode = ds_mode
+        self.encode_mods = encode_mods
 
         if n_classes is not None:
             self.n_classes = n_classes
@@ -705,6 +709,13 @@ class FitRuleBase(Problem):
             vars = {key: val for d in [vars, vars_weights] for key, val in d.items()}
             varbound = np.concatenate((varbound, weights_bounds), axis=0)
 
+        if encode_mods:
+            # Now we add modifiers exponents for the membership functions.
+            rule_mods = np.array([[0, len(rules.modifiers_names.keys()) - 1]] * self.nAnts * self.nRules)
+            vars_modifiers = {max(vars.keys()) + 1 + ix: Integer(
+                bounds=rule_mods[ix]) for ix in range(len(rule_mods))}
+            vars = {key: val for d in [vars, vars_modifiers] for key, val in d.items()}
+            varbound = np.concatenate((varbound, rule_mods), axis=0)
 
         nVar = len(varbound)
         self.single_gen_size = nVar
@@ -732,7 +743,7 @@ class FitRuleBase(Problem):
                 xu=varbound[:, 1])
 
 
-    def encode_rulebase(self, rule_base: rules.MasterRuleBase, optimize_lv: bool) -> np.array:
+    def encode_rulebase(self, rule_base: rules.MasterRuleBase, optimize_lv: bool, encode_mods:bool=False) -> np.array:
         '''
         Given a rule base, constructs the corresponding gene associated with that rule base.
 
@@ -745,7 +756,7 @@ class FitRuleBase(Problem):
 
         :param rule_base: rule base object.
         :param optimize_lv: if True, the gene is prepared to optimize the membership functions.
-        :param antecedents_referencial: list of lists. Each list contains the referencial for each variable.  Required only if optimize_lv is True.
+        :param encode_mods: if True, the gene is prepared to encode the modifiers for the membership functions.
         :return: np array of size self.single_gen_size.
         '''
         gene = np.zeros((self.single_gen_size,))
@@ -766,10 +777,22 @@ class FitRuleBase(Problem):
             fourth_pointer = 2 * self.nAnts * self.nRules
 
         # Pointer to the fifth section of the gene: weights (if they exist)
+        fifth_pointer = fourth_pointer + self.nRules
         if rule_base.ds_mode == 2:
-            fifth_pointer = fourth_pointer + self.nRules
             for ix, rule in enumerate(rule_base.get_rules()):
                 gene[fifth_pointer + ix] = rule.weight
+
+        # Last pointer to the gene: modifiers for the membership functions
+        if encode_mods:
+            if rule_base.ds_mode == 2:
+                sixth_pointer = fifth_pointer + rule_base.get_rules()
+            else:
+                sixth_pointer = fifth_pointer
+            
+            for ix, rule in enumerate(rule_base.get_rules()):
+                for jx, modifier in enumerate(rule.modifiers):
+                    mod_idx = list(rules.modifiers_names.keys()).index(modifier)
+                    gene[sixth_pointer + ix * self.nAnts + jx] = mod_idx
 
         # First and second sections of the gene: antecedents and linguistic variables
         for i0, rule in enumerate(rule_base.get_rules()):  # Reconstruct the rules
@@ -848,7 +871,15 @@ class FitRuleBase(Problem):
 
         if self.ds_mode == 2:
             fifth_pointer = fourth_pointer + self.nRules
+        else:
+            fifth_pointer = fourth_pointer
 
+        if self.ds_mode == 2:
+            sixth_pointer = fifth_pointer + self.nRules
+        else:
+            sixth_pointer = fifth_pointer
+            
+        
         aux_pointer = 0
         min_domain = np.min(self.X, axis=0)
         max_domain = np.max(self.X, axis=0)
@@ -886,9 +917,21 @@ class FitRuleBase(Problem):
                 rule_weight = x[fifth_pointer + i0] / 100
             else:
                 rule_weight = 1.0
+            
+            # Last pointer to the gene: modifiers for the membership functions
+            if self.encode_mods:
+                #for jx, modifier in enumerate(rule.modifiers):
+                rule_modifiers = np.ones((len(self.lvs),)) * -1
+                idx_mods = x[sixth_pointer + i0 * self.nAnts: sixth_pointer + (i0+1)*self.nAnts]
+                for jx, ant in enumerate(chosen_ants):
+                    rule_modifiers[ant] = list(rules.modifiers_names.keys())[idx_mods[jx]]
                 
+
+            else:
+                rule_modifiers = None
+
             if consequent_idx != -1 and np.any(init_rule_antecedents != -1):
-                rs_instance = rules.RuleSimple(init_rule_antecedents, 0)
+                rs_instance = rules.RuleSimple(init_rule_antecedents, 0, rule_modifiers)
                 if self.ds_mode == 1 or self.ds_mode == 2:
                     rs_instance.weight = rule_weight
 
@@ -896,7 +939,6 @@ class FitRuleBase(Problem):
                     rs_instance)
 
             
-
         # If we optimize the membership functions
         if self.lvs is None:
             third_pointer = 2 * self.nAnts * self.nRules
