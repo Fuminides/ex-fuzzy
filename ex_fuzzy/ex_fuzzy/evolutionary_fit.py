@@ -296,6 +296,21 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :return: np array samples (x 1) with the predicted class.
         '''
         return self.forward(X)
+    
+
+    def predict_proba(self, X: np.array) -> np.array:
+        '''
+        Returns the predicted class probabilities for each sample.
+
+        :param X: np array samples x features.
+        :return: np array samples x classes with the predicted class probabilities.
+        '''
+        try:
+            X = X.values  # If X was a pandas dataframe
+        except AttributeError:
+            pass
+
+        return self.rule_base.compute_association_degrees(X)
 
 
     def print_rules(self, return_rules:bool=False) -> None:

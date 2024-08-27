@@ -14,9 +14,6 @@ except ImportError:
     import centroid
 
 
-    
-
-
 def compute_antecedents_memberships(antecedents: list[fs.fuzzyVariable], x: np.array) -> list[dict]:
         '''
         Returns a list of of dictionaries that contains the memberships for each x value to the ith antecedents, nth linguistic variable.
@@ -974,9 +971,15 @@ class MasterRuleBase():
 
 
     def _winning_rules(self, X: np.array, precomputed_truth=None) -> np.array:
+        association_degrees = self.compute_association_degrees(X, precomputed_truth)
+
+        winning_rules = np.argmax(association_degrees, axis=1)
+
+        return winning_rules
+
+    def compute_association_degrees(self, X, precomputed_truth=None):
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
-
         :param X: array with the values of the inputs.
         :return: array with the winning rule for each sample.
         '''
@@ -994,10 +997,7 @@ class MasterRuleBase():
             association_degrees = np.mean(association_degrees, axis=2)
         elif self[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
             association_degrees = np.mean(association_degrees, axis=3)
-
-        winning_rules = np.argmax(association_degrees, axis=1)
-
-        return winning_rules
+        return association_degrees
     
     
     def winning_rule_predict(self, X: np.array, precomputed_truth=None) -> np.array:
@@ -1150,7 +1150,7 @@ class MasterRuleBase():
         return self.antecedents
     
 
-def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedents: list[fs.fuzzyVariable], rule_weights: np.array, class_names: list=None) -> MasterRuleBase:
+def construct_rule_base(rule_matrix: np.array, nclasses:int, consequents: np.array, antecedents: list[fs.fuzzyVariable], rule_weights: np.array, class_names: list=None) -> MasterRuleBase:
     '''
     Constructs a rule base from a matrix of rules.
 
@@ -1159,7 +1159,7 @@ def construct_rule_base(rule_matrix: np.array, consequents: np.array, antecedent
     :param antecedents: list of fuzzy variables.
     :param class_names: list with the names of the classes.
     '''
-    rule_lists = {ix:[] for ix in range(len(np.unique(consequents)))}
+    rule_lists = {ix:[] for ix in range(nclasses)}
     fs_studied = antecedents[0].fuzzy_type()
     for ix, consequent in enumerate(consequents):
         if not np.equal(rule_matrix[ix], -1).all():
