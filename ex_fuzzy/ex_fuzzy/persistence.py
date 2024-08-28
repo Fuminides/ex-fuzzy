@@ -19,11 +19,17 @@ except ImportError:
 
 
 def _extract_mod_word(text):
-    pattern = r'\(MOD\s+(\w+)\)'
+    pattern = r'\(MOD\s+([^)]+)\)'
     match = re.search(pattern, text)
     if match:
         return match.group(1)
     return None
+
+
+def _remove_mod_completely(text):
+    pattern = r'\(MOD\s+([^)]+)\)'
+    replacement = ''
+    return re.sub(pattern, replacement, text)
 
 
 def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterRuleBase:
@@ -42,6 +48,7 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
     value_names = [x.name for x in fuzzy_variables[0]]
     fz_type = fuzzy_variables[0].fuzzy_type()
     consequent_names = []
+    detected_modifiers = False
     for line in rules_printed.splitlines():
         if line.startswith('IF'):
             #Is a rule
@@ -63,8 +70,9 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
             for lx, antecedent in enumerate(antecedents.split('AND')):
                 antecedent = antecedent.replace('IF', '').strip()
                 if 'MOD' in antecedent:
+                    detected_modifiers = True
                     modifier_value = _extract_mod_word(antecedent)
-                    antecedent = antecedent.replace('(MOD .*)', '')
+                    antecedent = _remove_mod_completely(antecedent)
                     if modifier_value in rules.modifiers_names.keys():
                         modifiers[lx] = rules.modifiers_names[modifier_value]
 
@@ -80,8 +88,7 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
             rule_simple.accuracy = float(rule_acc[3:].strip()) # We remove the 'ACC ' and the last space
             rule_simple.weight = float(rule_weight[4:].strip())
             rule_simple.score = float(consequent_ds[3:].strip()) # We remove the 'DS ' and the last space
-            if not np.all(modifiers == 1):
-                rule_simple.modifiers = modifiers
+            rule_simple.modifiers = modifiers
             
             reconstructed_rules.append(rule_simple)
 

@@ -51,7 +51,7 @@ fz_type_studied = fs.FUZZY_SETS.t1
 # Compute the fuzzy partitions using 3 quartiles
 precomputed_partitions = utils.construct_partitions(X, fz_type_studied, n_partitions=n_linguistic_variables)
 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=precomputed_partitions, nAnts=3, n_linguistic_variables=n_linguistic_variables, fuzzy_type=fz_type_studied, verbose=True, tolerance=0.01, runner=1, ds_mode=2)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=precomputed_partitions, nAnts=3, n_linguistic_variables=n_linguistic_variables, fuzzy_type=fz_type_studied, verbose=True, tolerance=0.01, runner=1, ds_mode=2, fuzzy_modifiers=True)
 
 fl_classifier.fit(X_train, y_train)
 
