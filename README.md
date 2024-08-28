@@ -4,8 +4,8 @@ ex-Fuzzy is a fuzzy toolbox library for Python with special focus in its accesib
 Some of the tools available in this library include:
 
 - Support for approximate reasoning using fuzzy association rules, for both classification and regression problems. This includes rule base optimization using genetic algorithms and rule visualization.
-- Precomputed and optimized fuzzy variables and their correspondent linguistic variables (i.e low, medium, high).
-- Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets.
+- Quantile-based and problem-optimized fuzzy variables and their correspondent linguistic variables (i.e low, medium, high).
+- Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets. We also support linguistic hedges.
 - Rule mining using support, confidence and lift measures. Customizable genetic optimization of the rule bases parameters.
 
 ## Main Characteristics
@@ -35,7 +35,7 @@ Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules
   
 </p>
 
-### Test your results
+### Testing your patterns
 
 ex-Fuzzy lets you study how reliable are your rules and their variable usage. You can easily repeat the experiments for statistical quantification of the results and then study the patterns obtained.
 
@@ -44,7 +44,7 @@ ex-Fuzzy lets you study how reliable are your rules and their variable usage. Yo
   <img src="https://github.com/user-attachments/assets/819f0988-deeb-4c8d-8cca-d8dd75e437f7" height="360" title="Usage per variable">
 </p>
 
-
+### Support for many 
 ## Try some demos! <img src="https://colab.research.google.com/img/colab_favicon_256px.png" height="40">
 You can find them on Google colab:
 
