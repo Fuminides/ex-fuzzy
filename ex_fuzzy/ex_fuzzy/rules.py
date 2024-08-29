@@ -1276,6 +1276,8 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
                     str_rule += ' (MOD ' + str_mod + ')'
             except AttributeError:
                 pass
+            except TypeError:
+                pass
 
 
     try:
