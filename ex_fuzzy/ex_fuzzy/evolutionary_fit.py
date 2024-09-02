@@ -198,7 +198,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 print('=================================================')
                 print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
                 print('=================================================')
-            algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen)) # 33? Soon...
+            algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen)) 
             for k in range(n_gen):
                 algorithm.next()
                 res = algorithm
