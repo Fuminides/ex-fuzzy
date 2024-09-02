@@ -347,6 +347,10 @@ class RuleBase():
             cache_antecedent_memberships = []
 
             for ix, antecedent in enumerate(self.antecedents):
+                # Check if x is pandas 
+                if hasattr(x, 'values'):
+                    x = x.values
+
                 cache_antecedent_memberships.append(
                     antecedent.compute_memberships(x[:, ix]))
 
@@ -1019,6 +1023,7 @@ class MasterRuleBase():
 
         return winning_rules
 
+
     def compute_association_degrees(self, X, precomputed_truth=None):
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
@@ -1039,6 +1044,7 @@ class MasterRuleBase():
             association_degrees = np.mean(association_degrees, axis=2)
         elif self[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
             association_degrees = np.mean(association_degrees, axis=3)
+            
         return association_degrees
     
     
