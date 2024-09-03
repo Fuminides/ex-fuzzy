@@ -214,7 +214,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         best_individual = pop.get('X')[best_solution_arg, :]
 
                         rule_base = problem._construct_ruleBase(
-                            best_individual, self.fuzzy_type, self.allow_unknown)
+                            best_individual, self.fuzzy_type)
                         eval_performance = evr.evalRuleBase(
                             rule_base, np.array(X), y)
                         
@@ -251,7 +251,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.var_names = [str(ix) for ix in range(X.shape[1])]
 
         self.rule_base = problem._construct_ruleBase(
-        best_individual, self.fuzzy_type)
+        best_individual, fz_type=self.fuzzy_type)
         self.rule_base.rename_cons(self.classes_names)
 
         self.eval_performance = evr.evalRuleBase(
@@ -465,6 +465,7 @@ class ExploreRuleBases(Problem):
 
         :param x: gen of a rulebase. type: dict.
         :param fuzzy_type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.
+        :param ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
         
         :return: a Master rulebase object.
@@ -1013,7 +1014,7 @@ class FitRuleBase(Problem):
 
         :param out: dict where the F field is the fitness. It is used from the outside.
         '''
-        ruleBase = self._construct_ruleBase(x, self.fuzzy_type, ds_mode=self.ds_mode)
+        ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
 
         if len(ruleBase.get_rules()) > 0:
             score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self._precomputed_truth)

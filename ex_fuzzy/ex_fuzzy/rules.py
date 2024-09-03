@@ -1068,15 +1068,14 @@ class MasterRuleBase():
         consequents = sum([[ix]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
         winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
-
         res = np.zeros((X.shape[0], ))
-        for ix in winning_rules:
-            if ix == -1:
-                res[ix] = -1
+        for ix, winning_rule in enumerate(winning_rules):
+            if winning_rule != -1:
+                res[ix] = consequents[winning_rule]
             else:
-                res[ix] = consequents[ix]
+                res[ix] = -1
 
-        return np.array(res)
+        return res
 
 
     def add_rule_base(self, rule_base: RuleBase) -> None:
