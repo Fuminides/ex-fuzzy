@@ -125,7 +125,7 @@ class RuleSimple():
         '''
         self.antecedents = list(map(int, antecedents))
         self.consequent = int(consequent)
-        self.score = 1.0
+        #self.score = 1.0
         self.modifiers = modifiers
         #self.weight = weight
 
