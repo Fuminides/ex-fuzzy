@@ -295,7 +295,7 @@ class evalRuleBase():
             self.add_rule_weights()
 
         if self.time_moments is None:
-            winning_rules = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth)
+            winning_rules = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth, allow_unkown=self.mrule_base.allow_unknown)
             preds = self.mrule_base.winning_rule_predict(actual_X, precomputed_truth=self.precomputed_truth)
         else:
             winning_rules = self.mrule_base._winning_rules(actual_X, self.time_moments)

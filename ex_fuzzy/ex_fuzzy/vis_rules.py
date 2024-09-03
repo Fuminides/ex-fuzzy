@@ -338,7 +338,7 @@ def filter_useless_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
     '''
-    Prints the rule base in a latex format. It prints
+    Prints the rule base in a latex format.
 
     :note: if the rule base has three different linguistic labels, it will use custom commands for the partitions. You can define these commands (\low, \mid, \hig, \dc) to show colors, figures, etc. Be sure to recheck the DS, ACC values in this case, because 1.0 values of them are also converted to these commands.
     

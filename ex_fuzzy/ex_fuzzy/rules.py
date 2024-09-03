@@ -907,7 +907,7 @@ class MasterRuleBase():
     This Class encompasses a list of rule bases where each one corresponds to a different class.
     '''
 
-    def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0) -> None:
+    def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0, allow_unknown:bool=True) -> None:
         '''
         Constructor of the MasterRuleBase class.
 
@@ -924,6 +924,7 @@ class MasterRuleBase():
         else:
             self.consequent_names = consequent_names
         self.ds_mode = ds_mode
+        self.allow_unknown = allow_unknown
 
 
     def rename_cons(self, consequent_names: list[str]) -> None:
@@ -1016,10 +1017,14 @@ class MasterRuleBase():
         return np.concatenate(aux, axis=1)
 
 
-    def _winning_rules(self, X: np.array, precomputed_truth=None) -> np.array:
+    def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unkown=True) -> np.array:
         association_degrees = self.compute_association_degrees(X, precomputed_truth)
 
         winning_rules = np.argmax(association_degrees, axis=1)
+
+        if allow_unkown:
+            # If there is no rule that fires, we set the consequent to -1
+            winning_rules[np.max(association_degrees, axis=1) == 0] = -1
 
         return winning_rules
 
@@ -1062,9 +1067,15 @@ class MasterRuleBase():
         
         consequents = sum([[ix]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
-        winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth)
+        winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
+        res = np.zeros((X.shape[0], ))
+        for ix, winning_rule in enumerate(winning_rules):
+            if winning_rule != -1:
+                res[ix] = consequents[winning_rule]
+            else:
+                res[ix] = -1
 
-        return np.array([consequents[ix] for ix in winning_rules])
+        return res
 
 
     def add_rule_base(self, rule_base: RuleBase) -> None:
