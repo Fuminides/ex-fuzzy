@@ -40,7 +40,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: list[int]|int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
-                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, fuzzy_modifiers:bool=False) -> None:
+                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, fuzzy_modifiers:bool=False, allow_unknown:bool=True) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
 
@@ -57,6 +57,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param runner: number of threads to use. If None (default) the classifier will use 1 thread.
         :param ds_mode: mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         :param fuzzy_modifiers: if True, the classifier will use the modifiers in the optimization process.
+        :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
         '''
         if mnt.save_usage_flag:
             mnt.usage_data[mnt.usage_categories.Funcs]['fit'] += 1
@@ -85,6 +86,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.tolerance = tolerance
         self.ds_mode = ds_mode
         self.fuzzy_modifiers = fuzzy_modifiers
+        self.allow_unknown = allow_unknown
 
         if runner > 1:
             pool = ThreadPool(runner)
@@ -212,7 +214,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         best_individual = pop.get('X')[best_solution_arg, :]
 
                         rule_base = problem._construct_ruleBase(
-                            best_individual, self.fuzzy_type)
+                            best_individual, self.fuzzy_type, self.allow_unknown)
                         eval_performance = evr.evalRuleBase(
                             rule_base, np.array(X), y)
                         
@@ -457,11 +459,13 @@ class ExploreRuleBases(Problem):
                 xu=varbound[:, 1])
 
 
-    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS) -> rules.MasterRuleBase:
+    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, ds_mode:int=0, allow_unknown:bool=True) -> rules.MasterRuleBase:
         '''
         Creates a valid rulebase from the given subject and the candidate rules.
 
         :param x: gen of a rulebase. type: dict.
+        :param fuzzy_type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.
+        :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
         
         :return: a Master rulebase object.
         '''
@@ -496,7 +500,7 @@ class ExploreRuleBases(Problem):
                 rule_bases.append(rule_base_cons)
             
         # Create the Master Rule Base object with the individual rule bases
-        newMasterRuleBase = rules.MasterRuleBase(rule_bases, diff_consequents)    
+        newMasterRuleBase = rules.MasterRuleBase(rule_bases, diff_consequents, ds_mode=ds_mode, allow_unknown=allow_unknown)    
 
         return newMasterRuleBase
 
@@ -589,7 +593,7 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
-                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0, encode_mods: bool=False) -> None:
+                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0, encode_mods: bool=False, allow_unknown:bool=True) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -607,6 +611,7 @@ class FitRuleBase(Problem):
         :param beta: float. Weight for the average rule size term in the fitness function.
         :param ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         :param encode_mods: bool. If True, the optimization process will include the modifiers for the membership functions.
+        :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
         '''
         try:
             self.var_names = list(X.columns)
@@ -627,6 +632,7 @@ class FitRuleBase(Problem):
         self.nCons = 1  # This is fixed to MISO rules.
         self.ds_mode = ds_mode
         self.encode_mods = encode_mods
+        self.allow_unknown = allow_unknown
 
         if n_classes is not None:
             self.n_classes = n_classes
@@ -991,7 +997,7 @@ class FitRuleBase(Problem):
             
 
             if i == 0:
-                res = rules.MasterRuleBase([rule_base], self.classes_names, ds_mode=self.ds_mode)
+                res = rules.MasterRuleBase([rule_base], self.classes_names, ds_mode=self.ds_mode, allow_unknown=self.allow_unknown)
             else:
                 res.add_rule_base(rule_base)
 
