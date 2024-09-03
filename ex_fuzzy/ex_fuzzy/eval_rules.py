@@ -287,6 +287,9 @@ class evalRuleBase():
         else:
             actual_X = self.X
             actual_y = self.y
+
+        if isinstance(actual_y, list):
+            actual_y = np.array(actual_y)
         
         if not hasattr(self.mrule_base.get_rules()[0], 'score'):
             self.add_rule_weights()
