@@ -167,12 +167,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers)
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers,
+                                    allow_unknown=self.allow_unknown)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers)
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers,
+                                    allow_unknown=self.allow_unknown)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
