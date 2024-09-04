@@ -376,6 +376,8 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
         precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions)
     elif fz_type_studied == fs.FUZZY_SETS.gt2:
         precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions)
+    else:
+        raise ValueError('Fuzzy set type not recognized')
 
 
     if categorical_mask is not None:
