@@ -380,7 +380,7 @@ class pattern_stabilizer():
         fig1.suptitle(f'Class {self.classes_names[class_ix]} variable usage in the rulebases')
 
         for var_ix in range(len(self.rule_bases[0])):
-            if var_list is not None and var_ix in var_list:
+            if (var_list is not None and var_ix in var_list) or var_list is None:
                 labels = []
                 sizes = []
                 var = self.class_vars[class_ix][var_ix]
