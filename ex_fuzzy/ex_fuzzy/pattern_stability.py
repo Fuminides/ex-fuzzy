@@ -63,7 +63,8 @@ class pattern_stabilizer():
 
     def __init__(self,  X, y, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
-                 domain: list[float] = None, n_class: int=None, runner: int=1) -> None:
+                 domain: list[float] = None, n_class: int=None, runner: int=1, ds_mode:int=0, allow_unkown:bool=False,
+                 fuzzy_modifiers:bool=False) -> None:
         
         '''
         Inits the optimizer with the corresponding parameters.
@@ -95,13 +96,10 @@ class pattern_stabilizer():
         self.custom_loss = None
         self.verbose = verbose
         self.tolerance = tolerance
-        
-
-        if runner > 1:
-            pool = ThreadPool(runner)
-            self.thread_runner = StarmapParallelization(pool.starmap)
-        else:
-            self.thread_runner = None
+        self.ds_mode = ds_mode
+        self.allow_unknown = allow_unkown
+        self.fuzzy_modifiers = fuzzy_modifiers
+        self.runner = runner
         
         if linguistic_variables is not None:
             # If the linguistic variables are precomputed then we act accordingly
@@ -123,17 +121,17 @@ class pattern_stabilizer():
         self.y = y
 
 
-    def generate_solutions(self, n=30):
+    def generate_solutions(self, n=30, n_gen=10, pop_size=10):
         # We will generate n solutions and return the rule bases and the accuracies
         rule_bases = []
         accs = []
 
         for ix in range(n):
-            fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=self.lvs, nAnts=3, n_linguistic_variables=5, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=0.01, runner=1)
+            fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=self.nRules, linguistic_variables=self.lvs, nAnts=self.nAnts, n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=self.tolerance, runner=self.runner, ds_mode=self.ds_mode, fuzzy_modifiers=self.fuzzy_modifiers, allow_unknown=self.allow_unknown)
             # Generate train test partition
             
             X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.33, random_state=ix)
-            fl_classifier.fit(X_train, np.array(y_train), n_gen=10, pop_size=10, checkpoints=0)
+            fl_classifier.fit(X_train, np.array(y_train), n_gen=n_gen, pop_size=pop_size, checkpoints=0)
 
             rule_bases.append(fl_classifier.rule_base)
             accuracy = np.mean(np.equal(fl_classifier.forward(X_test), np.array(y_test)))
@@ -212,7 +210,7 @@ class pattern_stabilizer():
         return class_patterns, patterns_dss, class_vars
     
 
-    def get_patterns_scores(self, n=30):
+    def get_patterns_scores(self, n=30, n_gen=10, pop_size=10):
         '''
         Gets the patterns scores for the generated solutions.
 
@@ -223,7 +221,7 @@ class pattern_stabilizer():
         :return accuracies: list. The list with the accuracies of the generated solutions.
         :return rule_bases: list. The list with the generated rule bases.
         '''
-        rule_bases, accuracies = self.generate_solutions(n)
+        rule_bases, accuracies = self.generate_solutions(n, n_gen=n_gen, pop_size=pop_size)
         self.n = n
         for ix, mrule_base in enumerate(rule_bases):
             if ix == 0:
@@ -258,7 +256,7 @@ class pattern_stabilizer():
                         print(f'Variable {antecedents[jx].name}')
                         initiated = True
 
-                    print(f'{antecedents[jx][key].name} appears %.2f times' % float(class_vars[jx][key] / self.n))
+                    print(f'{antecedents[jx][key].name} appears %.2f times per experiment.' % float(class_vars[jx][key] / self.n))
             if initiated:
                 print()
                 
@@ -299,14 +297,14 @@ class pattern_stabilizer():
             print()
     
 
-    def stability_report(self, n=10):
+    def stability_report(self, n=10, n_gen=30, pop_size=20):
         '''
         Generates a stability report for pattern stabilization.
 
         :param n: int. The number of solutions to generate.
         :return text_report: str. The text report for pattern stability.
         '''
-        class_patterns, patterns_dss, class_vars, accuracies, rule_bases = self.get_patterns_scores(n)
+        class_patterns, patterns_dss, class_vars, accuracies, rule_bases = self.get_patterns_scores(n, n_gen=n_gen, pop_size=pop_size)
         self.class_patterns = class_patterns
         self.patterns_dss = patterns_dss
         self.class_vars = class_vars
