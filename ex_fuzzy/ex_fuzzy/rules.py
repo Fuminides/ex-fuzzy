@@ -1100,7 +1100,6 @@ class MasterRuleBase():
         res = ''
         for ix, ruleBase in enumerate(self.rule_bases):    
             res += 'Rules for consequent: ' + str(self.consequent_names[ix]) + '\n'
-            
             res += '----------------\n'
             res += ruleBase.print_rules(return_rules=True) + '\n'
         
