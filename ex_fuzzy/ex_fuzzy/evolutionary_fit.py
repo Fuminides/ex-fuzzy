@@ -102,6 +102,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.n_linguist_variables = [len(lv.linguistic_variable_names()) for lv in self.lvs]
             self.domain = None
             self.fuzzy_type = self.lvs[0].fuzzy_type()
+
+            if self.nAnts > len(linguistic_variables):
+                self.nAnts = len(linguistic_variables)
+                if verbose:
+                    print('Warning: The number of antecedents is higher than the number of variables. Setting nAnts to the number of linguistic variables. (' + str(len(linguistic_variables)) + ')')
+
         else:
             if mnt.save_usage_flag:
                 mnt.usage_data[mnt.usage_categories.Funcs]['opt_labels'] += 1
@@ -164,6 +170,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 if isinstance(self.n_linguist_variables, int):
                     self.n_linguist_variables = [self.n_linguist_variables for _ in range(X.shape[1])]
                 
+                if self.nAnts > X.shape[1]:
+                    self.nAnts = X.shape[1]
+                    if self.verbose:
+                        print('Warning: The number of antecedents is higher than the number of variables. Setting nAnts to the number of variables. (' + str(X.shape[1]) + ')') 
+
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
