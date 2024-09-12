@@ -440,15 +440,17 @@ class fuzzyVariable():
     Class to implement a fuzzy Variable. Contains a series of fuzzy sets and computes the memberships to all of them.
     '''
 
-    def __init__(self, name: str, fuzzy_sets: list[FS]) -> None:
+    def __init__(self, name: str, fuzzy_sets: list[FS], units:str=None) -> None:
         '''
         Creates a fuzzy variable.
 
         :param name: string. Name of the fuzzy variable.
         :param fuzzy_sets: list of IVFS. Each of the fuzzy sets that comprises the linguist variables of the fuzzy variable.
+        :param units: string. Units of the fuzzy variable. Only for printings purposes.
         '''
         self.linguistic_variables = []
         self.name = name
+        self.units = units
 
         for ix, fs in enumerate(fuzzy_sets):
             self.linguistic_variables.append(fs)

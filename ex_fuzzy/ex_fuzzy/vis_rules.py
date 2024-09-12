@@ -298,6 +298,10 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
                     initiated = True
 
     ax.legend(loc='upper right', shadow=True)
+    ax.set_ylabel('Membership degree')
+    if fuzzy_variable.units is not None:
+        ax.set_xlabel(fuzzy_variable.units)
+
     plt.title(fuzzy_variable.name)
     fig.show()
 
