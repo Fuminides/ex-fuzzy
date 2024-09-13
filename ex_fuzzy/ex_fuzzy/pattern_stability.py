@@ -128,7 +128,6 @@ class pattern_stabilizer():
 
         for ix in range(n):
             fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=self.nRules, linguistic_variables=self.lvs, nAnts=self.nAnts, n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=self.tolerance, runner=self.runner, ds_mode=self.ds_mode, fuzzy_modifiers=self.fuzzy_modifiers, allow_unknown=self.allow_unknown)
-            # Generate train test partition
             
             X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.33, random_state=ix)
             fl_classifier.fit(X_train, np.array(y_train), n_gen=n_gen, pop_size=pop_size, checkpoints=0)
@@ -223,11 +222,16 @@ class pattern_stabilizer():
         '''
         rule_bases, accuracies = self.generate_solutions(n, n_gen=n_gen, pop_size=pop_size)
         self.n = n
+        faults = 0
         for ix, mrule_base in enumerate(rule_bases):
-            if ix == 0:
-                class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base)
+            if len(mrule_base) != 0:
+                if ix == 0:
+                    class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base)
+                else:
+                    class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base, class_patterns, patterns_dss, class_vars)
             else:
-                class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base, class_patterns, patterns_dss, class_vars)
+                faults += 1
+                print(f'No rules were generated for solution {ix}. Percentage of faulty solutions: {faults / n * 100}%')
             
         # Sort the patterns by the number of appearances
         for ix in range(len(class_patterns)):
@@ -394,6 +398,7 @@ class pattern_stabilizer():
                 ax1[var_ix].axis('equal')
 
         plt.show()
+
 
     def gen_colormap(self, antecedents):
         '''
