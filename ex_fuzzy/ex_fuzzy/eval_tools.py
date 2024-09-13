@@ -42,16 +42,18 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train: np.ar
       print('------------')
       print('ACCURACY')
       print('Train performance: ' +
-            str(np.mean(np.equal(y_train, fl_classifier.predict(X_train)))))
+            str(np.mean(np.equal(y_train, fl_classifier.predict(X_train, out_class_names=isinstance(y_train[0], str))))))
       print('Test performance: ' +
-            str(np.mean(np.equal(y_test, fl_classifier.predict(X_test)))))
+            str(np.mean(np.equal(y_test, fl_classifier.predict(X_test, out_class_names=isinstance(y_train[0], str))))))
       print('------------')
     if print_matthew:
       print('MATTHEW CORRCOEF')
       print('Train performance: ' +
-            str(matthews_corrcoef(y_train, fl_classifier.predict(X_train))))
+            str(matthews_corrcoef(y_train, fl_classifier.predict(X_train, out_class_names=isinstance(y_train[0], str))))
+            )
       print('Test performance: ' +
-            str(matthews_corrcoef(y_test, fl_classifier.predict(X_test))))
+            str(matthews_corrcoef(y_test, fl_classifier.predict(X_test, out_class_names=isinstance(y_train[0], str))))
+            )
       print('------------')
 
 

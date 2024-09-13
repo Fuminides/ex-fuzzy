@@ -301,6 +301,13 @@ class evalRuleBase():
             winning_rules = self.mrule_base._winning_rules(actual_X, self.time_moments)
             preds = self.mrule_base.winning_rule_predict(actual_X, self.time_moments)
 
+        # If preds and labels are not instances of the same type, we convert them to the same type
+        if type(preds[0]) != type(actual_y[0]):
+            if isinstance(actual_y[0], str):
+                preds = np.array([self.consequents_names[p].index(str(p)) for p in preds])
+            elif isinstance(preds[0], str):
+                preds = np.array([list(self.consequents_names).index(str(p)) for p in preds])
+                
         rules = self.mrule_base.get_rules()
         for jx in range(len(rules)):
                 relevant_samples = winning_rules == jx

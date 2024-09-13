@@ -4,6 +4,7 @@ This is a the source file that contains the Rule, RuleBase and MasterRuleBase cl
 
 """
 import abc
+import numbers
 
 import numpy as np
 try:
@@ -1053,7 +1054,7 @@ class MasterRuleBase():
         return association_degrees
     
     
-    def winning_rule_predict(self, X: np.array, precomputed_truth=None) -> np.array:
+    def winning_rule_predict(self, X: np.array, precomputed_truth=None, out_class_names=False) -> np.array:
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
 
@@ -1065,17 +1066,33 @@ class MasterRuleBase():
         if len(self.get_rules()) == 0:
             raise RuleError('No rules to predict!')
         
-        consequents = sum([[ix]*len(self[ix].rules)
+        if out_class_names:
+            consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
+        else:
+            consequents = sum([[ix]*len(self[ix].rules)
+                          for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
+            
         winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
-        res = np.zeros((X.shape[0], ))
+
+        if out_class_names:
+            res = []
+        else:
+            res = np.zeros((X.shape[0], ))
+
         for ix, winning_rule in enumerate(winning_rules):
             if winning_rule != -1:
-                res[ix] = consequents[winning_rule]
+                if out_class_names:
+                    res.append(consequents[winning_rule])
+                else:
+                    res[ix] = consequents[winning_rule]
             else:
-                res[ix] = -1
+                if out_class_names:
+                    res.append('Unknown')
+                else:
+                    res[ix] = -1
 
-        return res
+        return np.array(res)
 
 
     def add_rule_base(self, rule_base: RuleBase) -> None:
@@ -1185,9 +1202,10 @@ class MasterRuleBase():
         aux = self.winning_rule_predict(X)
          
         # Convert the predictions to the names of the consequents
-        return np.array([self.consequent_names[ix] for ix in aux])
+        #return np.array(self.consequent_names)[aux]
+        return aux
         
-        
+
     def get_rulebases(self) -> list[RuleBase]:
         '''
         Returns a list with all the rules.

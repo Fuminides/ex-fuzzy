@@ -273,7 +273,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.eval_performance.add_full_evaluation()  
         if self.lvs is None:
             self.rename_fuzzy_variables()
-        self.eval_performance.add_classification_metrics()
+        
         self.rule_base.purge_rules(self.tolerance)
         
 
@@ -290,11 +290,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.nclasses_ = len(rule_base)
         
 
-    def forward(self, X: np.array) -> np.array:
+    def forward(self, X: np.array, out_class_names=False) -> np.array:
         '''
         Returns the predicted class for each sample.
 
         :param X: np array samples x features.
+        :param out_class_names: if True, the output will be the class names instead of the class index.
         :return: np array samples (x 1) with the predicted class.
         '''
         try:
@@ -302,17 +303,18 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         except AttributeError:
             pass
         
-        return self.rule_base.winning_rule_predict(X)
+        return self.rule_base.winning_rule_predict(X, out_class_names=out_class_names)
         
 
-    def predict(self, X: np.array) -> np.array:
+    def predict(self, X: np.array, out_class_names=False) -> np.array:
         '''
         Returns the predicted class for each sample.
 
         :param X: np array samples x features.
+        :param out_class_names: if True, the output will be the class names instead of the class index.
         :return: np array samples (x 1) with the predicted class.
         '''
-        return self.forward(X)
+        return self.forward(X, out_class_names=out_class_names)
     
 
     def predict_proba(self, X: np.array) -> np.array:
