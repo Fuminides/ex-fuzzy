@@ -85,13 +85,13 @@ class pattern_stabilizer():
         self.nAnts = nAnts
         self.nclasses_ = n_class
 
-        if not (class_names is None):
+        if class_names is None:
+            self.classes_names = list(np.unique(y))
+        else:
             if isinstance(class_names, np.ndarray):
                 self.classes_names = list(class_names)
             else:
                 self.classes_names = class_names
-        else:
-            self.classes_names = list(np.unique(y))
 
         self.custom_loss = None
         self.verbose = verbose
