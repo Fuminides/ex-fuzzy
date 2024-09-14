@@ -91,7 +91,7 @@ class pattern_stabilizer():
             else:
                 self.classes_names = class_names
         else:
-            self.classes_names = class_names
+            self.classes_names = list(np.unique(y))
 
         self.custom_loss = None
         self.verbose = verbose
