@@ -5,6 +5,7 @@ import numpy as np
 from multiprocessing.pool import ThreadPool
 from pymoo.core.problem import StarmapParallelization
 from sklearn.model_selection import train_test_split
+import numbers
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
 
@@ -125,6 +126,7 @@ class pattern_stabilizer():
         # We will generate n solutions and return the rule bases and the accuracies
         rule_bases = []
         accs = []
+        use_names = not isinstance(self.classes_names[0], numbers.Number)
 
         for ix in range(n):
             fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=self.nRules, linguistic_variables=self.lvs, nAnts=self.nAnts, n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=self.tolerance, runner=self.runner, ds_mode=self.ds_mode, fuzzy_modifiers=self.fuzzy_modifiers, allow_unknown=self.allow_unknown)
@@ -133,7 +135,7 @@ class pattern_stabilizer():
             fl_classifier.fit(X_train, np.array(y_train), n_gen=n_gen, pop_size=pop_size, checkpoints=0)
 
             rule_bases.append(fl_classifier.rule_base)
-            accuracy = np.mean(np.equal(fl_classifier.forward(X_test), np.array(y_test)))
+            accuracy = np.mean(np.equal(fl_classifier.forward(X_test, out_class_names=use_names), np.array(y_test)))
             accs.append(accuracy)
         
         return rule_bases, accs
