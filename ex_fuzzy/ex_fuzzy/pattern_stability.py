@@ -198,12 +198,13 @@ class pattern_stabilizer():
             patterns_dss = {ix: {} for ix in range(len(mrule_base))}
 
         for ix, rule_base in enumerate(mrule_base):
-            unique_patterns, patterns_ds, var_used = self.count_unique_patterns(rule_base)
-            class_patterns[ix] = add_dicts(class_patterns[ix], unique_patterns)
-            for key, value in class_vars.items():
-                class_vars[ix][key] = add_dicts(class_vars[ix][key], var_used[key])
+            if len(rule_base) != 0:
+                unique_patterns, patterns_ds, var_used = self.count_unique_patterns(rule_base)
+                class_patterns[ix] = add_dicts(class_patterns[ix], unique_patterns)
+                for key, value in class_vars.items():
+                    class_vars[ix][key] = add_dicts(class_vars[ix][key], var_used[key])
 
-            patterns_dss[ix] = concatenate_dicts(patterns_dss[ix], patterns_ds)
+                patterns_dss[ix] = concatenate_dicts(patterns_dss[ix], patterns_ds)
             
 
         return class_patterns, patterns_dss, class_vars
