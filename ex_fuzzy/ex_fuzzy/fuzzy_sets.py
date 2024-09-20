@@ -271,8 +271,21 @@ class categoricalIVFS(IVFS):
 
         :param x: input values in the referencial domain.
         '''
-        res = np.equal(x, self.category).astype(float)
-        res = np.stack([res, res], axis=-1)
+        if isinstance(x, np.ndarray):
+            res = np.equal(x, self.category).astype(float)
+            res = np.stack([res, res], axis=-1)
+        elif isinstance(x, torch.Tensor):
+            res = torch.eq(x, self.category).float()
+            res = torch.stack([res, res], axis=-1)
+        elif isinstance(x, list):
+            res = [1.0 if elem == self.category else 0.0 for elem in x]
+            res = np.stack([res, res], axis=-1)
+        elif isinstance(x, float) or isinstance(x, int):
+            res = 1.0 if x == self.category else 0.0
+            res = np.array([res, res])
+        elif isinstance(x, pd.Series):
+            res = x.apply(lambda elem: 1.0 if elem == self.category else 0.0)
+            res = np.stack([res, res], axis=-1)
         
         return res
 
@@ -426,6 +439,28 @@ class gaussianIVFS(IVFS):
         upper = __gaussian2(input, self.secondMF_upper)
 
         return np.array(np.concatenate([lower, upper])).T
+
+
+    def type(self) -> FUZZY_SETS:
+        '''
+        Returns the type of the fuzzy set. (t1)
+        '''
+        return FUZZY_SETS.t2
+    
+
+class gaussianFS(FS):
+    '''
+    Class to define a gaussian fuzzy set.
+    '''
+
+    def membership(self, input: np.array) -> np.array:
+        '''
+        Computes the gaussian membership of a point or a vector.
+
+        :param input: input values in the fuzzy set referencial domain.
+        :return: np array samples
+        '''
+        return __gaussian2(input, self.membership_parameters)
 
 
     def type(self) -> FUZZY_SETS:

@@ -256,6 +256,13 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         if  fz_studied == fs.FUZZY_SETS.t1:
             ax.plot(fuzzy_set.membership_parameters,
                     memberships, colors[ix], label=name)
+            ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
+            
+            # Optionally, add text annotations at the center of the membership function
+            #center_x = np.mean(fuzzy_set.membership_parameters)
+            #ax.annotate(name, xy=(center_x *1, 0.5), xytext=(center_x *0.85, 0.6),
+            #            fontsize=10, arrowprops=dict(facecolor='black', shrink=0.05))
+
         elif fz_studied == fs.FUZZY_SETS.t2:
             ax.plot(fuzzy_set.secondMF_lower, np.array(memberships) * fuzzy_set.lower_height, 'black')
             ax.plot(fuzzy_set.secondMF_upper, np.array(memberships), 'black')
@@ -297,12 +304,23 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
                     ax.plot(key_plot,  fuzzy_set.sample_unit_domain[gt2_memberships > 0], gt2_memberships[gt2_memberships > 0], color=colors[ix], label=name)
                     initiated = True
 
-    ax.legend(loc='upper right', shadow=True)
-    ax.set_ylabel('Membership degree')
+        
+    # Enhance the overall style
+    plt.legend(bbox_to_anchor=(1.05, 1))
+    ax.set_ylabel('Membership degree', fontsize=12)
+    ax.grid(True, linestyle='--', alpha=0.7)
+    ax.set_ylim(0, 1.1)
+    plt.style.use('seaborn-v0_8-whitegrid')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_position(('outward', 10))
+    ax.spines['bottom'].set_position(('outward', 10))
+    
     if fuzzy_variable.units is not None:
-        ax.set_xlabel(fuzzy_variable.units)
-
-    plt.title(fuzzy_variable.name)
+        ax.set_xlabel(fuzzy_variable.units, fontsize=12)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.85)  # Add space for the title
+    plt.title(fuzzy_variable.name, fontsize=16, fontweight='bold')
     fig.show()
 
 

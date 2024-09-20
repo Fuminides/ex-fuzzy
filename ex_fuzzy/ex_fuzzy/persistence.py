@@ -125,3 +125,127 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
 
     return mrule_base
 
+
+def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
+    '''
+    Load the linguistic variables from a string.
+    
+    :param fuzzy_variables_printed: string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.
+    
+    '''
+    if mnt.save_usage_flag:
+        mnt.usage_data[mnt.usage_categories.Persistence]['persistence_read'] += 1
+    fuzzy_set_type = fs.FUZZY_SETS.t1 
+
+    fuzzy_variables = []
+    active_linguistic_variables = False
+    for line in fuzzy_variables_printed.splitlines():
+        if line.startswith('$$$') or line.startswith('$Fuzzy'):
+            #New linguistic variable
+            if active_linguistic_variables:
+                object_fvar = fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units)
+
+                fuzzy_variables.append(object_fvar)
+
+            linguistic_var_fuzzy_sets = []
+            linguistic_variable_name = line.split(':')[1].strip()
+            try:
+                fvar_units = line.split(':')[2].strip()
+            except:
+                fvar_units = None
+
+            active_linguistic_variables = True
+        else:
+            processes_line = line.split(';')
+
+            if processes_line[1] == 'Categorical':
+                categories = processes_line[0].split(',')
+
+                if fuzzy_set_type == fs.FUZZY_SETS.t1:
+                    fscat_categories = [fs.categoricalFS(category, category) for category in categories]
+                elif fuzzy_set_type == fs.FUZZY_SETS.t2:
+                    fscat_categories = [fs.categoricalFS(category, category) for category in categories]
+
+                #We know there is one categorical variable active
+                for fscat in fscat_categories:
+                    linguistic_var_fuzzy_sets.append(fscat)
+
+            else:
+                #We know there is one fuzzy variable active
+                fields = processes_line.split(';')
+                if len(fields) == 4:
+                    name, domain, membership_type, mem1 = fields
+                elif len(fields) == 5:
+                    name, domain, membership_type, mem1, mem2 = fields
+                    fuzzy_set_type = fs.FUZZY_SETS.t2
+                    mem2 = [float(x) for x in mem2.split(',')]
+                
+                domain = [float(x) for x in domain.split(',')]
+                mem = [float(x) for x in mem.split(',')]
+
+                if membership_type == 'gauss':
+                    if fuzzy_set_type == fs.FUZZY_SETS.t1:
+                        constructed_fs = fs.gaussianFS(name, domain, mem)
+                    elif fuzzy_set_type == fs.FUZZY_SETS.t2:
+                        constructed_fs = fs.gaussianIVFS(name, domain, mem1, mem2)
+
+                elif membership_type == 'trap':
+                    if fuzzy_set_type == fs.FUZZY_SETS.t1:
+                        constructed_fs = fs.FS(name, mem, domain)
+                    elif fuzzy_set_type == fs.FUZZY_SETS.t2:
+                        constructed_fs = fs.FS(name, mem, domain)
+                
+                linguistic_var_fuzzy_sets.append(constructed_fs)
+
+    if active_linguistic_variables:
+        object_fvar = fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units)
+        fuzzy_variables.append(object_fvar)
+
+    return fuzzy_variables
+
+
+def print_fuzzy_variable(fuzzy_variable: fs.FuzzyVariable) -> str:
+    '''
+    Save the linguistic variable to a string.
+    
+    :param fuzzy_variable: linguistic variable. Object of FuzzyVariable class.
+    
+    '''
+    if mnt.save_usage_flag:
+        mnt.usage_data[mnt.usage_categories.Persistence]['persistence_write'] += 1
+
+    if isinstance(fuzzy_variable[0], fs.categoricalFS):
+        fuzzy_variable_printed = '$Categorical variable: ' + fuzzy_variable.name + ' : ' + fuzzy_variable.units + '\n'
+        for fuzzy_set in fuzzy_variable.fuzzy_sets:
+            fuzzy_variable_printed += fuzzy_set.name + ','
+        fuzzy_variable_printed += 'Categorical\n'
+    else:
+        fuzzy_variable_printed = '$$$ Linguistic variable: ' + fuzzy_variable.name + ' : ' + fuzzy_variable.units + '\n'
+        for fuzzy_set in fuzzy_variable.fuzzy_sets:
+            if isinstance(fuzzy_set, fs.gaussianFS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.membership]) + '\n'
+            elif isinstance(fuzzy_set, fs.FS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.membership]) + '\n'
+            elif isinstance(fuzzy_set, fs.gaussianIVFS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + '\n'
+            elif isinstance(fuzzy_set, fs.IVFS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + '\n'
+
+    return fuzzy_variable_printed
+
+
+def save_fuzzy_variables(fuzzy_variables: list) -> str:
+    '''
+    Save the linguistic variables to a string.
+    
+    :param fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.
+    
+    '''
+    if mnt.save_usage_flag:
+        mnt.usage_data[mnt.usage_categories.Persistence]['persistence_write'] += 1
+
+    
+    for fvar in fuzzy_variables:
+        fuzzy_variables_printed += print_fuzzy_variable(fvar) + '\n'
+
+    return fuzzy_variables_printed

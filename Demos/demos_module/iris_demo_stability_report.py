@@ -43,23 +43,23 @@ runner = 1 # 1: single thread, 2+: corresponding multi-thread
 n_gen = 20
 n_pop = 50
     
-nRules = 10
-nAnts = 3
-tolerance = 0.0000
+nRules = 15
+nAnts = 2
+tolerance = 0.1
 
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = pd.Series(iris.target)
 class_names = iris.target_names
-
+y_class_names = [class_names[i] for i in y]
 fz_type_studied = fs.FUZZY_SETS.t1
 vl = 3
 # Compute the fuzzy partitions using n linguistic variables
 precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl)
 
 # Split the data into a training set and a test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
-pts = pattern_stability.pattern_stabilizer(X_train, y_train, nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, tolerance=tolerance, class_names=class_names, n_linguistic_variables=vl, verbose=True, linguistic_variables=precomputed_partitions_vl, runner=runner)
+X_train, X_test, y_train, y_test = train_test_split(X, y_class_names, test_size=0.33, random_state=0)
+pts = pattern_stability.pattern_stabilizer(X_train, y_train, nRules=nRules, nAnts=nAnts, fuzzy_type=fz_type_studied, tolerance=tolerance, class_names=None, n_linguistic_variables=vl, verbose=True, linguistic_variables=precomputed_partitions_vl, runner=runner)
 pts.stability_report(20)
 pts.pie_chart_class(0)
 pts.pie_chart_class(1)
