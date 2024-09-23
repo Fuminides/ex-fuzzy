@@ -85,9 +85,13 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                 init_rule_antecedents[antecedent_index] = antecedent_value_index
                 
             rule_simple = rules.RuleSimple(init_rule_antecedents, 0)
-            rule_simple.accuracy = float(rule_acc[3:].strip()) # We remove the 'ACC ' and the last space
-            rule_simple.weight = float(rule_weight[4:].strip())
             rule_simple.score = float(consequent_ds[3:].strip()) # We remove the 'DS ' and the last space
+            rule_simple.accuracy = float(rule_acc[4:].strip()) # We remove the 'ACC ' and the last space
+            try:
+                rule_simple.weight = float(rule_weight[4:].strip())
+            except:
+                pass
+            
             rule_simple.modifiers = modifiers
             
             reconstructed_rules.append(rule_simple)
@@ -155,6 +159,8 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                 fvar_units = None
 
             active_linguistic_variables = True
+        elif line == '':
+            pass
         else:
             processes_line = line.split(';')
 
@@ -172,7 +178,7 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
 
             else:
                 #We know there is one fuzzy variable active
-                fields = processes_line.split(';')
+                fields = processes_line
                 if len(fields) == 4:
                     name, domain, membership_type, mem1 = fields
                 elif len(fields) == 5:
@@ -181,7 +187,7 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                     mem2 = [float(x) for x in mem2.split(',')]
                 
                 domain = [float(x) for x in domain.split(',')]
-                mem = [float(x) for x in mem.split(',')]
+                mem = [float(x) for x in mem1.split(',')]
 
                 if membership_type == 'gauss':
                     if fuzzy_set_type == fs.FUZZY_SETS.t1:
@@ -204,7 +210,7 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
     return fuzzy_variables
 
 
-def print_fuzzy_variable(fuzzy_variable: fs.FuzzyVariable) -> str:
+def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
     '''
     Save the linguistic variable to a string.
     
@@ -215,22 +221,30 @@ def print_fuzzy_variable(fuzzy_variable: fs.FuzzyVariable) -> str:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_write'] += 1
 
     if isinstance(fuzzy_variable[0], fs.categoricalFS):
-        fuzzy_variable_printed = '$Categorical variable: ' + fuzzy_variable.name + ' : ' + fuzzy_variable.units + '\n'
+        fuzzy_variable_printed = '$Categorical variable: ' + fuzzy_variable.name
+        if fuzzy_variable.units is not None:
+            fuzzy_variable_printed += ' : ' + fuzzy_variable.units
+        fuzzy_variable_printed += '\n'
+
         for fuzzy_set in fuzzy_variable.fuzzy_sets:
             fuzzy_variable_printed += fuzzy_set.name + ','
         fuzzy_variable_printed += 'Categorical\n'
     else:
-        fuzzy_variable_printed = '$$$ Linguistic variable: ' + fuzzy_variable.name + ' : ' + fuzzy_variable.units + '\n'
-        for fuzzy_set in fuzzy_variable.fuzzy_sets:
-            if isinstance(fuzzy_set, fs.gaussianFS):
-                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.membership]) + '\n'
-            elif isinstance(fuzzy_set, fs.FS):
-                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.membership]) + '\n'
-            elif isinstance(fuzzy_set, fs.gaussianIVFS):
+        fuzzy_variable_printed = '$$$ Linguistic variable: ' + fuzzy_variable.name
+        if fuzzy_variable.units is not None:
+            fuzzy_variable_printed += ' : ' + fuzzy_variable.units
+        fuzzy_variable_printed += '\n'
+
+        for fuzzy_set in fuzzy_variable.linguistic_variables:
+            if isinstance(fuzzy_set, fs.gaussianIVFS):
                 fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + '\n'
             elif isinstance(fuzzy_set, fs.IVFS):
                 fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + '\n'
-
+            elif isinstance(fuzzy_set, fs.gaussianFS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.membership_parameters]) + '\n'
+            elif isinstance(fuzzy_set, fs.FS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.membership_parameters]) + '\n'
+            
     return fuzzy_variable_printed
 
 
@@ -244,7 +258,7 @@ def save_fuzzy_variables(fuzzy_variables: list) -> str:
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_write'] += 1
 
-    
+    fuzzy_variables_printed = ''
     for fvar in fuzzy_variables:
         fuzzy_variables_printed += print_fuzzy_variable(fvar) + '\n'
 

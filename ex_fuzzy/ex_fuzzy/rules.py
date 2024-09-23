@@ -1040,11 +1040,19 @@ class MasterRuleBase():
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
 
         if self.ds_mode == 0:
-            association_degrees = self.get_scores() * firing_strengths
+            rulesw = self.get_scores()
+            if self.fuzzy_type() == fs.FUZZY_SETS.t2 and len(rulesw.shape) == 1:
+                rulesw = rulesw[None, :, None]
+                
+            association_degrees = rulesw * firing_strengths
         elif self.ds_mode == 1:
             association_degrees = firing_strengths
         elif self.ds_mode == 2:
-            association_degrees = self.get_weights() * firing_strengths
+            rulesw = self.get_weights()
+            if self.fuzzy_type() == fs.FUZZY_SETS.t2:
+                rulesw = rulesw[None, :, None] 
+            
+            association_degrees = rulesw * firing_strengths
 
         if (self[0].fuzzy_type() == fs.FUZZY_SETS.t2) or (self[0].fuzzy_type() == fs.FUZZY_SETS.gt2):
             association_degrees = np.mean(association_degrees, axis=2)
