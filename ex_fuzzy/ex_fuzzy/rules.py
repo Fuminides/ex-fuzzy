@@ -908,7 +908,7 @@ class MasterRuleBase():
     This Class encompasses a list of rule bases where each one corresponds to a different class.
     '''
 
-    def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0, allow_unknown:bool=True) -> None:
+    def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0, allow_unknown:bool=False) -> None:
         '''
         Constructor of the MasterRuleBase class.
 

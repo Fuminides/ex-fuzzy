@@ -89,8 +89,9 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
             rule_simple.accuracy = float(rule_acc[4:].strip()) # We remove the 'ACC ' and the last space
             try:
                 rule_simple.weight = float(rule_weight[4:].strip())
+                ds_mode = 2
             except:
-                pass
+                ds_mode = 0
             
             rule_simple.modifiers = modifiers
             
@@ -109,7 +110,7 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                     rule_base = rules.RuleBaseGT2(fuzzy_variables, reconstructed_rules)
                                     
             if consequent == 1:
-                mrule_base = rules.MasterRuleBase([rule_base])
+                mrule_base = rules.MasterRuleBase([rule_base], ds_mode=ds_mode)
             elif consequent > 1:
                 mrule_base.add_rule_base(rule_base)
 
@@ -181,25 +182,26 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                 fields = processes_line
                 if len(fields) == 4:
                     name, domain, membership_type, mem1 = fields
-                elif len(fields) == 5:
-                    name, domain, membership_type, mem1, mem2 = fields
+                elif len(fields) > 4:
+                    name, domain, membership_type, mem1, mem2, height = fields
                     fuzzy_set_type = fs.FUZZY_SETS.t2
                     mem2 = [float(x) for x in mem2.split(',')]
+                    height = float(height)
                 
                 domain = [float(x) for x in domain.split(',')]
                 mem = [float(x) for x in mem1.split(',')]
 
                 if membership_type == 'gauss':
                     if fuzzy_set_type == fs.FUZZY_SETS.t1:
-                        constructed_fs = fs.gaussianFS(name, domain, mem)
+                        constructed_fs = fs.gaussianFS(name, mem, domain)
                     elif fuzzy_set_type == fs.FUZZY_SETS.t2:
-                        constructed_fs = fs.gaussianIVFS(name, domain, mem1, mem2)
+                        constructed_fs = fs.gaussianIVFS(name, mem1, mem2, domain, height)
 
                 elif membership_type == 'trap':
                     if fuzzy_set_type == fs.FUZZY_SETS.t1:
                         constructed_fs = fs.FS(name, mem, domain)
                     elif fuzzy_set_type == fs.FUZZY_SETS.t2:
-                        constructed_fs = fs.FS(name, mem, domain)
+                        constructed_fs = fs.IVFS(name, mem, mem2, domain, height)
                 
                 linguistic_var_fuzzy_sets.append(constructed_fs)
 
@@ -237,9 +239,9 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
 
         for fuzzy_set in fuzzy_variable.linguistic_variables:
             if isinstance(fuzzy_set, fs.gaussianIVFS):
-                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + '\n'
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + ';' + str(fuzzy_set.lower_height) + '\n' 
             elif isinstance(fuzzy_set, fs.IVFS):
-                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + '\n'
+                fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + ';' + str(fuzzy_set.lower_height) + '\n'  
             elif isinstance(fuzzy_set, fs.gaussianFS):
                 fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.membership_parameters]) + '\n'
             elif isinstance(fuzzy_set, fs.FS):

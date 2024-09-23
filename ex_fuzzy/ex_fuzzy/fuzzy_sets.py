@@ -137,6 +137,16 @@ class FS():
         :return: membership of the fuzzy set.
         '''
         return self.membership(x)
+    
+
+    def __str__(self) -> str:
+        '''
+        Returns the name of the fuzzy set, its type and its parameters.
+        
+        :return: string.
+        '''
+        return f'{self.name} ({self.type().name}) - {self.membership_parameters}'
+
 
 
 class categoricalFS(FS):
