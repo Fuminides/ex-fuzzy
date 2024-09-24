@@ -40,7 +40,7 @@ in the evaluation part of this section::
 
     import ex_fuzzy.evolutionary_fit as GA
 
-    fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, nAnts=4, n_linguist_variables=3,
+    fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, nAnts=4, n_linguistic_variables=3,
                                                  fuzzy_type=fs.FUZZY_SETS.t2, tolerance=0.001)
 
 These instructions will optimize the linguistic variables in each fuzzy variable, using IV fuzzy sets, using three linguistic variables and ten rules with up to four antecedents.

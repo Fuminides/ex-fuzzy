@@ -89,6 +89,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="k">try</span><span class="p">:</span>
@@ -210,7 +211,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">consequent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">consequent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="c1">#self.score = 1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="o">=</span> <span class="n">modifiers</span>
         <span class="c1">#self.weight = weight</span>
 
@@ -432,6 +433,10 @@
             <span class="n">cache_antecedent_memberships</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">antecedent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span><span class="p">):</span>
+                <span class="c1"># Check if x is pandas </span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">):</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">values</span>
+
                 <span class="n">cache_antecedent_memberships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">antecedent</span><span class="o">.</span><span class="n">compute_memberships</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]))</span>
 
@@ -988,7 +993,7 @@
 <span class="sd">    This Class encompasses a list of rule bases where each one corresponds to a different class.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleBase</span><span class="p">],</span> <span class="n">consequent_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ds_mode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleBase</span><span class="p">],</span> <span class="n">consequent_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ds_mode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Constructor of the MasterRuleBase class.</span>
 
@@ -1005,6 +1010,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span> <span class="o">=</span> <span class="n">consequent_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ds_mode</span> <span class="o">=</span> <span class="n">ds_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_unknown</span> <span class="o">=</span> <span class="n">allow_unknown</span>
 
 
 <div class="viewcode-block" id="MasterRuleBase.rename_cons"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.rename_cons">[docs]</a>    <span class="k">def</span> <span class="nf">rename_cons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consequent_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1097,12 +1103,17 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_winning_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_winning_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_unkown</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
         <span class="n">association_degrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_association_degrees</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="p">)</span>
 
         <span class="n">winning_rules</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">allow_unkown</span><span class="p">:</span>
+            <span class="c1"># If there is no rule that fires, we set the consequent to -1</span>
+            <span class="n">winning_rules</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
         <span class="k">return</span> <span class="n">winning_rules</span>
+
 
 <div class="viewcode-block" id="MasterRuleBase.compute_association_degrees"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.compute_association_degrees">[docs]</a>    <span class="k">def</span> <span class="nf">compute_association_degrees</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
@@ -1114,20 +1125,29 @@
         <span class="n">firing_strengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_firing_strenghts</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="n">precomputed_truth</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds_mode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">association_degrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()</span> <span class="o">*</span> <span class="n">firing_strengths</span>
+            <span class="n">rulesw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">rulesw</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">rulesw</span> <span class="o">=</span> <span class="n">rulesw</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+                
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">rulesw</span> <span class="o">*</span> <span class="n">firing_strengths</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds_mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">firing_strengths</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds_mode</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">association_degrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span> <span class="o">*</span> <span class="n">firing_strengths</span>
+            <span class="n">rulesw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                <span class="n">rulesw</span> <span class="o">=</span> <span class="n">rulesw</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> 
+            
+            <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">rulesw</span> <span class="o">*</span> <span class="n">firing_strengths</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">):</span>
             <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
             <span class="n">association_degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">association_degrees</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            
         <span class="k">return</span> <span class="n">association_degrees</span></div>
     
     
-<div class="viewcode-block" id="MasterRuleBase.winning_rule_predict"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.winning_rule_predict">[docs]</a>    <span class="k">def</span> <span class="nf">winning_rule_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="MasterRuleBase.winning_rule_predict"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.winning_rule_predict">[docs]</a>    <span class="k">def</span> <span class="nf">winning_rule_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the winning rule for each sample. Takes into account dominance scores if already computed.</span>
 
@@ -1139,11 +1159,33 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_rules</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RuleError</span><span class="p">(</span><span class="s1">&#39;No rules to predict!&#39;</span><span class="p">)</span>
         
-        <span class="n">consequents</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([[</span><span class="n">ix</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out_class_names</span><span class="p">:</span>
+            <span class="n">consequents</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([[</span><span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span><span class="p">[</span><span class="n">ix</span><span class="p">]]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
                           <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">))],</span> <span class="p">[])</span>  <span class="c1"># The sum is for flatenning the list</span>
-        <span class="n">winning_rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_winning_rules</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="n">precomputed_truth</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">consequents</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([[</span><span class="n">ix</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">))],</span> <span class="p">[])</span>  <span class="c1"># The sum is for flatenning the list</span>
+            
+        <span class="n">winning_rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_winning_rules</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="n">precomputed_truth</span><span class="p">,</span> <span class="n">allow_unkown</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_unknown</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">consequents</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="n">winning_rules</span><span class="p">])</span></div>
+        <span class="k">if</span> <span class="n">out_class_names</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">winning_rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">winning_rules</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">winning_rule</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">out_class_names</span><span class="p">:</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">consequents</span><span class="p">[</span><span class="n">winning_rule</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">consequents</span><span class="p">[</span><span class="n">winning_rule</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">out_class_names</span><span class="p">:</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Unknown&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MasterRuleBase.add_rule_base"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.add_rule_base">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">RuleBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1168,7 +1210,6 @@
         <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">ruleBase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_bases</span><span class="p">):</span>    
             <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;Rules for consequent: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consequent_names</span><span class="p">[</span><span class="n">ix</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
-            
             <span class="n">res</span> <span class="o">+=</span> <span class="s1">&#39;----------------</span><span class="se">\n</span><span class="s1">&#39;</span>
             <span class="n">res</span> <span class="o">+=</span> <span class="n">ruleBase</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
         
@@ -1251,9 +1292,13 @@
 <span class="sd">        :param X: array of dims: samples x features.</span>
 <span class="sd">        :return: vector of predictions, size: samples,</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+         
+        <span class="c1"># Convert the predictions to the names of the consequents</span>
+        <span class="c1">#return np.array(self.consequent_names)[aux]</span>
+        <span class="k">return</span> <span class="n">aux</span>
         
-        
+
 <div class="viewcode-block" id="MasterRuleBase.get_rulebases"><a class="viewcode-back" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rulebases">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RuleBase</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a list with all the rules.</span>
@@ -1360,6 +1405,8 @@
 
                     <span class="n">str_rule</span> <span class="o">+=</span> <span class="s1">&#39; (MOD &#39;</span> <span class="o">+</span> <span class="n">str_mod</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                 <span class="k">pass</span>
 
 

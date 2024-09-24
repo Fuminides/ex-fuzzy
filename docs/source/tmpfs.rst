@@ -53,5 +53,5 @@ The temporal fuzzy classifier can be evaluated using the ``eval_temporal_fuzzy_m
                                 plot_rules=False, print_rules=True, plot_partitions=False)
 
 
-.. _references::
-    [Kiah] Kiani, M., Andreu-Perez, J., & Hagras, H. (2022). A Temporal Type-2 Fuzzy System for Time-dependent Explainable Artificial Intelligence. IEEE Transactions on Artificial Intelligence.
+
+[Kiah] Kiani, M., Andreu-Perez, J., & Hagras, H. (2022). A Temporal Type-2 Fuzzy System for Time-dependent Explainable Artificial Intelligence. IEEE Transactions on Artificial Intelligence.

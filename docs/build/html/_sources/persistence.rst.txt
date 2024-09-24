@@ -2,7 +2,7 @@
 
 Persistence
 ====================================
-Rules can be saved and loaded using plain text. The specification for this format is the same the print format of the rules.
+Rules and fuzzy partitions can be saved and loaded using plain text. The specification for the rule file format is the same the print format of the rules.
 We can extract the rules from a model using the ``ex_fuzzy.eval_tools.eval_fuzzy_model`` method, which can can return the rules in string format if the ``return_rules`` parameter is set to ``True``::
 
 
@@ -63,4 +63,24 @@ If we already created the ``FuzzyRulesClassifier`` object, we can load the rules
 
 You can also save the best rulebase found each x steps of the genetic tuning if you set the ``checkpoint`` parameter to that x number of steps.
 
-    
+For the fuzzy partitions, a separate text file is needed. Each file is comprised of a section per variable, introduced as: "$$$ Linguistic variable:", after the :, we introduce the name of the variable. Each of the subsequent lpines contains the info per each of the fuzzy sets used to partitionate that variable. Those lines follow the scheme: Name, Domain, trapezoidal or gaussian membership (trap|gaus), and the parameters of the fuzzy membership. The separator between different fields is always the ,. When using a t2 partition, the parameters of the other membership function appear after the previous one. This is an example for the Iris dataset::
+
+    $$$ Linguistic variable: sepal length (cm)
+    Very Low;4.3,7.9;trap;4.3,4.3,5.0,5.36
+    Low;4.3,7.9;trap;5.04,5.2,5.6,5.779999999999999
+    Medium;4.3,7.9;trap;5.44,5.6,6.05,6.2749999999999995
+    High;4.3,7.9;trap;5.85,6.05,6.5,6.68
+    Very High;4.3,7.9;trap;6.34,6.7,7.9,7.9
+
+    $$$ Linguistic variable: sepal width (cm)
+    Very Low;2.0,4.4;trap;2.0,2.0,2.7,2.88
+    Low;2.0,4.4;trap;2.72,2.8,2.95,2.995
+    Medium;2.0,4.4;trap;2.91,2.95,3.1,3.1900000000000004
+    High;2.0,4.4;trap;3.02,3.1,3.3083333333333345,3.405833333333335
+    Very High;2.0,4.4;trap;3.221666666666667,3.4166666666666683,4.4,4.4
+
+You can load this file using the ``load_fuzzy_variables`` function from the persistence module::
+
+    # Load the saved fuzzy partitions from a file
+    with open('iris_partitions.txt', 'r') as f:
+        loaded_partitions = persistence.load_fuzzy_variables(f.read())

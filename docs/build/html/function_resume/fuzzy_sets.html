@@ -257,7 +257,7 @@ like computing the FM function, etc.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">fuzzyVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_sets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><span class="pre">ex_fuzzy.fuzzy_sets.FS</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">fuzzyVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_sets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><span class="pre">ex_fuzzy.fuzzy_sets.FS</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to implement a fuzzy Variable. Contains a series of fuzzy sets and computes the memberships to all of them.</p>
 <dl class="py method">
@@ -316,6 +316,33 @@ like computing the FM function, etc.</p>
 <dd class="field-odd"><p>list of strings.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">gaussianFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<p>Class to define a gaussian fuzzy set.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.membership" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the gaussian membership of a point or a vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input</strong> – input values in the fuzzy set referencial domain.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FUZZY_SETS</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.type" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the type of the fuzzy set. (t1)</p>
 </dd></dl>
 
 </dd></dl>

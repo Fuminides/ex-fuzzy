@@ -1,7 +1,7 @@
 .. _pattern_stats:
 
 Studying patterns
-=================
+============================
 
 Due to the nature of the genetic optimization, we might obtain different rulebases for the same dataset if we run the experiment with different seeds. Due to the nature of rule-based reasoning, we can directly study how often some patterns appear and how useful variables are by directly analyzing the different rulebases and the way in which their rules use each variable.
 

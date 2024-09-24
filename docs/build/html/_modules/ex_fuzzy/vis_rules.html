@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Studying patterns</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
@@ -340,6 +341,13 @@
         <span class="k">if</span>  <span class="n">fz_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">membership_parameters</span><span class="p">,</span>
                     <span class="n">memberships</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="n">ix</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">membership_parameters</span><span class="p">,</span> <span class="n">memberships</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+            
+            <span class="c1"># Optionally, add text annotations at the center of the membership function</span>
+            <span class="c1">#center_x = np.mean(fuzzy_set.membership_parameters)</span>
+            <span class="c1">#ax.annotate(name, xy=(center_x *1, 0.5), xytext=(center_x *0.85, 0.6),</span>
+            <span class="c1">#            fontsize=10, arrowprops=dict(facecolor=&#39;black&#39;, shrink=0.05))</span>
+
         <span class="k">elif</span> <span class="n">fz_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">secondMF_lower</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">memberships</span><span class="p">)</span> <span class="o">*</span> <span class="n">fuzzy_set</span><span class="o">.</span><span class="n">lower_height</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fuzzy_set</span><span class="o">.</span><span class="n">secondMF_upper</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">memberships</span><span class="p">),</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
@@ -381,8 +389,23 @@
                     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">key_plot</span><span class="p">,</span>  <span class="n">fuzzy_set</span><span class="o">.</span><span class="n">sample_unit_domain</span><span class="p">[</span><span class="n">gt2_memberships</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span> <span class="n">gt2_memberships</span><span class="p">[</span><span class="n">gt2_memberships</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">ix</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
                     <span class="n">initiated</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">fuzzy_variable</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        
+    <span class="c1"># Enhance the overall style</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Membership degree&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-v0_8-whitegrid&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="s1">&#39;outward&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="s1">&#39;outward&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">fuzzy_variable</span><span class="o">.</span><span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">fuzzy_variable</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>  <span class="c1"># Add space for the title</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">fuzzy_variable</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
@@ -422,7 +445,7 @@
 
 <div class="viewcode-block" id="rules_to_latex"><a class="viewcode-back" href="../../function_resume/vis_rules.html#ex_fuzzy.vis_rules.rules_to_latex">[docs]</a><span class="k">def</span> <span class="nf">rules_to_latex</span><span class="p">(</span><span class="n">rule_base</span><span class="p">:</span><span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Prints the rule base in a latex format. It prints</span>
+<span class="sd">    Prints the rule base in a latex format.</span>
 
 <span class="sd">    :note: if the rule base has three different linguistic labels, it will use custom commands for the partitions. You can define these commands (\low, \mid, \hig, \dc) to show colors, figures, etc. Be sure to recheck the DS, ACC values in this case, because 1.0 values of them are also converted to these commands.</span>
 <span class="sd">    </span>

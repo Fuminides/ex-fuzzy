@@ -20,8 +20,7 @@ A brief piece of code that does this case of use is the following::
 
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
-    fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, nAnts=4, n_linguist_variables=3,
-                                                 fuzzy_type=fs.FUZZY_SETS.t2, tolerance=0.001)
+    fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, nAnts=4)
     fl_classifier.fit(X_train, y_train, n_gen=50, pop_size=30)
 
     eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 

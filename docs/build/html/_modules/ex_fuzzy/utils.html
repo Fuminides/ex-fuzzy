@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Studying patterns</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
@@ -460,6 +461,8 @@
         <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">t2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
         <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">gt2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Fuzzy set type not recognized&#39;</span><span class="p">)</span>
 
 
     <span class="k">if</span> <span class="n">categorical_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
