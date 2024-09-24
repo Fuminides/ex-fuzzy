@@ -8,7 +8,7 @@ Some of the tools available in this library include:
 - Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets. We also support linguistic hedges.
 - Rule mining using support, confidence and lift measures. Customizable genetic optimization of the rule bases parameters.
 
-## Main Characteristics![ejemplo_t1]()
+## Main Characteristics
 
 
 ### Easy to use
