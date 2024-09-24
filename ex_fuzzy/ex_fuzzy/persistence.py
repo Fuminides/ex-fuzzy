@@ -38,7 +38,7 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
     
     :param rules_printed: string with the rules. Follows the specification given by the same printing method of rules.MasterRuleBase
     :param fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.
-    
+    :return mrule_base: object of MasterRuleBase class that contains the rules.
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_read'] += 1
@@ -136,7 +136,7 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
     Load the linguistic variables from a string.
     
     :param fuzzy_variables_printed: string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.
-    
+    :return fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_read'] += 1
@@ -217,7 +217,7 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
     Save the linguistic variable to a string.
     
     :param fuzzy_variable: linguistic variable. Object of FuzzyVariable class.
-    
+    :return fuzzy_variable_printed: string with the linguistic variable. Follows the specification given by the same printing method of FuzzyVariable class.
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_write'] += 1
@@ -255,7 +255,7 @@ def save_fuzzy_variables(fuzzy_variables: list) -> str:
     Save the linguistic variables to a string.
     
     :param fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.
-    
+    :return fuzzy_variables_printed: string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_write'] += 1
