@@ -8,7 +8,8 @@ Some of the tools available in this library include:
 - Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets. We also support linguistic hedges.
 - Rule mining using support, confidence and lift measures. Customizable genetic optimization of the rule bases parameters.
 
-## Main Characteristics
+## Main Characteristics![ejemplo_t1]()
+
 
 ### Easy to use
 
@@ -29,8 +30,8 @@ Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/12574757/210235257-17b22ede-762b-406c-880a-497e06964f17.png" height="320" title="Fuzzy graph">
-  <img src="https://user-images.githubusercontent.com/12574757/210235264-be98fff9-d1b6-4f3b-8b93-b11e0466a48c.png" height="320" title="Type 1 example">
-  <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/0a3f4508-6ab8-40b5-938b-d89b619c53a3" height="350" title="Type 2 example">
+  <img src="https://github.com/user-attachments/assets/858ae72b-6504-4173-b81b-b11a3caf802f" height="320" title="Type 1 example">
+  <img src="https://github.com/user-attachments/assets/0daf546a-6f8b-46dd-9d7e-f97242ea5324" height="350" title="Type 2 example">
   <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/b356a09f-4c66-45c9-8362-ebdbda684669" height="350" title="General Type 2 example">
   
 </p>
