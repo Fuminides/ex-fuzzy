@@ -103,7 +103,7 @@ def compute_quantiles(x, n_partitions):
     :return: numpy array, quantiles for partitioning.
     '''
     quantiles = np.linspace(0, 100, n_partitions + 2)
-    return np.percentile(x, quantiles, axis=0)
+    return np.nanpercentile(x, quantiles, axis=0)
 
 
 def t1_n_partition_parameters(x, n_partitions):

@@ -192,6 +192,15 @@ class categoricalFS(FS):
         Returns the corresponding fuzzy set type according to FUZZY_SETS enum.
         '''
         return FUZZY_SETS.t1
+    
+
+    def __str__(self) -> str:
+        '''
+        Returns the name of the fuzzy set, its type and its parameters.
+        
+        :return: string.
+        '''
+        return f'Categorical set: {self.name}, type 1 output'
 
 
 class IVFS(FS):
@@ -251,6 +260,15 @@ class IVFS(FS):
         Returns the corresponding fuzzy set type according to FUZZY_SETS enum: (t2)
         '''
         return FUZZY_SETS.t2
+    
+
+    def __str__(self) -> str:
+        '''
+        Returns the name of the fuzzy set, its type and its parameters.
+        
+        :return: string.
+        '''
+        return f'{self.name} ({self.type().name}) - {self.secondMF_lower} - {self.secondMF_upper}'
 
 
 class categoricalIVFS(IVFS):
@@ -305,6 +323,15 @@ class categoricalIVFS(IVFS):
         Returns the corresponding fuzzy set type according to FUZZY_SETS enum.
         '''
         return FUZZY_SETS.t2
+
+
+    def __str__(self) -> str:
+        '''
+        Returns the name of the fuzzy set, its type and its parameters.
+        
+        :return: string.
+        '''
+        return f'Categorical set: {self.name}, type 2 output'
     
 
 
@@ -501,6 +528,15 @@ class fuzzyVariable():
             self.linguistic_variables.append(fs)
 
         self.fs_type = self.linguistic_variables[0].type()
+
+
+    def append(self, fs: FS) -> None:
+        '''
+        Appends a fuzzy set to the fuzzy variable.
+
+        :param fs: FS. Fuzzy set to append.
+        '''
+        self.linguistic_variables.append(fs)
 
 
     def linguistic_variable_names(self) -> list:

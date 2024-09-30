@@ -12,3 +12,4 @@ rules_iris_t2.txt
 tmp.prof
 iris_partitions.txt
 .vscode/settings.json
+*.gz

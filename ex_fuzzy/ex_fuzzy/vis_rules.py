@@ -254,45 +254,50 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         fz_studied =  fuzzy_set.type()
 
         if  fz_studied == fs.FUZZY_SETS.t1:
-            ax.plot(fuzzy_set.membership_parameters,
-                    memberships, colors[ix], label=name)
-            ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
-            
+            try:
+                ax.plot(fuzzy_set.membership_parameters,
+                        memberships, colors[ix], label=name)
+                ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
+            except AttributeError:
+                print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
+
             # Optionally, add text annotations at the center of the membership function
             #center_x = np.mean(fuzzy_set.membership_parameters)
             #ax.annotate(name, xy=(center_x *1, 0.5), xytext=(center_x *0.85, 0.6),
             #            fontsize=10, arrowprops=dict(facecolor='black', shrink=0.05))
 
         elif fz_studied == fs.FUZZY_SETS.t2:
-            ax.plot(fuzzy_set.secondMF_lower, np.array(memberships) * fuzzy_set.lower_height, 'black')
-            ax.plot(fuzzy_set.secondMF_upper, np.array(memberships), 'black')
+            try:
+                ax.plot(fuzzy_set.secondMF_lower, np.array(memberships) * fuzzy_set.lower_height, 'black')
+                ax.plot(fuzzy_set.secondMF_upper, np.array(memberships), 'black')
 
-            # Compute the memberships for the lower/upper membership points. We do it in this way because non-exact 0/1s give problems.
-            x_lower = fuzzy_set.secondMF_lower
-            x_lower_lmemberships = [0.0 ,fuzzy_set.lower_height ,fuzzy_set.lower_height, 0.0] 
-            x_lower_umemberships = [fuzzy_set(x_lower[0])[1] , 1.0, 1.0 , fuzzy_set(x_lower[3])[1]]
+                # Compute the memberships for the lower/upper membership points. We do it in this way because non-exact 0/1s give problems.
+                x_lower = fuzzy_set.secondMF_lower
+                x_lower_lmemberships = [0.0 ,fuzzy_set.lower_height ,fuzzy_set.lower_height, 0.0] 
+                x_lower_umemberships = [fuzzy_set(x_lower[0])[1] , 1.0, 1.0 , fuzzy_set(x_lower[3])[1]]
 
-            x_upper = fuzzy_set.secondMF_upper
-            x_upper_lmemberships  = [0.0 , fuzzy_set(x_upper[1])[0], fuzzy_set(x_upper[2])[0], 0.0] 
-            x_upper_umemberships  = [0.0 ,1.0 ,1.0, 0.0] 
+                x_upper = fuzzy_set.secondMF_upper
+                x_upper_lmemberships  = [0.0 , fuzzy_set(x_upper[1])[0], fuzzy_set(x_upper[2])[0], 0.0] 
+                x_upper_umemberships  = [0.0 ,1.0 ,1.0, 0.0] 
 
-            x_values = list(x_lower) + list(x_upper)
-            lmembership_values = list(x_lower_lmemberships) + list(x_upper_lmemberships)
-            umembership_values = list(x_lower_umemberships) + list(x_upper_umemberships)
-            aux_df = pd.DataFrame(zip(x_values, lmembership_values, umembership_values),  columns=['x', 'l', 'u'])
-            
+                x_values = list(x_lower) + list(x_upper)
+                lmembership_values = list(x_lower_lmemberships) + list(x_upper_lmemberships)
+                umembership_values = list(x_lower_umemberships) + list(x_upper_umemberships)
+                aux_df = pd.DataFrame(zip(x_values, lmembership_values, umembership_values),  columns=['x', 'l', 'u'])
+                
 
-            if len(aux_df['x']) != len(set(aux_df['x'])): # There are repeated elements, so we use an order that should work in this case
-                # u0 l0 u1 l1 l2 u2 l3 u3
-                x = list((x_upper[0], x_lower[0], x_upper[1], x_lower[1], x_lower[2], x_upper[2], x_lower[3], x_upper[3]))
-                l_memberships = list((x_upper_lmemberships[0], x_lower_lmemberships[0], x_upper_lmemberships[1], x_lower_lmemberships[1], x_lower_lmemberships[2], x_upper_lmemberships[2], x_lower_lmemberships[3], x_upper_lmemberships[3]))
-                u_memberships = list((x_upper_umemberships[0], x_lower_umemberships[0], x_upper_umemberships[1], x_lower_umemberships[1], x_lower_umemberships[2], x_upper_umemberships[2], x_lower_umemberships[3], x_upper_umemberships[3]))
+                if len(aux_df['x']) != len(set(aux_df['x'])): # There are repeated elements, so we use an order that should work in this case
+                    # u0 l0 u1 l1 l2 u2 l3 u3
+                    x = list((x_upper[0], x_lower[0], x_upper[1], x_lower[1], x_lower[2], x_upper[2], x_lower[3], x_upper[3]))
+                    l_memberships = list((x_upper_lmemberships[0], x_lower_lmemberships[0], x_upper_lmemberships[1], x_lower_lmemberships[1], x_lower_lmemberships[2], x_upper_lmemberships[2], x_lower_lmemberships[3], x_upper_lmemberships[3]))
+                    u_memberships = list((x_upper_umemberships[0], x_lower_umemberships[0], x_upper_umemberships[1], x_lower_umemberships[1], x_lower_umemberships[2], x_upper_umemberships[2], x_lower_umemberships[3], x_upper_umemberships[3]))
 
-                ax.fill_between(x, l_memberships, u_memberships, color=colors[ix], alpha=0.5, label=name)
-            else:
-                aux_df.sort_values('x', inplace=True)
-                ax.fill_between(aux_df['x'], aux_df['l'], aux_df['u'], color=colors[ix], alpha=0.5, label=name)
-
+                    ax.fill_between(x, l_memberships, u_memberships, color=colors[ix], alpha=0.5, label=name)
+                else:
+                    aux_df.sort_values('x', inplace=True)
+                    ax.fill_between(aux_df['x'], aux_df['l'], aux_df['u'], color=colors[ix], alpha=0.5, label=name)
+            except AttributeError:
+                print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
         elif fz_studied == fs.FUZZY_SETS.gt2:
             for key, value in fuzzy_set.secondary_memberships.items():
                 
