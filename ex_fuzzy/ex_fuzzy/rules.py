@@ -1212,6 +1212,16 @@ class MasterRuleBase():
         # Convert the predictions to the names of the consequents
         #return np.array(self.consequent_names)[aux]
         return aux
+    
+
+    def predict(self, X: np.array) -> np.array:
+        '''
+        Gives the prediction for each sample (same as winning_rule_predict)
+
+        :param X: array of dims: samples x features.
+        :return: vector of predictions, size: samples,
+        '''
+        return self(X)
         
 
     def get_rulebases(self) -> list[RuleBase]:

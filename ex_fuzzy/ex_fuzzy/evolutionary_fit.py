@@ -278,7 +278,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.eval_performance = evr.evalRuleBase(
         self.rule_base, np.array(X), y)
 
-        self.eval_performance.add_full_evaluation()  
+        self.eval_performance.add_full_evaluation() 
+        self.p_value_labels, self.p_value_features = self.eval_performance.bootstrap_classifier_validation() 
+
         if self.lvs is None:
             self.rename_fuzzy_variables()
         

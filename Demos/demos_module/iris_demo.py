@@ -15,11 +15,15 @@ We also show the GA to optimize the rules obtained in classification.
 
 
 import pandas as pd
-
+import numpy as np
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
 import sys
+
+import ex_fuzzy.fuzzy_sets as fs
+
+
 
 # In case you run this without installing the package, you need to add the path to the package
 
@@ -51,14 +55,12 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = pd.Series(iris.target)
 class_names = iris.target_names
-
-fz_type_studied = fs.FUZZY_SETS.t1
+class_names = np.unique(y)
+fz_type_studied = fs.FUZZY_SETS.t2
 vl = 3
 
 # Compute the fuzzy partitions using n linguistic variables
 precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl)
-for fuzzy_variable in precomputed_partitions_vl:
-    fuzzy_variable.units = 'cm'
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 
@@ -67,12 +69,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random
 fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions_vl, nAnts=nAnts, class_names=class_names, n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner)
 
 # fl_classifier.customized_loss(utils.mcc_loss) Use this to change the loss function, but be sure to look at the API first
-fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=10, random_state=0)
+fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0)
 
 # print(vis_rules.rules_to_latex(fl_classifier.rule_base))
 str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
                         plot_rules=False, print_rules=True, plot_partitions=True, return_rules=True)
-
 rule_matrix = fl_classifier.rule_base.get_rulebase_matrix()
 
 # Save the rules as a plain text file

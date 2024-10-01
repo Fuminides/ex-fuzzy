@@ -8,9 +8,11 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 try:
     from . import rules
     from . import fuzzy_sets as fs
+    from . import boostrapping_test as bt
 except ImportError:
     import rules
     import fuzzy_sets as fs
+    import boostrapping_test as bt
 
 
 class evalRuleBase():
@@ -403,6 +405,24 @@ class evalRuleBase():
 
         return rule_density
 
+
+    def bootstrap_classifier_validation(self, n=100, r=10) -> float:
+        '''
+        Performs a boostrap test to evaluate the performance of the rule base.
+        Returns the p-valuefor the label permutation test and the feature coalition test.
+
+        :param n: int. Number of boostrap samples.
+        :param r: int. Number of repetitions to estimate the original error rate.
+        :return: p-value of the permutation test.
+        '''
+        test1 = bt.permutation_labels_test(self.mrule_base, self.X, self.y, k=n, r=r)
+        test2 = bt.permute_columns_class_test(self.mrule_base, self.X, self.y, k=n, r=r)
+
+        self.mrule_base.p_value_labels = test1
+        self.mrule_base.p_value_features = test2
+
+        return test1, test2
+    
 
     def add_full_evaluation(self):
         '''
