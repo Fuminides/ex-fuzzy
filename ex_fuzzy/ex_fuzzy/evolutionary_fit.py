@@ -133,7 +133,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
 
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
-            checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33) -> None:
+            checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
+            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -143,6 +144,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param pop_size: integer. Population size for each gneration.
         :param checkpoints: integer. Number of checkpoints to save the best rulebase found so far.
         :param candidate_rules: if these rules exist, the optimization process will choose the best rules from this set. If None (default) the rules will be generated from scratch.
+        :param initial_rules: if these rules exist, the optimization process will start from this set. If None (default) the rules will be generated from scratch.
+        :param random_state: integer. Random seed for the optimization process.
+        :param var_prob: float. Probability of crossover for the genetic algorithm.
+        :param sbx_eta: float. Eta parameter for the SBX crossover.
+        :param mutation_eta: float. Eta parameter for the polynomial mutation.
+        :param tournament_size: integer. Size of the tournament for the genetic algorithm.
         :return: None. The classifier is fitted to the data.
         '''
         if mnt.save_usage_flag:
@@ -202,8 +209,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         algorithm = GA(
             pop_size=pop_size,
-            crossover=SBX(prob=.3, eta=3.0),
-            mutation=PolynomialMutation(eta=7.0),
+            crossover=SBX(prob=var_prob, eta=sbx_eta),
+            mutation=PolynomialMutation(eta=mutation_eta),
+            tournament_size=tournament_size,
             sampling=rules_gene,
             eliminate_duplicates=False)
         
