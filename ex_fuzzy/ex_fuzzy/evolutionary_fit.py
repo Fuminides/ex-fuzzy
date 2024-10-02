@@ -272,7 +272,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.var_names = [str(ix) for ix in range(X.shape[1])]
 
         self.rule_base = problem._construct_ruleBase(
-        best_individual, fz_type=self.fuzzy_type)
+        best_individual, self.fuzzy_type)
         self.rule_base.rename_cons(self.classes_names)
 
         self.eval_performance = evr.evalRuleBase(
