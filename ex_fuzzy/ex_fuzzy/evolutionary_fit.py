@@ -794,10 +794,10 @@ class FitRuleBase(Problem):
         gene = np.zeros((self.single_gen_size,))
 
         n_lv_possible = len(rule_base.rule_bases[0].antecedents[0].linguistic_variables)
-        fz_type = rule_base.fuzzy_type()
+        fuzzy_type = rule_base.fuzzy_type()
         rule_consequents = rule_base.get_consequents()
         nreal_rules = len(rule_consequents)
-        mf_size = 4 if fz_type == fs.FUZZY_SETS.t1 else 8
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 8
 
         # Pointer to the fourth section of the gene: consequents
         if optimize_lv:
@@ -867,12 +867,12 @@ class FitRuleBase(Problem):
         
 
 
-    def _construct_ruleBase(self, x: np.array, fz_type: fs.FUZZY_SETS, **kwargs) -> rules.MasterRuleBase:
+    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> rules.MasterRuleBase:
         '''
         Given a subject, it creates a rulebase according to its specification.
 
         :param x: gen of a rulebase. type: dict.
-        :param fz_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
+        :param fuzzy_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
         :param kwargs: additional parameters to pass to the rule
         :return: a rulebase object.
 
@@ -883,7 +883,7 @@ class FitRuleBase(Problem):
 
         rule_list = [[] for _ in range(self.n_classes)]
 
-        mf_size = 4 if fz_type == fs.FUZZY_SETS.t1 else 8
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 8
         '''
         GEN STRUCTURE
 
@@ -986,7 +986,7 @@ class FitRuleBase(Problem):
                     fz_parameters = self.antecedents_referencial[fuzzy_variable][fz_parameters_idx]
                     aux_pointer += mf_size
 
-                    if fz_type == fs.FUZZY_SETS.t2:
+                    if fuzzy_type == fs.FUZZY_SETS.t2:
                         fz_parameters[0:6] = np.sort(fz_parameters[0:6])
                         mu = [np.min(fz_parameters[0:2]), fz_parameters[2],
                               fz_parameters[3], np.max(fz_parameters[4:6])]
@@ -1011,14 +1011,14 @@ class FitRuleBase(Problem):
 
 
         for i in range(self.n_classes):
-            if fz_type == fs.FUZZY_SETS.temporal:
-                fz_type = self.lvs[0][0].inside_type()
+            if fuzzy_type == fs.FUZZY_SETS.temporal:
+                fuzzy_type = self.lvs[0][0].inside_type()
 
-            if fz_type == fs.FUZZY_SETS.t1:
+            if fuzzy_type == fs.FUZZY_SETS.t1:
                 rule_base = rules.RuleBaseT1(antecedents, rule_list[i])
-            elif fz_type == fs.FUZZY_SETS.t2:
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
                 rule_base = rules.RuleBaseT2(antecedents, rule_list[i])
-            elif fz_type == fs.FUZZY_SETS.gt2:
+            elif fuzzy_type == fs.FUZZY_SETS.gt2:
                 rule_base = rules.RuleBaseGT2(antecedents, rule_list[i])
             
 
