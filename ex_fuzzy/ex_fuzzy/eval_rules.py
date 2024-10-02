@@ -418,8 +418,11 @@ class evalRuleBase():
         test1 = bt.permutation_labels_test(self.mrule_base, self.X, self.y, k=n, r=r)
         test2 = bt.permute_columns_class_test(self.mrule_base, self.X, self.y, k=n, r=r)
 
-        self.mrule_base.p_value_labels = test1
-        self.mrule_base.p_value_features = test2
+        bt.rulewise_label_permutation_test(self.mrule_base, self.X, self.y, k=n, r=r)
+        bt.rulewise_column_permutation_test(self.mrule_base, self.X, self.y, k=n, r=r)
+        
+        self.mrule_base.p_value_class_structure = test1
+        self.mrule_base.p_value_feature_coalition = test2
 
         return test1, test2
     
