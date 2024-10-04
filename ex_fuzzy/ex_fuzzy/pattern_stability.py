@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 import numbers
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
+import random
 
 try:
     from . import fuzzy_sets as fs
@@ -65,7 +66,7 @@ class pattern_stabilizer():
     def __init__(self,  X, y, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
                  domain: list[float] = None, n_class: int=None, runner: int=1, ds_mode:int=0, allow_unkown:bool=False,
-                 fuzzy_modifiers:bool=False) -> None:
+                 fuzzy_modifiers:bool=False, stratify_by:str=None) -> None:
         
         '''
         Inits the optimizer with the corresponding parameters.
@@ -81,6 +82,7 @@ class pattern_stabilizer():
         :param n_class: names of the classes in the problem. If None (default) the classifier will compute it empirically.
         :param precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
         :param runner: number of threads to use. If None (default) the classifier will use 1 thread.
+        :param stratify_by: string naming additional column to stratify test/train split if desired (e.g. split by participant rather than trial).
         '''
         self.nRules = nRules
         self.nAnts = nAnts
@@ -121,18 +123,45 @@ class pattern_stabilizer():
         self.X = X
         self.y = y
 
+        self.stratify_by = stratify_by
 
-    def generate_solutions(self, n=30, n_gen=10, pop_size=10):
+
+    def generate_solutions(self, n=30, n_gen=10, pop_size=10,stratify_by:str=None,test_size=0.33):
         # We will generate n solutions and return the rule bases and the accuracies
+        # Pre-defined stratification by additional column (e.g. participant vs. trial) if desired
         rule_bases = []
         accs = []
         use_names = not isinstance(self.classes_names[0], numbers.Number)
+        strat_column = None
+        strat = self.stratify_by
 
         for ix in range(n):
             fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=self.nRules, linguistic_variables=self.lvs, nAnts=self.nAnts, n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=self.tolerance, runner=self.runner, ds_mode=self.ds_mode, fuzzy_modifiers=self.fuzzy_modifiers, allow_unknown=self.allow_unknown)
             
-            X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.33, random_state=ix)
-            fl_classifier.fit(X_train, np.array(y_train), n_gen=n_gen, pop_size=pop_size, checkpoints=0)
+            if strat:
+                strat_column = self.stratify_by
+                # Use strat_column to split the data then drop the column and perform test/train split
+                id = self.X[strat_column].unique() #get unique ids in strat_column
+                random.seed(ix) # set different seeds to split data differently per iteration
+                test_ix = random.sample(range(0,len(id)),int(len(id)*test_size)) #randomly select indices for testing using test_size value
+                test_id = [id[i] for i in test_ix] #get labels for test ix
+
+                # Get train/test X and y data
+                X_train = self.X[~self.X[strat_column].isin(test_id)]
+                X_test = self.X[self.X[strat_column].isin(test_id)]
+                y_train = [self.y[i] for i in X_train.index.tolist()]
+                y_test = [self.y[i] for i in X_test.index.tolist()]
+
+                # Drop ID column for training
+                X_train = X_train.drop(columns=[strat_column])
+                X_test = X_test.drop(columns=[strat_column])
+
+                fl_classifier.fit(X_train, np.array(y_train), n_gen=n_gen, pop_size=pop_size, checkpoints=0)
+            
+            else:
+                X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=test_size, random_state=ix)
+                fl_classifier.fit(X_train, np.array(y_train), n_gen=n_gen, pop_size=pop_size, checkpoints=0)
+
 
             rule_bases.append(fl_classifier.rule_base)
             accuracy = np.mean(np.equal(fl_classifier.forward(X_test, out_class_names=use_names), np.array(y_test)))
@@ -140,7 +169,6 @@ class pattern_stabilizer():
         
         return rule_bases, accs
     
-
     def count_unique_patterns(self, rule_base: rl.RuleBase):
         '''
         We will count the number of unique patterns in the rule base. It will also count the number of times each variable is used in the rule base and the record the dominance score of each pattern.
@@ -176,7 +204,6 @@ class pattern_stabilizer():
         
         return unique_patterns, patterns_ds, var_used
     
-
     def count_unique_patterns_all_classes(self, mrule_base: rl.MasterRuleBase, class_patterns: dict[list] = None, patterns_dss: dict[list] = None, class_vars: dict[list] = None):
         '''
         Counts the number of unique patterns for all classes. It also counts the number of times each variable is used in the rule base and the dominance score of each pattern.
@@ -212,18 +239,19 @@ class pattern_stabilizer():
         return class_patterns, patterns_dss, class_vars
     
 
-    def get_patterns_scores(self, n=30, n_gen=10, pop_size=10):
+    def get_patterns_scores(self, n=30, n_gen=10, pop_size=10,test_size=0.33):
         '''
         Gets the patterns scores for the generated solutions.
 
         :param n: int. The number of solutions to generate.
+        :param test_size: int defines train/test split
         :return class_patterns: dict[list]. The dictionary with the unique patterns for each class.
         :return patterns_dss: dict[list]. The dictionary with the dominance score of each pattern for each class.
         :return class_vars: dict[list]. The dictionary with the number of times each variable is used in the rule base for each class.
         :return accuracies: list. The list with the accuracies of the generated solutions.
         :return rule_bases: list. The list with the generated rule bases.
         '''
-        rule_bases, accuracies = self.generate_solutions(n, n_gen=n_gen, pop_size=pop_size)
+        rule_bases, accuracies = self.generate_solutions(n, n_gen=n_gen, pop_size=pop_size,test_size=test_size)
         self.n = n
         faults = 0
         for ix, mrule_base in enumerate(rule_bases):
@@ -304,14 +332,14 @@ class pattern_stabilizer():
             print()
     
 
-    def stability_report(self, n=10, n_gen=30, pop_size=20):
+    def stability_report(self, n=10, n_gen=30, pop_size=20,test_size=0.33):
         '''
         Generates a stability report for pattern stabilization.
 
         :param n: int. The number of solutions to generate.
         :return text_report: str. The text report for pattern stability.
         '''
-        class_patterns, patterns_dss, class_vars, accuracies, rule_bases = self.get_patterns_scores(n, n_gen=n_gen, pop_size=pop_size)
+        class_patterns, patterns_dss, class_vars, accuracies, rule_bases = self.get_patterns_scores(n, n_gen=n_gen, pop_size=pop_size,test_size=test_size)
         self.class_patterns = class_patterns
         self.patterns_dss = patterns_dss
         self.class_vars = class_vars
