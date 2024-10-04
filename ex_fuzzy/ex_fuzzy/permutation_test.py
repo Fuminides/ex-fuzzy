@@ -14,13 +14,13 @@ import pandas as pd
 from sklearn.base import ClassifierMixin
 
 try:
-    from . import evolutionary_fit as GA
+    from . import rules
 except:
-    import evolutionary_fit as GA
+    import rules
 
 class classifierWrapper(ClassifierMixin):
 
-    def __init__(self, classifier: GA.BaseFuzzyRulesClassifier, nrule:int):
+    def __init__(self, classifier: rules.MasterRuleBase, nrule:int):
         '''
         Creates a classifier wrapper for the given rule in a rule-based classifier.
 
@@ -38,12 +38,12 @@ class classifierWrapper(ClassifierMixin):
         :param X: data to evaluate.
         :return: predicted labels.
         '''
-        winning_rule_preds = self.classifier.rule_base._winning_rules(X)
+        winning_rule_preds = self.classifier._winning_rules(X)
 
         return winning_rule_preds == self.nrule
 
 
-def _aux_ova_rule_classifier(classifier: GA.BaseFuzzyRulesClassifier, nrule:int, labels: np.array):
+def _aux_ova_rule_classifier(classifier: rules.MasterRuleBase, nrule:int, labels: np.array):
     '''
     Formats the data to the OVA format and creates a classifier wrapper for the given rule in a rule-based classifier.
 
@@ -53,7 +53,7 @@ def _aux_ova_rule_classifier(classifier: GA.BaseFuzzyRulesClassifier, nrule:int,
     :return: an object of the sklearn classifier class.
     '''
     ruleOVA_classifier = classifierWrapper(classifier, nrule)
-    rules_consequents = classifier.rule_base.get_consequents()
+    rules_consequents = classifier.get_consequents()
 
     new_labels = labels == rules_consequents[nrule]
 
@@ -150,7 +150,7 @@ def permute_columns_class_test(classifier, X:np.array, labels:np.array, k:int=10
     return p_value
 
 
-def rulewise_label_permutation_test(classifier: GA.BaseFuzzyRulesClassifier, X: np.array, labels: np.array, k:int=100, r:int=10):
+def rulewise_label_permutation_test(classifier: rules.MasterRuleBase, X: np.array, labels: np.array, k:int=100, r:int=10):
     '''
     Function to perform a permutation test to evaluate the performance of a classifier.
     
@@ -161,7 +161,7 @@ def rulewise_label_permutation_test(classifier: GA.BaseFuzzyRulesClassifier, X: 
     :param r: number of repetitions to estimate the original error rate.
     :return: p-value of the permutation test.
     '''
-    for ix_rule, rule in enumerate(classifier.rule_base.get_rules()):
+    for ix_rule, rule in enumerate(classifier.get_rules()):
         error_rates = []
 
         ruleOVA_classifier, new_labels = _aux_ova_rule_classifier(classifier, ix_rule, labels)
@@ -178,7 +178,7 @@ def rulewise_label_permutation_test(classifier: GA.BaseFuzzyRulesClassifier, X: 
         rule.p_value_class_structure = p_value
 
 
-def rulewise_column_permutation_test(classifier: GA.BaseFuzzyRulesClassifier, X: np.array, labels: np.array, k:int=100, r:int=10):
+def rulewise_column_permutation_test(classifier: rules.MasterRuleBase, X: np.array, labels: np.array, k:int=100, r:int=10):
     '''
     Function to perform a permutation test to evaluate the performance of a classifier.
     
@@ -189,7 +189,7 @@ def rulewise_column_permutation_test(classifier: GA.BaseFuzzyRulesClassifier, X:
     :param r: number of repetitions to estimate the original error rate.
     :return: p-value of the permutation test.
     '''
-    for ix_rule, rule in enumerate(classifier.rule_base.get_rules()):
+    for ix_rule, rule in enumerate(classifier.get_rules()):
         error_rates = []
 
         ruleOVA_classifier, new_labels = _aux_ova_rule_classifier(classifier, ix_rule, labels)
@@ -198,10 +198,10 @@ def rulewise_column_permutation_test(classifier: GA.BaseFuzzyRulesClassifier, X:
 
         for i in range(k):
             permuted_X = X.copy()
-            for clas in classes:
-                premuted_x_clas = permuted_X[new_labels == clas]
-                premuted_x_clas = np.random.permutation(premuted_x_clas)
-                permuted_X[new_labels == clas] = premuted_x_clas
+            clas = classifier.get_consequents()[ix_rule]
+            premuted_x_clas = permuted_X[new_labels == clas]
+            premuted_x_clas = np.random.permutation(premuted_x_clas)
+            permuted_X[new_labels == clas] = premuted_x_clas
                 
             permuted_error_rate = np.mean(ruleOVA_classifier.predict(permuted_X) != new_labels)
             error_rates.append(permuted_error_rate)

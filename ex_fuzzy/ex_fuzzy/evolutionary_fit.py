@@ -134,7 +134,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
-            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3) -> None:
+            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3, bootstrap_size=1000) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -273,18 +273,20 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         self.rule_base = problem._construct_ruleBase(
         best_individual, self.fuzzy_type)
-        self.rule_base.rename_cons(self.classes_names)
+        
 
         self.eval_performance = evr.evalRuleBase(
         self.rule_base, np.array(X), y)
-
-        self.eval_performance.add_full_evaluation() 
-        self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.bootstrap_classifier_validation() 
-
+        self.eval_performance.add_full_evaluation()
+        self.rule_base.purge_rules(self.tolerance)
+        self.eval_performance.add_full_evaluation() # After purging the bad rules we update the metrics.
+        
+        self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.p_permutation_classifier_validation() 
+        self.eval_performance.p_bootstrapping_rules_validation(bootstrap_size)
+        self.rule_base.rename_cons(self.classes_names)
         if self.lvs is None:
             self.rename_fuzzy_variables()
         
-        self.rule_base.purge_rules(self.tolerance)
         
 
     def load_master_rule_base(self, rule_base: rules.MasterRuleBase) -> None:
@@ -420,6 +422,15 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.beta_ = beta
 
 
+    def __call__(self, X:np.array) -> np.array:
+        '''
+        Returns the predicted class for each sample.
+
+        :param X: np array samples x features.
+        :return: np array samples (x 1) with the predicted class.
+        '''
+        return self.predict(X)
+    
 
 class ExploreRuleBases(Problem):
     '''

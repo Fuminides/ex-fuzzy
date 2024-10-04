@@ -8,11 +8,11 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 try:
     from . import rules
     from . import fuzzy_sets as fs
-    from . import boostrapping_test as bt
+    from . import permutation_test as bt
 except ImportError:
     import rules
     import fuzzy_sets as fs
-    import boostrapping_test as bt
+    import permutation_test as bt
 
 
 class evalRuleBase():
@@ -333,7 +333,10 @@ class evalRuleBase():
         self.add_rule_weights()
         preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
 
-        return matthews_corrcoef(self.y, preds)
+        self.mcc = matthews_corrcoef(self.y, preds)
+        self.acc = accuracy_score(self.y, preds)
+
+        return self.mcc
 
 
     def size_antecedents_eval(self, tolerance=0.1) -> float:
@@ -406,7 +409,7 @@ class evalRuleBase():
         return rule_density
 
 
-    def bootstrap_classifier_validation(self, n=100, r=10) -> float:
+    def p_permutation_classifier_validation(self, n=100, r=10) -> float:
         '''
         Performs a boostrap test to evaluate the performance of the rule base.
         Returns the p-valuefor the label permutation test and the feature coalition test.
@@ -420,12 +423,20 @@ class evalRuleBase():
 
         bt.rulewise_label_permutation_test(self.mrule_base, self.X, self.y, k=n, r=r)
         bt.rulewise_column_permutation_test(self.mrule_base, self.X, self.y, k=n, r=r)
-        
+
         self.mrule_base.p_value_class_structure = test1
         self.mrule_base.p_value_feature_coalition = test2
 
         return test1, test2
     
+
+    def p_bootstrapping_rules_validation(self, n=100) -> float:
+        import ex_fuzzy.bootstrapping_test as bt
+        rules_p_values =  bt.compute_rule_p_value(self.mrule_base, self.X, self.y, n).flatten()
+
+        for jx, rule in enumerate(self.mrule_base.get_rules()):
+            rule.boot_p_value = rules_p_values[jx]
+
 
     def add_full_evaluation(self):
         '''
@@ -433,4 +444,6 @@ class evalRuleBase():
         '''
         self.add_rule_weights()
         self.add_classification_metrics()
+        self.classification_eval()
+        
         

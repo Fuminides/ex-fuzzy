@@ -32,6 +32,12 @@ def _remove_mod_completely(text):
     return re.sub(pattern, replacement, text)
 
 
+import re
+
+def remove_parentheses(text):
+    return re.sub(r'\(.*?\)', '', text)
+
+
 def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterRuleBase:
     '''
     Load the rules from a string.
@@ -61,7 +67,8 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                     rule_acc = stat.strip()
                 elif 'WGHT' in stat:
                     rule_weight = stat.strip()
-                    
+            
+            consequent_ds = remove_parentheses(consequent_ds)
             consequent_ds = consequent_ds.split(',')[0].strip()
             modifiers = np.ones((len(fuzzy_variables),))
             init_rule_antecedents = np.zeros(

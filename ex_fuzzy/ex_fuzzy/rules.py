@@ -157,7 +157,8 @@ class RuleSimple():
         aux = 'Rule: antecedents: ' + str(self.antecedents) + ' consequent: ' + str(self.consequent)
 
         try:
-            aux += ' modifiers: ' + str(self.modifiers)
+            if self.modifiers is not None:
+                aux += ' modifiers: ' + str(self.modifiers)
         except AttributeError:
             pass
         
@@ -173,6 +174,16 @@ class RuleSimple():
     
         try:
             aux += ' accuracy: ' + str(self.accuracy)
+        except AttributeError:
+            pass
+
+        try:
+            aux += ' p-value class structure: ' + str(self.p_value_class_structure)
+        except AttributeError:
+            pass
+
+        try:
+            aux += ' p-value feature coalitions: ' + str(self.p_value_feature_coalitions)
         except AttributeError:
             pass
 
@@ -802,8 +813,10 @@ class RuleBaseGT2(RuleBase):
         :param antecedents_memberships: precomputed antecedent memberships. Not supported for GT2.
         :return: array with the memberships of the antecedents for each sample.
         '''
-        antecedent_membership = super().compute_rule_antecedent_memberships(x, scaled)
-        return self._alpha_reduction(antecedent_membership)
+        
+        rules_truth_values = super().compute_rule_antecedent_memberships(x, scaled, antecedents_memberships=antecedents_memberships)
+            
+        return self._alpha_reduction(rules_truth_values)
 
 
     def alpha_compute_rule_antecedent_memberships(self, x: np.array, scaled=True, antecedents_memberships=None) -> np.array:
@@ -1014,7 +1027,7 @@ class MasterRuleBase():
         for ix in range(len(self.rule_bases)):
             aux.append(self[ix].compute_rule_antecedent_memberships(X, antecedents_memberships=precomputed_truth))
 
-        # Firing strengths shape: samples x rules
+        # Firing strengths shape: samples x rules (x 2) (last is iv dimension) or (x alpha_cuts x 2) for gt2
         return np.concatenate(aux, axis=1)
 
 
@@ -1355,5 +1368,25 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
             str_rule += ' THEN consequent vl is ' + str(rule.consequent)
         except AttributeError:
             pass
+    
+    try:
+        p_value_class_structure = rule.p_value_class_structure
+        p_value_feature_coalition = rule.p_value_feature_coalitions
+
+        pvc = '*' if p_value_class_structure < 0.05 else str(p_value_class_structure)
+        pvf = '*' if p_value_feature_coalition < 0.05 else str(p_value_feature_coalition)
+
+        str_rule += ' (p-value Permutation CS: ' + pvc + ', FC: ' + pvf + ')'
+    except AttributeError:
+        pass
+
+
+    try:
+        p_value_bootstrap = rule.boot_p_value
+
+        pbs = '*' if p_value_bootstrap < 0.05 else str(p_value_bootstrap)
+        str_rule += ' (p-value bootstrap: ' + pbs + ')'
+    except AttributeError:
+        pass
     
     return str_rule
