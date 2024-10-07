@@ -44,11 +44,11 @@ import ex_fuzzy.pattern_stability as pattern_stability
 
 runner = 1 # 1: single thread, 2+: corresponding multi-thread
 
-n_gen = 20
+n_gen = 10
 n_pop = 50
     
 nRules = 10
-nAnts = 7
+nAnts = 3
 tolerance = 0.001
 
 iris = datasets.load_iris()
@@ -72,7 +72,8 @@ fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=
 fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0)
 
 # print(vis_rules.rules_to_latex(fl_classifier.rule_base))
-str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
+fuzzy_evaluator = eval_tools.FuzzyEvaluator(fl_classifier)
+str_rules = fuzzy_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
                         plot_rules=False, print_rules=True, plot_partitions=True, return_rules=True)
 rule_matrix = fl_classifier.rule_base.get_rulebase_matrix()
 

@@ -37,7 +37,7 @@ class FuzzyEvaluator():
         '''
         #Get y predictions
         y_pred = self.predict(X_true)
-
+        y_true = np.array(y_true)
         #Convert str classes to numbers in corresponding class if necessary
         unique_classes = self.fl_classifier.classes_names
 
@@ -54,6 +54,7 @@ class FuzzyEvaluator():
               return f"Metric '{metric}' not found in sklearn.metrics."
         except TypeError:
               return f"Invalid arguments passed for the metric '{metric}'."
+        
         
     def eval_fuzzy_model(self,X_train: np.array, y_train: np.array,X_test: np.array, y_test: np.array, 
                          plot_rules=True, print_rules=True, plot_partitions=True, 
@@ -89,10 +90,10 @@ class FuzzyEvaluator():
       if print_matthew:
             print('MATTHEW CORRCOEF')
             print('Train performance: ' +
-                  str(self.get_metric('mattews_corrcoef',X_train,y_train))
+                  str(self.get_metric('matthews_corrcoef',X_train,y_train))
                   )
             print('Test performance: ' +
-                  str(self.get_metric('mattews_corrcoef',X_test,y_test))
+                  str(self.get_metric('matthews_corrcoef',X_test,y_test))
                   )
             print('------------')
 
