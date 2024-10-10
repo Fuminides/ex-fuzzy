@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ex_fuzzy.eval_rules &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -93,12 +91,16 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">permutation_test</span> <span class="k">as</span> <span class="n">bt</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">rules</span>
     <span class="kn">import</span> <span class="nn">fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+    <span class="kn">import</span> <span class="nn">permutation_test</span> <span class="k">as</span> <span class="nn">bt</span>
 
 
-<div class="viewcode-block" id="evalRuleBase"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase">[docs]</a><span class="k">class</span> <span class="nc">evalRuleBase</span><span class="p">():</span>
+<div class="viewcode-block" id="evalRuleBase">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase">[docs]</a>
+<span class="k">class</span> <span class="nc">evalRuleBase</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Class to evaluate a set of rules given a evaluation dataset.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -127,7 +129,9 @@
 
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_pattern_support"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support">[docs]</a>    <span class="k">def</span> <span class="nf">compute_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.compute_pattern_support">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern support for each of the rules for the given X.</span>
 <span class="sd">        Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,</span>
@@ -162,7 +166,10 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_support"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support">[docs]</a>    <span class="k">def</span> <span class="nf">compute_aux_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_support">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_aux_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern support for each of the rules for each of the classes for the given X.</span>
 <span class="sd">        Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,</span>
@@ -201,6 +208,7 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
+
     <span class="k">def</span> <span class="nf">_get_all_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">rules</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a list of all the rules in the master rule base.</span>
@@ -214,7 +222,9 @@
         <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_pattern_confidence"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">compute_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.compute_pattern_confidence">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern confidence for each of the rules for the given X.</span>
 <span class="sd">        Each pattern confidence is the normalized firing strength.</span>
@@ -250,7 +260,10 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_confidence"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">compute_aux_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_confidence">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_aux_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern confidence for each of the rules for the given X.</span>
 <span class="sd">        Each pattern confidence is the normalized firing strength.</span>
@@ -287,7 +300,10 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.dominance_scores"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores">[docs]</a>    <span class="k">def</span> <span class="nf">dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.dominance_scores">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores">[docs]</a>
+    <span class="k">def</span> <span class="nf">dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the dominance score of each pattern for each rule.</span>
 
@@ -296,7 +312,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_pattern_confidence</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_pattern_support</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.association_degree"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.association_degree">[docs]</a>    <span class="k">def</span> <span class="nf">association_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.association_degree">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.association_degree">[docs]</a>
+    <span class="k">def</span> <span class="nf">association_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the association degree of each rule for each sample.</span>
 
@@ -311,7 +330,10 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.aux_dominance_scores"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores">[docs]</a>    <span class="k">def</span> <span class="nf">aux_dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.aux_dominance_scores">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores">[docs]</a>
+    <span class="k">def</span> <span class="nf">aux_dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the dominance score of each pattern for each rule.</span>
 
@@ -320,7 +342,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_aux_pattern_confidence</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_aux_pattern_support</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.add_rule_weights"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.add_rule_weights">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add dominance score field to each of the rules present in the master Rule Base.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -336,9 +361,12 @@
                 <span class="n">rules</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">confidences</span><span class="p">[</span><span class="n">aux_counter</span><span class="p">]</span>
                 
                 <span class="n">aux_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
     
 
-<div class="viewcode-block" id="evalRuleBase.add_auxiliary_rule_weights"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights">[docs]</a>    <span class="k">def</span> <span class="nf">add_auxiliary_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.add_auxiliary_rule_weights">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_auxiliary_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add dominance score field to each of the rules present in the master Rule Base for each consequent.</span>
 <span class="sd">        They are labeled as aux_score, aux_support and aux_confidence. (Because they are not the main rule weights)</span>
@@ -357,7 +385,10 @@
                 <span class="n">aux_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.add_classification_metrics"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">add_classification_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.add_classification_metrics">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_classification_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Adds the accuracy of each rule in the master rule base. It also adds the f1, precision and recall scores.</span>
 <span class="sd">        If X and y are None uses the train set.</span>
@@ -403,9 +434,12 @@
                     <span class="n">rules</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span><span class="o">.</span><span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">relevant_labels</span><span class="p">,</span> <span class="n">relevant_preds</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">rules</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span><span class="o">.</span><span class="n">accuracy</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
                 
     
-<div class="viewcode-block" id="evalRuleBase.classification_eval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.classification_eval">[docs]</a>    <span class="k">def</span> <span class="nf">classification_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.classification_eval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.classification_eval">[docs]</a>
+    <span class="k">def</span> <span class="nf">classification_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the matthews correlation coefficient for a classification task using</span>
 <span class="sd">        the rules evaluated.</span>
@@ -416,10 +450,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_rule_weights</span><span class="p">()</span>
         <span class="n">preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">precomputed_truth</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">matthews_corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcc</span> <span class="o">=</span> <span class="n">matthews_corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acc</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcc</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.size_antecedents_eval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval">[docs]</a>    <span class="k">def</span> <span class="nf">size_antecedents_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.size_antecedents_eval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval">[docs]</a>
+    <span class="k">def</span> <span class="nf">size_antecedents_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.</span>
 
@@ -454,9 +494,12 @@
             <span class="n">rule_density</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="k">return</span> <span class="n">rule_density</span></div>
+
     
 
-<div class="viewcode-block" id="evalRuleBase.effective_rulesize_eval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval">[docs]</a>    <span class="k">def</span> <span class="nf">effective_rulesize_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.effective_rulesize_eval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval">[docs]</a>
+    <span class="k">def</span> <span class="nf">effective_rulesize_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.</span>
 
@@ -489,12 +532,51 @@
         <span class="k">return</span> <span class="n">rule_density</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.add_full_evaluation"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation">[docs]</a>    <span class="k">def</span> <span class="nf">add_full_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="evalRuleBase.p_permutation_classifier_validation">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation">[docs]</a>
+    <span class="k">def</span> <span class="nf">p_permutation_classifier_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Performs a boostrap test to evaluate the performance of the rule base.</span>
+<span class="sd">        Returns the p-valuefor the label permutation test and the feature coalition test.</span>
+
+<span class="sd">        :param n: int. Number of boostrap samples.</span>
+<span class="sd">        :param r: int. Number of repetitions to estimate the original error rate.</span>
+<span class="sd">        :return: p-value of the permutation test.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">test1</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">permutation_labels_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">test2</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">permute_columns_class_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="n">bt</span><span class="o">.</span><span class="n">rulewise_label_permutation_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">bt</span><span class="o">.</span><span class="n">rulewise_column_permutation_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">p_value_class_structure</span> <span class="o">=</span> <span class="n">test1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">p_value_feature_coalition</span> <span class="o">=</span> <span class="n">test2</span>
+
+        <span class="k">return</span> <span class="n">test1</span><span class="p">,</span> <span class="n">test2</span></div>
+
+    
+
+    <span class="k">def</span> <span class="nf">p_bootstrapping_rules_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">ex_fuzzy.bootstrapping_test</span> <span class="k">as</span> <span class="nn">bt</span>
+        <span class="n">rules_p_values</span> <span class="o">=</span>  <span class="n">bt</span><span class="o">.</span><span class="n">compute_rule_p_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()):</span>
+            <span class="n">rule</span><span class="o">.</span><span class="n">boot_p_value</span> <span class="o">=</span> <span class="n">rules_p_values</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="evalRuleBase.add_full_evaluation">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_full_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Adds classification scores, both Dominance Scores and accuracy metrics, for each individual rule.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_rule_weights</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_classification_metrics</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_classification_metrics</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classification_eval</span><span class="p">()</span></div>
+</div>
+
+        
         
 </pre></div>
 

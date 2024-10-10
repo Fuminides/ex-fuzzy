@@ -23,8 +23,9 @@ A brief piece of code that does this case of use is the following::
     fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, nAnts=4)
     fl_classifier.fit(X_train, y_train, n_gen=50, pop_size=30)
 
-    eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
-                            plot_rules=True, print_rules=True, plot_partitions=True)
+    fuzzy_evaluator = eval_tools.FuzzyEvaluator(fl_classifier)
+    fuzzy_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
+                        plot_rules=True, print_rules=True, plot_partitions=True)
 
 This code trains the classifier and also plots the rules, prints them on screen and show the linguistic variables optimized in the process.
 

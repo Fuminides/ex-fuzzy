@@ -23,12 +23,15 @@ class FuzzyEvaluator():
             :param fl_classifier: Fuzzy rule based model
             '''
             self.fl_classifier = fl_classifier
-            
-    # Predict y for given X for use in metric evaluation
-    def predict(self,X):
+
+
+    
+    def predict(self,X: np.array) -> np.array:
+        # Predict y for given X for use in metric evaluation
         return self.fl_classifier.predict(X)
     
-    def get_metric(self,metric:str,X_true:np.array,y_true:np.array,**kwargs):
+
+    def get_metric(self,metric:str,X_true:np.array,y_true:np.array,**kwargs) -> float:
         '''
         :param metric: named metric in string format available in sklearn library for evaluation
         :param X_true: np.array of X values for prediction

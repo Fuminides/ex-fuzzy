@@ -281,7 +281,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.rule_base.purge_rules(self.tolerance)
         self.eval_performance.add_full_evaluation() # After purging the bad rules we update the metrics.
         
-        self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.p_permutation_classifier_validation() 
+        self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.p_permutation_classifier_validation()
+        self.rule_base.p_value_class_structure = self.p_value_class_structure
+        self.rule_base.p_value_feature_coalitions = self.p_value_feature_coalitions
+        
         self.eval_performance.p_bootstrapping_rules_validation(bootstrap_size)
         self.rule_base.rename_cons(self.classes_names)
         if self.lvs is None:

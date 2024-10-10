@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ex_fuzzy.persistence &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -117,13 +115,21 @@
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="load_fuzzy_rules"><a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_rules">[docs]</a><span class="k">def</span> <span class="nf">load_fuzzy_rules</span><span class="p">(</span><span class="n">rules_printed</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fuzzy_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">:</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">def</span> <span class="nf">remove_parentheses</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(.*?\)&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_fuzzy_rules">
+<a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_rules">[docs]</a>
+<span class="k">def</span> <span class="nf">load_fuzzy_rules</span><span class="p">(</span><span class="n">rules_printed</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fuzzy_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Load the rules from a string.</span>
 <span class="sd">    </span>
 <span class="sd">    :param rules_printed: string with the rules. Follows the specification given by the same printing method of rules.MasterRuleBase</span>
 <span class="sd">    :param fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.</span>
-<span class="sd">    </span>
+<span class="sd">    :return mrule_base: object of MasterRuleBase class that contains the rules.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">mnt</span><span class="o">.</span><span class="n">save_usage_flag</span><span class="p">:</span>
         <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">Persistence</span><span class="p">][</span><span class="s1">&#39;persistence_read&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -146,7 +152,8 @@
                     <span class="n">rule_acc</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                 <span class="k">elif</span> <span class="s1">&#39;WGHT&#39;</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
                     <span class="n">rule_weight</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                    
+            
+            <span class="n">consequent_ds</span> <span class="o">=</span> <span class="n">remove_parentheses</span><span class="p">(</span><span class="n">consequent_ds</span><span class="p">)</span>
             <span class="n">consequent_ds</span> <span class="o">=</span> <span class="n">consequent_ds</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">modifiers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">),))</span>
             <span class="n">init_rule_antecedents</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
@@ -216,12 +223,15 @@
     <span class="k">return</span> <span class="n">mrule_base</span></div>
 
 
-<div class="viewcode-block" id="load_fuzzy_variables"><a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_variables">[docs]</a><span class="k">def</span> <span class="nf">load_fuzzy_variables</span><span class="p">(</span><span class="n">fuzzy_variables_printed</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+
+<div class="viewcode-block" id="load_fuzzy_variables">
+<a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_variables">[docs]</a>
+<span class="k">def</span> <span class="nf">load_fuzzy_variables</span><span class="p">(</span><span class="n">fuzzy_variables_printed</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Load the linguistic variables from a string.</span>
 <span class="sd">    </span>
 <span class="sd">    :param fuzzy_variables_printed: string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.</span>
-<span class="sd">    </span>
+<span class="sd">    :return fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">mnt</span><span class="o">.</span><span class="n">save_usage_flag</span><span class="p">:</span>
         <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">Persistence</span><span class="p">][</span><span class="s1">&#39;persistence_read&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -297,12 +307,15 @@
     <span class="k">return</span> <span class="n">fuzzy_variables</span></div>
 
 
-<div class="viewcode-block" id="print_fuzzy_variable"><a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.print_fuzzy_variable">[docs]</a><span class="k">def</span> <span class="nf">print_fuzzy_variable</span><span class="p">(</span><span class="n">fuzzy_variable</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<div class="viewcode-block" id="print_fuzzy_variable">
+<a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.print_fuzzy_variable">[docs]</a>
+<span class="k">def</span> <span class="nf">print_fuzzy_variable</span><span class="p">(</span><span class="n">fuzzy_variable</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Save the linguistic variable to a string.</span>
 <span class="sd">    </span>
 <span class="sd">    :param fuzzy_variable: linguistic variable. Object of FuzzyVariable class.</span>
-<span class="sd">    </span>
+<span class="sd">    :return fuzzy_variable_printed: string with the linguistic variable. Follows the specification given by the same printing method of FuzzyVariable class.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">mnt</span><span class="o">.</span><span class="n">save_usage_flag</span><span class="p">:</span>
         <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">Persistence</span><span class="p">][</span><span class="s1">&#39;persistence_write&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -335,12 +348,15 @@
     <span class="k">return</span> <span class="n">fuzzy_variable_printed</span></div>
 
 
-<div class="viewcode-block" id="save_fuzzy_variables"><a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.save_fuzzy_variables">[docs]</a><span class="k">def</span> <span class="nf">save_fuzzy_variables</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<div class="viewcode-block" id="save_fuzzy_variables">
+<a class="viewcode-back" href="../../function_resume/persistence.html#ex_fuzzy.persistence.save_fuzzy_variables">[docs]</a>
+<span class="k">def</span> <span class="nf">save_fuzzy_variables</span><span class="p">(</span><span class="n">fuzzy_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Save the linguistic variables to a string.</span>
 <span class="sd">    </span>
 <span class="sd">    :param fuzzy_variables: list with the linguistic variables. Objects of FuzzyVariable class.</span>
-<span class="sd">    </span>
+<span class="sd">    :return fuzzy_variables_printed: string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">mnt</span><span class="o">.</span><span class="n">save_usage_flag</span><span class="p">:</span>
         <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">Persistence</span><span class="p">][</span><span class="s1">&#39;persistence_write&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -350,6 +366,7 @@
         <span class="n">fuzzy_variables_printed</span> <span class="o">+=</span> <span class="n">print_fuzzy_variable</span><span class="p">(</span><span class="n">fvar</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 
     <span class="k">return</span> <span class="n">fuzzy_variables_printed</span></div>
+
 </pre></div>
 
            </div>

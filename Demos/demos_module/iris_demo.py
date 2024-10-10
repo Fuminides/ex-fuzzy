@@ -21,7 +21,6 @@ from sklearn.model_selection import train_test_split
 
 import sys
 
-import ex_fuzzy.fuzzy_sets as fs
 
 
 

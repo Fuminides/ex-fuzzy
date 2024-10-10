@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rule Evaluation Functions &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -61,7 +59,27 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="fuzzy_sets.html">Fuzzy Sets Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rules.html">Fuzzy Rules Functions</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Rule Evaluation Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Rule Evaluation Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase"><code class="docutils literal notranslate"><span class="pre">evalRuleBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_auxiliary_rule_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_classification_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_full_evaluation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_rule_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.association_degree"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.association_degree()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.aux_dominance_scores()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.classification_eval"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.classification_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_aux_pattern_confidence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_aux_pattern_support()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_pattern_confidence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_pattern_support()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.dominance_scores()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.effective_rulesize_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.p_permutation_classifier_validation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.size_antecedents_eval()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="eval_tools.html">Classification evaluation tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vis_rules.html">Rule Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evolutionary_fit.html">Evolutionary Algorithms to Fit the rules</a></li>
@@ -103,23 +121,23 @@
            <div itemprop="articleBody">
              
   <section id="module-ex_fuzzy.eval_rules">
-<span id="rule-evaluation-functions"></span><h1>Rule Evaluation Functions<a class="headerlink" href="#module-ex_fuzzy.eval_rules" title="Permalink to this heading"></a></h1>
+<span id="rule-evaluation-functions"></span><h1>Rule Evaluation Functions<a class="headerlink" href="#module-ex_fuzzy.eval_rules" title="Link to this heading"></a></h1>
 <p>This file contains the classes to perform rule classification evaluation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.eval_rules.</span></span><span class="sig-name descname"><span class="pre">evalRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mrule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_moments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.eval_rules.</span></span><span class="sig-name descname"><span class="pre">evalRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mrule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_moments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to evaluate a set of rules given a evaluation dataset.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights">
-<span class="sig-name descname"><span class="pre">add_auxiliary_rule_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_auxiliary_rule_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_auxiliary_rule_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_auxiliary_rule_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights" title="Link to this definition"></a></dt>
 <dd><p>Add dominance score field to each of the rules present in the master Rule Base for each consequent.
 They are labeled as aux_score, aux_support and aux_confidence. (Because they are not the main rule weights)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics">
-<span class="sig-name descname"><span class="pre">add_classification_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_classification_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_classification_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_classification_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics" title="Link to this definition"></a></dt>
 <dd><p>Adds the accuracy of each rule in the master rule base. It also adds the f1, precision and recall scores.
 If X and y are None uses the train set.</p>
 <dl class="field-list simple">
@@ -134,19 +152,19 @@ If X and y are None uses the train set.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation">
-<span class="sig-name descname"><span class="pre">add_full_evaluation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_full_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_full_evaluation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_full_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation" title="Link to this definition"></a></dt>
 <dd><p>Adds classification scores, both Dominance Scores and accuracy metrics, for each individual rule.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights">
-<span class="sig-name descname"><span class="pre">add_rule_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_rule_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_rule_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.add_rule_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights" title="Link to this definition"></a></dt>
 <dd><p>Add dominance score field to each of the rules present in the master Rule Base.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.association_degree">
-<span class="sig-name descname"><span class="pre">association_degree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.association_degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.association_degree" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">association_degree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.association_degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.association_degree" title="Link to this definition"></a></dt>
 <dd><p>Returns the association degree of each rule for each sample.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -157,7 +175,7 @@ If X and y are None uses the train set.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores">
-<span class="sig-name descname"><span class="pre">aux_dominance_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.aux_dominance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">aux_dominance_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.aux_dominance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores" title="Link to this definition"></a></dt>
 <dd><p>Returns the dominance score of each pattern for each rule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -168,7 +186,7 @@ If X and y are None uses the train set.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.classification_eval">
-<span class="sig-name descname"><span class="pre">classification_eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.classification_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.classification_eval" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">classification_eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.classification_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.classification_eval" title="Link to this definition"></a></dt>
 <dd><p>Returns the matthews correlation coefficient for a classification task using
 the rules evaluated.</p>
 <dl class="field-list simple">
@@ -180,7 +198,7 @@ the rules evaluated.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence">
-<span class="sig-name descname"><span class="pre">compute_aux_pattern_confidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_aux_pattern_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_aux_pattern_confidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_aux_pattern_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence" title="Link to this definition"></a></dt>
 <dd><p>Computes the pattern confidence for each of the rules for the given X.
 Each pattern confidence is the normalized firing strength.</p>
 <dl class="field-list simple">
@@ -192,7 +210,7 @@ Each pattern confidence is the normalized firing strength.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support">
-<span class="sig-name descname"><span class="pre">compute_aux_pattern_support</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_aux_pattern_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_aux_pattern_support</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_aux_pattern_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support" title="Link to this definition"></a></dt>
 <dd><p>Computes the pattern support for each of the rules for each of the classes for the given X.
 Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,
 dvided by their number.</p>
@@ -205,7 +223,7 @@ dvided by their number.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence">
-<span class="sig-name descname"><span class="pre">compute_pattern_confidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_pattern_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_pattern_confidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_pattern_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence" title="Link to this definition"></a></dt>
 <dd><p>Computes the pattern confidence for each of the rules for the given X.
 Each pattern confidence is the normalized firing strength.</p>
 <dl class="field-list simple">
@@ -217,7 +235,7 @@ Each pattern confidence is the normalized firing strength.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support">
-<span class="sig-name descname"><span class="pre">compute_pattern_support</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_pattern_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_pattern_support</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.compute_pattern_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support" title="Link to this definition"></a></dt>
 <dd><p>Computes the pattern support for each of the rules for the given X.
 Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,
 dvided by their number.</p>
@@ -230,7 +248,7 @@ dvided by their number.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.dominance_scores">
-<span class="sig-name descname"><span class="pre">dominance_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.dominance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dominance_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.dominance_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores" title="Link to this definition"></a></dt>
 <dd><p>Returns the dominance score of each pattern for each rule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -241,7 +259,7 @@ dvided by their number.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval">
-<span class="sig-name descname"><span class="pre">effective_rulesize_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.effective_rulesize_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">effective_rulesize_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.effective_rulesize_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval" title="Link to this definition"></a></dt>
 <dd><p>Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.</p>
 <p>0 means that the rule base contains all rules with more than {tolerance} DS, there are many of them and they have all possible antecedents.
 The more rules and antecedent per rules the lower this score is.</p>
@@ -256,8 +274,26 @@ The more rules and antecedent per rules the lower this score is.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation">
+<span class="sig-name descname"><span class="pre">p_permutation_classifier_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.p_permutation_classifier_validation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation" title="Link to this definition"></a></dt>
+<dd><p>Performs a boostrap test to evaluate the performance of the rule base.
+Returns the p-valuefor the label permutation test and the feature coalition test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – int. Number of boostrap samples.</p></li>
+<li><p><strong>r</strong> – int. Number of repetitions to estimate the original error rate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>p-value of the permutation test.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval">
-<span class="sig-name descname"><span class="pre">size_antecedents_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.size_antecedents_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">size_antecedents_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/eval_rules.html#evalRuleBase.size_antecedents_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval" title="Link to this definition"></a></dt>
 <dd><p>Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.</p>
 <p>0 means that the rule base contains all rules with more than {tolerance} DS, there are many of them and they have all possible antecedents.
 The more rules and antecedent per rules the lower this score is.</p>

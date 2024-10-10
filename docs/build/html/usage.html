@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Getting Started &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -86,7 +84,7 @@
            <div itemprop="articleBody">
              
   <section id="getting-started">
-<span id="usage"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
+<span id="usage"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
 <p>The most straightforward way to use Ex-Fuzzy is to fit a fuzzy rule based classifier to a dataset, and then explore the results and the rules obtained.
 A couple of examples of this can be found in the “demos” folder.</p>
 <p>A brief piece of code that does this case of use is the following:</p>
@@ -104,8 +102,9 @@ A couple of examples of this can be found in the “demos” folder.</p>
 <span class="n">fl_classifier</span> <span class="o">=</span> <span class="n">GA</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">fl_classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
-<span class="n">eval_tools</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span>
-                        <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">fuzzy_evaluator</span> <span class="o">=</span> <span class="n">eval_tools</span><span class="o">.</span><span class="n">FuzzyEvaluator</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">)</span>
+<span class="n">fuzzy_evaluator</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span>
+                    <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This code trains the classifier and also plots the rules, prints them on screen and show the linguistic variables optimized in the process.</p>

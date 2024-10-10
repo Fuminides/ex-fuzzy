@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visualize rules and results &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -90,7 +88,7 @@
            <div itemprop="articleBody">
              
   <section id="visualize-rules-and-results">
-<span id="step4"></span><h1>Visualize rules and results<a class="headerlink" href="#visualize-rules-and-results" title="Permalink to this heading"></a></h1>
+<span id="step4"></span><h1>Visualize rules and results<a class="headerlink" href="#visualize-rules-and-results" title="Link to this heading"></a></h1>
 <p>Ex-Fuzzy can also visualize the fuzzy sets and the rules obtained after the training process.
 The easiest way to do this is using the <code class="docutils literal notranslate"><span class="pre">eval_tools.eval_fuzzy_model</span></code> function:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">eval_tools</span>
@@ -100,17 +98,21 @@ The easiest way to do this is using the <code class="docutils literal notranslat
 </div>
 <p>This function prints the performance of the model, prints the rules on screen and plot the rules as graphs.</p>
 <section id="visualize-rules">
-<h2>Visualize Rules<a class="headerlink" href="#visualize-rules" title="Permalink to this heading"></a></h2>
+<h2>Visualize Rules<a class="headerlink" href="#visualize-rules" title="Link to this heading"></a></h2>
 <p>You can visualize each consequent rules as a network, so that the interactions between the antecedents can be seen.</p>
-<a class="reference internal image-reference" href="_images/red_fuzzy.png"><img alt="_images/red_fuzzy.png" src="_images/red_fuzzy.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/red_fuzzy.png"><img alt="_images/red_fuzzy.png" src="_images/red_fuzzy.png" style="width: 200px;" />
+</a>
 <p>If the number of linguistic variables is three, they also get automatically colored. It is also possible to export them to the gephi software.</p>
 </section>
 <section id="visualize-fuzzy-sets">
-<h2>Visualize Fuzzy Sets<a class="headerlink" href="#visualize-fuzzy-sets" title="Permalink to this heading"></a></h2>
+<h2>Visualize Fuzzy Sets<a class="headerlink" href="#visualize-fuzzy-sets" title="Link to this heading"></a></h2>
 <p>Each fuzzy set is also visualized according to its own kind. The same linguistic variable can be visualized using T1, IV and GT2 fuzzy sets:</p>
-<a class="reference internal image-reference" href="_images/ejemplo_t1.png"><img alt="_images/ejemplo_t1.png" src="_images/ejemplo_t1.png" style="width: 200px;" /></a>
-<a class="reference internal image-reference" href="_images/ejemplo_t2.png"><img alt="_images/ejemplo_t2.png" src="_images/ejemplo_t2.png" style="width: 200px;" /></a>
-<a class="reference internal image-reference" href="_images/example_gt2.png"><img alt="_images/example_gt2.png" src="_images/example_gt2.png" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="_images/ejemplo_t1.png"><img alt="_images/ejemplo_t1.png" src="_images/ejemplo_t1.png" style="width: 200px;" />
+</a>
+<a class="reference internal image-reference" href="_images/ejemplo_t2.png"><img alt="_images/ejemplo_t2.png" src="_images/ejemplo_t2.png" style="width: 200px;" />
+</a>
+<a class="reference internal image-reference" href="_images/example_gt2.png"><img alt="_images/example_gt2.png" src="_images/example_gt2.png" style="width: 200px;" />
+</a>
 </section>
 </section>
 

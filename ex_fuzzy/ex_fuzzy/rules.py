@@ -187,6 +187,11 @@ class RuleSimple():
         except AttributeError:
             pass
 
+        try:
+            aux += ' p-value bootstrpping membership validation' + str(self.boot_p_value)
+        except AttributeError:
+            pass
+
         return aux
     
 
@@ -1136,6 +1141,7 @@ class MasterRuleBase():
         :param autoprint: if True, the rules are printed. If False, the rules are returned as a string.
         '''
         res = ''
+         
         for ix, ruleBase in enumerate(self.rule_bases):    
             res += 'Rules for consequent: ' + str(self.consequent_names[ix]) + '\n'
             res += '----------------\n'
@@ -1320,6 +1326,16 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
     :param antecedents: list of fuzzy variables.
     :param modifiers: array with the modifiers for the antecedents.
     '''
+    def format_p_value(p_value):
+        if p_value < 0.001:
+            return '***'
+        elif p_value < 0.01:
+            return '**' 
+        elif p_value < 0.05:
+            return '*'
+        else:
+            return 'ns'
+        
     initiated = False
     str_rule = 'IF '
     for jx, antecedent in enumerate(antecedents):
@@ -1373,8 +1389,8 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
         p_value_class_structure = rule.p_value_class_structure
         p_value_feature_coalition = rule.p_value_feature_coalitions
 
-        pvc = '*' if p_value_class_structure < 0.05 else str(p_value_class_structure)
-        pvf = '*' if p_value_feature_coalition < 0.05 else str(p_value_feature_coalition)
+        pvc = format_p_value(p_value_class_structure)
+        pvf = format_p_value(p_value_feature_coalition)
 
         str_rule += ' (p-value Permutation CS: ' + pvc + ', FC: ' + pvf + ')'
     except AttributeError:
@@ -1384,7 +1400,7 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
     try:
         p_value_bootstrap = rule.boot_p_value
 
-        pbs = '*' if p_value_bootstrap < 0.05 else str(p_value_bootstrap)
+        pbs = format_p_value(p_value_bootstrap)
         str_rule += ' (p-value bootstrap: ' + pbs + ')'
     except AttributeError:
         pass

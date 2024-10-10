@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rule Visualization &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -63,7 +61,18 @@
 <li class="toctree-l2"><a class="reference internal" href="rules.html">Fuzzy Rules Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval_rules.html">Rule Evaluation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval_tools.html">Classification evaluation tools</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Rule Visualization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Rule Visualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.choose_popular_rules"><code class="docutils literal notranslate"><span class="pre">choose_popular_rules()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.connect_master_rulebase"><code class="docutils literal notranslate"><span class="pre">connect_master_rulebase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.connect_rulebase"><code class="docutils literal notranslate"><span class="pre">connect_rulebase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.create_graph_connection"><code class="docutils literal notranslate"><span class="pre">create_graph_connection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.filter_useless_columns"><code class="docutils literal notranslate"><span class="pre">filter_useless_columns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.matrix_rule_base_form"><code class="docutils literal notranslate"><span class="pre">matrix_rule_base_form()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.plot_fuzzy_variable"><code class="docutils literal notranslate"><span class="pre">plot_fuzzy_variable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.rules_to_latex"><code class="docutils literal notranslate"><span class="pre">rules_to_latex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.vis_rules.visualize_rulebase"><code class="docutils literal notranslate"><span class="pre">visualize_rulebase()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="evolutionary_fit.html">Evolutionary Algorithms to Fit the rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rule_mining.html">Rule Mining methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classifiers.html">Advanced Classifiers</a></li>
@@ -103,11 +112,11 @@
            <div itemprop="articleBody">
              
   <section id="module-ex_fuzzy.vis_rules">
-<span id="rule-visualization"></span><h1>Rule Visualization<a class="headerlink" href="#module-ex_fuzzy.vis_rules" title="Permalink to this heading"></a></h1>
+<span id="rule-visualization"></span><h1>Rule Visualization<a class="headerlink" href="#module-ex_fuzzy.vis_rules" title="Link to this heading"></a></h1>
 <p>This is a the source file that contains the functions necessary to visualize the set of rules.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.choose_popular_rules">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">choose_popular_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#choose_popular_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.choose_popular_rules" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">choose_popular_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#choose_popular_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.choose_popular_rules" title="Link to this definition"></a></dt>
 <dd><p>Returns the index of the rules that contain the most popular antecedent in the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -121,7 +130,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.connect_master_rulebase">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">connect_master_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mrule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#connect_master_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.connect_master_rulebase" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">connect_master_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mrule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#connect_master_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.connect_master_rulebase" title="Link to this definition"></a></dt>
 <dd><p>Connects antecedents connected by checking if both are in the same rule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -135,7 +144,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.connect_rulebase">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">connect_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rulebase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#connect_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.connect_rulebase" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">connect_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rulebase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#connect_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.connect_rulebase" title="Link to this definition"></a></dt>
 <dd><p>Connects antecedents connected by checking if both are in the same rule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -149,7 +158,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.create_graph_connection">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">create_graph_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">possible_vl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#create_graph_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.create_graph_connection" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">create_graph_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">possible_vl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#create_graph_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.create_graph_connection" title="Link to this definition"></a></dt>
 <dd><p>Returns a square matrix where each number indicates if two nodes are connected.
 Connectes by checking if both are in the same rule.</p>
 <dl class="field-list simple">
@@ -167,7 +176,7 @@ Connectes by checking if both are in the same rule.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.filter_useless_columns">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">filter_useless_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#filter_useless_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.filter_useless_columns" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">filter_useless_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#filter_useless_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.filter_useless_columns" title="Link to this definition"></a></dt>
 <dd><p>Filter columns with only one value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -181,7 +190,7 @@ Connectes by checking if both are in the same rule.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.matrix_rule_base_form">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">matrix_rule_base_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.Rule" title="ex_fuzzy.rules.Rule"><span class="pre">Rule</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#matrix_rule_base_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.matrix_rule_base_form" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">matrix_rule_base_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.Rule" title="ex_fuzzy.rules.Rule"><span class="pre">Rule</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#matrix_rule_base_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.matrix_rule_base_form" title="Link to this definition"></a></dt>
 <dd><p>Returns a matrix with the rule base in the form of a matrix to visualize.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -195,7 +204,7 @@ Connectes by checking if both are in the same rule.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.plot_fuzzy_variable">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">plot_fuzzy_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">fuzzyVariable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#plot_fuzzy_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.plot_fuzzy_variable" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">plot_fuzzy_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">fuzzyVariable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#plot_fuzzy_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.plot_fuzzy_variable" title="Link to this definition"></a></dt>
 <dd><p>Plots a fuzzy variable using trapezoidal membership functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -209,7 +218,7 @@ Connectes by checking if both are in the same rule.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.rules_to_latex">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">rules_to_latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#rules_to_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.rules_to_latex" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">rules_to_latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#rules_to_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.rules_to_latex" title="Link to this definition"></a></dt>
 <dd><p>Prints the rule base in a latex format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Note<span class="colon">:</span></dt>
@@ -226,7 +235,7 @@ Connectes by checking if both are in the same rule.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.vis_rules.visualize_rulebase">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">visualize_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mrule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#visualize_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.visualize_rulebase" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.vis_rules.</span></span><span class="sig-name descname"><span class="pre">visualize_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mrule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/vis_rules.html#visualize_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.vis_rules.visualize_rulebase" title="Link to this definition"></a></dt>
 <dd><p>Visualize a rule base using low, medium and high partitions with 1 rule in common -&gt; 1 edge connections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

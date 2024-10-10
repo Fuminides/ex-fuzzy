@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Studying patterns &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -86,7 +84,7 @@
            <div itemprop="articleBody">
              
   <section id="studying-patterns">
-<span id="pattern-stats"></span><h1>Studying patterns<a class="headerlink" href="#studying-patterns" title="Permalink to this heading"></a></h1>
+<span id="pattern-stats"></span><h1>Studying patterns<a class="headerlink" href="#studying-patterns" title="Link to this heading"></a></h1>
 <p>Due to the nature of the genetic optimization, we might obtain different rulebases for the same dataset if we run the experiment with different seeds. Due to the nature of rule-based reasoning, we can directly study how often some patterns appear and how useful variables are by directly analyzing the different rulebases and the way in which their rules use each variable.</p>
 <p>The module <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability</span></code> contains a series of functions to analyze the ocurrences of the patterns when the same experiment is run with different seeds. This module comes with the class <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer</span></code> whose initialization sets the parameters for the analysis. Then, the function <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.stability_report</span></code> can be used to run the experiments. Finally, use <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer.text_report</span></code> to obtain a text report of the rules obtained and how often they appeared in the experiments. Use <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_class</span></code> and <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_var</span></code> to obtain pie charts of the ocurrences of the variables per class according to the linguistic variables used.</p>
 <p>This is an example of a textual report:</p>
@@ -141,8 +139,10 @@
 </pre></div>
 </div>
 <p>The pie charts look like this:</p>
-<a class="reference internal image-reference" href="_images/Class_usage_setosa.png"><img alt="_images/Class_usage_setosa.png" src="_images/Class_usage_setosa.png" style="width: 400px;" /></a>
-<a class="reference internal image-reference" href="_images/Var_usage_per_class_petal.png"><img alt="_images/Var_usage_per_class_petal.png" src="_images/Var_usage_per_class_petal.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/Class_usage_setosa.png"><img alt="_images/Class_usage_setosa.png" src="_images/Class_usage_setosa.png" style="width: 400px;" />
+</a>
+<a class="reference internal image-reference" href="_images/Var_usage_per_class_petal.png"><img alt="_images/Var_usage_per_class_petal.png" src="_images/Var_usage_per_class_petal.png" style="width: 400px;" />
+</a>
 </section>
 
 

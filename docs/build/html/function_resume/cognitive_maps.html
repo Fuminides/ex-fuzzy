@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fuzzy Cognitive Maps &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pattern_stats.html">Studying patterns</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="fuzzy_sets.html">Fuzzy Sets Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rules.html">Fuzzy Rules Functions</a></li>
@@ -67,7 +66,12 @@
 <li class="toctree-l2"><a class="reference internal" href="rule_mining.html">Rule Mining methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classifiers.html">Advanced Classifiers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="persistence.html">Classification persistence</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Fuzzy Cognitive Maps</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Fuzzy Cognitive Maps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.cognitive_maps.attractors_report"><code class="docutils literal notranslate"><span class="pre">attractors_report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.cognitive_maps.look_pattern_states"><code class="docutils literal notranslate"><span class="pre">look_pattern_states()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ex_fuzzy.cognitive_maps.study_attractors_FCM"><code class="docutils literal notranslate"><span class="pre">study_attractors_FCM()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Partition utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="centroid.html">T2 Centroid compute</a></li>
 <li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal fuzzy sets</a></li>
@@ -102,10 +106,10 @@
            <div itemprop="articleBody">
              
   <section id="module-ex_fuzzy.cognitive_maps">
-<span id="fuzzy-cognitive-maps"></span><h1>Fuzzy Cognitive Maps<a class="headerlink" href="#module-ex_fuzzy.cognitive_maps" title="Permalink to this heading"></a></h1>
+<span id="fuzzy-cognitive-maps"></span><h1>Fuzzy Cognitive Maps<a class="headerlink" href="#module-ex_fuzzy.cognitive_maps" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.cognitive_maps.attractors_report">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.cognitive_maps.</span></span><span class="sig-name descname"><span class="pre">attractors_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attractors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/cognitive_maps.html#attractors_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.cognitive_maps.attractors_report" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.cognitive_maps.</span></span><span class="sig-name descname"><span class="pre">attractors_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attractors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/cognitive_maps.html#attractors_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.cognitive_maps.attractors_report" title="Link to this definition"></a></dt>
 <dd><p>Prints a report of the attractors found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -116,7 +120,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.cognitive_maps.look_pattern_states">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.cognitive_maps.</span></span><span class="sig-name descname"><span class="pre">look_pattern_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FuzzyCognitiveMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="m"><span class="pre">50</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_period_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="m"><span class="pre">50</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/cognitive_maps.html#look_pattern_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.cognitive_maps.look_pattern_states" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.cognitive_maps.</span></span><span class="sig-name descname"><span class="pre">look_pattern_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FuzzyCognitiveMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="m"><span class="pre">50</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_period_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="m"><span class="pre">50</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/cognitive_maps.html#look_pattern_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.cognitive_maps.look_pattern_states" title="Link to this definition"></a></dt>
 <dd><p>Looks for the pattern states of the FCM when simulation is prolongued.</p>
 <p>:param fcm : FuzzyCognitiveMap. The FCM to look for the attractor states.
 :param max_steps: int. The maximum number of steps to look for the attractor states.
@@ -126,7 +130,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.cognitive_maps.study_attractors_FCM">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.cognitive_maps.</span></span><span class="sig-name descname"><span class="pre">study_attractors_FCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FuzzyCognitiveMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_inits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/cognitive_maps.html#study_attractors_FCM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.cognitive_maps.study_attractors_FCM" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.cognitive_maps.</span></span><span class="sig-name descname"><span class="pre">study_attractors_FCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FuzzyCognitiveMap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_inits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/cognitive_maps.html#study_attractors_FCM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.cognitive_maps.study_attractors_FCM" title="Link to this definition"></a></dt>
 <dd><p>Looks for the attractor states of the FCM when simulation is prolongued.</p>
 <p>:param fcm : FuzzyCognitiveMap. The FCM to look for the attractor states.
 :param max_steps: int. The maximum number of steps to look for the attractor states.

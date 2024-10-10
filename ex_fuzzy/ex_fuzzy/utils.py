@@ -421,7 +421,7 @@ def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studie
     :param x: array with values of the categorical variable.
     :param name of the fuzzy variable.
     :param fz_type_studied: fuzzy set type studied.
-    :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest)
+    :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest).
     '''
     possible_values = np.unique(x)
     fuzzy_sets = []
