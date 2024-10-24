@@ -134,7 +134,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
-            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3, bootstrap_size=1000) -> None:
+            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3, bootstrap_size=1000,
+            p_value_compute=False) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -281,14 +282,24 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.rule_base.purge_rules(self.tolerance)
         self.eval_performance.add_full_evaluation() # After purging the bad rules we update the metrics.
         
-        self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.p_permutation_classifier_validation()
+        if p_value_compute:
+            self.p_value_validation()
 
-        self.eval_performance.p_bootstrapping_rules_validation(bootstrap_size)
         self.rule_base.rename_cons(self.classes_names)
         if self.lvs is None:
             self.rename_fuzzy_variables()
         
         
+    
+    def p_value_validation(self, bootstrap_size:int=100):
+        '''
+        Computes the permutation and bootstrapping p-values for the classifier and its rules.
+
+        :param bootstrap_size: integer. Number of bootstraps samples to use.
+        '''
+        self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.p_permutation_classifier_validation()
+        
+        self.eval_performance.p_bootstrapping_rules_validation(bootstrap_size)
 
     def load_master_rule_base(self, rule_base: rules.MasterRuleBase) -> None:
         '''

@@ -232,6 +232,41 @@ def t2_n_partition_parameters(x, n_partitions):
     return partition_parameters
 
 
+def t1_simple_triangular_partition(x: np.array) -> np.array:
+    '''
+    Partitions the fuzzy variable in three triangular memberships.
+
+    :param x: numpy array, vector of shape (samples, ).
+    :return: numpy array, vector of shape (variables, 3, 3).
+    '''
+    n_partitions = 3
+    trap_memberships_size = 4
+    quantile_numbers = partition3_quantile_compute(x)
+    quantile_numbers = np.nanpercentile(x, [0, 25, 50, 75, 100])
+    partition_parameters = np.zeros(
+        (x.shape[1], n_partitions, trap_memberships_size))
+    
+    for partition in range(n_partitions):
+        if partition == 0:
+            partition_parameters[:, partition, 0] = quantile_numbers[0]
+            partition_parameters[:, partition, 1] = quantile_numbers[0]
+            partition_parameters[:, partition, 1] = quantile_numbers[1]
+            partition_parameters[:, partition, 2] = quantile_numbers[2]
+
+        elif partition == 1:
+            partition_parameters[:, partition, 0] = quantile_numbers[1]
+            partition_parameters[:, partition, 1] = quantile_numbers[2]
+            partition_parameters[:, partition, 2] = quantile_numbers[2]
+            partition_parameters[:, partition, 3] = quantile_numbers[3]
+        else:
+            partition_parameters[:, partition, 0] = quantile_numbers[2]
+            partition_parameters[:, partition, 1] = quantile_numbers[3]
+            partition_parameters[:, partition, 2] = quantile_numbers[3]
+            partition_parameters[:, partition, 3] = quantile_numbers[4]
+
+    return partition_parameters
+
+
 def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3) -> list[fs.fuzzyVariable]:
     '''
     Partitions the dataset features into different fuzzy variables. Parameters are prefixed.
