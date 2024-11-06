@@ -232,7 +232,7 @@ def t2_n_partition_parameters(x, n_partitions):
     return partition_parameters
 
 
-def t1_simple_triangular_partition(x: np.array) -> np.array:
+def t1_simple_triangular_partition_parameters(x: np.array) -> np.array:
     '''
     Partitions the fuzzy variable in three triangular memberships.
 
@@ -246,6 +246,7 @@ def t1_simple_triangular_partition(x: np.array) -> np.array:
     partition_parameters = np.zeros(
         (x.shape[1], n_partitions, trap_memberships_size))
     
+
     for partition in range(n_partitions):
         if partition == 0:
             partition_parameters[:, partition, 0] = quantile_numbers[0]
@@ -264,8 +265,25 @@ def t1_simple_triangular_partition(x: np.array) -> np.array:
             partition_parameters[:, partition, 2] = quantile_numbers[3]
             partition_parameters[:, partition, 3] = quantile_numbers[4]
 
+
     return partition_parameters
 
+def t1_simple_triangular_partition(x: np.array, n_partitions:int=3) -> list[np.array]:
+    '''
+    Partitions the dataset features into different fuzzy variables. Parameters are prefixed.
+    Use it for simple testing and initial solution.
+
+    :param x: numpy array|pandas dataframe, shape samples x features.
+    :return: list of fuzzy variables.
+    '''
+    partition_parameters = t1_simple_triangular_partition_parameters(x)
+    res = []
+    for fz_parameter in range(partition_parameters.shape[0]):
+        fzs = [fs.FS(str(ix), partition_parameters[fz_parameter, ix, :], [
+                     np.min(x), np.max(x)]) for ix in range(partition_parameters.shape[1])]
+        res.append(fs.fuzzyVariable(str(fz_parameter), fzs))
+
+    return res
 
 def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3) -> list[fs.fuzzyVariable]:
     '''
@@ -411,6 +429,75 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
         precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions)
     elif fz_type_studied == fs.FUZZY_SETS.gt2:
         precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions)
+    else:
+        raise ValueError('Fuzzy set type not recognized')
+
+
+    if categorical_mask is not None:
+        categorical_partition = {}
+        for ix, elem in enumerate(categorical_mask):
+            if elem:
+                if isinstance(X, pd.DataFrame):
+                    name = X.columns[ix]
+                else:
+                    name = str(ix)
+                cat_var = construct_crisp_categorical_partition(np.array(X)[:, ix], name, fz_type_studied)
+
+                categorical_partition[name] = cat_var
+
+        # Reorder the partitions so that they follow the same order as in the original X
+        precomputed_partitions_aux = []
+        for ix, elem in enumerate(categorical_mask):
+            if isinstance(X, pd.DataFrame):
+                name = X.columns[ix]
+            else:
+                name = str(ix)
+
+            if elem:
+                precomputed_partitions_aux.append(categorical_partition[name])
+            else:
+                precomputed_partitions_aux.append(precomputed_partitions.pop(0))
+
+        precomputed_partitions = precomputed_partitions_aux
+
+    
+    for ix, partition in enumerate(precomputed_partitions):
+        partition.name = feat_names[ix]
+
+    return precomputed_partitions
+
+
+def _triangular_construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3) -> list[fs.fuzzyVariable]:
+    '''
+    Returns a list of linguistic variables according to the kind of fuzzy specified.
+
+    :param X: numpy array|pandas dataframe, shape samples x features.
+    :param fz_type_studied: fuzzy set type studied.
+    :param categorial_mask: a boolean mask vector that indicates for each variables if its categorical or not.
+    :param n_partitions: number of partitions to use in the fuzzy set.
+    '''
+    if mnt.save_usage_flag:
+        mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
+        mnt.usage_data[mnt.usage_categories.FuzzySets][fz_type_studied.name] += 1
+
+    if isinstance(X, pd.DataFrame):
+        feat_names = X.columns
+        X = X.values
+    else:
+        feat_names = [str(ix) for ix in range(X.shape[1])]
+
+    # Get the X dataframe without the categorical variables
+    if categorical_mask is not None:
+        X_numerical = X[:, np.logical_not(categorical_mask)]
+    else:
+        X_numerical = X
+
+    if fz_type_studied == fs.FUZZY_SETS.t1:
+        precomputed_partitions = t1_simple_triangular_partition(X_numerical)
+    elif fz_type_studied == fs.FUZZY_SETS.t2:
+        raise NotImplementedError('Triangular partitions not implemented for t2 fuzzy sets')
+    elif fz_type_studied == fs.FUZZY_SETS.gt2:
+        raise NotImplementedError('Triangular partitions not implemented for gt2 fuzzy sets')
     else:
         raise ValueError('Fuzzy set type not recognized')
 
