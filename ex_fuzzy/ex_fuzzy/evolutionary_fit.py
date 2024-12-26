@@ -283,7 +283,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.eval_performance.add_full_evaluation() # After purging the bad rules we update the metrics.
         
         if p_value_compute:
-            self.p_value_validation()
+            self.p_value_validation(bootstrap_size)
 
         self.rule_base.rename_cons(self.classes_names)
         if self.lvs is None:
@@ -300,6 +300,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.p_value_class_structure, self.p_value_feature_coalitions = self.eval_performance.p_permutation_classifier_validation()
         
         self.eval_performance.p_bootstrapping_rules_validation(bootstrap_size)
+        
 
     def load_master_rule_base(self, rule_base: rules.MasterRuleBase) -> None:
         '''

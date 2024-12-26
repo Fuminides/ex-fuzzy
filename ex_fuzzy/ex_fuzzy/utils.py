@@ -241,8 +241,8 @@ def t1_simple_triangular_partition_parameters(x: np.array) -> np.array:
     '''
     n_partitions = 3
     trap_memberships_size = 4
-    quantile_numbers = partition3_quantile_compute(x)
-    quantile_numbers = np.nanpercentile(x, [0, 25, 50, 75, 100])
+    #quantile_numbers = partition3_quantile_compute(x)
+    quantile_numbers = np.nanpercentile(x, [0, 25, 50, 75, 100], axis=0)
     partition_parameters = np.zeros(
         (x.shape[1], n_partitions, trap_memberships_size))
     
@@ -251,8 +251,8 @@ def t1_simple_triangular_partition_parameters(x: np.array) -> np.array:
         if partition == 0:
             partition_parameters[:, partition, 0] = quantile_numbers[0]
             partition_parameters[:, partition, 1] = quantile_numbers[0]
-            partition_parameters[:, partition, 1] = quantile_numbers[1]
-            partition_parameters[:, partition, 2] = quantile_numbers[2]
+            partition_parameters[:, partition, 2] = quantile_numbers[0]
+            partition_parameters[:, partition, 3] = quantile_numbers[2]
 
         elif partition == 1:
             partition_parameters[:, partition, 0] = quantile_numbers[1]
@@ -261,12 +261,14 @@ def t1_simple_triangular_partition_parameters(x: np.array) -> np.array:
             partition_parameters[:, partition, 3] = quantile_numbers[3]
         else:
             partition_parameters[:, partition, 0] = quantile_numbers[2]
-            partition_parameters[:, partition, 1] = quantile_numbers[3]
-            partition_parameters[:, partition, 2] = quantile_numbers[3]
+            partition_parameters[:, partition, 1] = quantile_numbers[4]
+            partition_parameters[:, partition, 2] = quantile_numbers[4]
             partition_parameters[:, partition, 3] = quantile_numbers[4]
 
-
+    
     return partition_parameters
+
+
 
 def t1_simple_triangular_partition(x: np.array, n_partitions:int=3) -> list[np.array]:
     '''
@@ -423,14 +425,15 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
     else:
         X_numerical = X
 
-    if fz_type_studied == fs.FUZZY_SETS.t1:
-        precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical, n_partitions)
-    elif fz_type_studied == fs.FUZZY_SETS.t2:
-        precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions)
-    elif fz_type_studied == fs.FUZZY_SETS.gt2:
-        precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions)
-    else:
-        raise ValueError('Fuzzy set type not recognized')
+    if sum(np.logical_not(categorical_mask)) > 0: 
+        if fz_type_studied == fs.FUZZY_SETS.t1:
+            precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical, n_partitions)
+        elif fz_type_studied == fs.FUZZY_SETS.t2:
+            precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions)
+        elif fz_type_studied == fs.FUZZY_SETS.gt2:
+            precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions)
+        else:
+            raise ValueError('Fuzzy set type not recognized')
 
 
     if categorical_mask is not None:
