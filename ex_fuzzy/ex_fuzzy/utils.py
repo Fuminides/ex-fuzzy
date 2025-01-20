@@ -425,7 +425,7 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
     else:
         X_numerical = X
 
-    if sum(np.logical_not(categorical_mask)) > 0: 
+    if categorical_mask is None or sum(np.logical_not(categorical_mask)) > 0: 
         if fz_type_studied == fs.FUZZY_SETS.t1:
             precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical, n_partitions)
         elif fz_type_studied == fs.FUZZY_SETS.t2:

@@ -3,7 +3,6 @@ Created on Thu Jan  7 09:35:55 2021
 All rights reserved
 
 @author: Javier Fumanal Idocin - University of Essex
-@author: Javier Andreu-Perez - University of Essex
 
 
 This is a the source file that contains a demo for a tip computation example, where a diferent set of T1-FS are used to compute
@@ -41,24 +40,25 @@ import ex_fuzzy.vis_rules as vis_rules
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = iris.target
-n_linguistic_variables = 5
+n_linguistic_variables = 3
 
 # Split the data into a training set and a test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
 
-fz_type_studied = fs.FUZZY_SETS.t2
+fz_type_studied = fs.FUZZY_SETS.t1
 
 # Compute the fuzzy partitions using 3 quartiles
 precomputed_partitions = utils.construct_partitions(X, fz_type_studied, n_partitions=n_linguistic_variables)
 
 fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=precomputed_partitions, nAnts=3, 
                                             n_linguistic_variables=n_linguistic_variables, fuzzy_type=fz_type_studied, 
-                                            verbose=True, tolerance=0.01, runner=1, ds_mode=2, fuzzy_modifiers=False)
+                                            verbose=True, tolerance=0.01, runner=1, ds_mode=0, fuzzy_modifiers=False)
 
 fl_classifier.fit(X_train, y_train, n_gen=20)
 
-str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
-                        plot_rules=False, print_rules=True, plot_partitions=False, return_rules=True)
+fl_evaluator = eval_tools.FuzzyEvaluator(fl_classifier)
+str_rules = fl_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
+                        plot_rules=False, print_rules=True, plot_partitions=True, return_rules=True)
 
 # Save rules to a plain text file
 with open('iris_rules.txt', 'w') as f:
@@ -82,7 +82,9 @@ mrule_base = persistence.load_fuzzy_rules(str_rules, loaded_partitions)
 fl_classifier2 = GA.BaseFuzzyRulesClassifier(precomputed_rules=mrule_base, ds_mode=2, allow_unknown=False)
 # fl_classifier2.load_master_rule_base(mrule_base) # (Another possibility)
 
-str_rules = eval_tools.eval_fuzzy_model(fl_classifier2, X_train, y_train, X_test, y_test, 
+fl_evaluator = eval_tools.FuzzyEvaluator(fl_classifier2)
+
+str_rules = fl_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
                         plot_rules=False, print_rules=True, plot_partitions=False, return_rules=True)
                         
 print('Done')
