@@ -94,6 +94,39 @@ def t1_simple_partition(x: np.array) -> np.array:
     return partition_parameters
 
 
+def t1_simple_gaussian_partition(x: np.array) -> np.array:
+    '''
+    Partitions the fuzzy variable in four Gaussian memberships.
+
+    :param x: numpy array, vector of shape (samples, ).
+    :return: numpy array, vector of shape (variables, 4, 2) where the last dimension 
+            contains [mean, standard_deviation] for each Gaussian membership function.
+    '''
+    n_partitions = 4
+    gaussian_params_size = 2  # mean and standard deviation
+    quantile_numbers = fixed_quantile_compute(x)
+
+    partition_parameters = np.zeros(
+        (x.shape[1], n_partitions, gaussian_params_size))
+    
+    for partition in range(n_partitions):
+        if partition == 0:
+            # For first partition, center at first quantile
+            partition_parameters[:, partition, 0] = quantile_numbers[1]  # mean
+            partition_parameters[:, partition, 1] = (quantile_numbers[2] - quantile_numbers[0]) / 2  # std
+        elif partition == n_partitions - 1:
+            # For last partition, center at last quantile
+            partition_parameters[:, partition, 0] = quantile_numbers[-2]  # mean
+            partition_parameters[:, partition, 1] = (quantile_numbers[-1] - quantile_numbers[-3]) / 2  # std
+        else:
+            # For middle partitions
+            pointer = 2 if partition == 1 else 5
+            partition_parameters[:, partition, 0] = quantile_numbers[pointer]  # mean
+            partition_parameters[:, partition, 1] = (quantile_numbers[pointer+1] - quantile_numbers[pointer-1]) / 2  # std
+
+    return partition_parameters
+
+
 def compute_quantiles(x, n_partitions):
     '''
     Computes the quantiles needed for n-partition fuzzy membership.
@@ -137,6 +170,46 @@ def t1_n_partition_parameters(x, n_partitions):
             partition_parameters[:, partition, 1] = (quantile_numbers[partition, :] + quantile_numbers[partition + 1, :] ) / 2
             partition_parameters[:, partition, 2] = (quantile_numbers[partition + 1, :] + quantile_numbers[partition + 2, :] ) / 2
             partition_parameters[:, partition, 3] = quantile_numbers[partition + 2, :]
+
+    return partition_parameters
+
+
+def t1_n_gaussian_partition_parameters(x: np.array, n_partitions: int) -> np.array:
+    '''
+    Partitions the fuzzy variable in n Gaussian memberships.
+
+    :param x: numpy array, matrix of shape (samples, variables).
+    :param n_partitions: int, number of partitions.
+    :return: numpy array, tensor of shape (variables, n_partitions, 2) where the last dimension 
+            contains [mean, standard_deviation] for each Gaussian membership function.
+    '''
+    gaussian_params_size = 2  # mean and standard deviation
+    n_variables = x.shape[1]
+    quantile_numbers = compute_quantiles(x, n_partitions)
+    
+    # Initialize the array for partition parameters
+    partition_parameters = np.zeros((n_variables, n_partitions, gaussian_params_size))
+
+    for partition in range(n_partitions):
+        if partition == 0:  # First partition
+            # Center at first interior quantile
+            partition_parameters[:, partition, 0] = quantile_numbers[1, :]  # mean
+            # Spread based on distance to next quantile
+            partition_parameters[:, partition, 1] = (quantile_numbers[2, :] - quantile_numbers[0, :]) / 2  # std
+            
+        elif partition == n_partitions - 1:  # Last partition
+            # Center at last interior quantile
+            partition_parameters[:, partition, 0] = quantile_numbers[-2, :]  # mean
+            # Spread based on distance to previous quantile
+            partition_parameters[:, partition, 1] = (quantile_numbers[-1, :] - quantile_numbers[-3, :]) / 2  # std
+            
+        else:  # Intermediate partitions
+            # Center at current quantile
+            partition_parameters[:, partition, 0] = quantile_numbers[partition + 1, :]  # mean
+            # Spread based on distance to adjacent quantiles
+            partition_parameters[:, partition, 1] = (
+                quantile_numbers[partition + 2, :] - quantile_numbers[partition, :]
+            ) / 2  # std
 
     return partition_parameters
 
@@ -287,7 +360,7 @@ def t1_simple_triangular_partition(x: np.array, n_partitions:int=3) -> list[np.a
 
     return res
 
-def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3) -> list[fs.fuzzyVariable]:
+def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3, shape='trapezoid') -> list[fs.fuzzyVariable]:
     '''
     Partitions the dataset features into different fuzzy variables. Parameters are prefixed.
     Use it for simple testing and initial solution.
@@ -312,7 +385,13 @@ def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3) -> list[fs.fuzzyVar
 
     mins = np.min(x, axis=0)
     maxs = np.max(x, axis=0)
-    fz_memberships = t1_n_partition_parameters(x, n_partitions=n_partition)
+    if shape == 'trapezoid':
+        fz_memberships = t1_n_partition_parameters(x, n_partitions=n_partition)
+    elif shape == 'gaussian':
+        fz_memberships = t1_n_gaussian_partition_parameters(x, n_partitions=n_partition)
+    else:
+        raise ValueError('Shape not recognized')
+    
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
         fzs = [fs.FS(partition_names[ix], fz_memberships[fz_parameter, ix, :], [

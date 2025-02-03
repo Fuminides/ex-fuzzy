@@ -733,9 +733,14 @@ class FitRuleBase(Problem):
 
             self.feature_domain_bounds = np.array(
                 [[0, 99] for ix in range(self.X.shape[1])])
-            size_multiplier = 4 if self.fuzzy_type == fs.FUZZY_SETS.t1 else 8
+            size_multiplier = 4
+            if self.fuzzy_type == fs.FUZZY_SETS.t1:
+                correct_size = [(self.n_lv_possible[ixx]-1) * size_multiplier + 2 for ixx in range(len(self.n_lv_possible))]
+            elif self.fuzzy_type == fs.FUZZY_SETS.t2:
+                correct_size = [(self.n_lv_possible[ixx]-1) * (size_multiplier+2) + 3 for ixx in range(len(self.n_lv_possible))]
             membership_bounds = np.concatenate(
-                [[self.feature_domain_bounds[ixx]] * size_multiplier * self.n_lv_possible[ixx] for ixx in range(len(self.n_lv_possible))])
+                [[self.feature_domain_bounds[ixx]] * correct_size[ixx] for ixx in range(len(self.n_lv_possible))])
+            
             
             vars_memberships = {
                 aux_counter + ix: Integer(bounds=membership_bounds[ix]) for ix in range(len(membership_bounds))}
@@ -827,7 +832,7 @@ class FitRuleBase(Problem):
         if optimize_lv:
             # If lv memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules + \
-                len(rule_base.antecedents) * n_lv_possible * mf_size
+                len(self.n_lv_possible) * 3 + len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-2) * mf_size
         else:
             # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
@@ -907,20 +912,24 @@ class FitRuleBase(Problem):
 
         rule_list = [[] for _ in range(self.n_classes)]
 
-        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 8
+        mf_size = 4
         '''
         GEN STRUCTURE
 
         First: antecedents chosen by each rule. Size: nAnts * nRules
         Second: Variable linguistics used. Size: nAnts * nRules
-        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * self.n_linguistic_variables * 8|4 (2 trapezoidal memberships if t2)
+        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-2) * 4 =+ 3 + 2)
         Four: Consequent classes. Size: nRules
         Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
         '''
         if self.lvs is None:
             # If memberships are optimized.
-            fourth_pointer = 2 * self.nAnts * self.nRules + \
-                sum(self.n_lv_possible) * mf_size
+            if fuzzy_type == fs.FUZZY_SETS.t1:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * (mf_size+2)
         else:
             # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
@@ -966,6 +975,7 @@ class FitRuleBase(Problem):
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
             consequent_idx = x[fourth_pointer + aux_pointer]
+
             assert consequent_idx < self.n_classes, "Consequent class is not valid. Something in the gene is wrong."
             aux_pointer += 1
  
@@ -995,7 +1005,7 @@ class FitRuleBase(Problem):
                     rs_instance)
 
             
-        # If we optimize the membership functions
+        # If we optimize the membership functions - change to delta system
         if self.lvs is None:
             third_pointer = 2 * self.nAnts * self.nRules
             aux_pointer = 0
@@ -1003,27 +1013,81 @@ class FitRuleBase(Problem):
 
             for fuzzy_variable in range(self.X.shape[1]):
                 linguistic_variables = []
+                lv_FS = []
 
-                for linguistic_variable in range(self.n_lv_possible[fuzzy_variable]):
+                for lx in range(self.n_lv_possible[fuzzy_variable]):
                     parameter_pointer = third_pointer + aux_pointer
-                    fz_parameters_idx = x[parameter_pointer:parameter_pointer + mf_size]
-                    fz_parameters = self.antecedents_referencial[fuzzy_variable][fz_parameters_idx]
-                    aux_pointer += mf_size
+                    if lx == 0:
+                        fz_parameters_idx0 = x[parameter_pointer]
+                        fz_parameters_idx1 = x[parameter_pointer]
+                        fz_parameters_idx2 = x[parameter_pointer + 1]
+                        fz_parameters_idx3 = x[parameter_pointer + 2]
+                        fz_parameters_idx4 = x[parameter_pointer + 3]
 
-                    if fuzzy_type == fs.FUZZY_SETS.t2:
-                        fz_parameters[0:6] = np.sort(fz_parameters[0:6])
-                        mu = [np.min(fz_parameters[0:2]), fz_parameters[2],
-                              fz_parameters[3], np.max(fz_parameters[4:6])]
-                        ml = [np.max(fz_parameters[0:2]), fz_parameters[2],
-                              fz_parameters[3], np.min(fz_parameters[4:6])]
-                        height = fz_parameters[6] / np.max(fz_parameters)
+                        fz0 = fz_parameters_idx0
+                        fz1 = fz_parameters_idx1
+                        fz2 = fz_parameters_idx1 + fz_parameters_idx2
+                        fz3 = fz2 + fz_parameters_idx3 + fz_parameters_idx4
 
-                        ivfs = fs.IVFS(self.vl_names[fuzzy_variable][linguistic_variable], ml, mu,
-                                       (min_domain[fuzzy_variable], max_domain[fuzzy_variable]), lower_height=height)
+                        fz_parameters = np.array([fz0, fz1, fz2, fz3])
+                        next_init = fz2 + fz_parameters_idx3
+                        aux_pointer += mf_size
+
+                    elif lx == self.n_lv_possible[fuzzy_variable] - 1:
+                        fz_parameters_idx0 = next_init
+                        fz_parameters_idx1 = x[parameter_pointer]
+                        fz_parameters_idx2 = x[parameter_pointer + 1]
+                        fz_parameters_idx3 = x[parameter_pointer + 2]
+
+                        fz0 = fz_parameters_idx0
+                        fz1 = next_init + fz_parameters_idx1 + fz_parameters_idx2
+                        fz2 = fz1 + fz_parameters_idx3
+                        fz3 = fz2
+
+                        fz_parameters = np.array([fz0, fz1, fz2, fz3])
+                        aux_pointer += int(mf_size / 2)
                     else:
-                        ivfs = fs.FS(self.vl_names[fuzzy_variable][linguistic_variable], np.sort(fz_parameters[0:4]),
-                                     (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
-                    linguistic_variables.append(ivfs)
+                        fz_parameters_idx0 = next_init
+                        fz_parameters_idx1 = x[parameter_pointer]
+                        fz_parameters_idx2 = x[parameter_pointer + 1]
+                        fz_parameters_idx3 = x[parameter_pointer + 2]
+                        fz_parameters_idx4 = x[parameter_pointer + 3]
+                        fz_parameters_idx5 = x[parameter_pointer + 4]
+
+                        fz0 = fz_parameters_idx0
+                        fz1 = fz0 + fz_parameters_idx1 + fz_parameters_idx2
+                        fz2 = fz1 + fz_parameters_idx3
+                        fz3 = fz2 + fz_parameters_idx4 + fz_parameters_idx5
+                        aux_pointer += mf_size
+                        
+
+                        fz_parameters = np.array([fz0, fz1, fz2, fz3])
+                        next_init = fz2 + fz_parameters_idx4
+
+                    lv_FS.append(fz_parameters)
+                    
+                    #if fuzzy_type == fs.FUZZY_SETS.t2:
+                    #    fz_parameters[0:6] = np.sort(fz_parameters[0:6])
+                    #    mu = [np.min(fz_parameters[0:2]), fz_parameters[2],
+                    #          fz_parameters[3], np.max(fz_parameters[4:6])]
+                    #    ml = [np.max(fz_parameters[0:2]), fz_parameters[2],
+                    #          fz_parameters[3], np.min(fz_parameters[4:6])]
+                    #    height = fz_parameters[6] / np.max(fz_parameters)
+
+                    #    ivfs = fs.IVFS(self.vl_names[fuzzy_variable][linguistic_variable], ml, mu,
+                    #                   (min_domain[fuzzy_variable], max_domain[fuzzy_variable]), lower_height=height)
+                    #else:
+                    #    ivfs = fs.FS(self.vl_names[fuzzy_variable][linguistic_variable], np.sort(fz_parameters[0:4]),
+                    #                 (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
+                    #linguistic_variables.append(ivfs)
+                
+                min_lv = np.min(np.array(lv_FS))
+                max_lv = np.max(np.array(lv_FS))
+
+                for lx, relevant_lv in enumerate(lv_FS):
+                    relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * max_domain[fuzzy_variable]
+                    proper_FS = fs.FS(self.vl_names[fuzzy_variable][lx], relevant_lv, (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
+                    linguistic_variables.append(proper_FS)
 
                 antecedents.append(fs.fuzzyVariable(
                     self.var_names[fuzzy_variable], linguistic_variables))

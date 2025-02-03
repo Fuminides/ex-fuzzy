@@ -247,7 +247,7 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
 
     memberships = [0, 1, 1, 0]
 
-    colors = ['b', 'r', 'g', 'orange', 'y']
+    colors = ['b', 'r', 'g', 'orange', 'purple']
     for ix, fuzzy_set in enumerate(fuzzy_variable.linguistic_variables):
         name = fuzzy_set.name
         initiated = False
@@ -256,7 +256,7 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         if  fz_studied == fs.FUZZY_SETS.t1:
             try:
                 ax.plot(fuzzy_set.membership_parameters,
-                        memberships, colors[ix], label=name)
+                        memberships, colors[ix % len(colors)], label=name)
                 ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
             except AttributeError:
                 print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')

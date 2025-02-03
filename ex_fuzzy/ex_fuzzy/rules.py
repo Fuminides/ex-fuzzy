@@ -1054,7 +1054,6 @@ class MasterRuleBase():
         :param X: array with the values of the inputs.
         :return: array with the winning rule for each sample.
         '''
-        
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
 
         if self.ds_mode == 0:
