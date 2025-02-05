@@ -11,6 +11,7 @@ from sklearn.base import ClassifierMixin
 from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.core.problem import Problem
 from pymoo.optimize import minimize
+from pymoo.operators.repair.rounding import RoundingRepair
 from pymoo.operators.sampling.rnd import IntegerRandomSampling
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PolynomialMutation
@@ -202,16 +203,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
 
-        if initial_rules is not None:
+        if initial_rules is None:
+            rules_gene = IntegerRandomSampling()
+        else:
             rules_gene = problem.encode_rulebase(initial_rules, self.lvs is None)
             rules_gene = (np.ones((pop_size, len(rules_gene))) * rules_gene).astype(int)
-        else:
-            rules_gene = IntegerRandomSampling()
 
         algorithm = GA(
             pop_size=pop_size,
-            crossover=SBX(prob=var_prob, eta=sbx_eta),
-            mutation=PolynomialMutation(eta=mutation_eta),
+            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
+            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
             tournament_size=tournament_size,
             sampling=rules_gene,
             eliminate_duplicates=False)
@@ -918,7 +919,7 @@ class FitRuleBase(Problem):
 
         First: antecedents chosen by each rule. Size: nAnts * nRules
         Second: Variable linguistics used. Size: nAnts * nRules
-        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-2) * 4 =+ 3 + 2)
+        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)
         Four: Consequent classes. Size: nRules
         Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
         '''

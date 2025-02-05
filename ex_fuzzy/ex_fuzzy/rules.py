@@ -1043,7 +1043,7 @@ class MasterRuleBase():
 
         if allow_unkown:
             # If there is no rule that fires, we set the consequent to -1
-            winning_rules[np.max(association_degrees, axis=1) == 0] = -1
+            winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
 
         return winning_rules
 
