@@ -245,7 +245,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         # self.rename_fuzzy_variables() This wont work on checkpoints!
                         rule_base.purge_rules(self.tolerance)
                         rule_base.rename_cons(self.classes_names)
-                        checkpoint_rules = rule_base.print_rules(True)
+                        checkpoint_rules = rule_base.print_rules(True, bootstrap_results=True)
                         f.write(checkpoint_rules)     
 
         else:
@@ -290,8 +290,15 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         if self.lvs is None:
             self.rename_fuzzy_variables()
         
-        
     
+    def print_rule_bootstrap_results(self) -> None:
+        '''
+        Prints the bootstrap results for each rule.
+        '''
+        self.rule_base.print_rule_bootstrap_results()
+    
+
+
     def p_value_validation(self, bootstrap_size:int=100):
         '''
         Computes the permutation and bootstrapping p-values for the classifier and its rules.
@@ -358,11 +365,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         return self.rule_base.compute_association_degrees(X)
 
 
-    def print_rules(self, return_rules:bool=False) -> None:
+    def print_rules(self, return_rules:bool=False, bootstrap_results:bool=False) -> None:
         '''
         Print the rules contained in the fitted rulebase.
         '''
-        return self.rule_base.print_rules(return_rules)
+        return self.rule_base.print_rules(return_rules, bootstrap_results)
 
 
     def plot_fuzzy_variables(self) -> None:
@@ -734,14 +741,13 @@ class FitRuleBase(Problem):
 
             self.feature_domain_bounds = np.array(
                 [[0, 99] for ix in range(self.X.shape[1])])
-            size_multiplier = 4
             if self.fuzzy_type == fs.FUZZY_SETS.t1:
-                correct_size = [(self.n_lv_possible[ixx]-1) * size_multiplier + 2 for ixx in range(len(self.n_lv_possible))]
+                correct_size = [(self.n_lv_possible[ixx]-1) * 4 + 3 for ixx in range(len(self.n_lv_possible))]
             elif self.fuzzy_type == fs.FUZZY_SETS.t2:
-                correct_size = [(self.n_lv_possible[ixx]-1) * (size_multiplier+2) + 3 for ixx in range(len(self.n_lv_possible))]
+
+                correct_size = [(self.n_lv_possible[ixx]-1) * 6 + 2 for ixx in range(len(self.n_lv_possible))]
             membership_bounds = np.concatenate(
                 [[self.feature_domain_bounds[ixx]] * correct_size[ixx] for ixx in range(len(self.n_lv_possible))])
-            
             
             vars_memberships = {
                 aux_counter + ix: Integer(bounds=membership_bounds[ix]) for ix in range(len(membership_bounds))}
@@ -922,15 +928,17 @@ class FitRuleBase(Problem):
         Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)
         Four: Consequent classes. Size: nRules
         Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
+        Sixth: Modifiers for the membership functions. Size: len(self.lvs) * nAnts * nRules
         '''
         if self.lvs is None:
             # If memberships are optimized.
             if fuzzy_type == fs.FUZZY_SETS.t1:
                 fourth_pointer = 2 * self.nAnts * self.nRules + \
-                    len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4
             elif fuzzy_type == fs.FUZZY_SETS.t2:
                 fourth_pointer = 2 * self.nAnts * self.nRules + \
                     len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
+                
         else:
             # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
@@ -945,6 +953,7 @@ class FitRuleBase(Problem):
         else:
             sixth_pointer = fifth_pointer
             
+        
         
         aux_pointer = 0
         min_domain = np.min(self.X, axis=0)
@@ -1021,50 +1030,44 @@ class FitRuleBase(Problem):
                     if fuzzy_type == fs.FUZZY_SETS.t1:
                         if lx == 0:
                             fz_parameters_idx0 = x[parameter_pointer]
-                            fz_parameters_idx1 = x[parameter_pointer]
-                            fz_parameters_idx2 = x[parameter_pointer + 1]
-                            fz_parameters_idx3 = x[parameter_pointer + 2]
-                            fz_parameters_idx4 = x[parameter_pointer + 3]
+                            fz_parameters_idx1 = x[parameter_pointer + 1]
+                            fz_parameters_idx2 = x[parameter_pointer + 2]
+                            fz_parameters_idx3 = x[parameter_pointer + 3]
 
                             fz0 = fz_parameters_idx0
-                            fz1 = fz_parameters_idx1
-                            fz2 = fz_parameters_idx1 + fz_parameters_idx2
-                            fz3 = fz2 + fz_parameters_idx3 + fz_parameters_idx4
+                            fz1 = fz_parameters_idx0
+                            fz2 = fz1 + fz_parameters_idx1
+                            next_fz0 = fz2 + fz_parameters_idx2
+                            fz3 = next_fz0 + fz_parameters_idx3
 
                             fz_parameters = np.array([fz0, fz1, fz2, fz3])
-                            next_init = fz2 + fz_parameters_idx3
-                            aux_pointer += mf_size
+                            aux_pointer += 4
 
                         elif lx == self.n_lv_possible[fuzzy_variable] - 1:
-                            fz_parameters_idx0 = next_init
                             fz_parameters_idx1 = x[parameter_pointer]
                             fz_parameters_idx2 = x[parameter_pointer + 1]
-                            fz_parameters_idx3 = x[parameter_pointer + 2]
 
-                            fz0 = fz_parameters_idx0
-                            fz1 = next_init + fz_parameters_idx1 + fz_parameters_idx2
-                            fz2 = fz1 + fz_parameters_idx3
+                            fz0 = next_fz0
+                            fz1 = fz3 + fz_parameters_idx1
+                            fz2 = fz1 + fz_parameters_idx2
                             fz3 = fz2
 
                             fz_parameters = np.array([fz0, fz1, fz2, fz3])
-                            aux_pointer += int(mf_size / 2)
+                            aux_pointer += 3
                         else:
-                            fz_parameters_idx0 = next_init
                             fz_parameters_idx1 = x[parameter_pointer]
                             fz_parameters_idx2 = x[parameter_pointer + 1]
                             fz_parameters_idx3 = x[parameter_pointer + 2]
                             fz_parameters_idx4 = x[parameter_pointer + 3]
-                            fz_parameters_idx5 = x[parameter_pointer + 4]
 
-                            fz0 = fz_parameters_idx0
-                            fz1 = fz0 + fz_parameters_idx1 + fz_parameters_idx2
-                            fz2 = fz1 + fz_parameters_idx3
-                            fz3 = fz2 + fz_parameters_idx4 + fz_parameters_idx5
-                            aux_pointer += mf_size
+                            fz0 = next_fz0
+                            fz1 = fz3 + fz_parameters_idx1
+                            fz2 = fz1 + fz_parameters_idx2
+                            next_fz0 = fz2 + fz_parameters_idx3
+                            fz3 = next_fz0 + fz_parameters_idx4
+                            aux_pointer += 4
                             
-
                             fz_parameters = np.array([fz0, fz1, fz2, fz3])
-                            next_init = fz2 + fz_parameters_idx4
 
                         lv_FS.append(fz_parameters)
 
@@ -1080,9 +1083,9 @@ class FitRuleBase(Problem):
                             l_fz0 = fz_parameters_idx0
                             l_fz1 = l_fz0
                             l_fz2 = l_fz1 + fz_parameters_idx1
-                            next_lfz0 = l_fz2 + fz_parameters_idx2
-                            next_ufz0 = next_lfz0 + fz_parameters_idx3
-                            l_fz3 = next_ufz0 + fz_parameters_idx4
+                            next_ufz0 = l_fz2 + fz_parameters_idx2
+                            next_lfz0 = next_ufz0 + fz_parameters_idx3
+                            l_fz3 = next_lfz0 + fz_parameters_idx4
 
                             u_fz0 = l_fz0
                             u_fz1 = u_fz0
@@ -1100,12 +1103,13 @@ class FitRuleBase(Problem):
                             
                             u_fz0 = next_ufz0
                             l_fz0 = next_lfz0
-                            u_fz1 = l_fz0 + fz_parameters_idx0
+                            u_fz1 = u_fz3 + fz_parameters_idx0
                             l_fz1 = u_fz1
                             u_fz2 = l_fz1 + fz_parameters_idx1
                             l_fz2 = u_fz2
                             l_fz3 = l_fz2
                             u_fz3 = l_fz3
+
 
                             l_fz_parameters = np.array([l_fz0, l_fz1, l_fz2, l_fz3])
                             u_fz_parameters = np.array([u_fz0, u_fz1, u_fz2, u_fz3])
@@ -1127,13 +1131,16 @@ class FitRuleBase(Problem):
                             l_fz2 = l_fz1 + fz_parameters_idx1
                             u_fz2 = l_fz2
 
-                            next_lfz0 = l_fz2 + fz_parameters_idx2
-                            next_ufz0 = next_lfz0 + fz_parameters_idx3
+                            next_ufz0 = l_fz2 + fz_parameters_idx2
+                            next_lfz0 = next_ufz0 + fz_parameters_idx3
+
+                            l_fz3 = next_lfz0 + fz_parameters_idx4
+                            u_fz3 = l_fz3 + fz_parameters_idx5
 
                             l_fz_parameters = np.array([l_fz0, l_fz1, l_fz2, l_fz3])
                             u_fz_parameters = np.array([u_fz0, u_fz1, u_fz2, u_fz3])
-                            next_init = l_fz2 + fz_parameters_idx4
                             aux_pointer += 6
+
 
                         lv_FS.append((l_fz_parameters, u_fz_parameters))
 

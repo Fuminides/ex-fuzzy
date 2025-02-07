@@ -188,9 +188,20 @@ class RuleSimple():
             pass
 
         try:
-            aux += ' p-value bootstrpping membership validation' + str(self.boot_p_value)
+            aux += ' p-value bootstrapping membership validation: ' + str(self.boot_p_value)
         except AttributeError:
             pass
+
+        try:
+            aux += ' bootstrapping confidence conf. interval: ' + str(self.boot_confidence_interval)
+        except AttributeError:
+            pass
+
+        try:
+            aux += ' bootstrapping support conf. interval: ' + str(self.boot_support_interval)
+        except AttributeError:
+            pass
+            
 
         return aux
     
@@ -475,7 +486,7 @@ class RuleBase():
         return res
 
 
-    def print_rules(self, return_rules:bool=False) -> None:
+    def print_rules(self, return_rules:bool=False, bootstrap_results:bool=True) -> None:
         '''
         Print the rules from the rule base.
 
@@ -483,7 +494,7 @@ class RuleBase():
         '''
         all_rules = ''
         for ix, rule in enumerate(self.rules):
-            str_rule = generate_rule_string(rule, self.antecedents)
+            str_rule = generate_rule_string(rule, self.antecedents, bootstrap_results)
             
             all_rules += str_rule + '\n'
 
@@ -639,6 +650,14 @@ class RuleBase():
         Returns the number of linguistic variables in the rule base.
         '''
         return [len(amt) for amt in self.antecedents]
+
+
+    def print_rule_bootstrap_results(self) -> None:
+        '''
+        Prints the bootstrap results for each rule.
+        '''
+        for ix, rule in enumerate(self.rules):
+            print('Rule ' + str(ix) + ': ' + str(rule) + ' - Confidence: ' + str(rule.boot_confidence_interval) + ' - Support: ' + str(rule.boot_support_interval))
 
 
 class RuleBaseT2(RuleBase):
@@ -1133,7 +1152,7 @@ class MasterRuleBase():
             self.consequent_names = [ix for ix in range(len(self.rule_bases))]
 
 
-    def print_rules(self, return_rules=False) -> None:
+    def print_rules(self, return_rules=False, bootstrap_results=True) -> None:
         '''
         Print all the rules for all the consequents.
 
@@ -1144,13 +1163,22 @@ class MasterRuleBase():
         for ix, ruleBase in enumerate(self.rule_bases):    
             res += 'Rules for consequent: ' + str(self.consequent_names[ix]) + '\n'
             res += '----------------\n'
-            res += ruleBase.print_rules(return_rules=True) + '\n'
+            res += ruleBase.print_rules(return_rules=True, bootstrap_results=bootstrap_results) + '\n'
         
         
         if return_rules:
             return res
         else:
             print(res)
+    
+
+    def print_rule_bootstrap_results(self) -> None:
+        '''
+        Prints the bootstrap results for each rule.
+        '''
+        for ix, ruleBase in enumerate(self.rule_bases):
+            print('Rules for consequent: ' + str(self.consequent_names[ix]))
+            ruleBase.print_rule_bootstrap_results()
 
 
     def get_rules(self) -> list[RuleSimple]:
@@ -1202,7 +1230,7 @@ class MasterRuleBase():
         '''
         Returns a string with the rules for each consequent.
         '''
-        return self.print_rules(return_rules=True)
+        return self.print_rules(return_rules=True, bootstrap_results=False)
     
 
     def __eq__(self, __value: object) -> bool:
@@ -1317,7 +1345,7 @@ def list_rules_to_matrix(rule_list: list[RuleSimple]) -> np.array:
     return res
 
 
-def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
+def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results: bool=True) -> str:
     '''
     Generates a string with the rule.
 
@@ -1384,24 +1412,24 @@ def generate_rule_string(rule: RuleSimple, antecedents: list) -> str:
         except AttributeError:
             pass
     
-    try:
-        p_value_class_structure = rule.p_value_class_structure
-        p_value_feature_coalition = rule.p_value_feature_coalitions
-
-        pvc = format_p_value(p_value_class_structure)
-        pvf = format_p_value(p_value_feature_coalition)
-
-        str_rule += ' (p-value Permutation CS: ' + pvc + ', FC: ' + pvf + ')'
-    except AttributeError:
-        pass
+    if bootstrap_results:
+        try:
+            p_value_class_structure = rule.p_value_class_structure
+            p_value_feature_coalition = rule.p_value_feature_coalitions
 
 
-    try:
-        p_value_bootstrap = rule.boot_p_value
+            pvc = format_p_value(p_value_class_structure)
+            pvf = format_p_value(p_value_feature_coalition)
 
-        pbs = format_p_value(p_value_bootstrap)
-        str_rule += ' (p-value bootstrap: ' + pbs + ')'
-    except AttributeError:
-        pass
-    
+            str_rule += ' (p-value Permutation Class Structure: ' + pvc + ', Feature Coalition: ' + pvf 
+            p_value_bootstrap = rule.boot_p_value
+
+            pbs = format_p_value(p_value_bootstrap)
+            str_rule += 'Membership Validation: ' + pbs
+            str_rule += ')'
+
+            str_rule += ' Confidence Interval: ' + str(rule.boot_confidence_interval)
+            str_rule += ' Support Interval: ' + str(rule.boot_support_interval)
+        except AttributeError:
+            pass
     return str_rule

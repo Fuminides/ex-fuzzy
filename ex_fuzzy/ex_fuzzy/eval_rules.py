@@ -77,10 +77,14 @@ class evalRuleBase():
         for ix, pattern in enumerate(patterns):
             pattern_firing_strength = antecedent_memberships[:, ix]
             res[ix] = np.mean(pattern_firing_strength)
-            
+        
+        if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            res = np.mean(res, axis=1)
+
         return res
 
     def compute_pattern_support(self, X: np.array=None, y: np.array=None) -> np.array:
+
         '''
         Computes the pattern support for each of the rules for the given X.
         Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,
@@ -114,15 +118,17 @@ class evalRuleBase():
             pattern_firing_strength = antecedent_memberships[:, ix]
 
 
-
-            if pattern_firing_strength[consequent_match].shape[0] > 0:
-                    res[ix] = np.mean(pattern_firing_strength[consequent_match])
             
+            res[ix] = np.mean(pattern_firing_strength * consequent_match)
+            
+        if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            res = np.mean(res, axis=1)
 
         return res
 
 
     def compute_aux_pattern_support(self) -> np.array:
+
         '''
         Computes the pattern support for each of the rules for each of the classes for the given X.
         Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,
@@ -149,16 +155,17 @@ class evalRuleBase():
 
         for con_ix in range(n_classes):
             for ix, pattern in enumerate(patterns):
-                consequent_match = self.y == con_ix
+                consequent_match = np.equal(self.y, con_ix)
                 pattern_firing_strength = antecedent_memberships[:, ix]
 
-                # / pattern_firing_strength.shape[0]
-                if pattern_firing_strength[consequent_match].shape[0] > 0:
-                    res[ix, con_ix] = np.mean(pattern_firing_strength[consequent_match])
-                else:
-                    res[ix, con_ix] = pattern_firing_strength[consequent_match]
+                res[ix, con_ix] = np.mean(pattern_firing_strength * consequent_match)
+
+
+        if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            res = np.mean(res, axis=1)
 
         return res
+
 
 
     def _get_all_rules(self) -> list[rules.RuleSimple]:
@@ -214,10 +221,15 @@ class evalRuleBase():
                 res[ix] = np.sum(
                     pattern_firing_strength[antecedent_consequent_match]) / dem
 
+        if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            res = np.mean(res, axis=1)
+
         return res
 
 
+
     def compute_aux_pattern_confidence(self) -> np.array:
+
         '''
         Computes the pattern confidence for each of the rules for the given X.
         Each pattern confidence is the normalized firing strength.
@@ -250,8 +262,12 @@ class evalRuleBase():
                 else:
                     res[ix, consequent] = np.sum(
                         pattern_firing_strength[antecedent_consequent_match]) / dem
+                    
+        if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            res = np.mean(res, axis=1)
 
         return res
+
 
 
     def dominance_scores(self) -> np.array:
@@ -490,12 +506,10 @@ class evalRuleBase():
         
         confidence_interval = self.bootstrap_confidence_confinterval(self.X, self.y, n)
         support_interval = self.bootstrap_support_confinterval(self.X, self.y, n)
-        joint_interval = self.jointprob_confinterval(self.X, self.y, n)
 
         for jx, rule in enumerate(self.mrule_base.get_rules()):
             rule.boot_confidence_interval = confidence_interval[:, jx]
             rule.boot_support_interval = support_interval[:, jx]
-            rule.boot_jointprob_interval = joint_interval[:, jx]
 
 
 
@@ -536,22 +550,6 @@ class evalRuleBase():
         return confidences
 
 
-    def bootstrap_jointprob_rules(self, X: np.array, y: np.array, n_samples: int):
-        '''
-        Bootstraps the joint probability of the rules in the classifier.
-        '''
-        samples = bt.generate_bootstrap_samples(X, np.array(y), n_samples)
-        ant_support = np.zeros((n_samples, len(self.mrule_base.get_rules())))
-        confidences = np.zeros((n_samples, len(self.mrule_base.get_rules())))
-
-
-        for i, sample in enumerate(samples):
-            confidences[i] = self.compute_pattern_confidence(sample[0], sample[1])
-            ant_support[i] = self.compute_antecedent_pattern_support(sample[0])
-
-        return ant_support * confidences
-
-
     def bootstrap_support_confinterval(self, X: np.array, y: np.array, n_samples: int):
         '''
         Bootstraps the support of the rules in the classifier.
@@ -569,12 +567,3 @@ class evalRuleBase():
         confidences = self.bootstrap_confidence_rules(X, np.array(y), n_samples)
         conf_interval = np.percentile(confidences, [2.5, 97.5], axis=0)
         return conf_interval
-    
-
-    def jointprob_confinterval(self, X: np.array, y: np.array, n_samples: int):
-        '''
-        Bootstraps the joint probability of the rules in the classifier.
-        '''
-        joint_probabilities = self.bootstrap_jointprob_rules(X, np.array(y), n_samples)
-        joint_interval = np.percentile(joint_probabilities, [2.5, 97.5], axis=0)
-        return joint_interval
