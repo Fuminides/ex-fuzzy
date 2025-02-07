@@ -38,7 +38,7 @@ class classifierWrapper(ClassifierMixin):
         :param X: data to evaluate.
         :return: predicted labels.
         '''
-        winning_rule_preds = self.classifier._winning_rules(X)
+        winning_rule_preds, _winning_association_degrees = self.classifier._winning_rules(X)
 
         return winning_rule_preds == self.nrule
 

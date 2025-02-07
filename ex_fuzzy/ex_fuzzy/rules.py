@@ -1057,14 +1057,16 @@ class MasterRuleBase():
 
     def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unkown=True) -> np.array:
         association_degrees = self.compute_association_degrees(X, precomputed_truth)
+        firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
 
         winning_rules = np.argmax(association_degrees, axis=1)
+        winning_association_degrees = np.max(firing_strengths, axis=1)
 
         if allow_unkown:
             # If there is no rule that fires, we set the consequent to -1
             winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
 
-        return winning_rules
+        return winning_rules, winning_association_degrees
 
 
     def compute_association_degrees(self, X, precomputed_truth=None):
@@ -1117,7 +1119,7 @@ class MasterRuleBase():
             consequents = sum([[ix]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
             
-        winning_rules = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
+        winning_rules, _winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
 
         if out_class_names:
             res = []
@@ -1139,9 +1141,54 @@ class MasterRuleBase():
         return np.array(res)
 
 
+    def explainable_predict(self, X: np.array, out_class_names=False, precomputed_truth=None) -> np.array:
+        '''
+        Returns the predicted class for each sample.
+
+        :param X: array with the values of the inputs.
+        :param out_class_names: if True, the output will be the class names instead of the class index.
+        :return: np array samples (x 1) with the predicted class.
+        '''
+        # Raise an error if there no rules
+        if len(self.get_rules()) == 0:
+            raise RuleError('No rules to predict!')
+        
+        if out_class_names:
+            consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
+                          for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
+        else:
+            consequents = sum([[ix]*len(self[ix].rules)
+                          for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
+            
+        winning_rules, winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
+        confidence_intervals = [ rule.boot_confidence_interval for rule in self.get_rules()]
+        winning_rule_confidence_intervals = [confidence_intervals[ix] for ix in winning_rules]
+
+        if out_class_names:
+            res = []
+        else:
+            res = np.zeros((X.shape[0], ))
+
+        for ix, winning_rule in enumerate(winning_rules):
+            if winning_rule != -1:
+                if out_class_names:
+                    res.append(consequents[winning_rule])
+                else:
+                    res[ix] = consequents[winning_rule]
+            else:
+                if out_class_names:
+                    res.append('Unknown')
+                else:
+                    res[ix] = -1
+
+        return np.array(res), winning_rules, winning_association_degrees, winning_rule_confidence_intervals * winning_association_degrees.reshape(len(winning_association_degrees),1)
+
+
+
     def add_rule_base(self, rule_base: RuleBase) -> None:
         '''
         Adds a rule base to the list of rule bases.
+
 
         :param rule_base: rule base to add.
         '''

@@ -359,15 +359,18 @@ class evalRuleBase():
         if isinstance(actual_y, list):
             actual_y = np.array(actual_y)
         
-        if not hasattr(self.mrule_base.get_rules()[0], 'score'):
+        if len(self.mrule_base.get_rules()) > 0 and not hasattr(self.mrule_base.get_rules()[0], 'score'):
             self.add_rule_weights()
 
+
         if self.time_moments is None:
-            winning_rules = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth, allow_unkown=self.mrule_base.allow_unknown)
+            winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth, allow_unkown=self.mrule_base.allow_unknown)
             preds = self.mrule_base.winning_rule_predict(actual_X, precomputed_truth=self.precomputed_truth)
         else:
-            winning_rules = self.mrule_base._winning_rules(actual_X, self.time_moments)
+
+            winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, self.time_moments)
             preds = self.mrule_base.winning_rule_predict(actual_X, self.time_moments)
+
 
         # If preds and labels are not instances of the same type, we convert them to the same type
         consequents_names = self.mrule_base.get_consequents_names()

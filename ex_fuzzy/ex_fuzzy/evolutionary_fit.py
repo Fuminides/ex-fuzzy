@@ -322,9 +322,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.nAnts = len(rule_base.get_rules()[0].antecedents)
         self.nclasses_ = len(rule_base)
         
+    
+    def explainable_predict(self, X: np.array, out_class_names=False) -> np.array:
+        '''
+        Returns the predicted class for each sample.
+        '''
+        return self.rule_base.explainable_predict(X, out_class_names=out_class_names)
 
     def forward(self, X: np.array, out_class_names=False) -> np.array:
         '''
+
         Returns the predicted class for each sample.
 
         :param X: np array samples x features.
