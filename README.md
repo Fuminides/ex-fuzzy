@@ -46,6 +46,7 @@ You can also do bootstrapping to obtain the confidence intervals of all the metr
 
 
 <img src="https://github.com/user-attachments/assets/4d5d9d77-4ac4-474e-8ac2-6a146085ae53" alt="Exfuzzy iris example" style="border: 4px solid #ddd; border-radius: 15px; padding: 10px;" />
+
 ### Reusable code
 
 Code is designed so that some parts can be easily extendable so that some use cases, like research, can be also supported. The rule base optimization is done using a Genetic Algorithm, but almost any other pymoo search algorithm will do. Fuzzy sets can be extended with ease, just as the kind of partitions, membership functions, etc.
