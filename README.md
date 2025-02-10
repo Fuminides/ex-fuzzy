@@ -4,20 +4,17 @@ ex-Fuzzy is a fuzzy toolbox library for Python with special focus in its accesib
 Some of the tools available in this library include:
 
 - Support for approximate reasoning using fuzzy association rules, for both classification and regression problems. This includes rule base optimization using genetic algorithms and rule visualization.
-- Quantile-based and problem-optimized fuzzy variables and their correspondent linguistic variables (i.e low, medium, high).
-- Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets. We also support linguistic hedges.
+- Define rule bases as you want: number of rules, antecedents, etc. Everything can be explicitly set by the user.
+- Quantile-based and problem-optimized fuzzy variables and their correspondent linguistic variables (i.e low, medium, high). We also support genetic fine tuning of the partitions that keep them interpretable by the user.
 - Rule mining using support, confidence and lift measures. Customizable genetic optimization of the rule bases parameters.
+- Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets. We also support linguistic hedges.
 
 ## Main Characteristics
 
 
 ### Easy to use
 
-ex-Fuzzy is designed to be easy to use. Linguistic variables can be precomputed and optimized without any understading of its implementation. Choosing one kind of fuzzy set only requires to set one flag. 
-
-### Reusable code
-
-Code is designed so that some parts can be easily extendable so that some use cases, like research, can be also supported. The rule base optimization is done using a Genetic Algorithm, but almost any other pymoo search algorithm will do. Fuzzy sets can be extended with ease, just as the kind of partitions, membership functions, etc.
+ex-Fuzzy is designed to be easy to use. Linguistic variables can be precomputed and optimized without any understading of its implementation. No need to know anything about fuzzy. Choosing one kind of fuzzy set only requires to set one flag. You can also see the demos to see how the basic uses are supported.
 
 ### Sci-py like interface
 
@@ -36,7 +33,7 @@ Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules
   
 </p>
 
-### Testing your patterns
+### Testing your patterns and building robust rules
 
 ex-Fuzzy lets you study how reliable are your rules and their variable usage. You can easily repeat the experiments for statistical quantification of the results and then study the patterns obtained.
 
@@ -45,7 +42,14 @@ ex-Fuzzy lets you study how reliable are your rules and their variable usage. Yo
   <img src="https://github.com/user-attachments/assets/819f0988-deeb-4c8d-8cca-d8dd75e437f7" height="360" title="Usage per variable">
 </p>
 
-### Support for many 
+You can also do bootstrapping to obtain the confidence intervals of all the metrics you are interested in. You can easily discard those that are not good enough for your standards:
+
+
+<img src="https://github.com/user-attachments/assets/4d5d9d77-4ac4-474e-8ac2-6a146085ae53" alt="Exfuzzy iris example" style="border: 4px solid #ddd; border-radius: 15px; padding: 10px;" />
+### Reusable code
+
+Code is designed so that some parts can be easily extendable so that some use cases, like research, can be also supported. The rule base optimization is done using a Genetic Algorithm, but almost any other pymoo search algorithm will do. Fuzzy sets can be extended with ease, just as the kind of partitions, membership functions, etc.
+
 ## Try some demos! <img src="https://colab.research.google.com/img/colab_favicon_256px.png" height="40">
 You can find them on Google colab:
 
@@ -61,9 +65,9 @@ You can find them on Google colab:
 - Numpy
 - Pandas
 - Matplotlib
-- Networkx
-
 - Pymoo
+- Networkx (optional: only for rule visualization)
+- Pytorch (optional: only if you want to run fuzzy inference in a GPU)
 
 ## Installation
 
@@ -88,6 +92,8 @@ url = {https://www.sciencedirect.com/science/article/pii/S0925231224008191},
 author = {Javier Fumanal-Idocin and Javier Andreu-Perez},
 }
 ```
+
+If you find this work interesting or want to see papers that apply ex-Fuzzy, check the rest of our research as well in Google scholar. If you are interested in the code, a Github star is also greatly appreciated.
 
 ## Contributors
 Javier Fumanal Idocin, Javier Andreu-Perez
