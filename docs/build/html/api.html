@@ -1,26 +1,28 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9a2dae69"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Fuzzy Sets Functions" href="function_resume/fuzzy_sets.html" />
-    <link rel="prev" title="Studying patterns" href="pattern_stats.html" /> 
+    <link rel="prev" title="Bootstrapping and rule robustness" href="pattern_stats.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Studying patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Bootstrapping and rule robustness</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html">Fuzzy Sets Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html">Fuzzy Rules Functions</a></li>
@@ -100,318 +102,22 @@
            <div itemprop="articleBody">
              
   <section id="api">
-<h1>API<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
+<h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/fuzzy_sets.html">Fuzzy Sets Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS"><code class="docutils literal notranslate"><span class="pre">FS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS.membership"><code class="docutils literal notranslate"><span class="pre">FS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS.type"><code class="docutils literal notranslate"><span class="pre">FS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2"><code class="docutils literal notranslate"><span class="pre">GT2</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2.alpha_reduction"><code class="docutils literal notranslate"><span class="pre">GT2.alpha_reduction()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2.membership"><code class="docutils literal notranslate"><span class="pre">GT2.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.GT2.type"><code class="docutils literal notranslate"><span class="pre">GT2.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS"><code class="docutils literal notranslate"><span class="pre">IVFS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS.membership"><code class="docutils literal notranslate"><span class="pre">IVFS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS.type"><code class="docutils literal notranslate"><span class="pre">IVFS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalFS"><code class="docutils literal notranslate"><span class="pre">categoricalFS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalFS.membership"><code class="docutils literal notranslate"><span class="pre">categoricalFS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalFS.type"><code class="docutils literal notranslate"><span class="pre">categoricalFS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalIVFS"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalIVFS.membership"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalIVFS.type"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.append"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.append()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.compute_memberships"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.compute_memberships()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.domain"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.domain()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.get_linguistic_variables()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variable_names"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.linguistic_variable_names()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianFS"><code class="docutils literal notranslate"><span class="pre">gaussianFS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianFS.membership"><code class="docutils literal notranslate"><span class="pre">gaussianFS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianFS.type"><code class="docutils literal notranslate"><span class="pre">gaussianFS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS.membership"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS.type"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.trapezoidal_membership"><code class="docutils literal notranslate"><span class="pre">trapezoidal_membership()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/rules.html">Fuzzy Rules Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.add_rule"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.add_rule()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.add_rule_base"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.add_rule_base()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.compute_association_degrees"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.compute_association_degrees()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.compute_firing_strenghts"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.compute_firing_strenghts()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_antecedents"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_antecedents()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_consequents"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_consequents()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_consequents_names"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_consequents_names()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rulebase_matrix"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_rulebase_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rulebases"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_rulebases()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_rules"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_scores"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_scores()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.get_weights"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_weights()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.n_linguistic_variables"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.n_linguistic_variables()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.predict"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.predict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.print_rules"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.print_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.purge_rules"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.purge_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.rename_cons"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.rename_cons()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.winning_rule_predict"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.winning_rule_predict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.Rule"><code class="docutils literal notranslate"><span class="pre">Rule</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.Rule.consequent_centroid"><code class="docutils literal notranslate"><span class="pre">Rule.consequent_centroid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.Rule.membership"><code class="docutils literal notranslate"><span class="pre">Rule.membership()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase"><code class="docutils literal notranslate"><span class="pre">RuleBase</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.add_rule"><code class="docutils literal notranslate"><span class="pre">RuleBase.add_rule()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.add_rules"><code class="docutils literal notranslate"><span class="pre">RuleBase.add_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_antecedents_memberships"><code class="docutils literal notranslate"><span class="pre">RuleBase.compute_antecedents_memberships()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.compute_rule_antecedent_memberships"><code class="docutils literal notranslate"><span class="pre">RuleBase.compute_rule_antecedent_memberships()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.forward"><code class="docutils literal notranslate"><span class="pre">RuleBase.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">RuleBase.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_rulebase_matrix"><code class="docutils literal notranslate"><span class="pre">RuleBase.get_rulebase_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_rules"><code class="docutils literal notranslate"><span class="pre">RuleBase.get_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_scores"><code class="docutils literal notranslate"><span class="pre">RuleBase.get_scores()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.get_weights"><code class="docutils literal notranslate"><span class="pre">RuleBase.get_weights()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.inference"><code class="docutils literal notranslate"><span class="pre">RuleBase.inference()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.n_linguistic_variables"><code class="docutils literal notranslate"><span class="pre">RuleBase.n_linguistic_variables()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.print_rules"><code class="docutils literal notranslate"><span class="pre">RuleBase.print_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.prune_bad_rules"><code class="docutils literal notranslate"><span class="pre">RuleBase.prune_bad_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.remove_rule"><code class="docutils literal notranslate"><span class="pre">RuleBase.remove_rule()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.remove_rules"><code class="docutils literal notranslate"><span class="pre">RuleBase.remove_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBase.scores"><code class="docutils literal notranslate"><span class="pre">RuleBase.scores()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2"><code class="docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.alpha_compute_rule_antecedent_memberships"><code class="docutils literal notranslate"><span class="pre">RuleBaseGT2.alpha_compute_rule_antecedent_memberships()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.compute_rule_antecedent_memberships"><code class="docutils literal notranslate"><span class="pre">RuleBaseGT2.compute_rule_antecedent_memberships()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.forward"><code class="docutils literal notranslate"><span class="pre">RuleBaseGT2.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">RuleBaseGT2.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2.inference"><code class="docutils literal notranslate"><span class="pre">RuleBaseGT2.inference()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1"><code class="docutils literal notranslate"><span class="pre">RuleBaseT1</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1.forward"><code class="docutils literal notranslate"><span class="pre">RuleBaseT1.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">RuleBaseT1.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1.inference"><code class="docutils literal notranslate"><span class="pre">RuleBaseT1.inference()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2"><code class="docutils literal notranslate"><span class="pre">RuleBaseT2</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.forward"><code class="docutils literal notranslate"><span class="pre">RuleBaseT2.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">RuleBaseT2.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2.inference"><code class="docutils literal notranslate"><span class="pre">RuleBaseT2.inference()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleError"><code class="docutils literal notranslate"><span class="pre">RuleError</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.RuleSimple"><code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.compute_antecedents_memberships"><code class="docutils literal notranslate"><span class="pre">compute_antecedents_memberships()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.construct_rule_base"><code class="docutils literal notranslate"><span class="pre">construct_rule_base()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.generate_rule_string"><code class="docutils literal notranslate"><span class="pre">generate_rule_string()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rules.html#ex_fuzzy.rules.list_rules_to_matrix"><code class="docutils literal notranslate"><span class="pre">list_rules_to_matrix()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/eval_rules.html">Rule Evaluation Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase"><code class="docutils literal notranslate"><span class="pre">evalRuleBase</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_auxiliary_rule_weights()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_classification_metrics()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_full_evaluation()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.add_rule_weights()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.association_degree"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.association_degree()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.aux_dominance_scores()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.classification_eval"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.classification_eval()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_aux_pattern_confidence()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_aux_pattern_support()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_pattern_confidence()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.compute_pattern_support()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.dominance_scores()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.effective_rulesize_eval()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.p_permutation_classifier_validation()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval"><code class="docutils literal notranslate"><span class="pre">evalRuleBase.size_antecedents_eval()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/eval_tools.html">Classification evaluation tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator"><code class="docutils literal notranslate"><span class="pre">FuzzyEvaluator</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model"><code class="docutils literal notranslate"><span class="pre">FuzzyEvaluator.eval_fuzzy_model()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric"><code class="docutils literal notranslate"><span class="pre">FuzzyEvaluator.get_metric()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/vis_rules.html">Rule Visualization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.choose_popular_rules"><code class="docutils literal notranslate"><span class="pre">choose_popular_rules()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.connect_master_rulebase"><code class="docutils literal notranslate"><span class="pre">connect_master_rulebase()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.connect_rulebase"><code class="docutils literal notranslate"><span class="pre">connect_rulebase()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.create_graph_connection"><code class="docutils literal notranslate"><span class="pre">create_graph_connection()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.filter_useless_columns"><code class="docutils literal notranslate"><span class="pre">filter_useless_columns()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.matrix_rule_base_form"><code class="docutils literal notranslate"><span class="pre">matrix_rule_base_form()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.plot_fuzzy_variable"><code class="docutils literal notranslate"><span class="pre">plot_fuzzy_variable()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.rules_to_latex"><code class="docutils literal notranslate"><span class="pre">rules_to_latex()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/vis_rules.html#ex_fuzzy.vis_rules.visualize_rulebase"><code class="docutils literal notranslate"><span class="pre">visualize_rulebase()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/evolutionary_fit.html">Evolutionary Algorithms to Fit the rules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.customized_loss()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.get_rulebase()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.load_master_rule_base()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.plot_fuzzy_variables()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.predict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.predict_proba()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.print_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.rename_fuzzy_variables()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.reparametrice_loss()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.ExploreRuleBases"><code class="docutils literal notranslate"><span class="pre">ExploreRuleBases</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func"><code class="docutils literal notranslate"><span class="pre">ExploreRuleBases.fitness_func()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase"><code class="docutils literal notranslate"><span class="pre">FitRuleBase</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase"><code class="docutils literal notranslate"><span class="pre">FitRuleBase.encode_rulebase()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func"><code class="docutils literal notranslate"><span class="pre">FitRuleBase.fitness_func()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/rule_mining.html">Rule Mining methods</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets"><code class="docutils literal notranslate"><span class="pre">generate_rules_from_itemsets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.mine_rulebase_support"><code class="docutils literal notranslate"><span class="pre">mine_rulebase_support()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase"><code class="docutils literal notranslate"><span class="pre">multiclass_mine_rulebase()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift"><code class="docutils literal notranslate"><span class="pre">prune_rules_confidence_lift()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.rule_search"><code class="docutils literal notranslate"><span class="pre">rule_search()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_mine_rulebase"><code class="docutils literal notranslate"><span class="pre">simple_mine_rulebase()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase"><code class="docutils literal notranslate"><span class="pre">simple_multiclass_mine_rulebase()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/classifiers.html">Advanced Classifiers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.FuzzyRulesClassifier"><code class="docutils literal notranslate"><span class="pre">FuzzyRulesClassifier</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.FuzzyRulesClassifier.fit"><code class="docutils literal notranslate"><span class="pre">FuzzyRulesClassifier.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.FuzzyRulesClassifier.predict"><code class="docutils literal notranslate"><span class="pre">FuzzyRulesClassifier.predict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleFineTuneClassifier"><code class="docutils literal notranslate"><span class="pre">RuleFineTuneClassifier</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleFineTuneClassifier.fit"><code class="docutils literal notranslate"><span class="pre">RuleFineTuneClassifier.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleFineTuneClassifier.predict"><code class="docutils literal notranslate"><span class="pre">RuleFineTuneClassifier.predict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.fit"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.predict"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.predict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/persistence.html">Classification persistence</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_rules"><code class="docutils literal notranslate"><span class="pre">load_fuzzy_rules()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">load_fuzzy_variables()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/persistence.html#ex_fuzzy.persistence.print_fuzzy_variable"><code class="docutils literal notranslate"><span class="pre">print_fuzzy_variable()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/persistence.html#ex_fuzzy.persistence.save_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">save_fuzzy_variables()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/cognitive_maps.html">Fuzzy Cognitive Maps</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/cognitive_maps.html#ex_fuzzy.cognitive_maps.attractors_report"><code class="docutils literal notranslate"><span class="pre">attractors_report()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/cognitive_maps.html#ex_fuzzy.cognitive_maps.look_pattern_states"><code class="docutils literal notranslate"><span class="pre">look_pattern_states()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/cognitive_maps.html#ex_fuzzy.cognitive_maps.study_attractors_FCM"><code class="docutils literal notranslate"><span class="pre">study_attractors_FCM()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/utils.html">Partition utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.assign_time"><code class="docutils literal notranslate"><span class="pre">assign_time()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.classify_temp"><code class="docutils literal notranslate"><span class="pre">classify_temp()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.compute_quantiles"><code class="docutils literal notranslate"><span class="pre">compute_quantiles()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.construct_conditional_frequencies"><code class="docutils literal notranslate"><span class="pre">construct_conditional_frequencies()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.construct_crisp_categorical_partition"><code class="docutils literal notranslate"><span class="pre">construct_crisp_categorical_partition()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.construct_partitions"><code class="docutils literal notranslate"><span class="pre">construct_partitions()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.create_multi_tempVariables"><code class="docutils literal notranslate"><span class="pre">create_multi_tempVariables()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.create_tempVariables"><code class="docutils literal notranslate"><span class="pre">create_tempVariables()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.extend_fuzzy_sets_enum"><code class="docutils literal notranslate"><span class="pre">extend_fuzzy_sets_enum()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.fixed_quantile_compute"><code class="docutils literal notranslate"><span class="pre">fixed_quantile_compute()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.gt2_fuzzy_partitions_dataset"><code class="docutils literal notranslate"><span class="pre">gt2_fuzzy_partitions_dataset()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.mcc_loss"><code class="docutils literal notranslate"><span class="pre">mcc_loss()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.partition3_quantile_compute"><code class="docutils literal notranslate"><span class="pre">partition3_quantile_compute()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.quartile_compute"><code class="docutils literal notranslate"><span class="pre">quartile_compute()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.t1_fuzzy_partitions_dataset"><code class="docutils literal notranslate"><span class="pre">t1_fuzzy_partitions_dataset()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.t1_n_partition_parameters"><code class="docutils literal notranslate"><span class="pre">t1_n_partition_parameters()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.t1_simple_partition"><code class="docutils literal notranslate"><span class="pre">t1_simple_partition()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.t1_three_partition"><code class="docutils literal notranslate"><span class="pre">t1_three_partition()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.t2_fuzzy_partitions_dataset"><code class="docutils literal notranslate"><span class="pre">t2_fuzzy_partitions_dataset()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.t2_n_partition_parameters"><code class="docutils literal notranslate"><span class="pre">t2_n_partition_parameters()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.temporal_assemble"><code class="docutils literal notranslate"><span class="pre">temporal_assemble()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/utils.html#ex_fuzzy.utils.temporal_cuts"><code class="docutils literal notranslate"><span class="pre">temporal_cuts()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/centroid.html">T2 Centroid compute</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.center_of_masses"><code class="docutils literal notranslate"><span class="pre">center_of_masses()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.compute_centroid_iv"><code class="docutils literal notranslate"><span class="pre">compute_centroid_iv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.compute_centroid_t2_l"><code class="docutils literal notranslate"><span class="pre">compute_centroid_t2_l()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.compute_centroid_t2_r"><code class="docutils literal notranslate"><span class="pre">compute_centroid_t2_r()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.consequent_centroid"><code class="docutils literal notranslate"><span class="pre">consequent_centroid()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.consequent_centroid_l"><code class="docutils literal notranslate"><span class="pre">consequent_centroid_l()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/centroid.html#ex_fuzzy.centroid.consequent_centroid_r"><code class="docutils literal notranslate"><span class="pre">consequent_centroid_r()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function_resume/temporal.html">Temporal fuzzy sets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.NEW_FUZZY_SETS"><code class="docutils literal notranslate"><span class="pre">NEW_FUZZY_SETS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.TMP_FUZZY_SETS"><code class="docutils literal notranslate"><span class="pre">TMP_FUZZY_SETS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier"><code class="docutils literal notranslate"><span class="pre">TemporalFuzzyRulesClassifier</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.fit"><code class="docutils literal notranslate"><span class="pre">TemporalFuzzyRulesClassifier.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.forward"><code class="docutils literal notranslate"><span class="pre">TemporalFuzzyRulesClassifier.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.get_rulebase"><code class="docutils literal notranslate"><span class="pre">TemporalFuzzyRulesClassifier.get_rulebase()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.TemporalFuzzyRulesClassifier.plot_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">TemporalFuzzyRulesClassifier.plot_fuzzy_variables()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.eval_temporal_fuzzy_model"><code class="docutils literal notranslate"><span class="pre">eval_temporal_fuzzy_model()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFS"><code class="docutils literal notranslate"><span class="pre">temporalFS</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.fix_time"><code class="docutils literal notranslate"><span class="pre">temporalFS.fix_time()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.inside_type"><code class="docutils literal notranslate"><span class="pre">temporalFS.inside_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.membership"><code class="docutils literal notranslate"><span class="pre">temporalFS.membership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFS.type"><code class="docutils literal notranslate"><span class="pre">temporalFS.type()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable"><code class="docutils literal notranslate"><span class="pre">temporalFuzzyVariable</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.compute_memberships"><code class="docutils literal notranslate"><span class="pre">temporalFuzzyVariable.compute_memberships()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.fix_time"><code class="docutils literal notranslate"><span class="pre">temporalFuzzyVariable.fix_time()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalFuzzyVariable.n_time_moments"><code class="docutils literal notranslate"><span class="pre">temporalFuzzyVariable.n_time_moments()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.add_rule"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.add_rule()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.add_rule_base"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.add_rule_base()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.compute_firing_strenghts"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.compute_firing_strenghts()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.fuzzy_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_consequents"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.get_consequents()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_rulebase_matrix"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.get_rulebase_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_rulebases"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.get_rulebases()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_rules"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.get_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.get_scores"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.get_scores()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.print_rules"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.print_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.purge_rules"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.purge_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="function_resume/temporal.html#ex_fuzzy.temporal.temporalMasterRuleBase.winning_rule_predict"><code class="docutils literal notranslate"><span class="pre">temporalMasterRuleBase.winning_rule_predict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/fuzzy_sets.html">Fuzzy Sets Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/rules.html">Fuzzy Rules Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/eval_rules.html">Rule Evaluation Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/eval_tools.html">Classification evaluation tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/vis_rules.html">Rule Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/evolutionary_fit.html">Evolutionary Algorithms to Fit the rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/rule_mining.html">Rule Mining methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/classifiers.html">Advanced Classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/persistence.html">Classification persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/cognitive_maps.html">Fuzzy Cognitive Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/utils.html">Partition utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/centroid.html">T2 Centroid compute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_resume/temporal.html">Temporal fuzzy sets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="function_resume/pattern_stability.html">Pattern stability analysis</a></li>
 </ul>
 </div>
@@ -421,7 +127,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pattern_stats.html" class="btn btn-neutral float-left" title="Studying patterns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pattern_stats.html" class="btn btn-neutral float-left" title="Bootstrapping and rule robustness" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="function_resume/fuzzy_sets.html" class="btn btn-neutral float-right" title="Fuzzy Sets Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

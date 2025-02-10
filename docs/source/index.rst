@@ -7,10 +7,9 @@ Welcome to Ex-Fuzzy's documentation!
 ====================================
 
 **Ex-Fuzzy** is a library to perform fuzzy logic inference using fuzzy logic, with a special focus
-on the explainable features of approximate reasoning. Different fuzzy sets are supported, and rules 
-are fitted to a dataset using genetic optimization. We also support fuzzy cognitive_maps.
+on the explainable features of approximate reasoning.
 
-Check out the :doc:`usage` section for a few examples.
+Check out the :doc:`usage` section for a few examples. If you want a quick overview, go to main_iris_demo.py in the demos folder. Other demos showcase different features of the library.
 
 .. toctree::
 

@@ -19,8 +19,9 @@ MAINTAINER_EMAIL = "javierfumanalidocin@gmail.com"
 URL = "https://github.com/Fuminides/ex-fuzzy"
 LICENSE = "GPL-3.0"
 DOWNLOAD_URL = "https://pypi.org/project/ex-fuzzy/"
-VERSION = "2.0.0b"
-INSTALL_REQUIRES = ["numpy", "networkx", "matplotlib", "pymoo", "pandas", "scikit-learn"]
+VERSION = "2.0.0"
+INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo", "pandas", "scikit-learn"]
+OPTIONAL_REQUIRES = {"Rule visualization": ["networkx"], "GPU inference": ["torch"]}
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -45,7 +46,9 @@ setup(
     packages=['ex_fuzzy'],
     package_dir={'ex_fuzzy': 'ex_fuzzy/ex_fuzzy'},
     install_requires=INSTALL_REQUIRES,
+    extras_require=OPTIONAL_REQUIRES,
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=CLASSIFIERS,
+
 )

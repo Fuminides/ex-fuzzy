@@ -1,20 +1,22 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ex_fuzzy.evolutionary_fit &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
 
   
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -52,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Studying patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Bootstrapping and rule robustness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
@@ -94,6 +96,7 @@
 <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.ga</span> <span class="kn">import</span> <span class="n">GA</span>
 <span class="kn">from</span> <span class="nn">pymoo.core.problem</span> <span class="kn">import</span> <span class="n">Problem</span>
 <span class="kn">from</span> <span class="nn">pymoo.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span> <span class="nn">pymoo.operators.repair.rounding</span> <span class="kn">import</span> <span class="n">RoundingRepair</span>
 <span class="kn">from</span> <span class="nn">pymoo.operators.sampling.rnd</span> <span class="kn">import</span> <span class="n">IntegerRandomSampling</span>
 <span class="kn">from</span> <span class="nn">pymoo.operators.crossover.sbx</span> <span class="kn">import</span> <span class="n">SBX</span>
 <span class="kn">from</span> <span class="nn">pymoo.operators.mutation.pm</span> <span class="kn">import</span> <span class="n">PolynomialMutation</span>
@@ -116,9 +119,7 @@
 
 
 
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier">[docs]</a>
-<span class="k">class</span> <span class="nc">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier">[docs]</a><span class="k">class</span> <span class="nc">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Class that is used as a classifier for a fuzzy rule based system. Supports precomputed and optimization of the linguistic variables.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -207,9 +208,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">beta_</span> <span class="o">=</span> <span class="mf">0.0</span>
 
 
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.customized_loss">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss">[docs]</a>
-    <span class="k">def</span> <span class="nf">customized_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.customized_loss"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss">[docs]</a>    <span class="k">def</span> <span class="nf">customized_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Function to customize the loss function used for the optimization.</span>
 
@@ -219,12 +218,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">custom_loss</span> <span class="o">=</span> <span class="n">loss_function</span></div>
 
 
-
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.fit">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_gen</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">pop_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.fit"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_gen</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">pop_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
             <span class="n">checkpoints</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">candidate_rules</span><span class="p">:</span><span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial_rules</span><span class="p">:</span><span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span>
-            <span class="n">var_prob</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">sbx_eta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">mutation_eta</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">tournament_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bootstrap_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">var_prob</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">sbx_eta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">mutation_eta</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">tournament_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bootstrap_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">p_value_compute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Fits a fuzzy rule based classifier using a genetic algorithm to the given data.</span>
 
@@ -291,16 +288,16 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">problem</span><span class="o">.</span><span class="n">fitness_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_loss</span>
 
-        <span class="k">if</span> <span class="n">initial_rules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">initial_rules</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rules_gene</span> <span class="o">=</span> <span class="n">IntegerRandomSampling</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="n">rules_gene</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">encode_rulebase</span><span class="p">(</span><span class="n">initial_rules</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">rules_gene</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">pop_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rules_gene</span><span class="p">)))</span> <span class="o">*</span> <span class="n">rules_gene</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">rules_gene</span> <span class="o">=</span> <span class="n">IntegerRandomSampling</span><span class="p">()</span>
 
         <span class="n">algorithm</span> <span class="o">=</span> <span class="n">GA</span><span class="p">(</span>
             <span class="n">pop_size</span><span class="o">=</span><span class="n">pop_size</span><span class="p">,</span>
-            <span class="n">crossover</span><span class="o">=</span><span class="n">SBX</span><span class="p">(</span><span class="n">prob</span><span class="o">=</span><span class="n">var_prob</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="n">sbx_eta</span><span class="p">),</span>
-            <span class="n">mutation</span><span class="o">=</span><span class="n">PolynomialMutation</span><span class="p">(</span><span class="n">eta</span><span class="o">=</span><span class="n">mutation_eta</span><span class="p">),</span>
+            <span class="n">crossover</span><span class="o">=</span><span class="n">SBX</span><span class="p">(</span><span class="n">prob</span><span class="o">=</span><span class="n">var_prob</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="n">sbx_eta</span><span class="p">,</span> <span class="n">repair</span><span class="o">=</span><span class="n">RoundingRepair</span><span class="p">()),</span>
+            <span class="n">mutation</span><span class="o">=</span><span class="n">PolynomialMutation</span><span class="p">(</span><span class="n">eta</span><span class="o">=</span><span class="n">mutation_eta</span><span class="p">,</span> <span class="n">repair</span><span class="o">=</span><span class="n">RoundingRepair</span><span class="p">()),</span>
             <span class="n">tournament_size</span><span class="o">=</span><span class="n">tournament_size</span><span class="p">,</span>
             <span class="n">sampling</span><span class="o">=</span><span class="n">rules_gene</span><span class="p">,</span>
             <span class="n">eliminate_duplicates</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -333,7 +330,7 @@
                         <span class="c1"># self.rename_fuzzy_variables() This wont work on checkpoints!</span>
                         <span class="n">rule_base</span><span class="o">.</span><span class="n">purge_rules</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">)</span>
                         <span class="n">rule_base</span><span class="o">.</span><span class="n">rename_cons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_names</span><span class="p">)</span>
-                        <span class="n">checkpoint_rules</span> <span class="o">=</span> <span class="n">rule_base</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">checkpoint_rules</span> <span class="o">=</span> <span class="n">rule_base</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">bootstrap_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">checkpoint_rules</span><span class="p">)</span>     
 
         <span class="k">else</span><span class="p">:</span>
@@ -371,18 +368,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">purge_rules</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span><span class="o">.</span><span class="n">add_full_evaluation</span><span class="p">()</span> <span class="c1"># After purging the bad rules we update the metrics.</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_value_class_structure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_value_feature_coalitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span><span class="o">.</span><span class="n">p_permutation_classifier_validation</span><span class="p">()</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span><span class="o">.</span><span class="n">p_bootstrapping_rules_validation</span><span class="p">(</span><span class="n">bootstrap_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p_value_compute</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_value_validation</span><span class="p">(</span><span class="n">bootstrap_size</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">rename_cons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_names</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rename_fuzzy_variables</span><span class="p">()</span></div>
-
         
+    
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.print_rule_bootstrap_results"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rule_bootstrap_results">[docs]</a>    <span class="k">def</span> <span class="nf">print_rule_bootstrap_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Prints the bootstrap results for each rule.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">print_rule_bootstrap_results</span><span class="p">()</span></div>
+    
+
+
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.p_value_validation"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.p_value_validation">[docs]</a>    <span class="k">def</span> <span class="nf">p_value_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bootstrap_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the permutation and bootstrapping p-values for the classifier and its rules.</span>
+
+<span class="sd">        :param bootstrap_size: integer. Number of bootstraps samples to use.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_value_class_structure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_value_feature_coalitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span><span class="o">.</span><span class="n">p_permutation_classifier_validation</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_performance</span><span class="o">.</span><span class="n">p_bootstrapping_rules_validation</span><span class="p">(</span><span class="n">bootstrap_size</span><span class="p">)</span></div>
         
 
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.load_master_rule_base">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_master_rule_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.load_master_rule_base"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base">[docs]</a>    <span class="k">def</span> <span class="nf">load_master_rule_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Loads a master rule base to be used in the prediction process.</span>
 
@@ -393,13 +406,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_rules</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nclasses_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_base</span><span class="p">)</span></div>
-
         
-
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.forward">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.explainable_predict"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.explainable_predict">[docs]</a>    <span class="k">def</span> <span class="nf">explainable_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the predicted class for each sample.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">explainable_predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="n">out_class_names</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.forward"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+
 <span class="sd">        Returns the predicted class for each sample.</span>
 
 <span class="sd">        :param X: np array samples x features.</span>
@@ -412,12 +429,9 @@
             <span class="k">pass</span>
         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="n">out_class_names</span><span class="p">)</span></div>
-
         
 
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.predict">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict">[docs]</a>
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.predict"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the predicted class for each sample.</span>
 
@@ -426,12 +440,9 @@
 <span class="sd">        :return: np array samples (x 1) with the predicted class.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">out_class_names</span><span class="o">=</span><span class="n">out_class_names</span><span class="p">)</span></div>
-
     
 
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.predict_proba">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba">[docs]</a>
-    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.predict_proba"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the predicted class probabilities for each sample.</span>
 
@@ -446,20 +457,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">compute_association_degrees</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.print_rules">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules">[docs]</a>
-    <span class="k">def</span> <span class="nf">print_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_rules</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.print_rules"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules">[docs]</a>    <span class="k">def</span> <span class="nf">print_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_rules</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bootstrap_results</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Print the rules contained in the fitted rulebase.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="p">,</span> <span class="n">bootstrap_results</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.plot_fuzzy_variables">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_fuzzy_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.plot_fuzzy_variables"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fuzzy_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Plot the fuzzy partitions in each fuzzy variable.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -469,10 +474,7 @@
             <span class="n">vis_rules</span><span class="o">.</span><span class="n">plot_fuzzy_variable</span><span class="p">(</span><span class="n">fv</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.rename_fuzzy_variables">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables">[docs]</a>
-    <span class="k">def</span> <span class="nf">rename_fuzzy_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.rename_fuzzy_variables"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables">[docs]</a>    <span class="k">def</span> <span class="nf">rename_fuzzy_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Renames the linguist labels so that high, low and so on are consistent. It does so usually after an optimization process.</span>
 
@@ -512,22 +514,16 @@
                     <span class="n">fuzzy_sets_vl</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">possible_names</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span></div>
 
 
-
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.get_rulebase">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_rulebase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.get_rulebase"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase">[docs]</a>    <span class="k">def</span> <span class="nf">get_rulebase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Get the rulebase obtained after fitting the classifier to the data.</span>
 
 <span class="sd">        :return: a matrix format for the rulebase.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_rulebase_matrix</span><span class="p">()</span></div>
-
     
 
-<div class="viewcode-block" id="BaseFuzzyRulesClassifier.reparametrice_loss">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss">[docs]</a>
-    <span class="k">def</span> <span class="nf">reparametrice_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseFuzzyRulesClassifier.reparametrice_loss"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss">[docs]</a>    <span class="k">def</span> <span class="nf">reparametrice_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Changes the parameters in the loss function. </span>
 
@@ -539,7 +535,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">beta_</span> <span class="o">=</span> <span class="n">beta</span></div>
 
 
-
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the predicted class for each sample.</span>
@@ -548,12 +543,9 @@
 <span class="sd">        :return: np array samples (x 1) with the predicted class.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
-
     
 
-<div class="viewcode-block" id="ExploreRuleBases">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.ExploreRuleBases">[docs]</a>
-<span class="k">class</span> <span class="nc">ExploreRuleBases</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
+<div class="viewcode-block" id="ExploreRuleBases"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.ExploreRuleBases">[docs]</a><span class="k">class</span> <span class="nc">ExploreRuleBases</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Class to model as pymoo problem the fitting of a rulebase to a set of data given a series of candidate rules for a classification problem using Evolutionary strategies</span>
 <span class="sd">    Supports type 1 and t2.</span>
@@ -681,9 +673,7 @@
             <span class="n">out</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
     
-<div class="viewcode-block" id="ExploreRuleBases.fitness_func">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func">[docs]</a>
-    <span class="k">def</span> <span class="nf">fitness_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ruleBase</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="ExploreRuleBases.fitness_func"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func">[docs]</a>    <span class="k">def</span> <span class="nf">fitness_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ruleBase</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Fitness function for the optimization problem.</span>
 <span class="sd">        :param ruleBase: RuleBase object</span>
@@ -701,15 +691,11 @@
 
         <span class="n">score</span> <span class="o">=</span> <span class="n">score_acc</span> <span class="o">+</span> <span class="n">score_rules_size</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">+</span> <span class="n">score_nrules</span> <span class="o">*</span> <span class="n">beta</span>
 
-        <span class="k">return</span> <span class="n">score</span></div>
-</div>
-
+        <span class="k">return</span> <span class="n">score</span></div></div>
     
 
 
-<div class="viewcode-block" id="FitRuleBase">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase">[docs]</a>
-<span class="k">class</span> <span class="nc">FitRuleBase</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
+<div class="viewcode-block" id="FitRuleBase"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase">[docs]</a><span class="k">class</span> <span class="nc">FitRuleBase</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Class to model as pymoo problem the fitting of a rulebase for a classification problem using Evolutionary strategies. </span>
 <span class="sd">    Supports type 1 and iv fs (iv-type 2)</span>
@@ -847,9 +833,13 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">feature_domain_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                 <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">99</span><span class="p">]</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
-            <span class="n">size_multiplier</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span> <span class="k">else</span> <span class="mi">8</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                <span class="n">correct_size</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">ixx</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">ixx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">))]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+
+                <span class="n">correct_size</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">ixx</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">ixx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">))]</span>
             <span class="n">membership_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_domain_bounds</span><span class="p">[</span><span class="n">ixx</span><span class="p">]]</span> <span class="o">*</span> <span class="n">size_multiplier</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">ixx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ixx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">))])</span>
+                <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_domain_bounds</span><span class="p">[</span><span class="n">ixx</span><span class="p">]]</span> <span class="o">*</span> <span class="n">correct_size</span><span class="p">[</span><span class="n">ixx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ixx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">))])</span>
             
             <span class="n">vars_memberships</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">aux_counter</span> <span class="o">+</span> <span class="n">ix</span><span class="p">:</span> <span class="n">Integer</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="n">membership_bounds</span><span class="p">[</span><span class="n">ix</span><span class="p">])</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">membership_bounds</span><span class="p">))}</span>
@@ -913,9 +903,7 @@
                 <span class="n">xu</span><span class="o">=</span><span class="n">varbound</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="FitRuleBase.encode_rulebase">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">[docs]</a>
-    <span class="k">def</span> <span class="nf">encode_rulebase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">,</span> <span class="n">optimize_lv</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">encode_mods</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="FitRuleBase.encode_rulebase"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">[docs]</a>    <span class="k">def</span> <span class="nf">encode_rulebase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_base</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">,</span> <span class="n">optimize_lv</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">encode_mods</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Given a rule base, constructs the corresponding gene associated with that rule base.</span>
 
@@ -943,7 +931,7 @@
         <span class="k">if</span> <span class="n">optimize_lv</span><span class="p">:</span>
             <span class="c1"># If lv memberships are optimized.</span>
             <span class="n">fourth_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span> <span class="o">+</span> \
-                <span class="nb">len</span><span class="p">(</span><span class="n">rule_base</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_lv_possible</span> <span class="o">*</span> <span class="n">mf_size</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">mf_size</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If no memberships are optimized.</span>
             <span class="n">fourth_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span>
@@ -1004,7 +992,6 @@
                         <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">1</span>
                     
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">gene</span><span class="p">)))</span></div>
-
         
 
 
@@ -1024,20 +1011,26 @@
 
         <span class="n">rule_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">)]</span>
 
-        <span class="n">mf_size</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span> <span class="k">else</span> <span class="mi">8</span>
+        <span class="n">mf_size</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span> <span class="k">else</span> <span class="mi">6</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        GEN STRUCTURE</span>
 
 <span class="sd">        First: antecedents chosen by each rule. Size: nAnts * nRules</span>
 <span class="sd">        Second: Variable linguistics used. Size: nAnts * nRules</span>
-<span class="sd">        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * self.n_linguistic_variables * 8|4 (2 trapezoidal memberships if t2)</span>
+<span class="sd">        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)</span>
 <span class="sd">        Four: Consequent classes. Size: nRules</span>
 <span class="sd">        Five: Weights for each rule. Size: nRules (only if ds_mode == 2)</span>
+<span class="sd">        Sixth: Modifiers for the membership functions. Size: len(self.lvs) * nAnts * nRules</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># If memberships are optimized.</span>
-            <span class="n">fourth_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span> <span class="o">+</span> \
-                <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span> <span class="o">*</span> <span class="n">mf_size</span>
+            <span class="k">if</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                <span class="n">fourth_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span> <span class="o">+</span> \
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+            <span class="k">elif</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                <span class="n">fourth_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span> <span class="o">+</span> \
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mf_size</span>
+                
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If no memberships are optimized.</span>
             <span class="n">fourth_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span>
@@ -1052,6 +1045,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sixth_pointer</span> <span class="o">=</span> <span class="n">fifth_pointer</span>
             
+        
         
         <span class="n">aux_pointer</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">min_domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1083,6 +1077,7 @@
                 <span class="n">init_rule_antecedents</span><span class="p">[</span><span class="n">ant</span><span class="p">]</span> <span class="o">=</span> <span class="n">antecedent_parameters</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span>
 
             <span class="n">consequent_idx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">fourth_pointer</span> <span class="o">+</span> <span class="n">aux_pointer</span><span class="p">]</span>
+
             <span class="k">assert</span> <span class="n">consequent_idx</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="s2">&quot;Consequent class is not valid. Something in the gene is wrong.&quot;</span>
             <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">1</span>
  
@@ -1112,7 +1107,7 @@
                     <span class="n">rs_instance</span><span class="p">)</span>
 
             
-        <span class="c1"># If we optimize the membership functions</span>
+        <span class="c1"># If we optimize the membership functions - change to delta system</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">third_pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAnts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nRules</span>
             <span class="n">aux_pointer</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1120,30 +1115,141 @@
 
             <span class="k">for</span> <span class="n">fuzzy_variable</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="n">linguistic_variables</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">lv_FS</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="k">for</span> <span class="n">linguistic_variable</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">lx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]):</span>
                     <span class="n">parameter_pointer</span> <span class="o">=</span> <span class="n">third_pointer</span> <span class="o">+</span> <span class="n">aux_pointer</span>
-                    <span class="n">fz_parameters_idx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">:</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="n">mf_size</span><span class="p">]</span>
-                    <span class="n">fz_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">antecedents_referencial</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">][</span><span class="n">fz_parameters_idx</span><span class="p">]</span>
-                    <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="n">mf_size</span>
+                    <span class="k">if</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">lx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">fz_parameters_idx0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx3</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
 
-                    <span class="k">if</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
-                        <span class="n">fz_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
-                        <span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]),</span> <span class="n">fz_parameters</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                              <span class="n">fz_parameters</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">])]</span>
-                        <span class="n">ml</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]),</span> <span class="n">fz_parameters</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                              <span class="n">fz_parameters</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">])]</span>
-                        <span class="n">height</span> <span class="o">=</span> <span class="n">fz_parameters</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">)</span>
+                            <span class="n">fz0</span> <span class="o">=</span> <span class="n">fz_parameters_idx0</span>
+                            <span class="n">fz1</span> <span class="o">=</span> <span class="n">fz_parameters_idx0</span>
+                            <span class="n">fz2</span> <span class="o">=</span> <span class="n">fz1</span> <span class="o">+</span> <span class="n">fz_parameters_idx1</span>
+                            <span class="n">next_fz0</span> <span class="o">=</span> <span class="n">fz2</span> <span class="o">+</span> <span class="n">fz_parameters_idx2</span>
+                            <span class="n">fz3</span> <span class="o">=</span> <span class="n">next_fz0</span> <span class="o">+</span> <span class="n">fz_parameters_idx3</span>
 
-                        <span class="n">ivfs</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">IVFS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vl_names</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">][</span><span class="n">linguistic_variable</span><span class="p">],</span> <span class="n">ml</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span>
-                                       <span class="p">(</span><span class="n">min_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">],</span> <span class="n">max_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]),</span> <span class="n">lower_height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">ivfs</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vl_names</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">][</span><span class="n">linguistic_variable</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-                                     <span class="p">(</span><span class="n">min_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">],</span> <span class="n">max_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]))</span>
-                    <span class="n">linguistic_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ivfs</span><span class="p">)</span>
+                            <span class="n">fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fz0</span><span class="p">,</span> <span class="n">fz1</span><span class="p">,</span> <span class="n">fz2</span><span class="p">,</span> <span class="n">fz3</span><span class="p">])</span>
+                            <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">4</span>
+
+                        <span class="k">elif</span> <span class="n">lx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">fz_parameters_idx1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+                            <span class="n">fz0</span> <span class="o">=</span> <span class="n">next_fz0</span>
+                            <span class="n">fz1</span> <span class="o">=</span> <span class="n">fz3</span> <span class="o">+</span> <span class="n">fz_parameters_idx1</span>
+                            <span class="n">fz2</span> <span class="o">=</span> <span class="n">fz1</span> <span class="o">+</span> <span class="n">fz_parameters_idx2</span>
+                            <span class="n">fz3</span> <span class="o">=</span> <span class="n">fz2</span>
+
+                            <span class="n">fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fz0</span><span class="p">,</span> <span class="n">fz1</span><span class="p">,</span> <span class="n">fz2</span><span class="p">,</span> <span class="n">fz3</span><span class="p">])</span>
+                            <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">3</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">fz_parameters_idx1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx3</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx4</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
+
+                            <span class="n">fz0</span> <span class="o">=</span> <span class="n">next_fz0</span>
+                            <span class="n">fz1</span> <span class="o">=</span> <span class="n">fz3</span> <span class="o">+</span> <span class="n">fz_parameters_idx1</span>
+                            <span class="n">fz2</span> <span class="o">=</span> <span class="n">fz1</span> <span class="o">+</span> <span class="n">fz_parameters_idx2</span>
+                            <span class="n">next_fz0</span> <span class="o">=</span> <span class="n">fz2</span> <span class="o">+</span> <span class="n">fz_parameters_idx3</span>
+                            <span class="n">fz3</span> <span class="o">=</span> <span class="n">next_fz0</span> <span class="o">+</span> <span class="n">fz_parameters_idx4</span>
+                            <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">4</span>
+                            
+                            <span class="n">fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fz0</span><span class="p">,</span> <span class="n">fz1</span><span class="p">,</span> <span class="n">fz2</span><span class="p">,</span> <span class="n">fz3</span><span class="p">])</span>
+
+                        <span class="n">lv_FS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fz_parameters</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">lx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">fz_parameters_idx0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx3</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx4</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx5</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">5</span><span class="p">]</span>
+                            
+                            <span class="n">l_fz0</span> <span class="o">=</span> <span class="n">fz_parameters_idx0</span>
+                            <span class="n">l_fz1</span> <span class="o">=</span> <span class="n">l_fz0</span>
+                            <span class="n">l_fz2</span> <span class="o">=</span> <span class="n">l_fz1</span> <span class="o">+</span> <span class="n">fz_parameters_idx1</span>
+                            <span class="n">next_ufz0</span> <span class="o">=</span> <span class="n">l_fz2</span> <span class="o">+</span> <span class="n">fz_parameters_idx2</span>
+                            <span class="n">next_lfz0</span> <span class="o">=</span> <span class="n">next_ufz0</span> <span class="o">+</span> <span class="n">fz_parameters_idx3</span>
+                            <span class="n">l_fz3</span> <span class="o">=</span> <span class="n">next_lfz0</span> <span class="o">+</span> <span class="n">fz_parameters_idx4</span>
+
+                            <span class="n">u_fz0</span> <span class="o">=</span> <span class="n">l_fz0</span>
+                            <span class="n">u_fz1</span> <span class="o">=</span> <span class="n">u_fz0</span>
+                            <span class="n">u_fz2</span> <span class="o">=</span> <span class="n">l_fz2</span>
+                            <span class="n">u_fz3</span> <span class="o">=</span> <span class="n">l_fz3</span> <span class="o">+</span> <span class="n">fz_parameters_idx5</span>
+
+                            <span class="n">l_fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">l_fz0</span><span class="p">,</span> <span class="n">l_fz1</span><span class="p">,</span> <span class="n">l_fz2</span><span class="p">,</span> <span class="n">l_fz3</span><span class="p">])</span>
+                            <span class="n">u_fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u_fz0</span><span class="p">,</span> <span class="n">u_fz1</span><span class="p">,</span> <span class="n">u_fz2</span><span class="p">,</span> <span class="n">u_fz3</span><span class="p">])</span>
+                            <span class="n">next_init</span> <span class="o">=</span> <span class="n">l_fz2</span> <span class="o">+</span> <span class="n">fz_parameters_idx4</span>
+                            <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">6</span>
+                            
+                        <span class="k">elif</span> <span class="n">lx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_lv_possible</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">fz_parameters_idx0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            
+                            <span class="n">u_fz0</span> <span class="o">=</span> <span class="n">next_ufz0</span>
+                            <span class="n">l_fz0</span> <span class="o">=</span> <span class="n">next_lfz0</span>
+                            <span class="n">u_fz1</span> <span class="o">=</span> <span class="n">u_fz3</span> <span class="o">+</span> <span class="n">fz_parameters_idx0</span>
+                            <span class="n">l_fz1</span> <span class="o">=</span> <span class="n">u_fz1</span>
+                            <span class="n">u_fz2</span> <span class="o">=</span> <span class="n">l_fz1</span> <span class="o">+</span> <span class="n">fz_parameters_idx1</span>
+                            <span class="n">l_fz2</span> <span class="o">=</span> <span class="n">u_fz2</span>
+                            <span class="n">l_fz3</span> <span class="o">=</span> <span class="n">l_fz2</span>
+                            <span class="n">u_fz3</span> <span class="o">=</span> <span class="n">l_fz3</span>
+
+
+                            <span class="n">l_fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">l_fz0</span><span class="p">,</span> <span class="n">l_fz1</span><span class="p">,</span> <span class="n">l_fz2</span><span class="p">,</span> <span class="n">l_fz3</span><span class="p">])</span>
+                            <span class="n">u_fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u_fz0</span><span class="p">,</span> <span class="n">u_fz1</span><span class="p">,</span> <span class="n">u_fz2</span><span class="p">,</span> <span class="n">u_fz3</span><span class="p">])</span>
+                            <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">2</span>
+                            
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">fz_parameters_idx0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx3</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx4</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+                            <span class="n">fz_parameters_idx5</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">parameter_pointer</span> <span class="o">+</span> <span class="mi">5</span><span class="p">]</span>
+
+                            <span class="n">u_fz0</span> <span class="o">=</span> <span class="n">next_ufz0</span>
+                            <span class="n">l_fz0</span> <span class="o">=</span> <span class="n">next_lfz0</span>
+
+                            <span class="n">l_fz1</span> <span class="o">=</span> <span class="n">u_fz3</span> <span class="o">+</span> <span class="n">fz_parameters_idx0</span>
+                            <span class="n">u_fz1</span> <span class="o">=</span> <span class="n">l_fz1</span>
+                            <span class="n">l_fz2</span> <span class="o">=</span> <span class="n">l_fz1</span> <span class="o">+</span> <span class="n">fz_parameters_idx1</span>
+                            <span class="n">u_fz2</span> <span class="o">=</span> <span class="n">l_fz2</span>
+
+                            <span class="n">next_ufz0</span> <span class="o">=</span> <span class="n">l_fz2</span> <span class="o">+</span> <span class="n">fz_parameters_idx2</span>
+                            <span class="n">next_lfz0</span> <span class="o">=</span> <span class="n">next_ufz0</span> <span class="o">+</span> <span class="n">fz_parameters_idx3</span>
+
+                            <span class="n">l_fz3</span> <span class="o">=</span> <span class="n">next_lfz0</span> <span class="o">+</span> <span class="n">fz_parameters_idx4</span>
+                            <span class="n">u_fz3</span> <span class="o">=</span> <span class="n">l_fz3</span> <span class="o">+</span> <span class="n">fz_parameters_idx5</span>
+
+                            <span class="n">l_fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">l_fz0</span><span class="p">,</span> <span class="n">l_fz1</span><span class="p">,</span> <span class="n">l_fz2</span><span class="p">,</span> <span class="n">l_fz3</span><span class="p">])</span>
+                            <span class="n">u_fz_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u_fz0</span><span class="p">,</span> <span class="n">u_fz1</span><span class="p">,</span> <span class="n">u_fz2</span><span class="p">,</span> <span class="n">u_fz3</span><span class="p">])</span>
+                            <span class="n">aux_pointer</span> <span class="o">+=</span> <span class="mi">6</span>
+
+
+                        <span class="n">lv_FS</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">l_fz_parameters</span><span class="p">,</span> <span class="n">u_fz_parameters</span><span class="p">))</span>
+
+                <span class="n">min_lv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lv_FS</span><span class="p">))</span>
+                <span class="n">max_lv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lv_FS</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">lx</span><span class="p">,</span> <span class="n">relevant_lv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lv_FS</span><span class="p">):</span>
+                    <span class="n">relevant_lv</span> <span class="o">=</span> <span class="p">(</span><span class="n">relevant_lv</span> <span class="o">-</span> <span class="n">min_lv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_lv</span> <span class="o">-</span> <span class="n">min_lv</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+                        <span class="n">proper_FS</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vl_names</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">][</span><span class="n">lx</span><span class="p">],</span> <span class="n">relevant_lv</span><span class="p">,</span> <span class="p">(</span><span class="n">min_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">],</span> <span class="n">max_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]))</span>
+                    <span class="k">elif</span> <span class="n">fuzzy_type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+                        <span class="n">proper_FS</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">IVFS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vl_names</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">][</span><span class="n">lx</span><span class="p">],</span> <span class="n">relevant_lv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">relevant_lv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">min_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">],</span> <span class="n">max_domain</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">]))</span>
+                    <span class="n">linguistic_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proper_FS</span><span class="p">)</span>
 
                 <span class="n">antecedents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">var_names</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">],</span> <span class="n">linguistic_variables</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">var_names</span><span class="p">[</span><span class="n">fuzzy_variable</span><span class="p">],</span> <span class="n">linguistic_variables</span><span class="p">))</span>
+                             
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">antecedents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lvs</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;time_moment&#39;</span><span class="p">]]</span>
@@ -1190,9 +1296,7 @@
         <span class="n">out</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">score</span>
     
 
-<div class="viewcode-block" id="FitRuleBase.fitness_func">
-<a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func">[docs]</a>
-    <span class="k">def</span> <span class="nf">fitness_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ruleBase</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="FitRuleBase.fitness_func"><a class="viewcode-back" href="../../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func">[docs]</a>    <span class="k">def</span> <span class="nf">fitness_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ruleBase</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Fitness function for the optimization problem.</span>
 <span class="sd">        :param ruleBase: RuleBase object</span>
@@ -1220,9 +1324,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
             
-        <span class="k">return</span> <span class="n">score</span></div>
-</div>
-
+        <span class="k">return</span> <span class="n">score</span></div></div>
     
 
 </pre></div>

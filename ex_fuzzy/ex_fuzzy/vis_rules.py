@@ -6,7 +6,6 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import networkx as nx
 
 try:
     from . import rules
@@ -166,6 +165,7 @@ def visualize_rulebase(mrule_base: rules.MasterRuleBase, export_path: str=None) 
     :param mrule_base: Master rule base to visualize.
     :param export_path: Path to export the graph.
     '''
+    import networkx as nx
 
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Visualization]['plot_graph'] += 1

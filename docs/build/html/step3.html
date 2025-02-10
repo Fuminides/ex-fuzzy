@@ -1,21 +1,23 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Optimizing a Fuzzy rule base for a classification problem &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9a2dae69"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -60,7 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Studying patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Bootstrapping and rule robustness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -89,9 +91,9 @@
            <div itemprop="articleBody">
              
   <section id="optimizing-a-fuzzy-rule-base-for-a-classification-problem">
-<span id="step3"></span><h1>Optimizing a Fuzzy rule base for a classification problem<a class="headerlink" href="#optimizing-a-fuzzy-rule-base-for-a-classification-problem" title="Link to this heading"></a></h1>
+<span id="step3"></span><h1>Optimizing a Fuzzy rule base for a classification problem<a class="headerlink" href="#optimizing-a-fuzzy-rule-base-for-a-classification-problem" title="Permalink to this heading"></a></h1>
 <section id="fuzzy-rule-based-classifier">
-<h2>Fuzzy rule based classifier<a class="headerlink" href="#fuzzy-rule-based-classifier" title="Link to this heading"></a></h2>
+<h2>Fuzzy rule based classifier<a class="headerlink" href="#fuzzy-rule-based-classifier" title="Permalink to this heading"></a></h2>
 <p>Usually, in classification inference we compute the matching degree of a sample for each rule in the rule base
 (we refer as “rule base” to both <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.RuleBase</span></code> and <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.MasterRuleBase</span></code> objects as they are conceptually equivalent).
 Then, the predicted class is the consequent class of that rule. In this library, besides the matching degree, we also use a prior, the Dominance Scores,
@@ -101,7 +103,7 @@ cover different patterns than those covered by other rules.</p>
 <p>For more info about the dominance scores, you can see [Fach23].</p>
 </section>
 <section id="training-a-fuzzy-rule-based-classifier">
-<h2>Training a fuzzy rule based classifier<a class="headerlink" href="#training-a-fuzzy-rule-based-classifier" title="Link to this heading"></a></h2>
+<h2>Training a fuzzy rule based classifier<a class="headerlink" href="#training-a-fuzzy-rule-based-classifier" title="Permalink to this heading"></a></h2>
 <p>In order to train a fuzzy rule based classifier, Ex-Fuzzy uses a Genetic algorithm to tune the rules to the
 desired classification task. The interface to use this kind of classifiers is analogous to the standard used
 in scikit-learn, so it requires no previous knowledge about fuzzy logic in order to work.</p>
@@ -135,7 +137,7 @@ of generations and the population size:</p>
 <p>You can modulate the inference process regarding rule weights by using the ds_mode parameter in <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</span></code>. If set to 0, the dominance scores are used as weights; if set to 1, the weights are all set to 1; and if set to 2, the dominance scores will be ignored and the weights will be set using the genetic optimization.</p>
 </section>
 <section id="evaluation">
-<h2>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading"></a></h2>
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading"></a></h2>
 <p>The genetic algorithm needs a fitness measure to evaluate the quality of each solution. In order to obtain the best possible set of rules,
 Ex-Fuzzy uses three different criteria.</p>
 <ol class="arabic simple">

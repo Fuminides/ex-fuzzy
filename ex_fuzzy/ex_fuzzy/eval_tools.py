@@ -14,6 +14,17 @@ except ImportError:
       import vis_rules
     
     
+def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train:np.array, y_train:np.array, X_test:np.array, y_test:np.array, plot_rules=False,print_rules:bool=True, plot_partitions:bool=False, return_rules:bool=True, bootstrap_results_print:bool=True) -> str:
+      '''
+      Take a look at the FuzzyEvaluator class for this function documentation.
+      '''
+      fuzzy_evaluator = FuzzyEvaluator(fl_classifier)
+      res = fuzzy_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
+                        plot_rules=plot_rules, print_rules=print_rules, plot_partitions=plot_partitions, return_rules=return_rules, bootstrap_results_print=bootstrap_results_print)
+      
+
+      return res
+
 class FuzzyEvaluator():
     '''
     Takes a model and associated data and permits rule evaluation
@@ -61,7 +72,7 @@ class FuzzyEvaluator():
         
     def eval_fuzzy_model(self,X_train: np.array, y_train: np.array,X_test: np.array, y_test: np.array, 
                          plot_rules=True, print_rules=True, plot_partitions=True, 
-                     return_rules=False, print_accuracy=True, print_matthew=True, export_path:str=None) -> None:
+                     return_rules=False, print_accuracy=True, print_matthew=True, export_path:str=None, bootstrap_results_print:bool=True) -> None:
       '''
       Function that evaluates a fuzzy rule based model. It also plots the rules and the fuzzy partitions.
 
@@ -102,7 +113,7 @@ class FuzzyEvaluator():
 
 
       if print_rules or return_rules:
-            res = self.fl_classifier.print_rules(True)
+            res = self.fl_classifier.print_rules(True, bootstrap_results=bootstrap_results_print)
 
             if print_rules:
                   print(res)

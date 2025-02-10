@@ -1,21 +1,23 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Using Fuzzy Rules &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9a2dae69"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -60,7 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Studying patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pattern_stats.html">Bootstrapping and rule robustness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -89,9 +91,9 @@
            <div itemprop="articleBody">
              
   <section id="using-fuzzy-rules">
-<span id="step2"></span><h1>Using Fuzzy Rules<a class="headerlink" href="#using-fuzzy-rules" title="Link to this heading"></a></h1>
+<span id="step2"></span><h1>Using Fuzzy Rules<a class="headerlink" href="#using-fuzzy-rules" title="Permalink to this heading"></a></h1>
 <section id="fuzzy-rules">
-<h2>Fuzzy Rules<a class="headerlink" href="#fuzzy-rules" title="Link to this heading"></a></h2>
+<h2>Fuzzy Rules<a class="headerlink" href="#fuzzy-rules" title="Permalink to this heading"></a></h2>
 <p>Fuzzy rules can be used to solve both regression and classification problems.</p>
 <p>The most straightforward way to construct a rule is to give a series of antecedents and a consequent.
 For the case of classification, the consequent will be a class, and for regression, a fuzzy set.
@@ -117,7 +119,7 @@ because we do not want to compute the degree of truth for a value for the same a
 of using the <code class="docutils literal notranslate"><span class="pre">Rule</span></code> class, it is more practical to use <code class="docutils literal notranslate"><span class="pre">RuleBase</span></code> and <code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> classes.</p>
 </section>
 <section id="rule-bases">
-<h2>Rule Bases<a class="headerlink" href="#rule-bases" title="Link to this heading"></a></h2>
+<h2>Rule Bases<a class="headerlink" href="#rule-bases" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> is a class that simplifies the way in which rules are expressed. Its antecedents are expressed as a list, denoting the
 linguistic variable relevant to the rule. The previous rule would be expressed as a <code class="docutils literal notranslate"><span class="pre">RuleSimple</span></code> as this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_rule</span> <span class="o">=</span> <span class="n">frule</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
@@ -139,7 +141,7 @@ Then, we can use “my_rule” using the <code class="docutils literal notransla
 classes are required: <code class="docutils literal notranslate"><span class="pre">RuleBaseT2</span></code>, <code class="docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code>.</p>
 </section>
 <section id="classification-problems-and-master-rule-bases">
-<h2>Classification problems and Master Rule Bases<a class="headerlink" href="#classification-problems-and-master-rule-bases" title="Link to this heading"></a></h2>
+<h2>Classification problems and Master Rule Bases<a class="headerlink" href="#classification-problems-and-master-rule-bases" title="Permalink to this heading"></a></h2>
 <p>Up to now, we have discussed how to model a regression problem. Classification problems perform the inference in a different way, which require another kind of object: the <code class="docutils literal notranslate"><span class="pre">ex_fuzzy.rules.MasterRuleBase</span></code>.
 This is because the way in which Ex-Fuzzy handles classification problems is by using one Rule Base per consequent.
 So, the <code class="docutils literal notranslate"><span class="pre">rules.MasterRuleBase</span></code> class is used to handle the rule bases created for each class. An object of this class is created using

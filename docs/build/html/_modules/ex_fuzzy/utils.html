@@ -1,20 +1,22 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ex_fuzzy.utils &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
 
   
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -52,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Studying patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Bootstrapping and rule robustness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
@@ -107,9 +109,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 
 
-<div class="viewcode-block" id="quartile_compute">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.quartile_compute">[docs]</a>
-<span class="k">def</span> <span class="nf">quartile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="quartile_compute"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.quartile_compute">[docs]</a><span class="k">def</span> <span class="nf">quartile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Computes the quartiles for each feature.</span>
 
@@ -119,10 +119,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="fixed_quantile_compute">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.fixed_quantile_compute">[docs]</a>
-<span class="k">def</span> <span class="nf">fixed_quantile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="fixed_quantile_compute"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.fixed_quantile_compute">[docs]</a><span class="k">def</span> <span class="nf">fixed_quantile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Computes a series of quantiles for each feature in numpy array.</span>
 <span class="sd">    Quantiles: [0, 0.20, 0.30, 0.45, 0.55, 0.7, 0.8, 1]</span>
@@ -133,10 +130,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="partition3_quantile_compute">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.partition3_quantile_compute">[docs]</a>
-<span class="k">def</span> <span class="nf">partition3_quantile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="partition3_quantile_compute"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.partition3_quantile_compute">[docs]</a><span class="k">def</span> <span class="nf">partition3_quantile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Computes a series of quantiles partitioning the variable in 3 cases.</span>
 
@@ -148,10 +142,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.80</span><span class="p">,</span> <span class="mf">1.00</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="t1_simple_partition">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_simple_partition">[docs]</a>
-<span class="k">def</span> <span class="nf">t1_simple_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="t1_simple_partition"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_simple_partition">[docs]</a><span class="k">def</span> <span class="nf">t1_simple_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the fuzzy variable in four trapezoidal memberships.</span>
 
@@ -188,10 +179,40 @@
     <span class="k">return</span> <span class="n">partition_parameters</span></div>
 
 
+<div class="viewcode-block" id="t1_simple_gaussian_partition"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_simple_gaussian_partition">[docs]</a><span class="k">def</span> <span class="nf">t1_simple_gaussian_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Partitions the fuzzy variable in four Gaussian memberships.</span>
 
-<div class="viewcode-block" id="compute_quantiles">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.compute_quantiles">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_quantiles</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">):</span>
+<span class="sd">    :param x: numpy array, vector of shape (samples, ).</span>
+<span class="sd">    :return: numpy array, vector of shape (variables, 4, 2) where the last dimension </span>
+<span class="sd">            contains [mean, standard_deviation] for each Gaussian membership function.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">n_partitions</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">gaussian_params_size</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># mean and standard deviation</span>
+    <span class="n">quantile_numbers</span> <span class="o">=</span> <span class="n">fixed_quantile_compute</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">partition_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_partitions</span><span class="p">,</span> <span class="n">gaussian_params_size</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_partitions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">partition</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># For first partition, center at first quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># mean</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># std</span>
+        <span class="k">elif</span> <span class="n">partition</span> <span class="o">==</span> <span class="n">n_partitions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># For last partition, center at last quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># mean</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">quantile_numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># std</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For middle partitions</span>
+            <span class="n">pointer</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">partition</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">5</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span>  <span class="c1"># mean</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">quantile_numbers</span><span class="p">[</span><span class="n">pointer</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="n">pointer</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># std</span>
+
+    <span class="k">return</span> <span class="n">partition_parameters</span></div>
+
+
+<div class="viewcode-block" id="compute_quantiles"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.compute_quantiles">[docs]</a><span class="k">def</span> <span class="nf">compute_quantiles</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Computes the quantiles needed for n-partition fuzzy membership.</span>
 <span class="sd">    </span>
@@ -203,10 +224,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="t1_n_partition_parameters">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_n_partition_parameters">[docs]</a>
-<span class="k">def</span> <span class="nf">t1_n_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">):</span>
+<div class="viewcode-block" id="t1_n_partition_parameters"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_n_partition_parameters">[docs]</a><span class="k">def</span> <span class="nf">t1_n_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the fuzzy variable in n trapezoidal memberships.</span>
 
@@ -241,10 +259,47 @@
     <span class="k">return</span> <span class="n">partition_parameters</span></div>
 
 
+<div class="viewcode-block" id="t1_n_gaussian_partition_parameters"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_n_gaussian_partition_parameters">[docs]</a><span class="k">def</span> <span class="nf">t1_n_gaussian_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Partitions the fuzzy variable in n Gaussian memberships.</span>
 
-<div class="viewcode-block" id="t1_three_partition">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_three_partition">[docs]</a>
-<span class="k">def</span> <span class="nf">t1_three_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="sd">    :param x: numpy array, matrix of shape (samples, variables).</span>
+<span class="sd">    :param n_partitions: int, number of partitions.</span>
+<span class="sd">    :return: numpy array, tensor of shape (variables, n_partitions, 2) where the last dimension </span>
+<span class="sd">            contains [mean, standard_deviation] for each Gaussian membership function.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">gaussian_params_size</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># mean and standard deviation</span>
+    <span class="n">n_variables</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">quantile_numbers</span> <span class="o">=</span> <span class="n">compute_quantiles</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
+    
+    <span class="c1"># Initialize the array for partition parameters</span>
+    <span class="n">partition_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_variables</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">,</span> <span class="n">gaussian_params_size</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_partitions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">partition</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># First partition</span>
+            <span class="c1"># Center at first interior quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># mean</span>
+            <span class="c1"># Spread based on distance to next quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># std</span>
+            
+        <span class="k">elif</span> <span class="n">partition</span> <span class="o">==</span> <span class="n">n_partitions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Last partition</span>
+            <span class="c1"># Center at last interior quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># mean</span>
+            <span class="c1"># Spread based on distance to previous quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">quantile_numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># std</span>
+            
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Intermediate partitions</span>
+            <span class="c1"># Center at current quantile</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="n">partition</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># mean</span>
+            <span class="c1"># Spread based on distance to adjacent quantiles</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">quantile_numbers</span><span class="p">[</span><span class="n">partition</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="n">partition</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># std</span>
+
+    <span class="k">return</span> <span class="n">partition_parameters</span></div>
+
+
+<div class="viewcode-block" id="t1_three_partition"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_three_partition">[docs]</a><span class="k">def</span> <span class="nf">t1_three_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the fuzzy variable in three trapezoidal memberships.</span>
 
@@ -279,10 +334,7 @@
     <span class="k">return</span> <span class="n">partition_parameters</span></div>
 
 
-
-<div class="viewcode-block" id="t2_n_partition_parameters">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t2_n_partition_parameters">[docs]</a>
-<span class="k">def</span> <span class="nf">t2_n_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">):</span>
+<div class="viewcode-block" id="t2_n_partition_parameters"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t2_n_partition_parameters">[docs]</a><span class="k">def</span> <span class="nf">t2_n_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the fuzzy variable in n trapezoidal memberships.</span>
 
@@ -338,10 +390,62 @@
     <span class="k">return</span> <span class="n">partition_parameters</span></div>
 
 
+<div class="viewcode-block" id="t1_simple_triangular_partition_parameters"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_simple_triangular_partition_parameters">[docs]</a><span class="k">def</span> <span class="nf">t1_simple_triangular_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Partitions the fuzzy variable in three triangular memberships.</span>
 
-<div class="viewcode-block" id="t1_fuzzy_partitions_dataset">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_fuzzy_partitions_dataset">[docs]</a>
-<span class="k">def</span> <span class="nf">t1_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_partition</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
+<span class="sd">    :param x: numpy array, vector of shape (samples, ).</span>
+<span class="sd">    :return: numpy array, vector of shape (variables, 3, 3).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">n_partitions</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">trap_memberships_size</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="c1">#quantile_numbers = partition3_quantile_compute(x)</span>
+    <span class="n">quantile_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">partition_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_partitions</span><span class="p">,</span> <span class="n">trap_memberships_size</span><span class="p">))</span>
+    
+
+    <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_partitions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">partition</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">partition</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">partition_parameters</span><span class="p">[:,</span> <span class="n">partition</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantile_numbers</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+    
+    <span class="k">return</span> <span class="n">partition_parameters</span></div>
+
+
+
+<div class="viewcode-block" id="t1_simple_triangular_partition"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_simple_triangular_partition">[docs]</a><span class="k">def</span> <span class="nf">t1_simple_triangular_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Partitions the dataset features into different fuzzy variables. Parameters are prefixed.</span>
+<span class="sd">    Use it for simple testing and initial solution.</span>
+
+<span class="sd">    :param x: numpy array|pandas dataframe, shape samples x features.</span>
+<span class="sd">    :return: list of fuzzy variables.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">partition_parameters</span> <span class="o">=</span> <span class="n">t1_simple_triangular_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fz_parameter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">partition_parameters</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">fzs</span> <span class="o">=</span> <span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">),</span> <span class="n">partition_parameters</span><span class="p">[</span><span class="n">fz_parameter</span><span class="p">,</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">partition_parameters</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fz_parameter</span><span class="p">),</span> <span class="n">fzs</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="t1_fuzzy_partitions_dataset"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t1_fuzzy_partitions_dataset">[docs]</a><span class="k">def</span> <span class="nf">t1_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_partition</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s1">&#39;trapezoid&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the dataset features into different fuzzy variables. Parameters are prefixed.</span>
 <span class="sd">    Use it for simple testing and initial solution.</span>
@@ -366,7 +470,13 @@
 
     <span class="n">mins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">maxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">fz_memberships</span> <span class="o">=</span> <span class="n">t1_n_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="n">n_partition</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s1">&#39;trapezoid&#39;</span><span class="p">:</span>
+        <span class="n">fz_memberships</span> <span class="o">=</span> <span class="n">t1_n_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="n">n_partition</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+        <span class="n">fz_memberships</span> <span class="o">=</span> <span class="n">t1_n_gaussian_partition_parameters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="n">n_partition</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Shape not recognized&#39;</span><span class="p">)</span>
+    
     <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">fz_parameter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fz_memberships</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="n">fzs</span> <span class="o">=</span> <span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="n">partition_names</span><span class="p">[</span><span class="n">ix</span><span class="p">],</span> <span class="n">fz_memberships</span><span class="p">[</span><span class="n">fz_parameter</span><span class="p">,</span> <span class="n">ix</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span>
@@ -376,10 +486,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-
-<div class="viewcode-block" id="t2_fuzzy_partitions_dataset">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t2_fuzzy_partitions_dataset">[docs]</a>
-<span class="k">def</span> <span class="nf">t2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_partition</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
+<div class="viewcode-block" id="t2_fuzzy_partitions_dataset"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.t2_fuzzy_partitions_dataset">[docs]</a><span class="k">def</span> <span class="nf">t2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_partition</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the dataset features into different fuzzy variables using iv fuzzy sets. Parameters are prefixed.</span>
 <span class="sd">    Use it for simple testing and initial solution.</span>
@@ -414,10 +521,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-
-<div class="viewcode-block" id="gt2_fuzzy_partitions_dataset">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.gt2_fuzzy_partitions_dataset">[docs]</a>
-<span class="k">def</span> <span class="nf">gt2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">resolution_exp</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_partition</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
+<div class="viewcode-block" id="gt2_fuzzy_partitions_dataset"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.gt2_fuzzy_partitions_dataset">[docs]</a><span class="k">def</span> <span class="nf">gt2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">resolution_exp</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_partition</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Partitions the dataset features into different fuzzy variables using gt2 fuzzy sets. Parameters are prefixed.</span>
 <span class="sd">    Use it for simple testing and initial solution.</span>
@@ -460,10 +564,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-
-<div class="viewcode-block" id="construct_partitions">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.construct_partitions">[docs]</a>
-<span class="k">def</span> <span class="nf">construct_partitions</span><span class="p">(</span><span class="n">X</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">fz_type_studied</span><span class="p">:</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">categorical_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
+<div class="viewcode-block" id="construct_partitions"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.construct_partitions">[docs]</a><span class="k">def</span> <span class="nf">construct_partitions</span><span class="p">(</span><span class="n">X</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">fz_type_studied</span><span class="p">:</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">categorical_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of linguistic variables according to the kind of fuzzy specified.</span>
 
@@ -488,14 +589,15 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">X_numerical</span> <span class="o">=</span> <span class="n">X</span>
 
-    <span class="k">if</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
-        <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">t1_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
-        <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">t2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
-        <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">gt2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Fuzzy set type not recognized&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">categorical_mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">categorical_mask</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+            <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">t1_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+            <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">t2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+            <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">gt2_fuzzy_partitions_dataset</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">,</span> <span class="n">n_partitions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Fuzzy set type not recognized&#39;</span><span class="p">)</span>
 
 
     <span class="k">if</span> <span class="n">categorical_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -532,10 +634,76 @@
     <span class="k">return</span> <span class="n">precomputed_partitions</span></div>
 
 
+<span class="k">def</span> <span class="nf">_triangular_construct_partitions</span><span class="p">(</span><span class="n">X</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">fz_type_studied</span><span class="p">:</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">categorical_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of linguistic variables according to the kind of fuzzy specified.</span>
 
-<div class="viewcode-block" id="construct_crisp_categorical_partition">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.construct_crisp_categorical_partition">[docs]</a>
-<span class="k">def</span> <span class="nf">construct_crisp_categorical_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fz_type_studied</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">:</span>
+<span class="sd">    :param X: numpy array|pandas dataframe, shape samples x features.</span>
+<span class="sd">    :param fz_type_studied: fuzzy set type studied.</span>
+<span class="sd">    :param categorial_mask: a boolean mask vector that indicates for each variables if its categorical or not.</span>
+<span class="sd">    :param n_partitions: number of partitions to use in the fuzzy set.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">mnt</span><span class="o">.</span><span class="n">save_usage_flag</span><span class="p">:</span>
+        <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">Funcs</span><span class="p">][</span><span class="s1">&#39;precompute_labels&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">mnt</span><span class="o">.</span><span class="n">usage_data</span><span class="p">[</span><span class="n">mnt</span><span class="o">.</span><span class="n">usage_categories</span><span class="o">.</span><span class="n">FuzzySets</span><span class="p">][</span><span class="n">fz_type_studied</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">feat_names</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">feat_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+    <span class="c1"># Get the X dataframe without the categorical variables</span>
+    <span class="k">if</span> <span class="n">categorical_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">X_numerical</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">categorical_mask</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">X_numerical</span> <span class="o">=</span> <span class="n">X</span>
+
+    <span class="k">if</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
+        <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">t1_simple_triangular_partition</span><span class="p">(</span><span class="n">X_numerical</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Triangular partitions not implemented for t2 fuzzy sets&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fz_type_studied</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Triangular partitions not implemented for gt2 fuzzy sets&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Fuzzy set type not recognized&#39;</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">categorical_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">categorical_partition</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_mask</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">elem</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+                <span class="n">cat_var</span> <span class="o">=</span> <span class="n">construct_crisp_categorical_partition</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)[:,</span> <span class="n">ix</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">fz_type_studied</span><span class="p">)</span>
+
+                <span class="n">categorical_partition</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat_var</span>
+
+        <span class="c1"># Reorder the partitions so that they follow the same order as in the original X</span>
+        <span class="n">precomputed_partitions_aux</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_mask</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">elem</span><span class="p">:</span>
+                <span class="n">precomputed_partitions_aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">categorical_partition</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">precomputed_partitions_aux</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precomputed_partitions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">precomputed_partitions_aux</span>
+
+    
+    <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">partition</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">precomputed_partitions</span><span class="p">):</span>
+        <span class="n">partition</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">feat_names</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">precomputed_partitions</span>
+
+
+<div class="viewcode-block" id="construct_crisp_categorical_partition"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.construct_crisp_categorical_partition">[docs]</a><span class="k">def</span> <span class="nf">construct_crisp_categorical_partition</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fz_type_studied</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Creates a fuzzy variable for a categorical feature. </span>
 
@@ -558,12 +726,9 @@
         <span class="n">fuzzy_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fuzzy_sets</span><span class="p">)</span></div>
-
     
 
-<div class="viewcode-block" id="construct_conditional_frequencies">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.construct_conditional_frequencies">[docs]</a>
-<span class="k">def</span> <span class="nf">construct_conditional_frequencies</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">discrete_time_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">initial_ffss</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">]):</span>
+<div class="viewcode-block" id="construct_conditional_frequencies"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.construct_conditional_frequencies">[docs]</a><span class="k">def</span> <span class="nf">construct_conditional_frequencies</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">discrete_time_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">initial_ffss</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Computes the conditional temporal function for a set of fuzzy sets according to their variation in time.</span>
 
@@ -598,10 +763,7 @@
     <span class="k">return</span> <span class="n">res</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="classify_temp">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.classify_temp">[docs]</a>
-<span class="k">def</span> <span class="nf">classify_temp</span><span class="p">(</span><span class="n">dates</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">cutpoints</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="classify_temp"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.classify_temp">[docs]</a><span class="k">def</span> <span class="nf">classify_temp</span><span class="p">(</span><span class="n">dates</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">cutpoints</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Classifies a set of dates according to the temporal cutpoints. Uses {time} as a the time resolution.</span>
 <span class="sd">    Returns an array where true values are those values contained between those two date points.</span>
@@ -631,10 +793,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">condicion1</span><span class="p">,</span> <span class="n">condicion2</span><span class="p">))</span></div>
 
 
-
-<div class="viewcode-block" id="assign_time">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.assign_time">[docs]</a>
-<span class="k">def</span> <span class="nf">assign_time</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">observations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="assign_time"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.assign_time">[docs]</a><span class="k">def</span> <span class="nf">assign_time</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">observations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Assigns a temporal moment to a set of observations.</span>
 <span class="sd">    </span>
@@ -647,12 +806,9 @@
             <span class="k">return</span> <span class="n">ix</span>
     
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No temporal moment assigned&#39;</span><span class="p">)</span></div>
-
         
 
-<div class="viewcode-block" id="create_tempVariables">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.create_tempVariables">[docs]</a>
-<span class="k">def</span> <span class="nf">create_tempVariables</span><span class="p">(</span><span class="n">X_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">precomputed_partitions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">temporal</span><span class="o">.</span><span class="n">temporalFS</span><span class="p">]:</span>
+<div class="viewcode-block" id="create_tempVariables"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.create_tempVariables">[docs]</a><span class="k">def</span> <span class="nf">create_tempVariables</span><span class="p">(</span><span class="n">X_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">precomputed_partitions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">temporal</span><span class="o">.</span><span class="n">temporalFS</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Creates a list of temporal fuzzy variables.</span>
 
@@ -675,10 +831,7 @@
     <span class="k">return</span> <span class="n">temp_partitions</span></div>
 
 
-
-<div class="viewcode-block" id="create_multi_tempVariables">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.create_multi_tempVariables">[docs]</a>
-<span class="k">def</span> <span class="nf">create_multi_tempVariables</span><span class="p">(</span><span class="n">X_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">fuzzy_type</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">temporal</span><span class="o">.</span><span class="n">temporalFS</span><span class="p">]]:</span>
+<div class="viewcode-block" id="create_multi_tempVariables"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.create_multi_tempVariables">[docs]</a><span class="k">def</span> <span class="nf">create_multi_tempVariables</span><span class="p">(</span><span class="n">X_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">fuzzy_type</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">temporal</span><span class="o">.</span><span class="n">temporalFS</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Creates a of list of lists of temporal fuzzy variables. Each corresponds to a fuzzy partition in a different moment in time.</span>
 <span class="sd">    (So, instead of having one vl for all time moments, you have one different for each time moment that represents the same idea)</span>
@@ -700,10 +853,7 @@
     <span class="k">return</span> <span class="n">temp_partitions</span></div>
 
 
-
-<div class="viewcode-block" id="temporal_cuts">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.temporal_cuts">[docs]</a>
-<span class="k">def</span> <span class="nf">temporal_cuts</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">cutpoints</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">time_resolution</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;hour&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<div class="viewcode-block" id="temporal_cuts"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.temporal_cuts">[docs]</a><span class="k">def</span> <span class="nf">temporal_cuts</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">cutpoints</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">time_resolution</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;hour&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of boolean indexes for each temporal moment. Performs the cuts between time steps using the cutpoints list.</span>
 
@@ -722,10 +872,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-
-<div class="viewcode-block" id="temporal_assemble">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.temporal_assemble">[docs]</a>
-<span class="k">def</span> <span class="nf">temporal_assemble</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">temporal_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]):</span>
+<div class="viewcode-block" id="temporal_assemble"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.temporal_assemble">[docs]</a><span class="k">def</span> <span class="nf">temporal_assemble</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">temporal_moments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Assembles the data in the temporal moments in order to have partitions with balanced time moments in each one.</span>
 <span class="sd">    </span>
@@ -775,10 +922,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span><span class="p">],</span> <span class="p">[</span><span class="n">train_temporal_boolean_markers</span><span class="p">,</span> <span class="n">test_temporal_boolean_markers</span><span class="p">]</span></div>
 
 
-
-<div class="viewcode-block" id="extend_fuzzy_sets_enum">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.extend_fuzzy_sets_enum">[docs]</a>
-<span class="k">def</span> <span class="nf">extend_fuzzy_sets_enum</span><span class="p">(</span><span class="n">new_fuzzy_sets_enum</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">]:</span>
+<div class="viewcode-block" id="extend_fuzzy_sets_enum"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.extend_fuzzy_sets_enum">[docs]</a><span class="k">def</span> <span class="nf">extend_fuzzy_sets_enum</span><span class="p">(</span><span class="n">new_fuzzy_sets_enum</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Extends the fuzzy sets enum with additional types.</span>
 
@@ -793,10 +937,7 @@
     <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span> <span class="o">=</span> <span class="n">NEW_FUZZY_SETS</span></div>
 
 
-
-<div class="viewcode-block" id="mcc_loss">
-<a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.mcc_loss">[docs]</a>
-<span class="k">def</span> <span class="nf">mcc_loss</span><span class="p">(</span><span class="n">ruleBase</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="mcc_loss"><a class="viewcode-back" href="../../function_resume/utils.html#ex_fuzzy.utils.mcc_loss">[docs]</a><span class="k">def</span> <span class="nf">mcc_loss</span><span class="p">(</span><span class="n">ruleBase</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Fitness function for the optimization problem. Uses only the MCC, ignores the size penalization terms.</span>
@@ -817,7 +958,6 @@
         <span class="n">score_acc</span> <span class="o">=</span> <span class="n">ev_object</span><span class="o">.</span><span class="n">classification_eval</span><span class="p">()</span>
         
         <span class="k">return</span> <span class="n">score_acc</span></div>
-
 </pre></div>
 
            </div>

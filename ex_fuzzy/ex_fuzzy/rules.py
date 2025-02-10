@@ -1472,7 +1472,7 @@ def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results:
             p_value_bootstrap = rule.boot_p_value
 
             pbs = format_p_value(p_value_bootstrap)
-            str_rule += 'Membership Validation: ' + pbs
+            str_rule += ' Membership Validation: ' + pbs
             str_rule += ')'
 
             str_rule += ' Confidence Interval: ' + str(rule.boot_confidence_interval)
