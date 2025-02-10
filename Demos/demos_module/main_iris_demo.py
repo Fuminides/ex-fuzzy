@@ -54,6 +54,7 @@ class_names = iris.target_names
 # Compute the fuzzy partitions using n linguistic variables
 precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl)
 
+
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 

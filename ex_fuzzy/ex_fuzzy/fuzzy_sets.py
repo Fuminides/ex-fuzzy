@@ -77,7 +77,7 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
 
 
 
-def __gaussian2(x, params: list[float]) -> np.array:
+def _gaussian2(x, params: list[float]) -> np.array:
     '''
     Gaussian membership functions.
 
@@ -85,8 +85,8 @@ def __gaussian2(x, params: list[float]) -> np.array:
     :param amplitude: real number.
     :param standard_deviation: std of the gaussian function.
     '''
-    mean, amplitude, standard_deviation = params
-    return amplitude * np.exp(- ((x - mean) / standard_deviation) ** 2)
+    mean, standard_deviation = params
+    return np.exp(- ((x - mean) / standard_deviation) ** 2)
 
 
 class FS():
@@ -146,6 +146,15 @@ class FS():
         :return: string.
         '''
         return f'{self.name} ({self.type().name}) - {self.membership_parameters}'
+    
+
+    def shape(self) -> str:
+        '''
+        Returns the shape of the fuzzy set.
+
+        :return: string.
+        '''
+        return 'trapezoid'
 
 
 
@@ -201,10 +210,20 @@ class categoricalFS(FS):
         :return: string.
         '''
         return f'Categorical set: {self.name}, type 1 output'
+    
+
+    def shape(self) -> str:
+        '''
+        Returns the shape of the fuzzy set.
+
+        :return: string.
+        '''
+        return 'categorical'
 
 
 class IVFS(FS):
     '''
+
     Class to define a iv fuzzy set.
     '''
 
@@ -333,6 +352,14 @@ class categoricalIVFS(IVFS):
         '''
         return f'Categorical set: {self.name}, type 2 output'
     
+
+    def shape(self) -> str:
+        '''
+        Returns the shape of the fuzzy set.
+
+        :return: string.
+        '''
+        return 'categorical'
 
 
 class GT2(FS):
@@ -472,8 +499,8 @@ class gaussianIVFS(IVFS):
         :param input: input values in the fuzzy set referencial domain.
         :return: np array samples x 2
         '''
-        lower = __gaussian2(input, self.secondMF_lower)
-        upper = __gaussian2(input, self.secondMF_upper)
+        lower = _gaussian2(input, self.secondMF_lower)
+        upper = _gaussian2(input, self.secondMF_upper)
 
         return np.array(np.concatenate([lower, upper])).T
 
@@ -483,6 +510,15 @@ class gaussianIVFS(IVFS):
         Returns the type of the fuzzy set. (t1)
         '''
         return FUZZY_SETS.t2
+
+
+    def shape(self) -> str:
+        '''
+        Returns the shape of the fuzzy set.
+
+        :return: string.
+        '''
+        return 'gaussian'
     
 
 class gaussianFS(FS):
@@ -497,7 +533,7 @@ class gaussianFS(FS):
         :param input: input values in the fuzzy set referencial domain.
         :return: np array samples
         '''
-        return __gaussian2(input, self.membership_parameters)
+        return _gaussian2(input, self.membership_parameters)
 
 
     def type(self) -> FUZZY_SETS:
@@ -505,6 +541,15 @@ class gaussianFS(FS):
         Returns the type of the fuzzy set. (t1)
         '''
         return FUZZY_SETS.t1
+    
+    
+    def shape(self) -> str:
+        '''
+        Returns the shape of the fuzzy set.
+
+        :return: string.
+        '''
+        return 'gaussian'
 
 
 class fuzzyVariable():

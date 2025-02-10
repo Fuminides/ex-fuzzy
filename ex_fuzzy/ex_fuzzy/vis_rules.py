@@ -245,19 +245,33 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         fig = plt.figure()
         ax = plt.axes(projection='3d')
 
-    memberships = [0, 1, 1, 0]
+    unit_resolution = 0.01
+    unit_range_sampled = np.arange(
+            0, 1 + unit_resolution, unit_resolution)
 
     colors = ['b', 'r', 'g', 'orange', 'purple']
     for ix, fuzzy_set in enumerate(fuzzy_variable.linguistic_variables):
         name = fuzzy_set.name
         initiated = False
         fz_studied =  fuzzy_set.type()
+        domain_sampled = unit_range_sampled * (fuzzy_set.domain[1] - fuzzy_set.domain[0]) + fuzzy_set.domain[0]
+        if fuzzy_set.shape() == 'gaussian':
+            memberships = fuzzy_set.membership(domain_sampled)
+        else:
+            memberships = [0, 1, 1, 0]
+
 
         if  fz_studied == fs.FUZZY_SETS.t1:
             try:
-                ax.plot(fuzzy_set.membership_parameters,
-                        memberships, colors[ix % len(colors)], label=name)
-                ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
+                if fuzzy_set.shape() == 'gaussian':
+                    ax.plot(unit_range_sampled,
+                            memberships, colors[ix % len(colors)], label=name)
+                    ax.fill_between(unit_range_sampled, memberships, alpha=0.3)
+                elif fuzzy_set.shape() == 'trapezoid':
+                    ax.plot(fuzzy_set.membership_parameters,
+                            memberships, colors[ix % len(colors)], label=name)
+                    ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
+
             except AttributeError:
                 print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
 

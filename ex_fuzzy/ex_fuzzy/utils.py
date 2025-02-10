@@ -193,13 +193,13 @@ def t1_n_gaussian_partition_parameters(x: np.array, n_partitions: int) -> np.arr
     for partition in range(n_partitions):
         if partition == 0:  # First partition
             # Center at first interior quantile
-            partition_parameters[:, partition, 0] = quantile_numbers[1, :]  # mean
+            partition_parameters[:, partition, 0] = quantile_numbers[0, :]  # mean
             # Spread based on distance to next quantile
             partition_parameters[:, partition, 1] = (quantile_numbers[2, :] - quantile_numbers[0, :]) / 2  # std
             
         elif partition == n_partitions - 1:  # Last partition
             # Center at last interior quantile
-            partition_parameters[:, partition, 0] = quantile_numbers[-2, :]  # mean
+            partition_parameters[:, partition, 0] = quantile_numbers[-1, :]  # mean
             # Spread based on distance to previous quantile
             partition_parameters[:, partition, 1] = (quantile_numbers[-1, :] - quantile_numbers[-3, :]) / 2  # std
             
@@ -390,13 +390,18 @@ def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3, shape='trapezoid') 
     elif shape == 'gaussian':
         fz_memberships = t1_n_gaussian_partition_parameters(x, n_partitions=n_partition)
     else:
-        raise ValueError('Shape not recognized')
+        raise ValueError('Shape not recognized, it must be either trapezoid or gaussian')
     
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
-        fzs = [fs.FS(partition_names[ix], fz_memberships[fz_parameter, ix, :], [
-                     mins[fz_parameter], maxs[fz_parameter]]) for ix in range(fz_memberships.shape[1])]
+        if shape == 'trapezoid':
+            fzs = [fs.FS(partition_names[ix], fz_memberships[fz_parameter, ix, :], [
+                         mins[fz_parameter], maxs[fz_parameter]]) for ix in range(fz_memberships.shape[1])]
+        elif shape == 'gaussian':
+            fzs = [fs.gaussianFS(partition_names[ix], fz_memberships[fz_parameter, ix, :], [
+                         mins[fz_parameter], maxs[fz_parameter]]) for ix in range(fz_memberships.shape[1])]
         res.append(fs.fuzzyVariable(fv_names[fz_parameter], fzs))
+
 
     return res
 
@@ -479,7 +484,7 @@ def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=2, n_partition
     return res
 
 
-def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3) -> list[fs.fuzzyVariable]:
+def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3, shape='trapezoid') -> list[fs.fuzzyVariable]:
     '''
     Returns a list of linguistic variables according to the kind of fuzzy specified.
 
@@ -506,12 +511,13 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
 
     if categorical_mask is None or sum(np.logical_not(categorical_mask)) > 0: 
         if fz_type_studied == fs.FUZZY_SETS.t1:
-            precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical, n_partitions)
+            precomputed_partitions = t1_fuzzy_partitions_dataset(X_numerical, n_partitions, shape)
         elif fz_type_studied == fs.FUZZY_SETS.t2:
-            precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions)
+            precomputed_partitions = t2_fuzzy_partitions_dataset(X_numerical, n_partitions, shape)
         elif fz_type_studied == fs.FUZZY_SETS.gt2:
-            precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions)
+            precomputed_partitions = gt2_fuzzy_partitions_dataset(X_numerical, n_partitions, shape)
         else:
+
             raise ValueError('Fuzzy set type not recognized')
 
 
