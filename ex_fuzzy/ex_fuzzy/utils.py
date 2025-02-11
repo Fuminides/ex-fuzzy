@@ -385,16 +385,22 @@ def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3, shape='trapezoid') 
 
     mins = np.min(x, axis=0)
     maxs = np.max(x, axis=0)
+
     if shape == 'trapezoid':
         fz_memberships = t1_n_partition_parameters(x, n_partitions=n_partition)
     elif shape == 'gaussian':
         fz_memberships = t1_n_gaussian_partition_parameters(x, n_partitions=n_partition)
+    elif shape == 'triangular':
+        if n_partition == 3:
+            fz_memberships = t1_simple_triangular_partition_parameters(x)
+        else:
+            raise ValueError('Triangular partitions must be 3')
     else:
-        raise ValueError('Shape not recognized, it must be either trapezoid or gaussian')
+        raise ValueError('Shape not recognized, it must be either trapezoid, gaussian, or triangular')
     
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
-        if shape == 'trapezoid':
+        if shape == 'trapezoid' or shape == 'triangular':
             fzs = [fs.FS(partition_names[ix], fz_memberships[fz_parameter, ix, :], [
                          mins[fz_parameter], maxs[fz_parameter]]) for ix in range(fz_memberships.shape[1])]
         elif shape == 'gaussian':
