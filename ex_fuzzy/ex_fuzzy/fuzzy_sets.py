@@ -157,6 +157,13 @@ class FS():
         return 'trapezoid'
 
 
+class triangularFS(FS):
+    def __init__(self, name: str, membership_parameters: list[float], domain: list[float]) -> None:
+        super().__init__(name, membership_parameters, domain)
+
+    def shape(self) -> str:
+        return 'triangular'
+
 
 class categoricalFS(FS):
 
