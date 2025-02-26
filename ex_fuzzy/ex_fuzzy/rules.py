@@ -1181,7 +1181,10 @@ class MasterRuleBase():
                 else:
                     res[ix] = -1
 
-        return np.array(res), winning_rules, winning_association_degrees, winning_rule_confidence_intervals * winning_association_degrees.reshape(len(winning_association_degrees),1)
+        if len(winning_association_degrees.shape) == 1:
+            winning_association_degrees = winning_association_degrees[:, None]
+
+        return np.array(res), winning_rules, winning_association_degrees, np.array(winning_rule_confidence_intervals) * winning_association_degrees
 
 
 

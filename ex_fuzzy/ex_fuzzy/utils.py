@@ -259,48 +259,49 @@ def t2_n_partition_parameters(x, n_partitions):
     '''
     trap_memberships_size = 4
     n_variables = x.shape[1]
-    quantile_numbers = compute_quantiles(x, n_partitions)
+    quantile_numbers = compute_quantiles(x, 4 + (n_partitions-2) * 2)
     
     # Initialize the array for partition parameters
     partition_parameters = np.zeros((n_variables, n_partitions, trap_memberships_size, 2))
 
+
     for partition in range(n_partitions):
         if partition == 0:  # First partition
-            partition_parameters[:, partition, 0, 1] = quantile_numbers[0]
-            partition_parameters[:, partition, 1, 1] = quantile_numbers[0]
-            partition_parameters[:, partition, 2, 1] = quantile_numbers[1]
-            partition_parameters[:, partition, 3, 1] = quantile_numbers[2]
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[0, :]
+            partition_parameters[:, partition, 0, 1] = quantile_numbers[0, :]
 
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[0]
-            partition_parameters[:, partition, 1, 0] = quantile_numbers[0]
-            partition_parameters[:, partition, 2, 0] = quantile_numbers[1]
-            partition_parameters[:, partition, 3, 0] = quantile_numbers[1] + \
-                0.9 * (quantile_numbers[2] - quantile_numbers[1])
-            
+            partition_parameters[:, partition, 1, 0] = quantile_numbers[0, :]
+            partition_parameters[:, partition, 1, 1] = quantile_numbers[0, :]
+
+            partition_parameters[:, partition, 2, 0] = quantile_numbers[1, :]
+            partition_parameters[:, partition, 2, 1] = quantile_numbers[1, :]
+
+            partition_parameters[:, partition, 3, 0] = quantile_numbers[2, :] - (quantile_numbers[2, :] - quantile_numbers[1, :]) / 2
+            partition_parameters[:, partition, 3, 1] = quantile_numbers[2, :]
         elif partition == n_partitions - 1:  # Last partition
-            partition_parameters[:, partition, 0, 1] = quantile_numbers[partition]
-            partition_parameters[:, partition, 1, 1] = quantile_numbers[partition + 1]
-            partition_parameters[:, partition, 2, 1] = quantile_numbers[partition + 2]
-            partition_parameters[:, partition, 3, 1] = quantile_numbers[partition + 2]
+            partition_parameters[:, partition, 0, 1] = quantile_numbers[-3, :]
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[-3, :] + (quantile_numbers[-2, :] - quantile_numbers[-3, :]) / 2
 
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[partition] + \
-                0.1 * (quantile_numbers[partition + 1] - quantile_numbers[partition])
-            partition_parameters[:, partition, 1, 0] = quantile_numbers[partition + 1]
-            partition_parameters[:, partition, 2, 0] = quantile_numbers[partition + 2]
-            partition_parameters[:, partition, 3, 0] = quantile_numbers[partition + 2]
+            partition_parameters[:, partition, 1, 0] = quantile_numbers[-2, :]
+            partition_parameters[:, partition, 1, 1] = quantile_numbers[-2, :]
 
+            partition_parameters[:, partition, 2, 0] = quantile_numbers[-1, :]
+            partition_parameters[:, partition, 2, 1] = quantile_numbers[-1, :]
+
+            partition_parameters[:, partition, 3, 0] = quantile_numbers[-1, :]
+            partition_parameters[:, partition, 3, 1] = quantile_numbers[-1, :]
         else:  # Intermediate partitions
-            partition_parameters[:, partition, 0, 1] = quantile_numbers[partition, :] 
-            partition_parameters[:, partition, 1, 1] = (quantile_numbers[partition, :] + quantile_numbers[partition + 1, :] ) / 2
-            partition_parameters[:, partition, 2, 1] = (quantile_numbers[partition + 1, :] + quantile_numbers[partition + 2, :] ) / 2
-            partition_parameters[:, partition, 3, 1] = quantile_numbers[partition + 2, :]
+            partition_parameters[:, partition, 0, 1] = quantile_numbers[1 + 2*(partition-1), :]
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[1 + 2*(partition-1), :] + (quantile_numbers[1 + 2*(partition-1) + 2, :] - quantile_numbers[1 + 2*(partition-1), :]) / 2
 
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[partition] + \
-                0.1 * (quantile_numbers[partition + 1] - quantile_numbers[partition])
-            partition_parameters[:, partition, 1, 0] = (quantile_numbers[partition, :] + quantile_numbers[partition + 1, :] ) / 2
-            partition_parameters[:, partition, 2, 0] = (quantile_numbers[partition + 1, :] + quantile_numbers[partition + 2, :] ) / 2
-            partition_parameters[:, partition, 3, 0] = ((quantile_numbers[partition + 1, :] + quantile_numbers[partition + 2, :] ) / 2) + \
-                0.9 * (quantile_numbers[partition + 2] - ((quantile_numbers[partition + 1, :] + quantile_numbers[partition + 2, :] ) / 2))
+            partition_parameters[:, partition, 1, 0] = quantile_numbers[1 + 2*(partition-1) + 1, :]
+            partition_parameters[:, partition, 1, 1] = quantile_numbers[1 + 2*(partition-1) + 1, :]
+
+            partition_parameters[:, partition, 2, 0] = quantile_numbers[1 + 2*(partition-1) + 2, :]
+            partition_parameters[:, partition, 2, 1] = quantile_numbers[1 + 2*(partition-1) + 2, :]
+
+            partition_parameters[:, partition, 3, 0] = quantile_numbers[1 + 2*(partition-1) + 3, :] - (quantile_numbers[1 + 2*(partition-1) + 3, :] - quantile_numbers[1 + 2*(partition-1) + 2, :]) / 2
+            partition_parameters[:, partition, 3, 1] = quantile_numbers[1 + 2*(partition-1) + 3, :]
 
     return partition_parameters
 

@@ -103,7 +103,6 @@ class evalRuleBase():
             antecedent_memberships = self.mrule_base.compute_firing_strenghts(
                 data_X, self.time_moments)
 
-
         patterns = self._get_all_rules()
 
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t1:
@@ -112,14 +111,17 @@ class evalRuleBase():
             res = np.zeros((len(patterns), 2))
         elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
             res = np.zeros((len(patterns), 2))
+
         consequents = self.mrule_base.get_consequents()
         for ix, pattern in enumerate(patterns):
             consequent_match = np.equal(data_y, consequents[ix])
+            try:
+                consequent_match = np.array(consequent_match, dtype=int)
+            except:
+                pass
             pattern_firing_strength = antecedent_memberships[:, ix]
-
-
             
-            res[ix] = np.mean(pattern_firing_strength * consequent_match)
+            res[ix] = np.mean(pattern_firing_strength * consequent_match.reshape(-1, 1))
             
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
             res = np.mean(res, axis=1)
@@ -214,8 +216,6 @@ class evalRuleBase():
             pattern_firing_strength = antecedent_memberships[:, ix]
             dem = np.sum(pattern_firing_strength)
             if dem == 0:
-
-
                 res[ix] = 0
             else:
                 res[ix] = np.sum(
