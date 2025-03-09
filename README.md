@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/74380868-0bee-4251-b09c-57e8ad65f2e5" width="200" height="200">
+</p>
+
+
 # Ex-Fuzzy
 ex-Fuzzy is a fuzzy toolbox library for Python with special focus in its accesibility to use and visualization of results. In this way, we focus on the ex(-Fuzzy)plainable capacities of approximate reasoning.
 
