@@ -1036,7 +1036,10 @@ class MasterRuleBase():
 
         res = [x for x in res if len(x) > 0]
         
-        return np.concatenate(res, axis=0)
+        try:
+            return np.concatenate(res, axis=0)
+        except ValueError:
+            return np.array([])
 
 
     def compute_firing_strenghts(self, X, precomputed_truth=None) -> np.array:
