@@ -14,3 +14,5 @@ iris_partitions.txt
 .vscode/settings.json
 *.gz
 test_data_set.csv
+Demos/demos_module/Classification_debug.py
+Demos/demos_module/Processed_csv.csv
