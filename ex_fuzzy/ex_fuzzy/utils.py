@@ -292,7 +292,7 @@ def t2_n_partition_parameters(x, n_partitions):
             partition_parameters[:, partition, 3, 1] = quantile_numbers[-1, :]
         else:  # Intermediate partitions
             partition_parameters[:, partition, 0, 1] = quantile_numbers[1 + 2*(partition-1), :]
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[1 + 2*(partition-1), :] + (quantile_numbers[1 + 2*(partition-1) + 2, :] - quantile_numbers[1 + 2*(partition-1), :]) / 2
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[1 + 2*(partition-1), :] + (quantile_numbers[1 + 2*(partition-1) + 1, :] - quantile_numbers[1 + 2*(partition-1), :]) / 2
 
             partition_parameters[:, partition, 1, 0] = quantile_numbers[1 + 2*(partition-1) + 1, :]
             partition_parameters[:, partition, 1, 1] = quantile_numbers[1 + 2*(partition-1) + 1, :]
@@ -652,7 +652,7 @@ def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studie
         if fz_type_studied == fs.FUZZY_SETS.t1:
             aux = fs.categoricalFS(str(value), value)
         elif fz_type_studied == fs.FUZZY_SETS.t2 or fz_type_studied == fs.FUZZY_SETS.gt2:
-            aux = fs.categoricalIVFS(str(value), np.unique(x))
+            aux = fs.categoricalIVFS(str(value), value)
 
         fuzzy_sets.append(aux)
 

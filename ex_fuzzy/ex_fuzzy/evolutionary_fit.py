@@ -329,6 +329,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         '''
         return self.rule_base.explainable_predict(X, out_class_names=out_class_names)
 
+
     def forward(self, X: np.array, out_class_names=False) -> np.array:
         '''
 

@@ -568,6 +568,7 @@ class RuleBase():
                 except AttributeError:
                     if score < tolerance:
                         delete_list.append(ix)
+                        
         except AttributeError:
             assert False, 'Dominance scores not computed for this rulebase'
 
