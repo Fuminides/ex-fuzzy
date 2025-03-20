@@ -236,111 +236,137 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
     :param fuzzy_variable: a fuzzy variable from the fuzzyVariable class in fuzzy_set module.
     :return: None
     '''
-    if mnt.save_usage_flag:
-        mnt.usage_data[mnt.usage_categories.Visualization]['plot_fuzzy_variable'] += 1
-
-    if fuzzy_variable.linguistic_variables[0].type() != fs.FUZZY_SETS.gt2:
-        fig, ax = plt.subplots()
-    else:
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-
-    unit_resolution = 0.01
-    unit_range_sampled = np.arange(
-            0, 1 + unit_resolution, unit_resolution)
-
-    colors = ['b', 'r', 'g', 'orange', 'purple']
-    for ix, fuzzy_set in enumerate(fuzzy_variable.linguistic_variables):
-        name = fuzzy_set.name
-        initiated = False
-        fz_studied =  fuzzy_set.type()
-        domain_sampled = unit_range_sampled * (fuzzy_set.domain[1] - fuzzy_set.domain[0]) + fuzzy_set.domain[0]
-        if fuzzy_set.shape() == 'gaussian':
-            memberships = fuzzy_set.membership(domain_sampled)
-        else:
-            memberships = [0, 1, 1, 0]
-
-
-        if  fz_studied == fs.FUZZY_SETS.t1:
-            try:
-                if fuzzy_set.shape() == 'gaussian':
-                    ax.plot(unit_range_sampled,
-                            memberships, colors[ix % len(colors)], label=name)
-                    ax.fill_between(unit_range_sampled, memberships, alpha=0.3)
-                elif fuzzy_set.shape() == 'trapezoid':
-                    ax.plot(fuzzy_set.membership_parameters,
-                            memberships, colors[ix % len(colors)], label=name)
-                    ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
-
-            except AttributeError:
-                print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
-
-            # Optionally, add text annotations at the center of the membership function
-            #center_x = np.mean(fuzzy_set.membership_parameters)
-            #ax.annotate(name, xy=(center_x *1, 0.5), xytext=(center_x *0.85, 0.6),
-            #            fontsize=10, arrowprops=dict(facecolor='black', shrink=0.05))
-
-        elif fz_studied == fs.FUZZY_SETS.t2:
-            try:
-                ax.plot(fuzzy_set.secondMF_lower, np.array(memberships) * fuzzy_set.lower_height, 'black')
-                ax.plot(fuzzy_set.secondMF_upper, np.array(memberships), 'black')
-
-                # Compute the memberships for the lower/upper membership points. We do it in this way because non-exact 0/1s give problems.
-                x_lower = fuzzy_set.secondMF_lower
-                x_lower_lmemberships = [0.0 ,fuzzy_set.lower_height ,fuzzy_set.lower_height, 0.0] 
-                x_lower_umemberships = [fuzzy_set(x_lower[0])[1] , 1.0, 1.0 , fuzzy_set(x_lower[3])[1]]
-
-                x_upper = fuzzy_set.secondMF_upper
-                x_upper_lmemberships  = [0.0 , fuzzy_set(x_upper[1])[0], fuzzy_set(x_upper[2])[0], 0.0] 
-                x_upper_umemberships  = [0.0 ,1.0 ,1.0, 0.0] 
-
-                x_values = list(x_lower) + list(x_upper)
-                lmembership_values = list(x_lower_lmemberships) + list(x_upper_lmemberships)
-                umembership_values = list(x_lower_umemberships) + list(x_upper_umemberships)
-                aux_df = pd.DataFrame(zip(x_values, lmembership_values, umembership_values),  columns=['x', 'l', 'u'])
-                
-
-                if len(aux_df['x']) != len(set(aux_df['x'])): # There are repeated elements, so we use an order that should work in this case
-                    # u0 l0 u1 l1 l2 u2 l3 u3
-                    x = list((x_upper[0], x_lower[0], x_upper[1], x_lower[1], x_lower[2], x_upper[2], x_lower[3], x_upper[3]))
-                    l_memberships = list((x_upper_lmemberships[0], x_lower_lmemberships[0], x_upper_lmemberships[1], x_lower_lmemberships[1], x_lower_lmemberships[2], x_upper_lmemberships[2], x_lower_lmemberships[3], x_upper_lmemberships[3]))
-                    u_memberships = list((x_upper_umemberships[0], x_lower_umemberships[0], x_upper_umemberships[1], x_lower_umemberships[1], x_lower_umemberships[2], x_upper_umemberships[2], x_lower_umemberships[3], x_upper_umemberships[3]))
-
-                    ax.fill_between(x, l_memberships, u_memberships, color=colors[ix], alpha=0.5, label=name)
-                else:
-                    aux_df.sort_values('x', inplace=True)
-                    ax.fill_between(aux_df['x'], aux_df['l'], aux_df['u'], color=colors[ix], alpha=0.5, label=name)
-            except AttributeError:
-                print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
-        elif fz_studied == fs.FUZZY_SETS.gt2:
-            for key, value in fuzzy_set.secondary_memberships.items():
-                
-                gt2_memberships = value(fuzzy_set.sample_unit_domain)
-                key_plot = [float(key)]*sum(gt2_memberships > 0)
-                if initiated:
-                    ax.plot(key_plot, fuzzy_set.sample_unit_domain[gt2_memberships > 0], gt2_memberships[gt2_memberships > 0], color=colors[ix])
-                else:
-                    ax.plot(key_plot,  fuzzy_set.sample_unit_domain[gt2_memberships > 0], gt2_memberships[gt2_memberships > 0], color=colors[ix], label=name)
-                    initiated = True
-
-        
-    # Enhance the overall style
-    plt.legend(bbox_to_anchor=(1.05, 1))
-    ax.set_ylabel('Membership degree', fontsize=12)
-    ax.grid(True, linestyle='--', alpha=0.7)
-    ax.set_ylim(0, 1.1)
-    plt.style.use('seaborn-v0_8-whitegrid')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_position(('outward', 10))
-    ax.spines['bottom'].set_position(('outward', 10))
+    fz_studied =  fuzzy_variable.linguistic_variables[0].type()
+    set_shape = fuzzy_variable.linguistic_variables[0].shape()
     
-    if fuzzy_variable.units is not None:
-        ax.set_xlabel(fuzzy_variable.units, fontsize=12)
-    plt.tight_layout()
-    plt.subplots_adjust(top=0.85)  # Add space for the title
-    plt.title(fuzzy_variable.name, fontsize=16, fontweight='bold')
-    fig.show()
+    if set_shape != 'categorical':
+        import matplotlib.pyplot as plt
+        if fuzzy_variable.linguistic_variables[0].type() != fs.FUZZY_SETS.gt2:
+            fig, ax = plt.subplots()
+        else:
+            fig = plt.figure()
+            ax = plt.axes(projection='3d')
+
+        unit_resolution = 0.01
+        unit_range_sampled = np.arange(
+                0, 1 + unit_resolution, unit_resolution)
+
+        colors = ['b', 'r', 'g', 'orange', 'purple']
+
+        for ix, fuzzy_set in enumerate(fuzzy_variable.linguistic_variables):
+            name = fuzzy_set.name        
+            initiated = False
+            domain_sampled = unit_range_sampled * (fuzzy_set.domain[1] - fuzzy_set.domain[0]) + fuzzy_set.domain[0]
+            if fuzzy_set.shape() == 'gaussian':
+                memberships = fuzzy_set.membership(domain_sampled)
+            else:
+                memberships = [0, 1, 1, 0]
+
+
+            if  fz_studied == fs.FUZZY_SETS.t1:
+                try:
+                    if fuzzy_set.shape() == 'gaussian':
+                        ax.plot(unit_range_sampled,
+                                memberships, colors[ix % len(colors)], label=name)
+                        ax.fill_between(unit_range_sampled, memberships, alpha=0.3)
+                    elif fuzzy_set.shape() == 'trapezoid':
+                        ax.plot(fuzzy_set.membership_parameters,
+                                memberships, colors[ix % len(colors)], label=name)
+                        ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)
+
+                except AttributeError:
+                    print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
+
+                # Optionally, add text annotations at the center of the membership function
+                #center_x = np.mean(fuzzy_set.membership_parameters)
+                #ax.annotate(name, xy=(center_x *1, 0.5), xytext=(center_x *0.85, 0.6),
+                #            fontsize=10, arrowprops=dict(facecolor='black', shrink=0.05))
+
+            elif fz_studied == fs.FUZZY_SETS.t2:
+                try:
+                    ax.plot(fuzzy_set.secondMF_lower, np.array(memberships) * fuzzy_set.lower_height, 'black')
+                    ax.plot(fuzzy_set.secondMF_upper, np.array(memberships), 'black')
+
+                    # Compute the memberships for the lower/upper membership points. We do it in this way because non-exact 0/1s give problems.
+                    x_lower = fuzzy_set.secondMF_lower
+                    x_lower_lmemberships = [0.0 ,fuzzy_set.lower_height ,fuzzy_set.lower_height, 0.0] 
+                    x_lower_umemberships = [fuzzy_set(x_lower[0])[1] , 1.0, 1.0 , fuzzy_set(x_lower[3])[1]]
+
+                    x_upper = fuzzy_set.secondMF_upper
+                    x_upper_lmemberships  = [0.0 , fuzzy_set(x_upper[1])[0], fuzzy_set(x_upper[2])[0], 0.0] 
+                    x_upper_umemberships  = [0.0 ,1.0 ,1.0, 0.0] 
+
+                    x_values = list(x_lower) + list(x_upper)
+                    lmembership_values = list(x_lower_lmemberships) + list(x_upper_lmemberships)
+                    umembership_values = list(x_lower_umemberships) + list(x_upper_umemberships)
+                    aux_df = pd.DataFrame(zip(x_values, lmembership_values, umembership_values),  columns=['x', 'l', 'u'])
+                    
+
+                    if len(aux_df['x']) != len(set(aux_df['x'])): # There are repeated elements, so we use an order that should work in this case
+                        # u0 l0 u1 l1 l2 u2 l3 u3
+                        x = list((x_upper[0], x_lower[0], x_upper[1], x_lower[1], x_lower[2], x_upper[2], x_lower[3], x_upper[3]))
+                        l_memberships = list((x_upper_lmemberships[0], x_lower_lmemberships[0], x_upper_lmemberships[1], x_lower_lmemberships[1], x_lower_lmemberships[2], x_upper_lmemberships[2], x_lower_lmemberships[3], x_upper_lmemberships[3]))
+                        u_memberships = list((x_upper_umemberships[0], x_lower_umemberships[0], x_upper_umemberships[1], x_lower_umemberships[1], x_lower_umemberships[2], x_upper_umemberships[2], x_lower_umemberships[3], x_upper_umemberships[3]))
+
+                        ax.fill_between(x, l_memberships, u_memberships, color=colors[ix], alpha=0.5, label=name)
+                    else:
+                        aux_df.sort_values('x', inplace=True)
+                        ax.fill_between(aux_df['x'], aux_df['l'], aux_df['u'], color=colors[ix], alpha=0.5, label=name)
+                except AttributeError:
+                    print('Error in the visualization of the fuzzy set: "' + name + '", probably because the fuzzy set is not a trapezoidal fuzzy set.')
+            elif fz_studied == fs.FUZZY_SETS.gt2:
+                for key, value in fuzzy_set.secondary_memberships.items():
+                    
+                    gt2_memberships = value(fuzzy_set.sample_unit_domain)
+                    key_plot = [float(key)]*sum(gt2_memberships > 0)
+                    if initiated:
+                        ax.plot(key_plot, fuzzy_set.sample_unit_domain[gt2_memberships > 0], gt2_memberships[gt2_memberships > 0], color=colors[ix])
+                    else:
+                        ax.plot(key_plot,  fuzzy_set.sample_unit_domain[gt2_memberships > 0], gt2_memberships[gt2_memberships > 0], color=colors[ix], label=name)
+                        initiated = True
+        
+        # Enhance the overall style
+        plt.legend(bbox_to_anchor=(1.05, 1))
+        ax.set_ylabel('Membership degree', fontsize=12)
+        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.set_ylim(0, 1.1)
+        plt.style.use('seaborn-v0_8-whitegrid')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_position(('outward', 10))
+        ax.spines['bottom'].set_position(('outward', 10))
+        
+        if fuzzy_variable.units is not None:
+            ax.set_xlabel(fuzzy_variable.units, fontsize=12)
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.85)  # Add space for the title
+        plt.title(fuzzy_variable.name, fontsize=16, fontweight='bold')
+        fig.show()
+    else:
+        import seaborn as sns
+        import matplotlib.pyplot as plt
+
+        # Sample data
+        categories = [fuzzy_set.name for fuzzy_set in fuzzy_variable.linguistic_variables]
+
+        # Create a table
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.axis('off')  # Hide axes
+        table = ax.table(cellText=[[cat] for cat in categories], loc='center', cellLoc='center', colLabels=['Categories'])
+
+        # Style the table
+        table.auto_set_font_size(False)
+        table.set_fontsize(14)
+        table.scale(1, 2)  # Scale cell sizes
+
+        # Show the name of the fuzzy variable
+        plt.title(fuzzy_variable.name, fontsize=16, fontweight='bold')
+        
+        # Show plot
+        plt.tight_layout()
+        plt.show()
+        
+    
 
 
 def matrix_rule_base_form(rule_base: rules.Rule) -> pd.DataFrame:

@@ -39,7 +39,7 @@ class evalRuleBase():
 
         self.precomputed_truth = precomputed_truth
 
-        if isinstance(y[0], str):
+        if isinstance(np.array(y)[0], str):
             consequents_names = self.mrule_base.get_consequents_names()
             self.y = np.array([list(consequents_names).index(str(y)) for y in y])
 
