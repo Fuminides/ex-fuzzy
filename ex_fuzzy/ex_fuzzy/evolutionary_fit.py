@@ -725,6 +725,10 @@ class FitRuleBase(Problem):
         else:
             self.n_classes = len(np.unique(y))
 
+        if categorical_mask is None:
+            self.categorical_mask = np.zeros(X.shape[1])
+            categorical_mask = self.categorical_mask
+
         if linguistic_variables is not None:
             self._init_precomputed_vl(linguistic_variables, X)
         else:
@@ -766,7 +770,6 @@ class FitRuleBase(Problem):
         aux_counter = len(vars_antecedent)
 
         if self.lvs is None:
-
             self.feature_domain_bounds = np.array(
                 [[0, 99] for ix in range(self.X.shape[1])])
             if self.fuzzy_type == fs.FUZZY_SETS.t1:
@@ -980,8 +983,6 @@ class FitRuleBase(Problem):
             sixth_pointer = fifth_pointer + self.nRules
         else:
             sixth_pointer = fifth_pointer
-            
-        
         
         aux_pointer = 0
         min_domain = np.min(self.X, axis=0)
