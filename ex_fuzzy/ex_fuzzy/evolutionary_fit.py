@@ -25,6 +25,7 @@ try:
     from . import eval_rules as evr
     from . import vis_rules
     from . import maintenance as mnt
+    
 except ImportError:
     import fuzzy_sets as fs
     import rules
@@ -188,7 +189,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers,
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, encode_mods=self.fuzzy_modifiers, categorical_mask=self.categorical_mask,
                                     allow_unknown=self.allow_unknown)
             else:
                 # If Fuzzy variables are already precomputed.
@@ -400,35 +401,35 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         for ix in range(len(self.rule_base)):
             fuzzy_variables = self.rule_base.rule_bases[ix].antecedents
-
             for jx, fv in enumerate(fuzzy_variables):
-                new_order_values = []
-                possible_names = FitRuleBase.vl_names[self.n_linguist_variables[jx]]
+                if fv[0].shape() != 'categorical':
+                    new_order_values = []
+                    possible_names = FitRuleBase.vl_names[self.n_linguist_variables[jx]]
 
-                for zx, fuzzy_set in enumerate(fv.linguistic_variables):
-                    studied_fz = fuzzy_set.type()
-                    
-                    if studied_fz == fs.FUZZY_SETS.temporal:
-                        studied_fz = fuzzy_set.inside_type()
+                    for zx, fuzzy_set in enumerate(fv.linguistic_variables):
+                        studied_fz = fuzzy_set.type()
+                        
+                        if studied_fz == fs.FUZZY_SETS.temporal:
+                            studied_fz = fuzzy_set.inside_type()
 
-                    if studied_fz == fs.FUZZY_SETS.t1:
-                        f1 = np.mean(
-                            fuzzy_set.membership_parameters[0] + fuzzy_set.membership_parameters[1])
-                    elif (studied_fz == fs.FUZZY_SETS.t2):
-                        f1 = np.mean(
-                            fuzzy_set.secondMF_upper[0] + fuzzy_set.secondMF_upper[1])
-                    elif studied_fz == fs.FUZZY_SETS.gt2:
-                        sec_memberships = fuzzy_set.secondary_memberships.values()
-                        f1 = float(list(fuzzy_set.secondary_memberships.keys())[np.argmax(
-                            [fzm.membership_parameters[2] for ix, fzm in enumerate(sec_memberships)])])
+                        if studied_fz == fs.FUZZY_SETS.t1:
+                            f1 = np.mean(
+                                fuzzy_set.membership_parameters[0] + fuzzy_set.membership_parameters[1])
+                        elif (studied_fz == fs.FUZZY_SETS.t2):
+                            f1 = np.mean(
+                                fuzzy_set.secondMF_upper[0] + fuzzy_set.secondMF_upper[1])
+                        elif studied_fz == fs.FUZZY_SETS.gt2:
+                            sec_memberships = fuzzy_set.secondary_memberships.values()
+                            f1 = float(list(fuzzy_set.secondary_memberships.keys())[np.argmax(
+                                [fzm.membership_parameters[2] for ix, fzm in enumerate(sec_memberships)])])
 
-                    new_order_values.append(f1)
+                        new_order_values.append(f1)
 
-                new_order = np.argsort(np.array(new_order_values))
-                fuzzy_sets_vl = fv.linguistic_variables
+                    new_order = np.argsort(np.array(new_order_values))
+                    fuzzy_sets_vl = fv.linguistic_variables
 
-                for jx, x in enumerate(new_order):
-                    fuzzy_sets_vl[x].name = possible_names[jx]
+                    for jx, x in enumerate(new_order):
+                        fuzzy_sets_vl[x].name = possible_names[jx]
 
 
     def get_rulebase(self) -> list[np.array]:
@@ -618,7 +619,7 @@ class FitRuleBase(Problem):
     Supports type 1 and iv fs (iv-type 2)
     '''
 
-    def _init_optimize_vl(self, fuzzy_type: fs.FUZZY_SETS, n_linguist_variables: int, domain: list[(float, float)] = None):
+    def _init_optimize_vl(self, fuzzy_type: fs.FUZZY_SETS, n_linguist_variables: int, domain: list[(float, float)] = None, categorical_variables: list[int] = None, X=None):
         '''
         Inits the corresponding fields if no linguistic partitions were given.
 
@@ -626,14 +627,32 @@ class FitRuleBase(Problem):
         :param n_linguistic_variables: number of linguistic variables per antecedent.
         :param domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
         '''
+        try:
+            from . import utils
+        except ImportError:
+            import utils
+
         self.lvs = None
         self.vl_names = [FitRuleBase.vl_names[n_linguist_variables[nn]] if n_linguist_variables[nn] < 6 else list(map(str, np.arange(nn))) for nn in range(len(n_linguist_variables))]
         
 
         self.fuzzy_type = fuzzy_type
-        self.n_lv_possible = n_linguist_variables
         self.domain = domain
         self._precomputed_truth = None
+        self.categorical_mask = categorical_variables
+        self.categorical_boolean_mask =  np.array(categorical_variables) > 0 if categorical_variables is not None else None 
+        self.categorical_variables = {}
+        for ix, cat in enumerate(categorical_variables):
+            if cat > 0:
+                self.categorical_variables[ix] = utils.construct_crisp_categorical_partition(np.array(X)[:, ix], self.var_names[ix], fuzzy_type)
+        
+        self.n_lv_possible = []
+        for ix in range(len(self.categorical_mask)):
+            if self.categorical_mask[ix] > 0:
+                self.n_lv_possible.append(len(self.categorical_variables[ix]))
+            else:
+                self.n_lv_possible.append(n_linguist_variables[ix])
+
 
     def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable], X: np.array):
         '''
@@ -659,7 +678,7 @@ class FitRuleBase(Problem):
     ]
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
-                 linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None,
+                 linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
                  tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0, encode_mods: bool=False, allow_unknown:bool=False) -> None:
         '''
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
@@ -712,7 +731,7 @@ class FitRuleBase(Problem):
             if isinstance(n_linguistic_variables, int):
                 n_linguistic_variables = [n_linguistic_variables] * self.X.shape[1]
             self._init_optimize_vl(
-                fuzzy_type, n_linguistic_variables)
+                fuzzy_type=fuzzy_type, n_linguist_variables=n_linguistic_variables, categorical_variables=categorical_mask, domain=domain, X=X)
 
         if self.domain is None:
             # If all the variables are numerical, then we can compute the min/max of the domain.
@@ -1164,8 +1183,12 @@ class FitRuleBase(Problem):
                         proper_FS = fs.IVFS(self.vl_names[fuzzy_variable][lx], relevant_lv[0], relevant_lv[1], (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
                     linguistic_variables.append(proper_FS)
 
-                antecedents.append(fs.fuzzyVariable(
-                        self.var_names[fuzzy_variable], linguistic_variables))
+                if self.categorical_boolean_mask[fuzzy_variable]:
+                    linguistic_variable = self.categorical_variables[fuzzy_variable]
+                else:
+                    linguistic_variable = fs.fuzzyVariable(self.var_names[fuzzy_variable], linguistic_variables)
+
+                antecedents.append(linguistic_variable)
                              
         else:
             try:

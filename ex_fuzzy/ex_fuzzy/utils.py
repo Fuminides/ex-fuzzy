@@ -534,7 +534,7 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
     if categorical_mask is not None:
         categorical_partition = {}
         for ix, elem in enumerate(categorical_mask):
-            if elem:
+            if elem > 0:
                 if isinstance(X, pd.DataFrame):
                     name = X.columns[ix]
                 else:
