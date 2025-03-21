@@ -1165,8 +1165,11 @@ class MasterRuleBase():
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
             
         winning_rules, winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unkown=self.allow_unknown)
-        confidence_intervals = [ rule.boot_confidence_interval for rule in self.get_rules()]
-        winning_rule_confidence_intervals = [confidence_intervals[ix] for ix in winning_rules]
+        try:
+            confidence_intervals = [ rule.boot_confidence_interval for rule in self.get_rules()]
+            winning_rule_confidence_intervals = [confidence_intervals[ix] for ix in winning_rules]
+        except AttributeError:
+            winning_rule_confidence_intervals = np.ones((X.shape[0], 1))
 
         if out_class_names:
             res = []
