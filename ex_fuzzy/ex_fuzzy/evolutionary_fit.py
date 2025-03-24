@@ -1176,17 +1176,18 @@ class FitRuleBase(Problem):
                 min_lv = np.min(np.array(lv_FS))
                 max_lv = np.max(np.array(lv_FS))
 
-                for lx, relevant_lv in enumerate(lv_FS):
-                    relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * max_domain[fuzzy_variable]
-                    if fuzzy_type == fs.FUZZY_SETS.t1:
-                        proper_FS = fs.FS(self.vl_names[fuzzy_variable][lx], relevant_lv, (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
-                    elif fuzzy_type == fs.FUZZY_SETS.t2:
-                        proper_FS = fs.IVFS(self.vl_names[fuzzy_variable][lx], relevant_lv[0], relevant_lv[1], (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
-                    linguistic_variables.append(proper_FS)
 
                 if self.categorical_boolean_mask[fuzzy_variable]:
                     linguistic_variable = self.categorical_variables[fuzzy_variable]
                 else:
+                    for lx, relevant_lv in enumerate(lv_FS):
+                        relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * max_domain[fuzzy_variable]
+                        if fuzzy_type == fs.FUZZY_SETS.t1:
+                            proper_FS = fs.FS(self.vl_names[fuzzy_variable][lx], relevant_lv, (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
+                        elif fuzzy_type == fs.FUZZY_SETS.t2:
+                            proper_FS = fs.IVFS(self.vl_names[fuzzy_variable][lx], relevant_lv[0], relevant_lv[1], (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
+                        linguistic_variables.append(proper_FS)
+
                     linguistic_variable = fs.fuzzyVariable(self.var_names[fuzzy_variable], linguistic_variables)
 
                 antecedents.append(linguistic_variable)
