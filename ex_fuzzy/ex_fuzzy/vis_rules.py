@@ -259,9 +259,8 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
             domain_sampled = unit_range_sampled * (fuzzy_set.domain[1] - fuzzy_set.domain[0]) + fuzzy_set.domain[0]
             if fuzzy_set.shape() == 'gaussian':
                 memberships = fuzzy_set.membership(domain_sampled)
-            else:
+            elif fuzzy_set.shape() == 'trapezoid' or fuzzy_set.shape() == 'triangular':
                 memberships = [0, 1, 1, 0]
-
 
             if  fz_studied == fs.FUZZY_SETS.t1:
                 try:
@@ -269,7 +268,7 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
                         ax.plot(unit_range_sampled,
                                 memberships, colors[ix % len(colors)], label=name)
                         ax.fill_between(unit_range_sampled, memberships, alpha=0.3)
-                    elif fuzzy_set.shape() == 'trapezoid':
+                    elif fuzzy_set.shape() == 'trapezoid' or fuzzy_set.shape() == 'triangular':
                         ax.plot(fuzzy_set.membership_parameters,
                                 memberships, colors[ix % len(colors)], label=name)
                         ax.fill_between(fuzzy_set.membership_parameters, memberships, alpha=0.3)

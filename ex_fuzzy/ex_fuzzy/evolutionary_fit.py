@@ -247,7 +247,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                         # self.rename_fuzzy_variables() This wont work on checkpoints!
                         rule_base.purge_rules(self.tolerance)
                         rule_base.rename_cons(self.classes_names)
-                        checkpoint_rules = rule_base.print_rules(True, bootstrap_results=True)
+                        checkpoint_rules = rule_base.print_rules(True, bootstrap_results=p_value_compute)
                         f.write(checkpoint_rules)     
 
         else:
@@ -775,7 +775,6 @@ class FitRuleBase(Problem):
             if self.fuzzy_type == fs.FUZZY_SETS.t1:
                 correct_size = [(self.n_lv_possible[ixx]-1) * 4 + 3 for ixx in range(len(self.n_lv_possible))]
             elif self.fuzzy_type == fs.FUZZY_SETS.t2:
-
                 correct_size = [(self.n_lv_possible[ixx]-1) * 6 + 2 for ixx in range(len(self.n_lv_possible))]
             membership_bounds = np.concatenate(
                 [[self.feature_domain_bounds[ixx]] * correct_size[ixx] for ixx in range(len(self.n_lv_possible))])
@@ -965,7 +964,7 @@ class FitRuleBase(Problem):
             # If memberships are optimized.
             if fuzzy_type == fs.FUZZY_SETS.t1:
                 fourth_pointer = 2 * self.nAnts * self.nRules + \
-                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4 # 4 is the size of the membership function, 3 is the size of the first (and last) membership function
             elif fuzzy_type == fs.FUZZY_SETS.t2:
                 fourth_pointer = 2 * self.nAnts * self.nRules + \
                     len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
@@ -987,6 +986,7 @@ class FitRuleBase(Problem):
         aux_pointer = 0
         min_domain = np.min(self.X, axis=0)
         max_domain = np.max(self.X, axis=0)
+        range_domain = max_domain - min_domain
 
         # Integer sampling doesnt work fine in pymoo, so we do this (which is btw what pymoo is really doing if you just set integer optimization)
         try:
@@ -1181,7 +1181,7 @@ class FitRuleBase(Problem):
                     linguistic_variable = self.categorical_variables[fuzzy_variable]
                 else:
                     for lx, relevant_lv in enumerate(lv_FS):
-                        relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * max_domain[fuzzy_variable]
+                        relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * range_domain[fuzzy_variable] + min_domain[fuzzy_variable]
                         if fuzzy_type == fs.FUZZY_SETS.t1:
                             proper_FS = fs.FS(self.vl_names[fuzzy_variable][lx], relevant_lv, (min_domain[fuzzy_variable], max_domain[fuzzy_variable]))
                         elif fuzzy_type == fs.FUZZY_SETS.t2:
