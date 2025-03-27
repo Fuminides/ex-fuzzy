@@ -515,7 +515,7 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
 
     # Get the X dataframe without the categorical variables
     if categorical_mask is not None:
-        X_numerical = X[:, np.logical_not(categorical_mask > 0)]
+        X_numerical = X[:, np.logical_not(np.array(categorical_mask) > 0)]
     else:
         X_numerical = X
 

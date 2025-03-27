@@ -992,7 +992,12 @@ class FitRuleBase(Problem):
         aux_pointer = 0
         min_domain = np.min(self.X, axis=0)
         max_domain = np.max(self.X, axis=0)
-        range_domain = max_domain - min_domain
+        range_domain = np.zeros((self.X.shape[1],))
+        for ix in range(self.X.shape[1]):
+            try:
+                range_domain[ix] = max_domain[ix] - min_domain[ix]
+            except TypeError:
+                pass
 
         # Integer sampling doesnt work fine in pymoo, so we do this (which is btw what pymoo is really doing if you just set integer optimization)
         try:
