@@ -2,6 +2,7 @@
 This is a the source file that contains the class to train/fit the rulebase using a genetic algorithm.
 
 """
+from typing import Callable
 import numpy as np
 import pandas as pd
 
@@ -138,7 +139,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
             var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3, bootstrap_size=1000,
-            p_value_compute=False) -> None:
+            p_value_compute=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -154,6 +155,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param sbx_eta: float. Eta parameter for the SBX crossover.
         :param mutation_eta: float. Eta parameter for the polynomial mutation.
         :param tournament_size: integer. Size of the tournament for the genetic algorithm.
+        :param checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
         :return: None. The classifier is fitted to the data.
         '''
         if mnt.save_usage_flag:
@@ -232,23 +234,27 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 if self.verbose:
                     print('%-6s | %-8s | %-8s | %-8s' % (res.n_gen, res.evaluator.n_eval, res.pop.get('F').mean(), res.pop.get('F').min()))
                 if k % checkpoints == 0:
-                    with open("checkpoint_" + str(algorithm.n_gen), "w") as f:
-                        pop = algorithm.pop
-                        fitness_last_gen = pop.get('F')
-                        best_solution_arg = np.argmin(fitness_last_gen)
-                        best_individual = pop.get('X')[best_solution_arg, :]
+                    pop = algorithm.pop
+                    fitness_last_gen = pop.get('F')
+                    best_solution_arg = np.argmin(fitness_last_gen)
+                    best_individual = pop.get('X')[best_solution_arg, :]
 
-                        rule_base = problem._construct_ruleBase(
-                            best_individual, self.fuzzy_type)
-                        eval_performance = evr.evalRuleBase(
-                            rule_base, np.array(X), y)
-                        
-                        eval_performance.add_full_evaluation()  
-                        # self.rename_fuzzy_variables() This wont work on checkpoints!
-                        rule_base.purge_rules(self.tolerance)
-                        rule_base.rename_cons(self.classes_names)
-                        checkpoint_rules = rule_base.print_rules(True, bootstrap_results=p_value_compute)
-                        f.write(checkpoint_rules)     
+                    rule_base = problem._construct_ruleBase(
+                        best_individual, self.fuzzy_type)
+                    eval_performance = evr.evalRuleBase(
+                        rule_base, np.array(X), y)
+                    
+                    eval_performance.add_full_evaluation()  
+                    # self.rename_fuzzy_variables() This wont work on checkpoints!
+                    rule_base.purge_rules(self.tolerance)
+                    rule_base.rename_cons(self.classes_names)
+                    checkpoint_rules = rule_base.print_rules(True, bootstrap_results=True)
+
+                    if checkpoint_callback is None:
+                        with open("checkpoint_" + str(algorithm.n_gen), "w") as f:
+                            f.write(checkpoint_rules) 
+                    else:
+                        checkpoint_callback(k, rule_base)
 
         else:
             res = minimize(problem,
