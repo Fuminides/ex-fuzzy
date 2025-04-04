@@ -381,6 +381,29 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         return self.rule_base.compute_association_degrees(X)
 
 
+    def predict_proba_class(self, X: np.array) -> np.array:
+        '''
+        Returns the predicted class probabilities for each sample.
+
+        :param X: np array samples x features.
+        :return: np array samples x classes with the predicted class probabilities.
+        '''
+        try:
+            X = X.values  # If X was a pandas dataframe
+        except AttributeError:
+            pass
+
+        rule_predict_proba = self.rule_base.compute_association_degrees(X)
+        rule_consequents = self.rule_base.get_consequents()
+
+        res = np.zeros((X.shape[0], self.nclasses_))
+        for jx in range(rule_predict_proba.shape[1]):
+            consequent = rule_consequents[jx]
+            res[:, consequent] = np.maximum(res[:, consequent], rule_predict_proba[:, jx]) 
+            
+        return res
+
+
     def print_rules(self, return_rules:bool=False, bootstrap_results:bool=False) -> None:
         '''
         Print the rules contained in the fitted rulebase.
