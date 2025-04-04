@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ex_fuzzy.eval_tools &mdash; Ex-Fuzzy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ex-Fuzzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Bootstrapping and rule robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ex-Fuzzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ex_fuzzy.eval_tools</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ex_fuzzy.eval_tools</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions that contain some general functions to eval already fitted fuzzy rule based models.</span>
+<span class="sd">It can also be used to visualize rules and fuzzy partitions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">metrics</span>
+
+<span class="k">try</span><span class="p">:</span>
+      <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">evolutionary_fit</span> <span class="k">as</span> <span class="n">evf</span>
+      <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">vis_rules</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+      <span class="kn">import</span><span class="w"> </span><span class="nn">evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
+      <span class="kn">import</span><span class="w"> </span><span class="nn">vis_rules</span>
+    
+    
+<div class="viewcode-block" id="eval_fuzzy_model">
+<a class="viewcode-back" href="../../function_resume/eval_tools.html#ex_fuzzy.eval_tools.eval_fuzzy_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">eval_fuzzy_model</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">:</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_train</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">X_test</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_test</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">plot_rules</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">print_rules</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_rules</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bootstrap_results_print</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">      </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Take a look at the FuzzyEvaluator class for this function documentation.</span>
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="n">fuzzy_evaluator</span> <span class="o">=</span> <span class="n">FuzzyEvaluator</span><span class="p">(</span><span class="n">fl_classifier</span><span class="p">)</span>
+      <span class="n">res</span> <span class="o">=</span> <span class="n">fuzzy_evaluator</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> 
+                        <span class="n">plot_rules</span><span class="o">=</span><span class="n">plot_rules</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="n">print_rules</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="n">plot_partitions</span><span class="p">,</span> <span class="n">return_rules</span><span class="o">=</span><span class="n">return_rules</span><span class="p">,</span> <span class="n">bootstrap_results_print</span><span class="o">=</span><span class="n">bootstrap_results_print</span><span class="p">)</span>
+      
+
+      <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="FuzzyEvaluator">
+<a class="viewcode-back" href="../../function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FuzzyEvaluator</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes a model and associated data and permits rule evaluation</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fl_classifier</span><span class="p">:</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            :param fl_classifier: Fuzzy rule based model</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span> <span class="o">=</span> <span class="n">fl_classifier</span>
+
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="c1"># Predict y for given X for use in metric evaluation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    
+
+<div class="viewcode-block" id="FuzzyEvaluator.get_metric">
+<a class="viewcode-back" href="../../function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">metric</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">X_true</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span><span class="n">y_true</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param metric: named metric in string format available in sklearn library for evaluation</span>
+<span class="sd">        :param X_true: np.array of X values for prediction</span>
+<span class="sd">        :param y_true: np.array of true class outcomes for X values</span>
+<span class="sd">        :param **kwargs: additional arguments for different sklearn.metrics functions</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">#Get y predictions</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_true</span><span class="p">)</span>
+        <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+        <span class="c1">#Convert str classes to numbers in corresponding class if necessary</span>
+        <span class="n">unique_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">classes_names</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="nb">str</span><span class="p">):</span>
+            <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">[</span><span class="n">unique_classes</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_true</span><span class="p">])</span>
+      
+        <span class="c1">#Find metrics requested in sklearn library, if not found </span>
+        <span class="k">try</span><span class="p">:</span>
+             <span class="c1"># Get the metric function dynamically from sklearn.metrics</span>
+              <span class="n">metric_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+             <span class="c1"># Call the metric function with y_true, y_pred, and any additional keyword arguments</span>
+              <span class="k">return</span> <span class="n">metric_function</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+              <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; not found in sklearn.metrics.&quot;</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+              <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Invalid arguments passed for the metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39;.&quot;</span></div>
+
+        
+        
+<div class="viewcode-block" id="FuzzyEvaluator.eval_fuzzy_model">
+<a class="viewcode-back" href="../../function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval_fuzzy_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span><span class="n">X_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> 
+                         <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                     <span class="n">return_rules</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_accuracy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_matthew</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">export_path</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bootstrap_results_print</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">      </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Function that evaluates a fuzzy rule based model. It also plots the rules and the fuzzy partitions.</span>
+
+<span class="sd">      :param X_train: Training data.</span>
+<span class="sd">      :param y_train: Training labels.</span>
+<span class="sd">      :param X_test: Test data.</span>
+<span class="sd">      :param y_test: Test labels.</span>
+<span class="sd">      :param plot_rules: If True, it plots the rules.</span>
+<span class="sd">      :param print_rules: If True, it prints the rules.</span>
+<span class="sd">      :param plot_partitions: If True, it plots the fuzzy partitions.</span>
+<span class="sd">      :return: None</span>
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="c1"># Get the unique classes from the classifier</span>
+      <span class="n">unique_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">classes_names</span>
+
+      <span class="c1"># Convert the names from the labels to the corresponding class if necessary</span>
+      <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">unique_classes</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_train</span><span class="p">])</span>
+            <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">unique_classes</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_test</span><span class="p">])</span>
+      
+      <span class="k">if</span> <span class="n">print_accuracy</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ACCURACY&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Train performance: &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metric</span><span class="p">(</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">,</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test performance: &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metric</span><span class="p">(</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">)))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">print_matthew</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MATTHEW CORRCOEF&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Train performance: &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metric</span><span class="p">(</span><span class="s1">&#39;matthews_corrcoef&#39;</span><span class="p">,</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">))</span>
+                  <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test performance: &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metric</span><span class="p">(</span><span class="s1">&#39;matthews_corrcoef&#39;</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">))</span>
+                  <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+
+
+      <span class="k">if</span> <span class="n">print_rules</span> <span class="ow">or</span> <span class="n">return_rules</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">bootstrap_results</span><span class="o">=</span><span class="n">bootstrap_results_print</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">print_rules</span><span class="p">:</span>
+                  <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">plot_partitions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">plot_fuzzy_variables</span><span class="p">()</span>
+
+      <span class="k">if</span> <span class="n">plot_rules</span><span class="p">:</span>
+            <span class="n">vis_rules</span><span class="o">.</span><span class="n">visualize_rulebase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fl_classifier</span><span class="o">.</span><span class="n">rule_base</span><span class="p">,</span> <span class="n">export_path</span><span class="o">=</span><span class="n">export_path</span><span class="p">)</span>
+            
+      <span class="k">if</span> <span class="n">return_rules</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
