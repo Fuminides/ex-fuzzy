@@ -366,19 +366,23 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         return self.forward(X, out_class_names=out_class_names)
     
 
-    def predict_proba(self, X: np.array) -> np.array:
+    def predict_proba(self, X: np.array, truth_degrees:bool=True) -> np.array:
         '''
         Returns the predicted class probabilities for each sample.
 
         :param X: np array samples x features.
+        :param truth_degrees: if True, the output will be the truth degrees of the rules. If false, will return the association degrees i.e. the truth degree multiplied by the weights/dominance of the rules. (depending on the inference mode chosen)
         :return: np array samples x classes with the predicted class probabilities.
         '''
         try:
             X = X.values  # If X was a pandas dataframe
         except AttributeError:
             pass
-
-        return self.rule_base.compute_association_degrees(X)
+        
+        if truth_degrees:
+            return self.rule_base.compute_firing_strenghts(X)
+        else:
+            return self.rule_base.compute_association_degrees(X)
 
 
     def predict_proba_class(self, X: np.array) -> np.array:

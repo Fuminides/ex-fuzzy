@@ -1073,14 +1073,14 @@ class MasterRuleBase():
         return winning_rules, winning_association_degrees
 
 
-    def compute_association_degrees(self, X, precomputed_truth=None):
+    def compute_association_degrees(self, X, precomputed_truth=None) -> np.array:
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
         :param X: array with the values of the inputs.
         :return: array with the winning rule for each sample.
         '''
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
-
+        
         if self.ds_mode == 0:
             rulesw = self.get_scores()
             if self.fuzzy_type() == fs.FUZZY_SETS.t2 and len(rulesw.shape) == 1:
