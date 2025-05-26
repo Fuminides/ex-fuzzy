@@ -147,6 +147,8 @@ def t1_n_partition_parameters(x, n_partitions):
     :param n_partitions: int, number of partitions.
     :return: numpy array, tensor of shape (variables, n_partitions, 4) containing the trapezoidal parameters.
     '''
+    epsilon = 0.0001
+
     trap_memberships_size = 4
     n_variables = x.shape[1]
     quantile_numbers = compute_quantiles(x, 4 + (n_partitions-2) * 2)
@@ -156,15 +158,15 @@ def t1_n_partition_parameters(x, n_partitions):
 
     for partition in range(n_partitions):
         if partition == 0:  # First partition
-            partition_parameters[:, partition, 0] = quantile_numbers[0, :]
-            partition_parameters[:, partition, 1] = quantile_numbers[0, :]
+            partition_parameters[:, partition, 0] = quantile_numbers[0, :] - epsilon
+            partition_parameters[:, partition, 1] = quantile_numbers[0, :] - epsilon
             partition_parameters[:, partition, 2] = quantile_numbers[1, :]
             partition_parameters[:, partition, 3] = quantile_numbers[2, :]
         elif partition == n_partitions - 1:  # Last partition
             partition_parameters[:, partition, 0] = quantile_numbers[-3, :]
             partition_parameters[:, partition, 1] = quantile_numbers[-2, :]
-            partition_parameters[:, partition, 2] = quantile_numbers[-1, :]
-            partition_parameters[:, partition, 3] = quantile_numbers[-1, :]
+            partition_parameters[:, partition, 2] = quantile_numbers[-1, :] + epsilon
+            partition_parameters[:, partition, 3] = quantile_numbers[-1, :] + epsilon
         else:  # Intermediate partitions
             partition_parameters[:, partition, 0] = quantile_numbers[1 + 2*(partition-1), :]
             partition_parameters[:, partition, 1] = quantile_numbers[1 + 2*(partition-1) + 1, :]
@@ -889,3 +891,26 @@ def mcc_loss(ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, 
         score_acc = ev_object.classification_eval()
         
         return score_acc
+
+
+
+def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical_mask: np.array=None) -> bool:
+    '''
+    Validates the partitions of the fuzzy variables. Checks that the partitions are valid and that they cover the whole range of the data.
+
+    :param X: numpy array, shape samples x features.
+    :param fuzzy_partitions: list of fuzzy variables.
+    :param categorical_mask: boolean mask vector that indicates for each variable if its categorical or not.
+    :return: True if the partitions are valid, False otherwise.
+    '''
+    if isinstance(X, pd.DataFrame):
+        X = X.values
+    res = []
+
+    for ix, fz in enumerate(fuzzy_partitions):
+        if categorical_mask is not None and categorical_mask[ix]:
+            continue  # Skip categorical variables
+        
+        res.append(fz.validate(X[:, ix]))
+
+    return res

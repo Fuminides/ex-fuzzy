@@ -642,6 +642,101 @@ class fuzzyVariable():
         return self.fs_type
 
 
+    def _wilcoxon_validation(self, mu_A, mu_B) -> bool:
+        '''
+        Validates the fuzzy variable using Earth Mover's Distance (EMD) to check if the fuzzy sets are statistically different.
+
+        :param memberships: np.array. Memberships of the fuzzy sets.
+        :return: bool. True if the fuzzy sets are statistically different, False otherwise.
+        '''
+        from scipy.stats import wilcoxon, ttest_1samp
+        import scipy.stats as stats
+        # Observed EMD
+        differences = np.abs(mu_A - mu_B)
+
+        # Check if the differences are normally distributed
+        if stats.shapiro(differences)[1] > 0.05:
+            # If normally distributed, use the t-test
+            t_stat, p_value = ttest_1samp(differences, 0)
+        else:
+            # If not normally distributed, use the Wilcoxon signed-rank test
+            w_stat, p_value = wilcoxon(differences)  
+
+        return p_value < 0.05  # If p-value is greater than 0.05, the null hypothesis is accepted, meaning the distributions are not statistically different.
+    
+
+    def _permutation_validation(self, mu_A, mu_B) -> bool:
+        '''
+        Validates the fuzzy variable using permutation test to check if the fuzzy sets are statistically different.
+
+        :param mu_A: np.array. Memberships of the first fuzzy set.
+        :param mu_B: np.array. Memberships of the second fuzzy set.
+        :return: bool. True if the fuzzy sets are statistically different, False otherwise.
+        '''
+        from scipy.stats import permutation_test
+
+        # Perform permutation test
+        result = permutation_test((mu_A, mu_B), lambda x, y: np.mean(np.abs(x - y)), n_resamples=1000)
+        statistic, p_value, null_distribution = result.statistic, result.pvalue, result.null_distribution
+
+        return p_value < 0.05
+    
+    
+    def validate(self, X) -> bool:
+        '''
+        Validates the fuzzy variable. Checks that all the fuzzy sets have the same type and domain.
+
+        :param X: np.array. Input data to validate the fuzzy variable.
+        :return: bool. True if the fuzzy variable is valid, False otherwise.
+        '''
+        if len(self.linguistic_variables) == 0:
+            return False
+        
+        # Get the fuzzy sets memberships
+        memberships = self.compute_memberships(X)
+        memberships = np.array(memberships)
+
+        valid = True
+        # Property 1: Only one of the fuzzy sets memberships can be 1 at the same time
+        if np.equal(memberships, 1).sum(axis=0).max() > 1:
+            valid = False
+        # Property 2: All fuzzy sets are fuzzy numbers is fullfilled if they are trapezoidal or gaussian
+
+        # Property 3: At least one fuzzy set must non zero in every point of the domain
+        if np.all(memberships == 0, axis=0).any():
+            valid = False
+
+        # Property 4: Given any two points of the domain, if a < b, the membership f_n+1(b)>f_n+1(a) can only hold if f_n(a)>f_n(b). So, a fuzzy set can only grow if the previous fuzzy set is decreasing.
+        for i in range(len(self.linguistic_variables) - 1):
+            if np.any(memberships[i, :] < memberships[i + 1, :]) and np.any(memberships[i, :] > memberships[i + 1, :]):
+                valid = False
+                break
+
+        
+        # Property 5: The smallest fuzzy set must be the first one and the biggest fuzzy set must be the last one. The smallest should start at the left of the domain and the biggest should end at the right of the domain.
+        valid = valid and (memberships[0, 0] == 0) and (memberships[-1, -1] == 1)
+
+        # Property 6: The population of the fuzzy sets-induced memberships must be statistically different from each other
+        if len(self.linguistic_variables) > 1:
+            from scipy.stats import wilcoxon
+            for i in range(len(self.linguistic_variables) - 1):
+                # Wilcoxon signed-rank test is a paired difference test
+                if self._permutation_validation(memberships[i, :], memberships[i + 1, :]) >= 0.05:
+                    valid = False
+                    break
+
+        return valid
+
+
+    def __str__(self) -> str:
+        '''
+        Returns the name of the fuzzy variable, its type and its parameters.
+        
+        :return: string.
+        '''
+        return f'{self.name} ({self.fs_type.name}) - {self.linguistic_variable_names()}'
+
+
     def __getitem__(self, item) -> FS:
         '''
         Returns the corresponding fs.
@@ -690,5 +785,6 @@ class fuzzyVariable():
         :return: list of floats. Membership to each of the FS in the fuzzy variables.
         '''
         return self.compute_memberships(x)
+
 
 

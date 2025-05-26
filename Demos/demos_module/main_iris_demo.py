@@ -35,7 +35,7 @@ import ex_fuzzy.pattern_stability as pattern_stability
 runner = 1 # 1: single thread, 2+: corresponding multi-thread
 
 # GA parameters
-n_gen = 5
+n_gen = 30
 n_pop = 30
 
 # FRBC parameters
@@ -52,22 +52,22 @@ y = pd.Series(iris.target)
 class_names = iris.target_names
 
 # Compute the fuzzy partitions using n linguistic variables
-precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl)
-
-
+precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl, shape='triangular')
+valid = utils.validate_partitions(X, precomputed_partitions_vl)
+print('Partitions are valid?: ' + str(valid))
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 
 # We create a FRBC with the precomputed partitions or None (will optimize them as well in that case) and the specified fuzzy set type
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=None, nAnts=nAnts, class_names=class_names, n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner, allow_unknown=True, ds_mode=0)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions_vl, nAnts=nAnts, class_names=class_names, n_linguistic_variables=vl, fuzzy_type=fz_type_studied, verbose=True, tolerance=tolerance, runner=runner, allow_unknown=True, ds_mode=0)
 
 # fl_classifier.customized_loss(utils.mcc_loss) Use this to change the loss function, but be sure to look at the API first
-fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0, p_value_compute=True)
+fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=0, random_state=0, p_value_compute=False)
 
 # We evaluate the fuzzy model, this will print the rules, the accuracy, the Matthew's correlation coefficient, etc.
 fuzzy_evaluator = eval_tools.FuzzyEvaluator(fl_classifier)
 str_rules = fuzzy_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
-                        plot_rules=False, print_rules=True, plot_partitions=False, return_rules=True, bootstrap_results_print=True)
+                        plot_rules=False, print_rules=True, plot_partitions=True, return_rules=True, bootstrap_results_print=False)
 
 # print(vis_rules.rules_to_latex(fl_classifier.rule_base)) # Do this to print the rules in latex format
 

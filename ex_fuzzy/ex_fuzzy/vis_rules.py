@@ -364,8 +364,6 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         # Show plot
         plt.tight_layout()
         plt.show()
-        
-    
 
 
 def matrix_rule_base_form(rule_base: rules.Rule) -> pd.DataFrame:
