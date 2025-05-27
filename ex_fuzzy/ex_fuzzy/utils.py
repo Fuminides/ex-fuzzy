@@ -23,6 +23,8 @@ except ImportError:
 
 from sklearn.model_selection import train_test_split
 
+epsilon = 0.0001
+
 
 def quartile_compute(x: np.array) -> list[float]:
     '''
@@ -112,11 +114,11 @@ def t1_simple_gaussian_partition(x: np.array) -> np.array:
     for partition in range(n_partitions):
         if partition == 0:
             # For first partition, center at first quantile
-            partition_parameters[:, partition, 0] = quantile_numbers[1]  # mean
+            partition_parameters[:, partition, 0] = quantile_numbers[1] # mean 
             partition_parameters[:, partition, 1] = (quantile_numbers[2] - quantile_numbers[0]) / 2  # std
         elif partition == n_partitions - 1:
             # For last partition, center at last quantile
-            partition_parameters[:, partition, 0] = quantile_numbers[-2]  # mean
+            partition_parameters[:, partition, 0] = quantile_numbers[-2] # mean
             partition_parameters[:, partition, 1] = (quantile_numbers[-1] - quantile_numbers[-3]) / 2  # std
         else:
             # For middle partitions
@@ -147,7 +149,6 @@ def t1_n_partition_parameters(x, n_partitions):
     :param n_partitions: int, number of partitions.
     :return: numpy array, tensor of shape (variables, n_partitions, 4) containing the trapezoidal parameters.
     '''
-    epsilon = 0.0001
 
     trap_memberships_size = 4
     n_variables = x.shape[1]
@@ -231,8 +232,8 @@ def t1_three_partition(x: np.array) -> np.array:
         (x.shape[1], n_partitions, trap_memberships_size))
     for partition in range(n_partitions):
         if partition == 0:
-            partition_parameters[:, partition, 0] = quantile_numbers[0]
-            partition_parameters[:, partition, 1] = quantile_numbers[0]
+            partition_parameters[:, partition, 0] = quantile_numbers[0] - epsilon
+            partition_parameters[:, partition, 1] = quantile_numbers[0] - epsilon
             partition_parameters[:, partition, 2] = quantile_numbers[1]
             partition_parameters[:, partition, 3] = quantile_numbers[2]
         elif partition == 1:
@@ -245,8 +246,8 @@ def t1_three_partition(x: np.array) -> np.array:
         else:
             partition_parameters[:, partition, 0] = quantile_numbers[2]
             partition_parameters[:, partition, 1] = quantile_numbers[3]
-            partition_parameters[:, partition, 2] = quantile_numbers[4]
-            partition_parameters[:, partition, 3] = quantile_numbers[4]
+            partition_parameters[:, partition, 2] = quantile_numbers[4] + epsilon
+            partition_parameters[:, partition, 3] = quantile_numbers[4] + epsilon
 
     return partition_parameters
 
@@ -269,8 +270,8 @@ def t2_n_partition_parameters(x, n_partitions):
 
     for partition in range(n_partitions):
         if partition == 0:  # First partition
-            partition_parameters[:, partition, 0, 0] = quantile_numbers[0, :]
-            partition_parameters[:, partition, 0, 1] = quantile_numbers[0, :]
+            partition_parameters[:, partition, 0, 0] = quantile_numbers[0, :] - epsilon
+            partition_parameters[:, partition, 0, 1] = quantile_numbers[0, :] - epsilon
 
             partition_parameters[:, partition, 1, 0] = quantile_numbers[0, :]
             partition_parameters[:, partition, 1, 1] = quantile_numbers[0, :]
@@ -290,8 +291,8 @@ def t2_n_partition_parameters(x, n_partitions):
             partition_parameters[:, partition, 2, 0] = quantile_numbers[-1, :]
             partition_parameters[:, partition, 2, 1] = quantile_numbers[-1, :]
 
-            partition_parameters[:, partition, 3, 0] = quantile_numbers[-1, :]
-            partition_parameters[:, partition, 3, 1] = quantile_numbers[-1, :]
+            partition_parameters[:, partition, 3, 0] = quantile_numbers[-1, :] + epsilon
+            partition_parameters[:, partition, 3, 1] = quantile_numbers[-1, :] + epsilon
         else:  # Intermediate partitions
             partition_parameters[:, partition, 0, 1] = quantile_numbers[1 + 2*(partition-1), :]
             partition_parameters[:, partition, 0, 0] = quantile_numbers[1 + 2*(partition-1), :] + (quantile_numbers[1 + 2*(partition-1) + 1, :] - quantile_numbers[1 + 2*(partition-1), :]) / 2
@@ -324,10 +325,10 @@ def t1_simple_triangular_partition_parameters(x: np.array) -> np.array:
     
 
     for partition in range(n_partitions):
-        if partition == 0:
-            partition_parameters[:, partition, 0] = quantile_numbers[0]
-            partition_parameters[:, partition, 1] = quantile_numbers[0]
-            partition_parameters[:, partition, 2] = quantile_numbers[0]
+        if partition == 0: 
+            partition_parameters[:, partition, 0] = quantile_numbers[0] - epsilon
+            partition_parameters[:, partition, 1] = quantile_numbers[0] - epsilon
+            partition_parameters[:, partition, 2] = quantile_numbers[0] - epsilon
             partition_parameters[:, partition, 3] = quantile_numbers[2]
 
         elif partition == 1:
@@ -337,9 +338,9 @@ def t1_simple_triangular_partition_parameters(x: np.array) -> np.array:
             partition_parameters[:, partition, 3] = quantile_numbers[3]
         else:
             partition_parameters[:, partition, 0] = quantile_numbers[2]
-            partition_parameters[:, partition, 1] = quantile_numbers[4]
-            partition_parameters[:, partition, 2] = quantile_numbers[4]
-            partition_parameters[:, partition, 3] = quantile_numbers[4]
+            partition_parameters[:, partition, 1] = quantile_numbers[4] + epsilon
+            partition_parameters[:, partition, 2] = quantile_numbers[4] + epsilon
+            partition_parameters[:, partition, 3] = quantile_numbers[4] + epsilon
 
     
     return partition_parameters
@@ -894,7 +895,7 @@ def mcc_loss(ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, 
 
 
 
-def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical_mask: np.array=None) -> bool:
+def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical_mask: np.array=None, verbose:bool=False) -> bool:
     '''
     Validates the partitions of the fuzzy variables. Checks that the partitions are valid and that they cover the whole range of the data.
 
@@ -910,7 +911,8 @@ def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical
     for ix, fz in enumerate(fuzzy_partitions):
         if categorical_mask is not None and categorical_mask[ix]:
             continue  # Skip categorical variables
-        
-        res.append(fz.validate(X[:, ix]))
+        if verbose:
+            print(f'Validating fuzzy variable {fz.name}...')
+        res.append(fz.validate(X[:, ix], verbose))
 
     return res
