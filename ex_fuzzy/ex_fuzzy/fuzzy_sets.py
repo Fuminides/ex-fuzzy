@@ -736,7 +736,7 @@ class fuzzyVariable():
             from scipy.stats import wilcoxon
             for i in range(len(self.linguistic_variables) - 1):
                 # Wilcoxon signed-rank test is a paired difference test
-                if not self._permutation_validation(memberships[i, :], memberships[i + 1, :], p_value=0.05):
+                if not self._permutation_validation(memberships[i, :], memberships[i + 1, :], p_value_needed=0.05):
                     cond6 = False
                     break
         if not cond6 and verbose:
