@@ -147,12 +147,13 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
     '''
     if mnt.save_usage_flag:
         mnt.usage_data[mnt.usage_categories.Persistence]['persistence_read'] += 1
+
     fuzzy_set_type = fs.FUZZY_SETS.t1 
 
     fuzzy_variables = []
     active_linguistic_variables = False
     for line in fuzzy_variables_printed.splitlines():
-        if line.startswith('$$$') or line.startswith('$Fuzzy'):
+        if line.startswith('$$$') or line.startswith('$Fuzzy') or line.startswith('$Categorical'):
             #New linguistic variable
             if active_linguistic_variables:
                 object_fvar = fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units)
@@ -172,13 +173,14 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
         else:
             processes_line = line.split(';')
 
+            # We found a categorical variable specification
             if processes_line[1] == 'Categorical':
                 categories = processes_line[0].split(',')
 
                 if fuzzy_set_type == fs.FUZZY_SETS.t1:
                     fscat_categories = [fs.categoricalFS(category, category) for category in categories]
                 elif fuzzy_set_type == fs.FUZZY_SETS.t2:
-                    fscat_categories = [fs.categoricalFS(category, category) for category in categories]
+                    fscat_categories = [fs.categoricalIVFS(category, category) for category in categories]
 
                 #We know there is one categorical variable active
                 for fscat in fscat_categories:
@@ -189,14 +191,21 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                 fields = processes_line
                 if len(fields) == 4:
                     name, domain, membership_type, mem1 = fields
+                    domain = [float(x) for x in domain.split(',')]
+                    mem = [float(x) for x in mem1.split(',')]
                 elif len(fields) > 4:
                     name, domain, membership_type, mem1, mem2, height = fields
                     fuzzy_set_type = fs.FUZZY_SETS.t2
                     mem2 = [float(x) for x in mem2.split(',')]
                     height = float(height)
+                    domain = [float(x) for x in domain.split(',')]
+                    mem = [float(x) for x in mem1.split(',')]
+                elif len(fields) == 2:
+                    # This a special case, it is a categorical variable with a category probably for NaN values
+                    name, category = fields
+                    category = float(category.strip()) # In this case, we always need to codify the category as a number.
+                    membership_type = 'Categorical'
                 
-                domain = [float(x) for x in domain.split(',')]
-                mem = [float(x) for x in mem1.split(',')]
 
                 if membership_type == 'gauss':
                     if fuzzy_set_type == fs.FUZZY_SETS.t1:
@@ -209,6 +218,12 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                         constructed_fs = fs.FS(name, mem, domain)
                     elif fuzzy_set_type == fs.FUZZY_SETS.t2:
                         constructed_fs = fs.IVFS(name, mem, mem2, domain, height)
+
+                elif membership_type == 'Categorical':
+                    if fuzzy_set_type == fs.FUZZY_SETS.t1:
+                        constructed_fs = fs.categoricalFS(name, category)
+                    elif fuzzy_set_type == fs.FUZZY_SETS.t2:
+                        constructed_fs = fs.categoricalIVFS(name, category)
                 
                 linguistic_var_fuzzy_sets.append(constructed_fs)
 
@@ -237,7 +252,7 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
 
         for fuzzy_set in fuzzy_variable.fuzzy_sets:
             fuzzy_variable_printed += fuzzy_set.name + ','
-        fuzzy_variable_printed += 'Categorical\n'
+        fuzzy_variable_printed += '\n'
     else:
         fuzzy_variable_printed = '$$$ Linguistic variable: ' + fuzzy_variable.name
         if fuzzy_variable.units is not None:
@@ -245,7 +260,9 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
         fuzzy_variable_printed += '\n'
 
         for fuzzy_set in fuzzy_variable.linguistic_variables:
-            if isinstance(fuzzy_set, fs.gaussianIVFS):
+            if isinstance(fuzzy_set, fs.categoricalFS) or isinstance(fuzzy_set, fs.categoricalIVFS):
+                fuzzy_variable_printed += fuzzy_set.name + ';' + str(fuzzy_set.category) +  '\n'
+            elif isinstance(fuzzy_set, fs.gaussianIVFS):
                 fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'gauss;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + ';' + str(fuzzy_set.lower_height) + '\n' 
             elif isinstance(fuzzy_set, fs.IVFS):
                 fuzzy_variable_printed += fuzzy_set.name + ';' + ','.join([str(x) for x in fuzzy_set.domain]) + ';' + 'trap;' + ','.join([str(x) for x in fuzzy_set.secondMF_lower]) + ';' + ','.join([str(x) for x in fuzzy_set.secondMF_upper]) + ';' + str(fuzzy_set.lower_height) + '\n'  

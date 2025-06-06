@@ -387,8 +387,8 @@ def t1_fuzzy_partitions_dataset(x0: np.array, n_partition=3, shape='trapezoid') 
         fv_names = [str(ix) for ix in range(x0.shape[1])]
         x = x0
 
-    mins = np.min(x, axis=0)
-    maxs = np.max(x, axis=0)
+    mins = np.nanmin(x, axis=0)
+    maxs = np.nanmax(x, axis=0)
 
     if shape == 'trapezoid':
         fz_memberships = t1_n_partition_parameters(x, n_partitions=n_partition)
@@ -442,8 +442,8 @@ def t2_fuzzy_partitions_dataset(x0: np.array, n_partition=3,  shape='trapezoid')
         fv_names = [str(ix) for ix in range(x0.shape[1])]
         x = x0
 
-    mins = np.min(x, axis=0)
-    maxs = np.max(x, axis=0)
+    mins = np.nanmin(x, axis=0)
+    maxs = np.nanmax(x, axis=0)
     fz_memberships = t2_n_partition_parameters(x, n_partition)
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):

@@ -256,7 +256,10 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         for ix, fuzzy_set in enumerate(fuzzy_variable.linguistic_variables):
             name = fuzzy_set.name        
             initiated = False
-            domain_sampled = unit_range_sampled * (fuzzy_set.domain[1] - fuzzy_set.domain[0]) + fuzzy_set.domain[0]
+            try:
+                domain_sampled = unit_range_sampled * (fuzzy_set.domain[1] - fuzzy_set.domain[0]) + fuzzy_set.domain[0]
+            except AttributeError:
+                continue
             if fuzzy_set.shape() == 'gaussian':
                 memberships = fuzzy_set.membership(domain_sampled)
             elif fuzzy_set.shape() == 'trapezoid' or fuzzy_set.shape() == 'triangular':

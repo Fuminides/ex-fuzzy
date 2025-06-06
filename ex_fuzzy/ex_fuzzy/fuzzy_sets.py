@@ -641,29 +641,6 @@ class fuzzyVariable():
         :return: the type of the fuzzy set present in the fuzzy variable.
         '''
         return self.fs_type
-
-
-    def _wilcoxon_validation(self, mu_A, mu_B) -> bool:
-        '''
-        Validates the fuzzy variable using Earth Mover's Distance (EMD) to check if the fuzzy sets are statistically different.
-
-        :param memberships: np.array. Memberships of the fuzzy sets.
-        :return: bool. True if the fuzzy sets are statistically different, False otherwise.
-        '''
-        from scipy.stats import wilcoxon, ttest_1samp
-        import scipy.stats as stats
-        # Observed EMD
-        differences = np.abs(mu_A - mu_B)
-
-        # Check if the differences are normally distributed
-        if stats.shapiro(differences)[1] > 0.05:
-            # If normally distributed, use the t-test
-            t_stat, p_value = ttest_1samp(differences, 0)
-        else:
-            # If not normally distributed, use the Wilcoxon signed-rank test
-            w_stat, p_value = wilcoxon(differences)  
-
-        return p_value < 0.05  # If p-value is greater than 0.05, the null hypothesis is accepted, meaning the distributions are not statistically different.
     
 
     def _permutation_validation(self, mu_A:np.array, mu_B:np.array, p_value_need:float=0.05) -> bool:
