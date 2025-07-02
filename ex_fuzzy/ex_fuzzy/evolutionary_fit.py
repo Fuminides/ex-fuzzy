@@ -2,7 +2,9 @@
 This is a the source file that contains the class to train/fit the rulebase using a genetic algorithm.
 
 """
+import os 
 from typing import Callable
+
 import numpy as np
 import pandas as pd
 
@@ -138,8 +140,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
-            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta=7.0, tournament_size=3, bootstrap_size=1000,
-            p_value_compute=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None) -> None:
+            var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta:float=7.0, tournament_size:int=3, bootstrap_size:int=1000, checkpoint_path:str='',
+            p_value_compute:bool=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -153,6 +155,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param random_state: integer. Random seed for the optimization process.
         :param var_prob: float. Probability of crossover for the genetic algorithm.
         :param sbx_eta: float. Eta parameter for the SBX crossover.
+        :param checkpoint_path: string. Path to save the checkpoints. If None (default) the checkpoints will be saved in the current directory.
         :param mutation_eta: float. Eta parameter for the polynomial mutation.
         :param tournament_size: integer. Size of the tournament for the genetic algorithm.
         :param checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
@@ -251,7 +254,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                     checkpoint_rules = rule_base.print_rules(True, bootstrap_results=True)
 
                     if checkpoint_callback is None:
-                        with open("checkpoint_" + str(algorithm.n_gen), "w") as f:
+                        with open(os.path.join(checkpoint_path,"checkpoint_" + str(algorithm.n_gen), "w")) as f:
                             f.write(checkpoint_rules) 
                     else:
                         checkpoint_callback(k, rule_base)
@@ -366,7 +369,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         return self.forward(X, out_class_names=out_class_names)
     
 
-    def predict_proba(self, X: np.array, truth_degrees:bool=True) -> np.array:
+    def predict_proba_rules(self, X: np.array, truth_degrees:bool=True) -> np.array:
         '''
         Returns the predicted class probabilities for each sample.
 
@@ -385,9 +388,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             return self.rule_base.compute_association_degrees(X)
 
 
-    def predict_proba_class(self, X: np.array) -> np.array:
+    def predict_membership_class(self, X: np.array) -> np.array:
         '''
-        Returns the predicted class probabilities for each sample.
+        Returns the predicted class memberships for each sample.
 
         :param X: np array samples x features.
         :return: np array samples x classes with the predicted class probabilities.
@@ -406,6 +409,20 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             res[:, consequent] = np.maximum(res[:, consequent], rule_predict_proba[:, jx]) 
             
         return res
+    
+
+    def predict_proba(self, X:np.array) -> np.array:
+        '''
+        Returns the predicted class probabilities for each sample.
+
+        :param X: np array samples x features.
+        :return: np array samples x classes with the predicted class probabilities.
+        '''
+        beliefs = self.predict_membership_class(X)
+
+        beliefs = beliefs / np.sum(beliefs, axis=1, keepdims=True)  # Normalize the beliefs to sum to 1
+
+        return beliefs
 
 
     def print_rules(self, return_rules:bool=False, bootstrap_results:bool=False) -> None:
@@ -785,7 +802,7 @@ class FitRuleBase(Problem):
                         self.max_bounds[ix] = np.max(self.X[:, ix])
                     else:
                         self.min_bounds[ix] = 0
-                        self.max_bounds[ix] = len(np.unique(self.X[:, ix]))
+                        self.max_bounds[ix] = len(np.unique(self.X[:, ix][~pd.isna(self.X[:, ix])]))
         else:
             self.min_bounds, self.max_bounds = self.domain
 
@@ -1017,8 +1034,20 @@ class FitRuleBase(Problem):
             sixth_pointer = fifth_pointer
         
         aux_pointer = 0
-        min_domain = np.min(self.X, axis=0)
-        max_domain = np.max(self.X, axis=0)
+        min_domain = np.zeros(self.X.shape[1])
+        max_domain = np.zeros(self.X.shape[1])
+        
+        # Handle mixed data types (numerical and string columns)
+        for ix in range(self.X.shape[1]):
+            if np.issubdtype(self.X[:, ix].dtype, np.number):
+                # For numerical columns, use nanmin/nanmax
+                min_domain[ix] = np.nanmin(self.X[:, ix])
+                max_domain[ix] = np.nanmax(self.X[:, ix])
+            else:
+                # For string/categorical columns, use 0 and number of unique values
+                min_domain[ix] = 0
+                max_domain[ix] = len(np.unique(self.X[:, ix][~pd.isna(self.X[:, ix])]))
+        
         range_domain = np.zeros((self.X.shape[1],))
         for ix in range(self.X.shape[1]):
             try:

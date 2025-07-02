@@ -646,7 +646,7 @@ def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studie
     :param fz_type_studied: fuzzy set type studied.
     :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest).
     '''
-    possible_values = np.unique(x)
+    possible_values = np.unique(x[~pd.isna(x)])
     fuzzy_sets = []
 
     # Create a fuzzy sets for each possible value
@@ -895,7 +895,7 @@ def mcc_loss(ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, 
 
 
 
-def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical_mask: np.array=None, verbose:bool=False) -> bool:
+def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical_mask: np.array=None, verbose:bool=False) -> list[bool]:
     '''
     Validates the partitions of the fuzzy variables. Checks that the partitions are valid and that they cover the whole range of the data.
 
