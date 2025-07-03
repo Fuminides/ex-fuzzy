@@ -51,7 +51,7 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
         
     consequent = 0
     linguistic_variables_names = [linguistic_variable.name for linguistic_variable in fuzzy_variables]
-    value_names = [x.name for x in fuzzy_variables[0]]
+    value_names = {fuzzy_variables[ix].name : [x.name for x in fuzzy_variables[ix]] for ix in range(len(fuzzy_variables))}
     fz_type = fuzzy_variables[0].fuzzy_type()
     consequent_names = []
     detected_modifiers = False
@@ -87,7 +87,7 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                 antecedent_name = antecedent_name.strip()
                 antecedent_value = antecedent_value.strip()
                 antecedent_index = linguistic_variables_names.index(antecedent_name)
-                antecedent_value_index = value_names.index(antecedent_value)
+                antecedent_value_index = value_names[antecedent_name].index(antecedent_value)
 
                 init_rule_antecedents[antecedent_index] = antecedent_value_index
                 
@@ -168,13 +168,24 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                 fvar_units = None
 
             active_linguistic_variables = True
+        elif line.startswith('$Categorical'):
+            #New categorical variable
+            if active_linguistic_variables:
+                object_fvar = fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units)
+
+                fuzzy_variables.append(object_fvar)
+
+            linguistic_variable_name = line.split(':')[1].strip()
+
+            active_linguistic_variables = True
+            
         elif line == '':
             pass
         else:
             processes_line = line.split(';')
 
-            if processes_line[1] == 'Categorical':
-                categories = processes_line[0].split(',')
+            if processes_line[0] == 'Categorical':
+                categories = processes_line[1].split(',')
 
                 if fuzzy_set_type == fs.FUZZY_SETS.t1:
                     fscat_categories = [fs.categoricalFS(category, category) for category in categories]
@@ -252,9 +263,10 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
             fuzzy_variable_printed += ' : ' + fuzzy_variable.units
         fuzzy_variable_printed += '\n'
 
-        for fuzzy_set in fuzzy_variable.fuzzy_sets:
+        fuzzy_variable_printed += 'Categorical;'
+        for fuzzy_set in fuzzy_variable:
             fuzzy_variable_printed += fuzzy_set.name + ','
-        fuzzy_variable_printed += 'Categorical\n'
+        fuzzy_variable_printed += '\n'
     else:
         fuzzy_variable_printed = '$$$ Linguistic variable: ' + fuzzy_variable.name
         if fuzzy_variable.units is not None:

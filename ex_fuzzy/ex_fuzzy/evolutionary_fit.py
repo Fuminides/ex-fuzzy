@@ -286,7 +286,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
         self.rule_base = problem._construct_ruleBase(
         best_individual, self.fuzzy_type)
-        
+        self.lvs = self.rule_base.rule_bases[0].antecedents if self.lvs is None else self.lvs
 
         self.eval_performance = evr.evalRuleBase(
         self.rule_base, np.array(X), y)

@@ -5,6 +5,7 @@ This is a the source file that contains the Rule, RuleBase and MasterRuleBase cl
 """
 import abc
 import numbers
+import copy
 
 import numpy as np
 try:
@@ -660,6 +661,35 @@ class RuleBase():
         for ix, rule in enumerate(self.rules):
             print('Rule ' + str(ix) + ': ' + str(rule) + ' - Confidence: ' + str(rule.boot_confidence_interval) + ' - Support: ' + str(rule.boot_support_interval))
 
+
+    def copy(self):
+        '''
+        Creates a copy of the RuleBase.
+        
+        :param deep: if True, creates a deep copy. If False, creates a shallow copy.
+        :return: a copy of the RuleBase.
+        '''
+        # Deep copy all components
+        copied_rules = copy.deepcopy(self.rules)
+        copied_antecedents = copy.deepcopy(self.antecedents)
+        copied_consequent = copy.deepcopy(self.consequent) if self.consequent is not None else None
+        
+        # Create new instance based on the type
+        if isinstance(self, RuleBaseT1):
+            return RuleBaseT1(copied_antecedents, copied_rules, copied_consequent, self.tnorm)
+        elif isinstance(self, RuleBaseT2):
+            return RuleBaseT2(copied_antecedents, copied_rules, copied_consequent, self.tnorm)
+        elif isinstance(self, RuleBaseGT2):
+            return RuleBaseGT2(copied_antecedents, copied_rules, copied_consequent, self.tnorm)
+        else:
+            # Base RuleBase class
+            new_rb = RuleBase.__new__(RuleBase)
+            new_rb.rules = copied_rules
+            new_rb.antecedents = copied_antecedents
+            new_rb.consequent = copied_consequent
+            new_rb.tnorm = self.tnorm
+            return new_rb
+   
 
 class RuleBaseT2(RuleBase):
     '''
@@ -1349,6 +1379,33 @@ class MasterRuleBase():
         '''
         return self.antecedents
     
+    # Add to MasterRuleBase class
+    def copy(self, deep=True):
+        '''
+        Creates a copy of the MasterRuleBase.
+        
+        :param deep: if True, creates a deep copy. If False, creates a shallow copy.
+        :return: a copy of the MasterRuleBase.
+        '''
+        if deep:
+            # Deep copy all rule bases and other attributes
+            copied_rule_bases = [rb.copy(deep=True) for rb in self.rule_bases]
+            copied_consequent_names = copy.deepcopy(self.consequent_names)
+        else:
+            # Shallow copy - copy the list but not the rule bases themselves
+            copied_rule_bases = self.rule_bases.copy()
+            copied_consequent_names = self.consequent_names.copy()
+        
+        # Create new MasterRuleBase instance
+        new_master_rb = MasterRuleBase(
+            copied_rule_bases, 
+            copied_consequent_names, 
+            self.ds_mode, 
+            self.allow_unknown
+        )
+        
+        return new_master_rb
+
 
 def construct_rule_base(rule_matrix: np.array, nclasses:int, consequents: np.array, antecedents: list[fs.fuzzyVariable], rule_weights: np.array, class_names: list=None) -> MasterRuleBase:
     '''
