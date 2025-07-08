@@ -296,8 +296,7 @@ If you use Ex-Fuzzy in your research, please cite our paper:
 ## 🌟 Acknowledgments
 
 - Special thanks to all [contributors](https://github.com/Fuminides/ex-fuzzy/graphs/contributors)
-- Built with ❤️ for the fuzzy logic and explainable AI communities
-- Supported by research institutions and open-source community
+- This research has been supported by the European Union and the University of Essex under a Marie Sklodowska-Curie YUFE4 postdoc action.
 
 ---
 
