@@ -1,7 +1,31 @@
-'''
-Module that contains classifiers that uses two step genetic optimization and rule mining based on the support of the candidate rules. 
+"""
+Fuzzy Classification Algorithms for Ex-Fuzzy Library
 
-'''
+This module provides high-level classification algorithms that combine rule mining,
+genetic optimization, and fuzzy inference for pattern classification tasks. The
+classifiers implement sophisticated two-stage optimization approaches that first
+discover candidate rules through data mining and then optimize rule combinations
+using evolutionary algorithms.
+
+Main Components:
+    - RuleMineClassifier: Two-stage classifier combining rule mining and genetic optimization
+    - DoubleGo classifier: Advanced multi-objective genetic optimization
+    - Integrated preprocessing: Automatic linguistic variable generation
+    - Performance optimization: Efficient rule evaluation and selection
+    - Scikit-learn compatibility: Standard fit/predict interface
+
+Key Features:
+    - Automatic feature fuzzification with optimal partitioning
+    - Rule mining with support, confidence, and lift thresholds
+    - Multi-objective optimization balancing accuracy and interpretability
+    - Support for imbalanced datasets with specialized fitness functions
+    - Cross-validation based fitness evaluation for robust models
+    - Integration with various fuzzy set types (Type-1, Type-2, GT2)
+
+The classifiers are designed to be both highly accurate and interpretable,
+making them suitable for applications where understanding the decision process
+is as important as predictive performance.
+"""
 
 import numpy as np
 from sklearn.base import ClassifierMixin
@@ -11,13 +35,11 @@ try:
     from . import evolutionary_fit as evf
     from . import rule_mining as rm
     from . import utils
-    from . import maintenance as mnt
 except:
     import fuzzy_sets as fs
     import evolutionary_fit as evf
     import rule_mining as rm
     import utils
-    import maintenance as mnt
 
 
 class RuleMineClassifier(ClassifierMixin):
@@ -38,8 +60,6 @@ class RuleMineClassifier(ClassifierMixin):
         :param runner: number of threads to use.
         :param linguistic_variables: linguistic variables per antecedent.
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.Classification]['data_mining'] += 1
         
         self.nAnts = nAnts
         self.fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=linguistic_variables, 
@@ -101,8 +121,6 @@ class FuzzyRulesClassifier(ClassifierMixin):
         :param expansion_factor: if > 1, it will compute inthe first optimization process n times the nRules parameters. (So that the search space for the second step is bigger)
         :param linguistic_variables: linguistic variables per antecedent.
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.Classification]['double_go'] += 1
 
 
         self.fl_classifier1 = evf.BaseFuzzyRulesClassifier(nRules=nRules* expansion_factor, linguistic_variables=linguistic_variables, nAnts=nAnts, # We give this one more number rules so that then the second optimization has a bigger search space
@@ -164,9 +182,6 @@ class RuleFineTuneClassifier(ClassifierMixin):
         :param n_class: number of classes in the problem. If None (default) the classifier will compute it empirically.
         :param linguistic_variables: linguistic variables per antecedent.
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.Classification]['double_go'] += 1
-            mnt.usage_data[mnt.usage_categories.Classification]['data_mining'] += 1
 
         self.fl_classifier1 = evf.BaseFuzzyRulesClassifier(nRules=nRules* expansion_factor, linguistic_variables=linguistic_variables, nAnts=nAnts, # We give this one more number rules so that then the second optimization has a bigger search space
                                             fuzzy_type=fuzzy_type, verbose=verbose, tolerance=tolerance, runner=runner, n_class=n_class) 

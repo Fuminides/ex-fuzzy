@@ -1,7 +1,20 @@
 """
-This is a the source file that contains the class of GT2 fuzzy set and its most direct applications, 
-like computing the FM function, etc.
+Fuzzy Sets Module for Ex-Fuzzy Library
 
+This module contains the core fuzzy set classes and functionality for the ex-fuzzy library.
+It implements Type-1, Type-2, and General Type-2 fuzzy sets with their associated 
+membership functions and operations.
+
+Main Components:
+    - FUZZY_SETS enum: Defines the types of fuzzy sets supported
+    - Membership function implementations (trapezoidal, triangular, gaussian)
+    - Fuzzy set classes: FS, IVFS, gaussianFS, gaussianIVFS, categoricalFS, etc.
+    - fuzzyVariable class: Container for linguistic variables with multiple fuzzy sets
+    - Validation and statistical testing methods for fuzzy variables
+
+The module supports both numerical computation and provides interfaces for
+PyTorch tensors when available, making it suitable for both traditional fuzzy
+logic applications and modern machine learning workflows.
 """
 import enum
 from typing import Generator
@@ -10,9 +23,9 @@ import numpy as np
 import pandas as pd
 
 try:
-    from . import maintenance as mnt
+    pass  # Removed deprecated maintenance module
 except:
-    import maintenance as mnt
+    pass
 
 # You dont require torch to use this module, however, we need to import it to give support in case you feed these methods with torch tensors.
 try:
@@ -22,8 +35,23 @@ except:
     torch_available = False
 
 
-''' Enum that defines the fuzzy set types.'''
 class FUZZY_SETS(enum.Enum):
+    """
+    Enumeration defining the types of fuzzy sets supported by the library.
+    
+    This enum is used throughout the library to specify which type of fuzzy set
+    should be created or used in operations.
+    
+    Attributes:
+        t1: Type-1 fuzzy sets with crisp membership functions
+        t2: Type-2 interval fuzzy sets with upper and lower membership bounds  
+        gt2: General Type-2 fuzzy sets with full secondary membership functions
+        
+    Example:
+        >>> fz_type = FUZZY_SETS.t1
+        >>> if fz_type == FUZZY_SETS.t1:
+        ...     print("Using Type-1 fuzzy sets")
+    """
     t1 = 'Type 1'
     t2 = 'Type 2'
     gt2 = 'General Type 2'
@@ -34,13 +62,34 @@ class FUZZY_SETS(enum.Enum):
 
 
 def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> np.array:
-    '''
-    Trapezoidal membership functions.
-
-    :param x: input values in the fuzzy set referencial domain.
-    :param params:  four numbers that comprises the start and end of the trapezoid.
-    :param epsilon: small float number for numerical stability. Adjust accordingly only if there are NaN issues.
-    '''
+    """
+    Compute trapezoidal membership function values.
+    
+    This function computes the membership degree for input values using a trapezoidal
+    membership function defined by four parameters representing the trapezoid vertices.
+    
+    Args:
+        x (np.array): Input values in the fuzzy set domain for which to compute membership
+        params (list[float]): Four numbers [a, b, c, d] defining the trapezoid:
+            - a: left foot (membership starts rising)
+            - b: left shoulder (membership reaches 1.0)  
+            - c: right shoulder (membership starts falling)
+            - d: right foot (membership reaches 0.0)
+        epsilon (float, optional): Small value for numerical stability. Defaults to 10E-5.
+            
+    Returns:
+        np.array: Membership values in [0, 1] for each input value
+        
+    Example:
+        >>> x = np.array([0, 1, 2, 3, 4, 5])
+        >>> params = [1, 2, 3, 4]  # trapezoid from 1 to 4, flat from 2 to 3
+        >>> membership = trapezoidal_membership(x, params)
+        >>> print(membership)  # [0, 0, 1, 1, 0, 0]
+        
+    Note:
+        Special case: if a == d (singleton), returns 1.0 for exact matches, 0.0 otherwise.
+        This handles degenerate trapezoids that collapse to single points.
+    """
     a, b, c, d = params
 
     # Special case: a singleton trapezoid
@@ -90,42 +139,82 @@ def _gaussian2(x, params: list[float]) -> np.array:
 
 
 class FS():
-    '''
-    Class that defines the most basic fuzzy sets (also known as Type 1 fuzzy sets or Zadeh sets).
-    '''
+    """
+    Base class for Type-1 fuzzy sets (Zadeh fuzzy sets).
+    
+    This class implements the fundamental Type-1 fuzzy set with crisp membership functions.
+    It serves as the base class for more specialized fuzzy set types like triangular,
+    gaussian, and categorical fuzzy sets.
+    
+    Attributes:
+        name (str): The linguistic name of the fuzzy set (e.g., "low", "medium", "high")
+        membership_parameters (list[float]): Parameters defining the membership function
+        domain (list[float]): Two-element list defining the universe of discourse [min, max]
+        
+    Example:
+        >>> fs = FS("medium", [1, 2, 3, 4], [0, 5])  # Trapezoidal fuzzy set
+        >>> membership = fs.membership(2.5)
+        >>> print(membership)  # Should be 1.0 (fully in the set)
+        
+    Note:
+        This class uses trapezoidal membership functions by default. For other shapes,
+        use specialized subclasses like gaussianFS or triangularFS.
+    """
 
     def __init__(self, name: str, membership_parameters: list[float], domain: list[float]) -> None:
-        '''
-        Creates a fuzzy set.
+        """
+        Initialize a Type-1 fuzzy set.
 
-        :param name: string.
-        :param secondMF_lower: four real numbers. Parameters of the lower trapezoid/gaussian function.
-        :param secondMF_upper: four real numbers. Parameters of the upper trapezoid/gaussian function.
-        :param domain: list of two numbers. Limits of the domain of the fuzzy set.
-        '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
-            
+        Args:
+            name (str): Linguistic name for the fuzzy set
+            membership_parameters (list[float]): Four parameters [a, b, c, d] defining 
+                the trapezoidal membership function where:
+                - a: left foot (membership starts rising from 0)
+                - b: left shoulder (membership reaches 1.0)
+                - c: right shoulder (membership starts falling from 1.0)
+                - d: right foot (membership reaches 0)
+            domain (list[float]): Two-element list [min, max] defining the universe
+                of discourse for this fuzzy set
+                
+        Example:
+            >>> fs = FS("medium", [2, 3, 7, 8], [0, 10])
+            >>> # Creates a trapezoidal set: rises from 2-3, flat 3-7, falls 7-8
+        """
         self.name = name
         self.domain = domain
         self.membership_parameters = membership_parameters
 
 
     def membership(self, x: np.array) -> np.array:
-        '''
-        Computes the membership of a point or a vector.
+        """
+        Compute membership degrees for input values.
 
-        :param x: input values in the fuzzy set referencial domain.
-        '''
+        This method calculates the membership degree(s) for the given input value(s)
+        using the trapezoidal membership function defined by this fuzzy set's parameters.
+
+        Args:
+            x (np.array): Input value(s) for which to compute membership degrees.
+                Can be a single value, list, or numpy array.
+
+        Returns:
+            np.array: Membership degree(s) in the range [0, 1]. Shape matches input.
+
+        Example:
+            >>> fs = FS("medium", [2, 3, 7, 8], [0, 10])
+            >>> print(fs.membership(5))    # 1.0 (in flat region)
+            >>> print(fs.membership(2.5)) # 0.5 (on rising slope)
+            >>> print(fs.membership([1, 5, 9])) # [0.0, 1.0, 0.0]
+        """
         return trapezoidal_membership(x, self.membership_parameters)
 
 
     def type(self) -> FUZZY_SETS:
-        '''
-        Returns the corresponding fuzzy set type according to FUZZY_SETS enum.
+        """
+        Return the fuzzy set type identifier.
 
-        :return: FUZZY_SETS enum.
-        '''
+        Returns:
+            FUZZY_SETS: The type identifier (FUZZY_SETS.t1 for Type-1 fuzzy sets)
+        """
         return FUZZY_SETS.t1
 
 
@@ -179,9 +268,6 @@ class categoricalFS(FS):
         self.name = name
         self.category = category
 
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
-
 
     def membership(self, x: np.array) -> np.array:
         '''
@@ -229,26 +315,53 @@ class categoricalFS(FS):
 
 
 class IVFS(FS):
-    '''
-
-    Class to define a iv fuzzy set.
-    '''
+    """
+    Interval-Valued Fuzzy Set (Type-2 Fuzzy Set) class.
+    
+    This class implements Type-2 fuzzy sets using interval-valued membership functions.
+    Each point in the domain has an interval [lower, upper] representing the uncertainty
+    in the membership degree, providing a more flexible representation than Type-1 sets.
+    
+    Attributes:
+        name (str): Linguistic name of the fuzzy set
+        domain (list[float]): Universe of discourse [min, max]
+        secondMF_lower (list[float]): Parameters for the lower membership function
+        secondMF_upper (list[float]): Parameters for the upper membership function  
+        lower_height (float): Height of the lower membership function
+        
+    Example:
+        >>> ivfs = IVFS("medium", [2,3,7,8], [1,2,8,9], [0,10], 0.8)
+        >>> membership = ivfs.membership(5)  
+        >>> print(membership)  # Returns [lower_membership, upper_membership]
+        
+    Note:
+        The upper membership function should be contained within the lower membership
+        function to maintain mathematical consistency of Type-2 fuzzy sets.
+    """
 
     def __init__(self, name: str, secondMF_lower: list[float], secondMF_upper: list[float], 
                 domain: list[float], lower_height=1.0) -> None:
-        '''
-        Creates a IV fuzzy set.
+        """
+        Initialize an Interval-Valued Fuzzy Set.
 
-        :param name: string.
-        :param secondMF_lower: four real numbers. Parameters of the lower trapezoid/gaussian function.
-        :param secondMF_upper: four real numbers. Parameters of the upper trapezoid/gaussian function.
-        :param domain: list of two numbers. Limits of the domain if the fuzzy set.
-        '''
+        Args:
+            name (str): Linguistic name for the fuzzy set
+            secondMF_lower (list[float]): Four parameters [a,b,c,d] for lower trapezoidal 
+                membership function (outer boundary)
+            secondMF_upper (list[float]): Four parameters [a,b,c,d] for upper trapezoidal
+                membership function (inner boundary)
+            domain (list[float]): Two-element list [min, max] defining universe of discourse
+            lower_height (float, optional): Maximum height of lower membership function.
+                Defaults to 1.0.
+                
+        Raises:
+            AssertionError: If membership function parameters are inconsistent or invalid
+            
+        Example:
+            >>> ivfs = IVFS("high", [6,7,9,10], [6.5,7.5,8.5,9.5], [0,10], 0.9)
+        """
         self.name = name
         self.domain = domain
-
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
 
         assert secondMF_lower[0] >= secondMF_upper[0], 'First term membership incoherent'
         assert secondMF_lower[0] <= secondMF_lower[1] and secondMF_lower[
@@ -314,9 +427,6 @@ class categoricalIVFS(IVFS):
         '''
         self.name = name
         self.category = category
-
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
 
 
     def membership(self, x: np.array) -> np.array:
@@ -390,9 +500,6 @@ class GT2(FS):
         :param alpha_cuts: list of real numbers. Alpha cuts of the fuzzy set.
         :param unit_resolution: real number. Resolution of the primary membership function.
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
-
         self.name = name
         self.domain = domain
         self.secondary_memberships = secondary_memberships
@@ -495,83 +602,182 @@ class GT2(FS):
         
 
 class gaussianIVFS(IVFS):
-    '''
-    Class to define a iv fuzzy set with gaussian membership.
-    '''
+    """
+    Gaussian Interval-Valued (Type-2) Fuzzy Set Implementation.
+    
+    This class implements a Gaussian interval-valued fuzzy set with two Gaussian
+    membership functions (upper and lower) representing the uncertainty boundaries.
+    This allows for modeling higher-order uncertainty in fuzzy systems.
+    
+    Attributes:
+        secondMF_lower (list): Parameters [mean, std] for the lower membership function
+        secondMF_upper (list): Parameters [mean, std] for the upper membership function
+        name (str): Human-readable name for the fuzzy set
+        universe_size (int): Size of the universe of discourse
+        
+    Example:
+        >>> lower_params = [5.0, 1.0]
+        >>> upper_params = [5.0, 1.5]
+        >>> iv_gauss = gaussianIVFS(lower_params, upper_params, "Medium", 10)
+        >>> membership = iv_gauss.membership(np.array([4.0, 5.0, 6.0]))
+        >>> print(membership.shape)  # (3, 2) - lower and upper bounds
+        
+    Note:
+        The interval-valued membership function provides both lower and upper
+        bounds for each input, enabling Type-2 fuzzy reasoning.
+    """
 
     def membership(self, input: np.array) -> np.array:
-        '''
-        Computes the gaussian iv-membership of a point or a vector.
-
-        :param input: input values in the fuzzy set referencial domain.
-        :return: np array samples x 2
-        '''
+        """
+        Computes the Gaussian interval-valued membership values for input points.
+        
+        Returns both lower and upper membership bounds for each input value,
+        enabling Type-2 fuzzy set operations.
+        
+        Args:
+            input (np.array): Input values in the fuzzy set domain
+            
+        Returns:
+            np.array: Array of shape (n, 2) with [lower, upper] bounds for each input
+            
+        Example:
+            >>> iv_gauss = gaussianIVFS([0, 1], [0, 1.5], "Zero", 5)
+            >>> values = iv_gauss.membership(np.array([0.0, 1.0]))
+            >>> print(values.shape)  # (2, 2) - 2 inputs, 2 bounds each
+        """
         lower = _gaussian2(input, self.secondMF_lower)
         upper = _gaussian2(input, self.secondMF_upper)
 
         return np.array(np.concatenate([lower, upper])).T
 
-
     def type(self) -> FUZZY_SETS:
-        '''
-        Returns the type of the fuzzy set. (t1)
-        '''
+        """
+        Returns the type of the fuzzy set.
+        
+        Returns:
+            FUZZY_SETS: Always returns FUZZY_SETS.t2 for Type-2 fuzzy sets
+        """
         return FUZZY_SETS.t2
 
-
     def shape(self) -> str:
-        '''
+        """
         Returns the shape of the fuzzy set.
-
-        :return: string.
-        '''
+        
+        Returns:
+            str: Always returns 'gaussian'
+        """
         return 'gaussian'
     
 
 class gaussianFS(FS):
-    '''
-    Class to define a gaussian fuzzy set.
-    '''
+    """
+    Gaussian Type-1 Fuzzy Set Implementation.
+    
+    This class implements a Gaussian fuzzy set with bell-shaped membership function.
+    Gaussian fuzzy sets are characterized by their mean and standard deviation,
+    providing smooth membership transitions ideal for continuous variables.
+    
+    Attributes:
+        membership_parameters (list): [mean, standard_deviation] defining the Gaussian curve
+        name (str): Human-readable name for the fuzzy set
+        universe_size (int): Size of the universe of discourse
+        
+    Example:
+        >>> params = [5.0, 1.5]  # mean=5, std=1.5
+        >>> gauss_fs = gaussianFS(params, "Medium", 10)
+        >>> membership = gauss_fs.membership(np.array([4.0, 5.0, 6.0]))
+        >>> print(membership)  # [0.606, 1.0, 0.606]
+        
+    Note:
+        The membership function follows the formula:
+        μ(x) = exp(-0.5 * ((x - mean) / std)^2)
+    """
 
     def membership(self, input: np.array) -> np.array:
-        '''
-        Computes the gaussian membership of a point or a vector.
-
-        :param input: input values in the fuzzy set referencial domain.
-        :return: np array samples
-        '''
+        """
+        Computes the Gaussian membership values for input points.
+        
+        The membership function implements the Gaussian curve formula using
+        the mean and standard deviation parameters.
+        
+        Args:
+            input (np.array): Input values in the fuzzy set domain
+            
+        Returns:
+            np.array: Membership values in range [0, 1]
+            
+        Example:
+            >>> gauss_fs = gaussianFS([0, 1], "Zero", 5)
+            >>> values = gauss_fs.membership(np.array([-1, 0, 1]))
+            >>> print(values)  # [0.606, 1.0, 0.606]
+        """
         return _gaussian2(input, self.membership_parameters)
 
-
     def type(self) -> FUZZY_SETS:
-        '''
-        Returns the type of the fuzzy set. (t1)
-        '''
+        """
+        Returns the type of the fuzzy set.
+        
+        Returns:
+            FUZZY_SETS: Always returns FUZZY_SETS.t1 for Type-1 fuzzy sets
+        """
         return FUZZY_SETS.t1
-    
-    
-    def shape(self) -> str:
-        '''
-        Returns the shape of the fuzzy set.
 
-        :return: string.
-        '''
+    def shape(self) -> str:
+        """
+        Returns the shape of the fuzzy set.
+        
+        Returns:
+            str: Always returns 'gaussian'
+        """
         return 'gaussian'
 
 
 class fuzzyVariable():
-    '''
-    Class to implement a fuzzy Variable. Contains a series of fuzzy sets and computes the memberships to all of them.
-    '''
+    """
+    Fuzzy Variable Container and Management Class.
+    
+    This class represents a fuzzy variable composed of multiple fuzzy sets
+    (linguistic variables). It provides methods to compute memberships across
+    all fuzzy sets and manage the linguistic terms of the variable.
+    
+    Attributes:
+        linguistic_variables (list): List of fuzzy sets that define the variable
+        name (str): Name of the fuzzy variable
+        units (str): Units of measurement (optional, for display purposes)
+        fs_type (FUZZY_SETS): Type of fuzzy sets (t1 or t2)
+        
+    Example:
+        >>> # Create fuzzy sets for temperature
+        >>> low_temp = gaussianFS([15, 5], "Low", 100)
+        >>> medium_temp = gaussianFS([25, 5], "Medium", 100)
+        >>> high_temp = gaussianFS([35, 5], "High", 100)
+        >>> 
+        >>> # Create fuzzy variable
+        >>> temp_var = fuzzyVariable("Temperature", [low_temp, medium_temp, high_temp], "°C")
+        >>> memberships = temp_var.membership([20, 25, 30])
+        >>> print(memberships.shape)  # (3, 3) - 3 inputs, 3 fuzzy sets
+        
+    Note:
+        All fuzzy sets in the variable must be of the same type (t1 or t2).
+    """
 
-    def __init__(self, name: str, fuzzy_sets: list[FS], units:str=None) -> None:
-        '''
-        Creates a fuzzy variable.
-
-        :param name: string. Name of the fuzzy variable.
-        :param fuzzy_sets: list of IVFS. Each of the fuzzy sets that comprises the linguist variables of the fuzzy variable.
-        :param units: string. Units of the fuzzy variable. Only for printings purposes.
-        '''
+    def __init__(self, name: str, fuzzy_sets: list[FS], units: str = None) -> None:
+        """
+        Creates a fuzzy variable with the specified fuzzy sets.
+        
+        Args:
+            name (str): Name of the fuzzy variable
+            fuzzy_sets (list[FS]): List of fuzzy sets that comprise the linguistic variables
+            units (str, optional): Units of the fuzzy variable for display purposes
+            
+        Raises:
+            ValueError: If fuzzy_sets is empty or contains mixed types
+            
+        Example:
+            >>> fs1 = gaussianFS([0, 1], "Low", 10)
+            >>> fs2 = gaussianFS([5, 1], "High", 10)
+            >>> var = fuzzyVariable("Speed", [fs1, fs2], "m/s")
+        """
         self.linguistic_variables = []
         self.name = name
         self.units = units

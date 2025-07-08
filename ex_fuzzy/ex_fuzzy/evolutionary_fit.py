@@ -1,6 +1,30 @@
 """
-This is a the source file that contains the class to train/fit the rulebase using a genetic algorithm.
+Evolutionary Optimization for Fuzzy Rule Base Learning
 
+This module implements genetic algorithm-based optimization for learning fuzzy rule bases.
+It provides automatic rule discovery, parameter tuning, and structure optimization for
+fuzzy inference systems using evolutionary computation techniques.
+
+Main Components:
+    - FitRuleBase: Core optimization problem class for genetic algorithms
+    - Fitness functions: Multiple objective functions for rule quality assessment
+    - Genetic operators: Specialized crossover, mutation, and selection for fuzzy rules
+    - Multi-objective optimization: Support for accuracy vs. complexity trade-offs
+    - Parallel evaluation: Efficient fitness evaluation using multiple threads
+    - Integration with Pymoo: Leverages the Pymoo optimization framework
+
+The module supports automatic learning of:
+    - Rule antecedents (which variables and linguistic terms to use)
+    - Rule consequents (output class assignments)
+    - Rule structure (number of rules, complexity constraints)
+    - Membership function parameters (when combined with other modules)
+
+Key Features:
+    - Stratified cross-validation for robust fitness evaluation
+    - Multiple fitness metrics (accuracy, MCC, F1-score, etc.)
+    - Support for Type-1, Type-2, and General Type-2 fuzzy systems
+    - Automatic handling of imbalanced datasets
+    - Configurable complexity penalties to avoid overfitting
 """
 import os 
 from typing import Callable
@@ -27,14 +51,12 @@ try:
     from . import rules
     from . import eval_rules as evr
     from . import vis_rules
-    from . import maintenance as mnt
     
 except ImportError:
     import fuzzy_sets as fs
     import rules
     import eval_rules as evr
     import vis_rules
-    import maintenance as mnt
 
 
 
@@ -64,9 +86,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param fuzzy_modifiers: if True, the classifier will use the modifiers in the optimization process.
         :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.Funcs]['fit'] += 1
-
         if precomputed_rules is not None:
             self.nRules = len(precomputed_rules.get_rules())
             self.nAnts = len(precomputed_rules.get_rules()[0].antecedents)
@@ -101,8 +120,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             self.thread_runner = None
         
         if linguistic_variables is not None:
-            if mnt.save_usage_flag:
-                mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
             # If the linguistic variables are precomputed then we act accordingly
             self.lvs = linguistic_variables
             self.n_linguist_variables = [len(lv.linguistic_variable_names()) for lv in self.lvs]
@@ -115,8 +132,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                     print('Warning: The number of antecedents is higher than the number of variables. Setting nAnts to the number of linguistic variables. (' + str(len(linguistic_variables)) + ')')
 
         else:
-            if mnt.save_usage_flag:
-                mnt.usage_data[mnt.usage_categories.Funcs]['opt_labels'] += 1
 
             # If not, then we need the parameters sumistered by the user.
             self.lvs = None
@@ -161,8 +176,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
         :return: None. The classifier is fitted to the data.
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.Funcs]['fit'] += 1
             
         if self.classes_names is None:
             self.classes_names = [aux for aux in np.unique(y)]

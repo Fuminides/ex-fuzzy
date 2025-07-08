@@ -2,106 +2,312 @@
   <img src="https://github.com/user-attachments/assets/74380868-0bee-4251-b09c-57e8ad65f2e5" width="200" height="200">
 </p>
 
-
-# Ex-Fuzzy
-ex-Fuzzy is a fuzzy toolbox library for Python with special focus in its accesibility to use and visualization of results. In this way, we focus on the ex(-Fuzzy)plainable capacities of approximate reasoning.
-
-Some of the tools available in this library include:
-
-- Support for approximate reasoning using fuzzy association rules, for both classification and regression problems. This includes rule base optimization using genetic algorithms and rule visualization.
-- Define rule bases as you want: number of rules, antecedents, etc. Everything can be explicitly set by the user.
-- Quantile-based and problem-optimized fuzzy variables and their correspondent linguistic variables (i.e low, medium, high). We also support genetic fine tuning of the partitions that keep them interpretable by the user.
-- Rule mining using support, confidence and lift measures. Customizable genetic optimization of the rule bases parameters.
-- Support for various kinds of fuzzy sets, including classic fuzzy sets, IV-fuzzy sets and General Type 2 fuzzy sets. We also support linguistic hedges.
-
-## Main Characteristics
-
-
-### Easy to use
-
-ex-Fuzzy is designed to be easy to use. Linguistic variables can be precomputed and optimized without any understading of its implementation. No need to know anything about fuzzy. Choosing one kind of fuzzy set only requires to set one flag. You can also see the demos to see how the basic uses are supported.
-
-### Sci-py like interface
-
-ex-Fuzzy is built taking into account the actual machine-learing frameworks used in Python. Training amd sing a rule base classifier works exactly as sci-kit learn classifier. Parameters such as the number of rules or antecedents are also built 
-
-### Visualization
-
-Use plots to visualize any kind of fuzzy sets, and use graphs to visualize rules or print them on screen.
-
+<h1 align="center">Ex-Fuzzy</h1>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/12574757/210235257-17b22ede-762b-406c-880a-497e06964f17.png" height="320" title="Fuzzy graph">
-  <img src="https://github.com/user-attachments/assets/858ae72b-6504-4173-b81b-b11a3caf802f" height="320" title="Type 1 example">
-  <img src="https://github.com/user-attachments/assets/0daf546a-6f8b-46dd-9d7e-f97242ea5324" height="350" title="Type 2 example">
-  <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/b356a09f-4c66-45c9-8362-ebdbda684669" height="350" title="General Type 2 example">
-  
+  <i>🚀 A modern, explainable fuzzy logic library for Python</i>
 </p>
-
-### Testing your patterns and building robust rules
-
-ex-Fuzzy lets you study how reliable are your rules and their variable usage. You can easily repeat the experiments for statistical quantification of the results and then study the patterns obtained.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/4e57469d-6cc6-4a9c-a256-dba052a91045" height="360" title="Usage per class">
-  <img src="https://github.com/user-attachments/assets/819f0988-deeb-4c8d-8cca-d8dd75e437f7" height="360" title="Usage per variable">
+  <a href="https://pypi.org/project/ex-fuzzy/">
+    <img alt="PyPI" src="https://img.shields.io/pypi/v/ex-fuzzy?color=blue&style=flat-square">
+  </a>
+  <a href="https://pypi.org/project/ex-fuzzy/">
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/ex-fuzzy?style=flat-square">
+  </a>
+  <a href="https://github.com/Fuminides/ex-fuzzy/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/Fuminides/ex-fuzzy?style=flat-square">
+  </a>
+  <a href="https://github.com/Fuminides/ex-fuzzy/stargazers">
+    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/Fuminides/ex-fuzzy?style=flat-square">
+  </a>
+  <a href="https://www.sciencedirect.com/science/article/pii/S0925231224008191">
+    <img alt="Paper" src="https://img.shields.io/badge/Paper-Neurocomputing-green?style=flat-square">
+  </a>
 </p>
 
-You can also do bootstrapping to obtain the confidence intervals of all the metrics you are interested in. You can easily discard those that are not good enough for your standards:
+<p align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-examples">Examples</a> •
+  <a href="#-documentation">Documentation</a> •
+  <a href="#-contributing">Contributing</a> •
+  <a href="#-citation">Citation</a>
+</p>
 
+---
 
-<img src="https://github.com/user-attachments/assets/4d5d9d77-4ac4-474e-8ac2-6a146085ae53" alt="Exfuzzy iris example" style="border: 4px solid #ddd; border-radius: 15px; padding: 10px;" />
+## 🎯 Overview
 
-### Reusable code
+**Ex-Fuzzy** is a comprehensive Python library for **explainable artificial intelligence** through fuzzy logic programming. Built with a focus on accessibility and visualization, it enables researchers and practitioners to create interpretable machine learning models using fuzzy association rules.
 
-Code is designed so that some parts can be easily extendable so that some use cases, like research, can be also supported. The rule base optimization is done using a Genetic Algorithm, but almost any other pymoo search algorithm will do. Fuzzy sets can be extended with ease, just as the kind of partitions, membership functions, etc.
+### Why Ex-Fuzzy?
 
-## Try some demos! <img src="https://colab.research.google.com/img/colab_favicon_256px.png" height="40">
-You can find them on Google colab:
+- 🔍 **Explainable AI**: Create interpretable models that humans can understand
+- 📊 **Rich Visualizations**: Beautiful plots and graphs for fuzzy sets and rules
+- 🛠️ **Scikit-learn Compatible**: Familiar API for machine learning practitioners
+- 🚀 **High Performance**: Optimized algorithms with optional GPU support
+- 📚 **Comprehensive**: Support for classification, regression, and rule mining
 
-- [Basic classification demo](https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing)
-- [Using a custom loss function](https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing)
-- [Loading a text rule file](https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing)
-- [Using a good set of rules for initial population](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing)
-- [Temporal fuzzy sets demo](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing)
-- [Rule mining classifiers](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing)
+## ✨ Features
 
-## Dependencies
+### 🧠 **Fuzzy Logic Systems**
+- **Multiple Fuzzy Set Types**: Classic, Interval-Valued (Type-2), and General Type-2 fuzzy sets
+- **Linguistic Variables**: Automatic generation with quantile-based optimization
+- **Linguistic Hedges**: Natural language modifiers for enhanced expressiveness
 
-- Numpy
-- Pandas
-- Matplotlib
-- Pymoo
-- Networkx (optional: only for rule visualization)
-- Pytorch (optional: only if you want to run fuzzy inference in a GPU)
+### 🔍 **Rule-Based Learning**
+- **Fuzzy Association Rules**: For both classification and regression problems
+- **Rule Mining**: Support, confidence, and lift measures with genetic optimization
+- **Custom Rule Bases**: Full control over rules, antecedents, and structure
 
-## Installation
+### 🎨 **Advanced Visualization**
+- **Interactive Plots**: Visualize fuzzy sets, rules, and decision boundaries
+- **Network Graphs**: Beautiful rule visualizations using NetworkX
+- **Statistical Analysis**: Pattern stability and bootstrap confidence intervals
 
-You can install ex-Fuzzy using pip, from the PyPi repository, with the following command:
+### 🔬 **Research & Development**
+- **Genetic Algorithms**: Rule base optimization using PyMOO
+- **Temporal Fuzzy Sets**: Time-aware fuzzy reasoning
+- **Extensible Architecture**: Easy to extend with custom components
 
-`pip install ex-fuzzy`
+## 🚀 Quick Start
 
-## Citation
+### Installation
 
-You can check our paper in [Neurocomputing](https://www.sciencedirect.com/science/article/pii/S0925231224008191).
+Install Ex-Fuzzy using pip:
 
-In case you find exFuzzy useful, please cite it in your papers:
+```bash
+pip install ex-fuzzy
 ```
+
+### Basic Usage
+
+```python
+import numpy as np
+from ex_fuzzy import BaseFuzzyRulesClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Create and train fuzzy classifier
+classifier = BaseFuzzyRulesClassifier(
+    n_rules=15,
+    n_antecedents=4,
+    fuzzy_type="t1"  # Type-1 fuzzy sets
+)
+
+# Train the model
+classifier.fit(X_train, y_train)
+
+# Make predictions
+predictions = classifier.predict(X_test)
+
+# Evaluate and visualize
+from ex_fuzzy.eval_tools import eval_fuzzy_model
+eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test, 
+                plot_rules=True, plot_partitions=True)
+```
+
+## 📊 Visualizations
+
+Ex-Fuzzy provides beautiful visualizations to understand your fuzzy models:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/12574757/210235257-17b22ede-762b-406c-880a-497e06964f17.png" height="280" title="Fuzzy Rule Graph">
+  <img src="https://github.com/user-attachments/assets/858ae72b-6504-4173-b81b-b11a3caf802f" height="280" title="Type-1 Fuzzy Sets">
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0daf546a-6f8b-46dd-9d7e-f97242ea5324" height="280" title="Type-2 Fuzzy Sets">
+  <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/b356a09f-4c66-45c9-8362-ebdbda684669" height="280" title="General Type-2 Fuzzy Sets">
+</p>
+
+### 📈 Statistical Analysis
+
+Monitor pattern stability and variable usage across multiple runs:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4e57469d-6cc6-4a9c-a256-dba052a91045" height="300" title="Usage per Class">
+  <img src="https://github.com/user-attachments/assets/819f0988-deeb-4c8d-8cca-d8dd75e437f7" height="300" title="Usage per Variable">
+</p>
+
+### 🎯 Bootstrap Confidence Intervals
+
+Obtain statistical confidence intervals for your metrics:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4d5d9d77-4ac4-474e-8ac2-6a146085ae53" alt="Bootstrap Analysis" style="border: 2px solid #ddd; border-radius: 8px; padding: 10px;" />
+</p>
+
+## 🛠️ Examples
+
+### 🔬 Interactive Jupyter Notebooks
+
+Try our hands-on examples in Google Colab:
+
+| Topic | Description | Colab Link |
+|-------|-------------|------------|
+| **Basic Classification** | Introduction to fuzzy classification | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing) |
+| **Custom Loss Functions** | Advanced optimization techniques | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing) |
+| **Rule File Loading** | Working with text-based rule files | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing) |
+| **Advanced Rules** | Using pre-computed rule populations | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing) |
+| **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
+| **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
+
+### 💻 Code Examples
+
+<details>
+<summary><b>🔍 Advanced Rule Mining</b></summary>
+
+```python
+from ex_fuzzy.rule_mining import mine_rulebase
+from ex_fuzzy.utils import create_fuzzy_variables
+
+# Create fuzzy variables
+variables = create_fuzzy_variables(X_train, ['low', 'medium', 'high'])
+
+# Mine rules from data
+rules = mine_rulebase(X_train, variables, 
+                     support_threshold=0.1, 
+                     max_depth=3)
+
+print(f"Discovered {len(rules)} rules")
+```
+</details>
+
+<details>
+<summary><b>📊 Custom Visualization</b></summary>
+
+```python
+from ex_fuzzy.vis_rules import visualize_rulebase
+
+# Create custom rule visualization
+visualize_rulebase(classifier.rule_base, 
+                  export_path="my_rules.png",
+                  layout="spring")
+
+# Plot fuzzy variable partitions
+classifier.plot_fuzzy_variables()
+```
+</details>
+
+<details>
+<summary><b>🧪 Bootstrap Analysis</b></summary>
+
+```python
+from ex_fuzzy.bootstrapping_test import generate_bootstrap_samples
+
+# Generate bootstrap samples
+bootstrap_samples = generate_bootstrap_samples(X_train, y_train, n_samples=100)
+
+# Evaluate model stability
+bootstrap_results = []
+for X_boot, y_boot in bootstrap_samples:
+    classifier_boot = BaseFuzzyRulesClassifier(n_rules=10)
+    classifier_boot.fit(X_boot, y_boot)
+    accuracy = classifier_boot.score(X_test, y_test)
+    bootstrap_results.append(accuracy)
+
+print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 97.5])}")
+```
+</details>
+
+## 📚 Documentation
+
+- **📖 [User Guide](https://github.com/Fuminides/ex-fuzzy/wiki)**: Comprehensive tutorials and examples
+- **🔧 [API Reference](https://github.com/Fuminides/ex-fuzzy/wiki/API)**: Detailed function and class documentation
+- **🚀 [Quick Start Guide](https://github.com/Fuminides/ex-fuzzy/wiki/Quick-Start)**: Get up and running fast
+- **📊 [Examples Gallery](https://github.com/Fuminides/ex-fuzzy/tree/main/Demos)**: Real-world use cases
+
+## 🛡️ Requirements
+
+### Core Dependencies
+- **Python** >= 3.7
+- **NumPy** >= 1.19.0
+- **Pandas** >= 1.2.0
+- **Matplotlib** >= 3.3.0
+- **PyMOO** >= 0.6.0
+
+### Optional Dependencies
+- **NetworkX** >= 2.6 (for rule visualization)
+- **PyTorch** >= 1.9.0 (for GPU acceleration)
+- **Scikit-learn** >= 0.24.0 (for compatibility examples)
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Here's how you can help:
+
+### 🐛 Bug Reports
+Found a bug? Please [open an issue](https://github.com/Fuminides/ex-fuzzy/issues) with:
+- Clear description of the problem
+- Steps to reproduce
+- Expected vs actual behavior
+- System information
+
+### 🚀 Feature Requests
+Have an idea? [Submit a feature request](https://github.com/Fuminides/ex-fuzzy/issues) with:
+- Clear use case description
+- Proposed API design
+- Implementation considerations
+
+### 💻 Code Contributions
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes with tests
+4. Submit a pull request
+
+### 📖 Documentation
+Help improve documentation by:
+- Adding examples
+- Fixing typos
+- Improving clarity
+- Adding translations
+
+## 📄 License
+
+This project is licensed under the **AGPL v3 License** - see the [LICENSE](LICENSE) file for details.
+
+## 📑 Citation
+
+If you use Ex-Fuzzy in your research, please cite our paper:
+
+```bibtex
 @article{fumanalex2024,
-title = {Ex-Fuzzy: A library for symbolic explainable AI through fuzzy logic programming},
-journal = {Neurocomputing},
-pages = {128048},
-year = {2024},
-issn = {0925-2312},
-doi = {https://doi.org/10.1016/j.neucom.2024.128048},
-url = {https://www.sciencedirect.com/science/article/pii/S0925231224008191},
-author = {Javier Fumanal-Idocin and Javier Andreu-Perez},
+  title = {Ex-Fuzzy: A library for symbolic explainable AI through fuzzy logic programming},
+  journal = {Neurocomputing},
+  pages = {128048},
+  year = {2024},
+  issn = {0925-2312},
+  doi = {10.1016/j.neucom.2024.128048},
+  url = {https://www.sciencedirect.com/science/article/pii/S0925231224008191},
+  author = {Javier Fumanal-Idocin and Javier Andreu-Perez}
 }
 ```
 
-If you find this work interesting or want to see papers that apply ex-Fuzzy, check the rest of our research as well in Google scholar. If you are interested in the code, a Github star is also greatly appreciated.
+## 👥 Authors & Contributors
 
-## Contributors
-Javier Fumanal Idocin, Javier Andreu-Perez
+- **[Javier Fumanal-Idocin](https://github.com/Fuminides)** - *Lead Developer*
+- **[Javier Andreu-Perez](https://github.com/javierandreuperez)** - *Co-author*
 
-This project is licensed under the terms of the AGLP v3 license, 2021-2024
+## 🌟 Acknowledgments
+
+- Special thanks to all [contributors](https://github.com/Fuminides/ex-fuzzy/graphs/contributors)
+- Built with ❤️ for the fuzzy logic and explainable AI communities
+- Supported by research institutions and open-source community
+
+---
+
+<p align="center">
+  <b>⭐ Star us on GitHub if you find Ex-Fuzzy useful!</b><br>
+  <a href="https://github.com/Fuminides/ex-fuzzy/stargazers">
+    <img src="https://img.shields.io/github/stars/Fuminides/ex-fuzzy?style=social" alt="GitHub Stars">
+  </a>
+</p>
+
+<p align="center">
+  Made with ❤️ by the Ex-Fuzzy team
+</p>

@@ -1,21 +1,30 @@
-# -*- coding: utf-8 -*-
 """
-Functions that are not fuzzy-specific, but util for some computations. 
-Dedicated mostly to compute quantiles for fuzzy partitions.
+Utility Functions for Ex-Fuzzy Library
 
+This module provides utility functions that support fuzzy system operations but are not
+fuzzy-specific themselves. The main focus is on quantile computation for fuzzy partitions,
+data preprocessing, and helper functions for fuzzy variable creation.
+
+Main Components:
+    - Quantile computation functions for different partition schemes
+    - Fuzzy variable creation utilities
+    - Data preprocessing and partitioning helpers
+    - Membership computation and precomputation utilities
+    - Support for temporal fuzzy systems
+
+These utilities are essential for creating well-distributed fuzzy partitions and
+preparing data for fuzzy system operations.
 """
 import numpy as np
 import pandas as pd
 
 try:
     from . import fuzzy_sets as fs
-    from . import maintenance as mnt
     from . import temporal
     from . import rules
     from . import eval_rules as evr
 except ImportError:
     import fuzzy_sets as fs
-    import maintenance as mnt
     import temporal
     import rules
     import eval_rules as evr
@@ -27,35 +36,84 @@ epsilon = 0.0001
 
 
 def quartile_compute(x: np.array) -> list[float]:
-    '''
-    Computes the quartiles for each feature.
-
-    :param x: array samples x features
-    :return: list of quartiles for each feature
-    '''
+    """
+    Compute quartiles for each feature in the dataset.
+    
+    This function calculates the 0%, 25%, 50%, and 100% quantiles (min, Q1, median, max)
+    for each feature in the input array. These quartiles are commonly used for creating
+    three-partition fuzzy variables.
+    
+    Args:
+        x (np.array): Input data array with shape (samples, features)
+        
+    Returns:
+        list[float]: Array of quartiles with shape (4, n_features) where each column
+            contains [min, Q1, median, max] for the corresponding feature
+            
+    Example:
+        >>> data = np.array([[1, 10], [2, 20], [3, 30], [4, 40]])
+        >>> quartiles = quartile_compute(data)
+        >>> print(quartiles)
+        [[1. 10.]   # Min values
+         [1.75 17.5] # Q1 values  
+         [2.5 25.]   # Median values
+         [4. 40.]]   # Max values
+    """
     return np.quantile(x, [0, 0.25, 0.5, 1], axis=0)
 
 
 def fixed_quantile_compute(x: np.array) -> list[float]:
-    '''
-    Computes a series of quantiles for each feature in numpy array.
-    Quantiles: [0, 0.20, 0.30, 0.45, 0.55, 0.7, 0.8, 1]
-
-    :param x: array samples x features
-    :return: list of quantiles for each feature
-    '''
+    """
+    Compute a fixed set of quantiles for each feature in the dataset.
+    
+    This function calculates a predefined set of quantiles optimized for creating
+    well-distributed fuzzy partitions. The quantiles are: [0, 0.20, 0.30, 0.45, 0.55, 0.7, 0.8, 1].
+    
+    Args:
+        x (np.array): Input data array with shape (samples, features)
+        
+    Returns:
+        list[float]: Array of quantiles with shape (8, n_features) where each column
+            contains the 8 quantile values for the corresponding feature
+            
+    Example:
+        >>> data = np.random.normal(0, 1, (100, 2))
+        >>> quantiles = fixed_quantile_compute(data)
+        >>> print(quantiles.shape)
+        (8, 2)
+        
+    Note:
+        This quantile scheme is particularly useful for creating fuzzy variables
+        with overlapping membership functions that provide good coverage of the data space.
+    """
     return np.quantile(x, [0, 0.20, 0.30, 0.45, 0.55, 0.7, 0.8, 1], axis=0)
 
 
 def partition3_quantile_compute(x: np.array) -> list[float]:
-    '''
-    Computes a series of quantiles partitioning the variable in 3 cases.
-
-    Quantiles: [0.00, 0.20, 0.50, 0.80, 1.00]
-
-    :param x: array samples x features
-    :return: list of quantiles for each feature
-    '''
+    """
+    Compute quantiles for three-partition fuzzy variables.
+    
+    This function calculates quantiles specifically designed for creating three-partition
+    fuzzy variables (typically low, medium, high). The quantiles are: [0.00, 0.20, 0.50, 0.80, 1.00].
+    
+    Args:
+        x (np.array): Input data array with shape (samples, features)
+        
+    Returns:
+        list[float]: Array of quantiles with shape (5, n_features) where each column
+            contains the 5 quantile values for the corresponding feature
+            
+    Example:
+        >>> data = np.random.uniform(0, 100, (1000, 3))
+        >>> quantiles = partition3_quantile_compute(data)
+        >>> print(quantiles.shape)
+        (5, 3)
+        
+    Note:
+        These quantiles are specifically chosen to create three overlapping trapezoidal
+        membership functions that provide balanced coverage of the data range with
+        appropriate overlap between adjacent fuzzy sets.
+    """
     return np.quantile(x, [0, 0.20, 0.50, 0.80, 1.00], axis=0)
 
 
@@ -498,18 +556,38 @@ def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=2, n_partition
 
 
 def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3, shape='trapezoid') -> list[fs.fuzzyVariable]:
-    '''
-    Returns a list of linguistic variables according to the kind of fuzzy specified.
-
-    :param X: numpy array|pandas dataframe, shape samples x features.
-    :param fz_type_studied: fuzzy set type studied.
-    :param categorial_mask: a boolean mask vector that indicates for each variables if its categorical or not.
-    :param n_partitions: number of partitions to use in the fuzzy set.
-    '''
-    if mnt.save_usage_flag:
-        mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
-        mnt.usage_data[mnt.usage_categories.FuzzySets][fz_type_studied.name] += 1
-
+    """
+    Create a list of fuzzy variables from data with automatic partitioning.
+    
+    This function automatically creates fuzzy variables from the input data by computing
+    appropriate quantiles and creating membership functions. It supports both numerical
+    and categorical variables.
+    
+    Args:
+        X (np.array or pd.DataFrame): Input data with shape (samples, features).
+            Can be either a numpy array or pandas DataFrame.
+        fz_type_studied (fs.FUZZY_SETS): Type of fuzzy sets to create (t1, t2, or gt2).
+        categorical_mask (list, optional): Boolean mask indicating which variables are 
+            categorical. If None, all variables are treated as numerical.
+        n_partitions (int, optional): Number of partitions (fuzzy sets) to create 
+            for each numerical variable. Default is 3.
+            
+    Returns:
+        list: List of fuzzyVariable objects, one for each feature in the input data.
+            Each variable contains the appropriate number of fuzzy sets with 
+            membership functions fitted to the data distribution.
+            
+    Example:
+        >>> X = np.random.normal(0, 1, (100, 3))
+        >>> lvs = create_fuzzy_variables(X, fs.FUZZY_SETS.t1, n_partitions=3)
+        >>> print(len(lvs))  # Should print 3
+        >>> print(len(lvs[0]))  # Should print 3 (number of fuzzy sets)
+        
+    Note:
+        - For numerical variables, trapezoidal membership functions are created
+        - For categorical variables, one fuzzy set is created per unique category
+        - The function automatically handles feature naming from DataFrame columns
+    """
     if isinstance(X, pd.DataFrame):
         feat_names = X.columns
         X = X.values
@@ -569,17 +647,29 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
 
 
 def _triangular_construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3) -> list[fs.fuzzyVariable]:
-    '''
-    Returns a list of linguistic variables according to the kind of fuzzy specified.
-
-    :param X: numpy array|pandas dataframe, shape samples x features.
-    :param fz_type_studied: fuzzy set type studied.
-    :param categorial_mask: a boolean mask vector that indicates for each variables if its categorical or not.
-    :param n_partitions: number of partitions to use in the fuzzy set.
-    '''
-    if mnt.save_usage_flag:
-        mnt.usage_data[mnt.usage_categories.Funcs]['precompute_labels'] += 1
-        mnt.usage_data[mnt.usage_categories.FuzzySets][fz_type_studied.name] += 1
+    """
+    Create fuzzy variables with triangular membership functions from data.
+    
+    This is an internal function that creates fuzzy variables specifically using
+    triangular membership functions. It supports both numerical and categorical variables.
+    
+    Args:
+        X (np.array or pd.DataFrame): Input data with shape (samples, features).
+        fz_type_studied (fs.FUZZY_SETS, optional): Type of fuzzy sets to create. 
+            Defaults to fs.FUZZY_SETS.t1.
+        categorical_mask (np.array, optional): Boolean mask indicating which variables 
+            are categorical. If None, all variables are treated as numerical.
+        n_partitions (int, optional): Number of partitions for each numerical variable.
+            Defaults to 3.
+            
+    Returns:
+        list[fs.fuzzyVariable]: List of fuzzy variables with triangular membership functions.
+        
+    Note:
+        This is an internal function used by create_fuzzy_variables() when triangular
+        membership functions are specifically requested. For general use, prefer
+        the main create_fuzzy_variables() function.
+    """
 
     if isinstance(X, pd.DataFrame):
         feat_names = X.columns

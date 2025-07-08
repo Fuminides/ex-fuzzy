@@ -1,7 +1,28 @@
 """
-Module to perform rule mining in a pandas dataframe or numpy array. The methods use the support of the different itemsets to look for good 
-rule candidates. It can be used then by a Genetic optimizator from evolutionary_fit module to search the optimal combination of them.
+Fuzzy Rule Mining Module for Ex-Fuzzy Library
 
+This module provides comprehensive fuzzy rule mining capabilities for extracting meaningful
+rules from datasets using support-based itemset mining algorithms. It implements efficient
+algorithms for discovering frequent fuzzy patterns and generating fuzzy association rules.
+
+Main Components:
+    - Itemset mining: Discovery of frequent fuzzy itemsets using support thresholds
+    - Rule generation: Conversion of frequent itemsets into fuzzy association rules
+    - Support calculation: Efficient computation of fuzzy support measures
+    - Rule filtering: Quality-based filtering of discovered rules
+    - Integration with evolutionary algorithms: Compatibility with genetic optimization
+
+Key Features:
+    - Support-based fuzzy itemset mining with configurable thresholds
+    - Efficient combination generation for large datasets
+    - Integration with fuzzy variable definitions
+    - Support for both Type-1 and Type-2 fuzzy systems
+    - Scalable algorithms for large rule bases
+    - Direct integration with evolutionary optimization workflows
+
+The module is designed to work seamlessly with the evolutionary_fit module to provide
+a complete pipeline from rule discovery to rule optimization, enabling the creation
+of high-quality fuzzy rule-based classifiers from data.
 """
 import typing
 from itertools import product, combinations
@@ -12,13 +33,11 @@ import numpy as np
 try:
     from . import rules as rl
     from . import fuzzy_sets as fs
-    from . import maintenance as mnt
     from . import utils
 except ImportError:
     import utils
     import rules as rl
     import fuzzy_sets as fs
-    import maintenance as mnt
 
 
 def _generate_combinations(lists: list, k: int) -> typing.Iterator:
@@ -114,9 +133,6 @@ def mine_rulebase_support(x: pd.DataFrame, fuzzy_variables:list[fs.fuzzyVariable
     :return: a rulebase object with the rules denoted as good.
     '''
     
-    if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.RuleMining]['mine_rulebase'] += 1
-            
     freq_itemsets = rule_search(x, fuzzy_variables, support_threshold, max_depth)
     rule_list = generate_rules_from_itemsets(freq_itemsets, len(fuzzy_variables))
 

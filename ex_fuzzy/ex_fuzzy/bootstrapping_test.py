@@ -1,8 +1,29 @@
-'''
-Module that contains the bootraping tests to evaluate the performance of the fuzzy rules and fuzzy rule based classifiers.
+"""
+Bootstrap Statistical Testing Module for Ex-Fuzzy Library
 
+This module provides comprehensive bootstrap statistical testing capabilities for evaluating
+the performance and reliability of fuzzy rules and fuzzy rule-based classifiers.
+Bootstrap methods are essential for assessing the statistical significance of fuzzy model
+performance and for providing confidence intervals for various metrics.
 
-'''
+Main Components:
+    - Bootstrap sample generation: Create resampled datasets for statistical testing
+    - Performance evaluation: Assess classifier performance with confidence intervals
+    - Rule validation: Statistical testing of individual fuzzy rules
+    - Comparative analysis: Compare multiple fuzzy models with statistical significance
+    - Membership function validation: Bootstrap testing of fuzzy set parameters
+
+Key Features:
+    - Stratified bootstrap sampling for balanced class representation
+    - Confidence interval computation for performance metrics
+    - Statistical significance testing for model comparisons
+    - Bootstrap validation of fuzzy rule accuracy and coverage
+    - Support for both Type-1 and Type-2 fuzzy systems
+
+The module is designed to provide robust statistical validation for fuzzy systems,
+ensuring that performance claims are statistically sound and that model comparisons
+are meaningful in research and practical applications.
+"""
 
 import numpy as np
 import pandas as pd
@@ -17,15 +38,35 @@ except:
     import fuzzy_sets as fs
 
 
-def generate_bootstrap_samples(X: np.array, y: np.array, n_samples:int):
-    '''
-    Generates bootstrap samples from the given data.
-
-    :param X: data to sample.
-    :param y: labels to sample.
-    :param n_samples: number of samples to generate.
-    :return: a list of tuples with the sampled data and labels.
-    '''
+def generate_bootstrap_samples(X: np.array, y: np.array, n_samples: int):
+    """
+    Generates bootstrap samples from the given dataset.
+    
+    This function creates multiple bootstrap samples by randomly sampling with replacement
+    from the original dataset. Each bootstrap sample has the same size as the original
+    dataset and is used for statistical testing and confidence interval estimation.
+    
+    Args:
+        X (np.array): Feature data to sample from with shape (n_samples, n_features)
+        y (np.array): Target labels corresponding to X with shape (n_samples,)
+        n_samples (int): Number of bootstrap samples to generate
+        
+    Returns:
+        list: List of tuples, each containing (X_bootstrap, y_bootstrap) where:
+            - X_bootstrap: Bootstrap sample of features
+            - y_bootstrap: Bootstrap sample of corresponding labels
+            
+    Example:
+        >>> X = np.array([[1, 2], [3, 4], [5, 6]])
+        >>> y = np.array([0, 1, 0])
+        >>> bootstrap_samples = generate_bootstrap_samples(X, y, n_samples=100)
+        >>> print(len(bootstrap_samples))  # 100
+        >>> print(bootstrap_samples[0][0].shape)  # (3, 2) - same as original
+        
+    Note:
+        Bootstrap sampling is performed with replacement, so the same data points
+        may appear multiple times in a single bootstrap sample.
+    """
     samples = []
     for i in range(n_samples):
         idx = np.random.choice(X.shape[0], X.shape[0], replace=True)

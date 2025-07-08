@@ -7,7 +7,6 @@ from . import rules
 from . import vis_rules
 from . import utils
 from . import persistence
-from . import maintenance
 from . import classifiers
 from . import pattern_stability
 from . import permutation_test

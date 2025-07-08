@@ -1,6 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-This is a the source file that contains the functions necessary to visualize the set of rules.
+Rule Visualization Module for Ex-Fuzzy Library
+
+This module provides comprehensive visualization capabilities for fuzzy rule-based systems.
+It includes functions to visualize individual rules, rule bases, decision boundaries,
+and fuzzy variable partitions to aid in understanding and interpreting fuzzy models.
+
+Main Components:
+    - Rule visualization: Graph-based representation of fuzzy rules and their relationships
+    - Rule base analysis: Statistical and visual analysis of complete rule bases
+    - Decision boundary plotting: Visual representation of classifier decision regions
+    - Fuzzy partition visualization: Display of fuzzy variable linguistic terms
+    - Interactive plots: Dynamic visualization tools for rule exploration
+
+Key Features:
+    - Network-based rule visualization using NetworkX
+    - Customizable color schemes and layout options
+    - Export capabilities for publication-ready figures
+    - Integration with matplotlib for high-quality plots
+    - Support for both Type-1 and Type-2 fuzzy rule visualization
+    - Rule importance and coverage analysis visualization
+
+The module is designed to make fuzzy rule-based systems more interpretable and accessible,
+providing researchers and practitioners with powerful tools for understanding model behavior
+and communicating results effectively.
 """
 import os
 import matplotlib.pyplot as plt
@@ -11,12 +34,10 @@ try:
     from . import rules
     from . import evolutionary_fit as evf
     from . import fuzzy_sets as fs
-    from . import maintenance as mnt
 except ImportError:
     import rules
     import evolutionary_fit as evf
     import fuzzy_sets as fs
-    import maintenance as mnt
 
 
 def _column_histogram(rule_matrix: np.array) -> dict:
@@ -166,9 +187,6 @@ def visualize_rulebase(mrule_base: rules.MasterRuleBase, export_path: str=None) 
     :param export_path: Path to export the graph.
     '''
     import networkx as nx
-
-    if mnt.save_usage_flag:
-        mnt.usage_data[mnt.usage_categories.Visualization]['plot_graph'] += 1
 
     def color_func(a):
         '''

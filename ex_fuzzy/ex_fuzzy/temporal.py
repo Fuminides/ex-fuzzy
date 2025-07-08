@@ -1,10 +1,25 @@
-'''
-Expansion of the base fuzzy sets, adding temporal fuzzy sets.
+"""
+Temporal Fuzzy Sets Module for Ex-Fuzzy Library
 
-Contains functions to model the temporal fuzzy sets, temporal fuzzy variables and temporal rule bases.
-It also contains functions to evaluate the fuzzy rulebases obtained.
+This module extends the base fuzzy sets functionality with temporal-aware fuzzy sets,
+enabling modeling of time-dependent fuzzy systems and temporal rule bases.
 
-'''
+Main Components:
+    - TMP_FUZZY_SETS: Enumeration of temporal fuzzy set types
+    - TMP_FS: Temporal fuzzy set implementation
+    - TMP_fuzzyVariable: Temporal fuzzy variable container
+    - TMP_RuleBase: Temporal rule base for complex time-dependent reasoning
+
+The temporal fuzzy sets allow for modeling uncertainty that changes over time,
+making them suitable for applications like time-series analysis, temporal pattern
+recognition, and dynamic system modeling.
+
+Key Features:
+    - Time-conditional membership functions
+    - Temporal rule evaluation
+    - Integration with evolutionary optimization
+    - Support for both Type-1 and Type-2 temporal fuzzy sets
+"""
 import enum
 
 import numpy as np
@@ -23,14 +38,12 @@ from pymoo.core.problem import StarmapParallelization
 
 try:
     from . import fuzzy_sets as fs
-    from . import maintenance as mnt
     from . import rules as rl
     from . import evolutionary_fit as evf
     from . import vis_rules
     from . import eval_rules as evr
 except:
     import fuzzy_sets as fs
-    import maintenance as mnt
     import rules as rl
     import evolutionary_fit as evf
     import vis_rules
@@ -60,9 +73,6 @@ class temporalFS(fs.FS):
         :param std_fuzzy_set: FS. Standard fuzzy set that contains the non-temporal aware memberhsip function.
         :param conditional_variable: np.array. The variable that expresses the different temporal moments. Shape (time discrete moments, ).
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzySets][self.type().name] += 1
-            
         self.std_set = std_fuzzy_set
         self.tmp_function = conditional_variable
         self.time = None

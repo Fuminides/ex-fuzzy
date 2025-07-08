@@ -1,7 +1,22 @@
-# -*- coding: utf-8 -*-
 """
-This is a the source file that contains the Rule, RuleBase and MasterRuleBase classes to perform fuzzy inference.
+Fuzzy Rules and Inference Engine for Ex-Fuzzy Library
 
+This module contains the core classes and functions for fuzzy rule definition, management,
+and inference. It implements a complete fuzzy inference system supporting Type-1, Type-2,
+and General Type-2 fuzzy sets with various t-norm operations and defuzzification methods.
+
+Main Components:
+    - Rule classes: RuleSimple for individual rule representation  
+    - RuleBase classes: RuleBaseT1, RuleBaseT2, RuleBaseGT2 for rule collections
+    - MasterRuleBase: Container for multiple rule bases (multi-class problems)
+    - Inference engines: Support for Mamdani and Takagi-Sugeno inference
+    - Defuzzification: Centroid, height, and other defuzzification methods
+    - T-norm operations: Product, minimum, and other aggregation functions
+
+The module supports complex fuzzy reasoning workflows including rule firing strength
+computation, aggregation across multiple rules, and final defuzzification to crisp outputs.
+It also includes support for rule modifiers (e.g., "very", "somewhat") and dominance scores
+for rule quality assessment.
 """
 import abc
 import numbers
@@ -18,35 +33,71 @@ except ImportError:
 modifiers_names = {0.5: 'Somewhat', 1.0: '', 1.3: 'A little', 1.7: 'Slightly', 2.0: 'Very', 3.0: 'Extremely', 4.0: 'Very very'}
 
 def compute_antecedents_memberships(antecedents: list[fs.fuzzyVariable], x: np.array) -> list[dict]:
-        '''
-        Returns a list of of dictionaries that contains the memberships for each x value to the ith antecedents, nth linguistic variable.
-        x must be a vector (only one sample)
+    """
+    Compute membership degrees for input values across all fuzzy variables.
+    
+    This function calculates the membership degrees of input values for each linguistic
+    variable in the antecedents. It returns a structured representation that can be
+    used for efficient rule evaluation and inference.
+    
+    Args:
+        antecedents (list[fs.fuzzyVariable]): List of fuzzy variables representing
+            the antecedents (input variables) of the fuzzy system
+        x (np.array): Input vector with values for each antecedent variable.
+            Shape should be (n_samples, n_variables) or (n_variables,) for single sample
+            
+    Returns:
+        list[dict]: List containing membership dictionaries for each antecedent variable.
+            Each dictionary maps linguistic term indices to their membership degrees.
+            
+    Example:
+        >>> # For 2 variables with 3 linguistic terms each
+        >>> antecedents = [temp_var, pressure_var]  
+        >>> x = np.array([25.0, 101.3])  # temperature=25°C, pressure=101.3kPa
+        >>> memberships = compute_antecedents_memberships(antecedents, x)
+        >>> # memberships[0] contains temperature memberships: {0: 0.2, 1: 0.8, 2: 0.0}
+        >>> # memberships[1] contains pressure memberships: {0: 0.0, 1: 0.6, 2: 0.4}
+        
+    Note:
+        This function is typically used internally during rule evaluation but can be
+        useful for debugging membership degree calculations or analyzing input fuzzification.
+    """
+    x = np.array(x)
+    cache_antecedent_memberships = []
 
-        :param x: vector with the values of the inputs.
-        :return: a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.
-        '''
-        x = np.array(x)
-        cache_antecedent_memberships = []
+    for ix, antecedent in enumerate(antecedents):
+        cache_antecedent_memberships.append(
+            antecedent.compute_memberships(x[:, ix]))
 
-        for ix, antecedent in enumerate(antecedents):
-            cache_antecedent_memberships.append(
-                antecedent.compute_memberships(x[:, ix]))
-
-        return cache_antecedent_memberships
+    return cache_antecedent_memberships
 
         
             
 class RuleError(Exception):
-    '''
-    Exception raised when a rule is not well defined.
-    '''
+    """
+    Exception raised when a fuzzy rule is incorrectly defined or invalid.
+    
+    This exception is used throughout the rules module to indicate various
+    rule-related errors such as invalid antecedent specifications, inconsistent
+    membership functions, or malformed rule structures.
+    
+    Attributes:
+        message (str): Human-readable description of the error
+        
+    Example:
+        >>> try:
+        ...     rule = RuleSimple([-1, -1, -1], 0)  # Invalid: all don't-care antecedents
+        ... except RuleError as e:
+        ...     print(f"Rule error: {e}")
+    """
 
     def __init__(self, message: str) -> None:
-        '''
-        Constructor of the RuleError class.
+        """
+        Initialize the RuleError exception.
 
-        :param message: message of the error.
-        '''
+        Args:
+            message (str): Descriptive error message explaining what went wrong
+        """
         super().__init__(message)
 
 
@@ -111,50 +162,94 @@ class Rule():
 
 
 class RuleSimple():
-    '''
-    Class designed to represent rules in its simplest form to optimize the computation in a rulebase.
+    """
+    Simplified Rule Representation for Optimized Computation.
+    
+    This class represents fuzzy rules in a simplified format optimized for
+    computational efficiency in rule base operations. It uses integer encoding
+    for antecedents and consequents to minimize memory usage and speed up
+    rule evaluation processes.
+    
+    Attributes:
+        antecedents (list[int]): Integer-encoded antecedents where:
+            - -1: Variable not used in the rule
+            - 0-N: Index of the linguistic variable used for the ith input
+        consequent (int): Integer index of the consequent linguistic variable
+        modifiers (np.array): Optional modifiers for rule adaptation
+        
+    Example:
+        >>> # Rule: IF x1 is Low AND x2 is High THEN y is Medium
+        >>> # Assuming Low=0, High=1, Medium=1
+        >>> rule = RuleSimple([0, 1], consequent=1)
+        >>> print(rule.antecedents)  # [0, 1]
+        >>> print(rule.consequent)  # 1
+        
+    Note:
+        This simplified representation is designed for high-performance
+        rule evaluation in large rule bases where memory and speed are critical.
+    """
 
-    It indicates the antecedent values using a vector coded in this way:
-        ith entry: -1 means this variable is not used. 0-N indicates that the variable linguistic used for the ith input is that one.
-    '''
-
-    def __init__(self, antecedents: list[int], consequent: int=0, modifiers: np.array=None) -> None:
-        '''
+    def __init__(self, antecedents: list[int], consequent: int = 0, modifiers: np.array = None) -> None:
+        """
         Creates a rule with the given antecedents and consequent.
-
-        :param antecedents: list of integers indicating the linguistic variable used for each input.
-        :param consequent: integer indicating the linguistic variable used for the consequent.
-        '''
+        
+        Args:
+            antecedents (list[int]): List of integers indicating the linguistic 
+                variable used for each input (-1 for unused variables)
+            consequent (int, optional): Integer indicating the linguistic variable 
+                used for the consequent. Defaults to 0.
+            modifiers (np.array, optional): Array of modifier values for rule adaptation.
+                Defaults to None.
+                
+        Example:
+            >>> # Create a rule with two antecedents and one consequent
+            >>> rule = RuleSimple([0, 2, -1], consequent=1)  # x1=0, x2=2, x3=unused, y=1
+        """
         self.antecedents = list(map(int, antecedents))
         self.consequent = int(consequent)
-        #self.score = 1.0
         self.modifiers = modifiers
-        #self.weight = weight
-
 
     def __getitem__(self, ix):
-        '''
+        """
         Returns the antecedent value for the given index.
-
-        :param ix: index of the antecedent to return.
-        '''
+        
+        Args:
+            ix (int): Index of the antecedent to return
+            
+        Returns:
+            int: The antecedent value at the specified index
+            
+        Example:
+            >>> rule = RuleSimple([0, 1, 2])
+            >>> print(rule[1])  # 1
+        """
         return self.antecedents[ix]
 
-
     def __setitem__(self, ix, value):
-        '''
+        """
         Sets the antecedent value for the given index.
-
-        :param ix: index of the antecedent to set.
-        :param value: value to set.
-        '''
+        
+        Args:
+            ix (int): Index of the antecedent to set
+            value (int): Value to set at the specified index
+            
+        Example:
+            >>> rule = RuleSimple([0, 1, 2])
+            >>> rule[1] = 3  # Change second antecedent to 3
+        """
         self.antecedents[ix] = value
-    
 
     def __str__(self):
-        '''
+        """
         Returns a string representation of the rule.
-        '''
+        
+        Returns:
+            str: Human-readable string representation of the rule
+            
+        Example:
+            >>> rule = RuleSimple([0, 1], consequent=2)
+            >>> print(rule)  # Rule: antecedents: [0, 1] consequent: 2
+        """
         aux = 'Rule: antecedents: ' + str(self.antecedents) + ' consequent: ' + str(self.consequent)
 
         try:
@@ -205,21 +300,36 @@ class RuleSimple():
             
 
         return aux
-    
 
     def __len__(self):
-        '''
+        """
         Returns the number of antecedents in the rule.
-        '''
+        
+        Returns:
+            int: Number of antecedents in the rule
+            
+        Example:
+            >>> rule = RuleSimple([0, 1, 2])
+            >>> print(len(rule))  # 3
+        """
         return len(self.antecedents)
-    
 
     def __eq__(self, other):
-        '''
+        """
         Returns True if the two rules are equal.
-        '''
+        
+        Args:
+            other (RuleSimple): Another rule to compare with
+            
+        Returns:
+            bool: True if rules have identical antecedents and consequent
+            
+        Example:
+            >>> rule1 = RuleSimple([0, 1], consequent=2)
+            >>> rule2 = RuleSimple([0, 1], consequent=2)
+            >>> print(rule1 == rule2)  # True
+        """
         return self.antecedents == other.antecedents and self.consequent == other.consequent
-    
 
     def __hash__(self):
         '''

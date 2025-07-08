@@ -1,23 +1,44 @@
+"""
+Fuzzy Cognitive Maps for Ex-Fuzzy Library
+
+This module implements Fuzzy Cognitive Maps (FCMs), a soft computing technique that
+combines fuzzy logic with cognitive mapping for modeling complex systems with
+causal relationships. FCMs are particularly useful for decision making, scenario
+analysis, and understanding dynamic system behavior.
+
+Main Components:
+    - FuzzyCognitiveMap: Core FCM class for creation and simulation
+    - Dynamic simulation: Iterative state evolution and convergence analysis
+    - Visualization tools: Network plotting and state trajectory visualization
+    - Analysis functions: Equilibrium detection, periodic behavior identification
+    - Threshold operations: Connection strength discretization and analysis
+
+Key Features:
+    - Support for weighted causal relationships between concepts
+    - Multiple activation functions (sigmoid, tanh, linear)
+    - Dynamic simulation with convergence detection
+    - Periodic behavior and limit cycle identification
+    - Interactive visualization of FCM structure and dynamics
+    - Integration with fuzzy rule systems for hybrid modeling
+
+Theoretical Background:
+    Fuzzy Cognitive Maps were originally developed by Bart Kosko and extend
+    traditional cognitive maps by incorporating fuzzy logic principles.
+    They represent concepts as nodes and causal relationships as weighted
+    directed edges, enabling the modeling of complex feedback systems.
+
+Applications:
+    - Decision support systems
+    - Strategic planning and scenario analysis  
+    - Complex system modeling and simulation
+    - Expert knowledge representation
+    - Policy analysis and impact assessment
+"""
 from __future__ import annotations
-'''
-Module to use fuzzy cognitive maps.
 
-The module contains the class FuzzyCognitiveMap, which is used to create and
-use fuzzy cognitive maps. You can also plot them, or simulate the dynamics of
-the FCM.
-
-For the original papers about FCM, see the works by Bart Kosko.
-
-'''
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-try:
-    from . import maintenance as mnt
-except ImportError:
-
-    import maintenance as mnt
 
 
 def _threshold_modules(connections: np.array | pd.DataFrame, threshold) -> np.array | pd.DataFrame:
@@ -90,8 +111,6 @@ def study_attractors_FCM(fcm: FuzzyCognitiveMap, max_steps: int, random_inits: i
     :param random_inits : int
     :returns: list of np.array. The attractor states found. None if none were found
     '''
-    if mnt.save_usage_flag:
-        mnt.usage_data[mnt.usage_categories.FuzzyCognitiveMaps]['fcm_report'] += 1
 
     attractors = {}
     gen_random_state = lambda : np.random.randint(0, 2, fcm.connections.shape[0])
@@ -109,8 +128,6 @@ def attractors_report(attractors: dict[np.array, np.array]) -> None:
     
     :param attractors: dict[np.array, np.array]. The attractors found.
     '''
-    if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzyCognitiveMaps]['fcm_report'] += 1
     pattern_dict = {}
 
     for _, attractor in attractors.items():
@@ -144,8 +161,6 @@ class FuzzyCognitiveMap:
         will be trimmed using these threhold into the {0, 1, -1} values.
         The default is 0.5.
         '''
-        if mnt.save_usage_flag:
-            mnt.usage_data[mnt.usage_categories.FuzzyCognitiveMaps]['fcm_create'] += 1
 
         self.connections = connections
         self.state = np.zeros(connections.shape[0])
