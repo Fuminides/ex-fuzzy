@@ -51,25 +51,28 @@
 
 ## ✨ Features
 
-### 🧠 **Fuzzy Logic Systems**
-- **Multiple Fuzzy Set Types**: Classic, Interval-Valued (Type-2), and General Type-2 fuzzy sets
-- **Linguistic Variables**: Automatic generation with quantile-based optimization
-- **Linguistic Hedges**: Natural language modifiers for enhanced expressiveness
 
-### 🔍 **Rule-Based Learning**
-- **Fuzzy Association Rules**: For both classification and regression problems
-- **Rule Mining**: Support, confidence, and lift measures with genetic optimization
-- **Custom Rule Bases**: Full control over rules, antecedents, and structure
+### **Explainable Rule-Based Learning**
+- **Fuzzy Association Rules**: For both classification and regression problems with genetic fine-tuning.
+- **Out-of-the-box Results**: Complete compatibility with scikit-learn, minimal to none fuzzy knowledge required to obtain good results.
+- **Complete Complexity Control**: Number of rules, rule length, linguistic variables, etc. can be specified by the user with strong and soft constrains.
+- **Statistical Analysis of Results**: Confidence intervals for all rule quality metrics, .
 
-### 🎨 **Advanced Visualization**
-- **Interactive Plots**: Visualize fuzzy sets, rules, and decision boundaries
-- **Network Graphs**: Beautiful rule visualizations using NetworkX
-- **Statistical Analysis**: Pattern stability and bootstrap confidence intervals
+###  **Complete Rule Base Visualization and Validation**
+- **Comprehensive Plots**: Visualize fuzzy sets and rules.
+- **Network Graphs**: Rule visualizations using NetworkX.
+- **Robustness Metrics**: Compute validation of rules, ensure linguistic meaning of fuzzy partitions, robustness metrics for rules and space partitions, reproducible experiments, etc.
 
-### 🔬 **Research & Development**
-- **Genetic Algorithms**: Rule base optimization using PyMOO
+###  **Advanced Learning Routines**
+- **Genetic Algorithms**: Rule base optimization using PyMOO supports fine-tuning of different hyperparameters, like tournament size, crossover rate, etc.
+- **Pre-mining and Rule Search**: start with good initial or prior populations, and then refine those results to obtain a good classifier using genetic optimization.
+- **Extensible Architecture**: Easy to extend with custom components.
+
+### **Complete Fuzzy Logic Systems Support**
+- **Multiple Fuzzy Set Types**: Classic, Interval-Valued Type-2, and General Type-2 fuzzy sets
+- **Linguistic Variables**: Automatic generation with quantile-based optimization.
+- **Linguistic Hedges**: Natural language modifiers for enhanced expressiveness.
 - **Temporal Fuzzy Sets**: Time-aware fuzzy reasoning
-- **Extensible Architecture**: Easy to extend with custom components
 
 ## 🚀 Quick Start
 
@@ -288,7 +291,7 @@ If you use Ex-Fuzzy in your research, please cite our paper:
 }
 ```
 
-## 👥 Authors & Contributors
+## 👥 Main Authors
 
 - **[Javier Fumanal-Idocin](https://github.com/Fuminides)** - *Lead Developer*
 - **[Javier Andreu-Perez](https://github.com/javierandreuperez)** - *Co-author*
@@ -305,8 +308,4 @@ If you use Ex-Fuzzy in your research, please cite our paper:
   <a href="https://github.com/Fuminides/ex-fuzzy/stargazers">
     <img src="https://img.shields.io/github/stars/Fuminides/ex-fuzzy?style=social" alt="GitHub Stars">
   </a>
-</p>
-
-<p align="center">
-  Made with ❤️ by the Ex-Fuzzy team
 </p>
