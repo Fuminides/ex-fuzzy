@@ -12,7 +12,32 @@ BUILDDIR      = build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile
+# Clean build directory
+clean:
+	@rm -rf "$(BUILDDIR)"
+	@echo "Build directory cleaned."
+
+# Live reload for development
+livehtml:
+	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)/html" --open-browser --reload-dirs "$(SOURCEDIR)"
+
+# Check external links
+linkcheck:
+	@$(SPHINXBUILD) -M linkcheck "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# Run doctests
+doctest:
+	@$(SPHINXBUILD) -M doctest "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# Coverage check
+coverage:
+	@$(SPHINXBUILD) -M coverage "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# Install documentation dependencies
+install-deps:
+	pip install -r requirements.txt
+
+.PHONY: help clean livehtml linkcheck doctest coverage install-deps Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
