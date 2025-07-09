@@ -1,118 +1,794 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evolutionary Algorithms to Fit the rules &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Evolutionary Algorithms to Fit the rules &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'function_resume/evolutionary_fit';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Rule Mining methods" href="rule_mining.html" />
-    <link rel="prev" title="Rule Visualization" href="vis_rules.html" /> 
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            Ex-Fuzzy
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step2.html">Using Fuzzy Rules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step4.html">Visualize rules and results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../precom.html">Computing fuzzy partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../optimize.html">Genetic algorithm details</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gt2.html">General Type 2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tmpfs.html">Temporal Fuzzy Sets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../extending.html">Extending Ex-Fuzzy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../persistence.html">Persistence</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../pattern_stats.html">Bootstrapping and rule robustness</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="fuzzy_sets.html">Fuzzy Sets Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rules.html">Fuzzy Rules Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eval_rules.html">Rule Evaluation Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eval_tools.html">Classification evaluation tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vis_rules.html">Rule Visualization</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Evolutionary Algorithms to Fit the rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rule_mining.html">Rule Mining methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classifiers.html">Advanced Classifiers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="persistence.html">Classification persistence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cognitive_maps.html">Fuzzy Cognitive Maps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html">Partition utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="centroid.html">T2 Centroid compute</a></li>
-<li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal fuzzy sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pattern_stability.html">Pattern stability analysis</a></li>
-</ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
 </li>
-</ul>
 
-        </div>
-      </div>
-    </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Ex-Fuzzy</a>
-      </nav>
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">Evolutionary Algorithms to Fit the rules</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/function_resume/evolutionary_fit.rst.txt" rel="nofollow"> View page source</a>
-      </li>
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
   </ul>
-  <hr/>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Evolutionary...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="module-ex_fuzzy.evolutionary_fit">
-<span id="evolutionary-algorithms-to-fit-the-rules"></span><h1>Evolutionary Algorithms to Fit the rules<a class="headerlink" href="#module-ex_fuzzy.evolutionary_fit" title="Permalink to this heading"></a></h1>
-<p>This is a the source file that contains the class to train/fit the rulebase using a genetic algorithm.</p>
+<span id="evolutionary-algorithms-to-fit-the-rules"></span><h1>Evolutionary Algorithms to Fit the rules<a class="headerlink" href="#module-ex_fuzzy.evolutionary_fit" title="Link to this heading">#</a></h1>
+<p>Evolutionary Optimization for Fuzzy Rule Base Learning</p>
+<p>This module implements genetic algorithm-based optimization for learning fuzzy rule bases.
+It provides automatic rule discovery, parameter tuning, and structure optimization for
+fuzzy inference systems using evolutionary computation techniques.</p>
+<dl class="simple">
+<dt>Main Components:</dt><dd><ul class="simple">
+<li><p>FitRuleBase: Core optimization problem class for genetic algorithms</p></li>
+<li><p>Fitness functions: Multiple objective functions for rule quality assessment</p></li>
+<li><p>Genetic operators: Specialized crossover, mutation, and selection for fuzzy rules</p></li>
+<li><p>Multi-objective optimization: Support for accuracy vs. complexity trade-offs</p></li>
+<li><p>Parallel evaluation: Efficient fitness evaluation using multiple threads</p></li>
+<li><p>Integration with Pymoo: Leverages the Pymoo optimization framework</p></li>
+</ul>
+</dd>
+<dt>The module supports automatic learning of:</dt><dd><ul class="simple">
+<li><p>Rule antecedents (which variables and linguistic terms to use)</p></li>
+<li><p>Rule consequents (output class assignments)</p></li>
+<li><p>Rule structure (number of rules, complexity constraints)</p></li>
+<li><p>Membership function parameters (when combined with other modules)</p></li>
+</ul>
+</dd>
+<dt>Key Features:</dt><dd><ul class="simple">
+<li><p>Stratified cross-validation for robust fitness evaluation</p></li>
+<li><p>Multiple fitness metrics (accuracy, MCC, F1-score, etc.)</p></li>
+<li><p>Support for Type-1, Type-2, and General Type-2 fuzzy systems</p></li>
+<li><p>Automatic handling of imbalanced datasets</p></li>
+<li><p>Configurable complexity penalties to avoid overfitting</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">BaseFuzzyRulesClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FUZZY_SETS</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_modifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">BaseFuzzyRulesClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_modifiers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a></p>
 <p>Class that is used as a classifier for a fuzzy rule based system. Supports precomputed and optimization of the linguistic variables.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_modifiers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Inits the optimizer with the corresponding parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
+<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
+<li><p><strong>type</strong> (<em>fuzzy</em>) – FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.</p></li>
+<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – tolerance for the dominance score of the rules.</p></li>
+<li><p><strong>n_linguist_variables</strong> – number of linguistic variables per antecedent.</p></li>
+<li><p><strong>verbose</strong> – if True, prints the progress of the optimization.</p></li>
+<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em>) – list of the limits for each variable. If None (default) the classifier will compute them empirically.</p></li>
+<li><p><strong>n_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – names of the classes in the problem. If None (default) the classifier will compute it empirically.</p></li>
+<li><p><strong>precomputed_rules</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.</p></li>
+<li><p><strong>runner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of threads to use. If None (default) the classifier will use 1 thread.</p></li>
+<li><p><strong>ds_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.</p></li>
+<li><p><strong>fuzzy_modifiers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the classifier will use the modifiers in the optimization process.</p></li>
+<li><p><strong>allow_unknown</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss">
-<span class="sig-name descname"><span class="pre">customized_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.customized_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">customized_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.customized_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss" title="Link to this definition">#</a></dt>
 <dd><p>Function to customize the loss function used for the optimization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -125,154 +801,222 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.explainable_predict">
-<span class="sig-name descname"><span class="pre">explainable_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.explainable_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.explainable_predict" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the predicted class for each sample.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">70</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sbx_eta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tournament_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value_compute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_gen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">70</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sbx_eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tournament_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value_compute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit" title="Link to this definition">#</a></dt>
 <dd><p>Fits a fuzzy rule based classifier using a genetic algorithm to the given data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – numpy array samples x features</p></li>
-<li><p><strong>y</strong> – labels. integer array samples (x 1)</p></li>
-<li><p><strong>n_gen</strong> – integer. Number of generations to run the genetic algorithm.</p></li>
-<li><p><strong>pop_size</strong> – integer. Population size for each gneration.</p></li>
-<li><p><strong>checkpoints</strong> – integer. Number of checkpoints to save the best rulebase found so far.</p></li>
-<li><p><strong>candidate_rules</strong> – if these rules exist, the optimization process will choose the best rules from this set. If None (default) the rules will be generated from scratch.</p></li>
-<li><p><strong>initial_rules</strong> – if these rules exist, the optimization process will start from this set. If None (default) the rules will be generated from scratch.</p></li>
-<li><p><strong>random_state</strong> – integer. Random seed for the optimization process.</p></li>
-<li><p><strong>var_prob</strong> – float. Probability of crossover for the genetic algorithm.</p></li>
-<li><p><strong>sbx_eta</strong> – float. Eta parameter for the SBX crossover.</p></li>
-<li><p><strong>mutation_eta</strong> – float. Eta parameter for the polynomial mutation.</p></li>
-<li><p><strong>tournament_size</strong> – integer. Size of the tournament for the genetic algorithm.</p></li>
+<li><p><strong>X</strong> (<em>array</em>) – numpy array samples x features</p></li>
+<li><p><strong>y</strong> (<em>array</em>) – labels. integer array samples (x 1)</p></li>
+<li><p><strong>n_gen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – integer. Number of generations to run the genetic algorithm.</p></li>
+<li><p><strong>pop_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – integer. Population size for each gneration.</p></li>
+<li><p><strong>checkpoints</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – integer. Number of checkpoints to save the best rulebase found so far.</p></li>
+<li><p><strong>candidate_rules</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – if these rules exist, the optimization process will choose the best rules from this set. If None (default) the rules will be generated from scratch.</p></li>
+<li><p><strong>initial_rules</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – if these rules exist, the optimization process will start from this set. If None (default) the rules will be generated from scratch.</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – integer. Random seed for the optimization process.</p></li>
+<li><p><strong>var_prob</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Probability of crossover for the genetic algorithm.</p></li>
+<li><p><strong>sbx_eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Eta parameter for the SBX crossover.</p></li>
+<li><p><strong>checkpoint_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – string. Path to save the checkpoints. If None (default) the checkpoints will be saved in the current directory.</p></li>
+<li><p><strong>mutation_eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Eta parameter for the polynomial mutation.</p></li>
+<li><p><strong>tournament_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – integer. Size of the tournament for the genetic algorithm.</p></li>
+<li><p><strong>checkpoint_callback</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – function. Callback function that get executed at each checkpoint (‘checkpoints’ must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None. The classifier is fitted to the data.</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the predicted class for each sample.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – np array samples x features.</p></li>
-<li><p><strong>out_class_names</strong> – if True, the output will be the class names instead of the class index.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>np array samples (x 1) with the predicted class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase">
-<span class="sig-name descname"><span class="pre">get_rulebase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.get_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase" title="Permalink to this definition"></a></dt>
-<dd><p>Get the rulebase obtained after fitting the classifier to the data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a matrix format for the rulebase.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base">
-<span class="sig-name descname"><span class="pre">load_master_rule_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.load_master_rule_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base" title="Permalink to this definition"></a></dt>
-<dd><p>Loads a master rule base to be used in the prediction process.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rule_base</strong> – ruleBase object.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.p_value_validation">
-<span class="sig-name descname"><span class="pre">p_value_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bootstrap_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.p_value_validation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.p_value_validation" title="Permalink to this definition"></a></dt>
-<dd><p>Computes the permutation and bootstrapping p-values for the classifier and its rules.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>bootstrap_size</strong> – integer. Number of bootstraps samples to use.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables">
-<span class="sig-name descname"><span class="pre">plot_fuzzy_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.plot_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Plot the fuzzy partitions in each fuzzy variable.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the predicted class for each sample.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – np array samples x features.</p></li>
-<li><p><strong>out_class_names</strong> – if True, the output will be the class names instead of the class index.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>np array samples (x 1) with the predicted class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the predicted class probabilities for each sample.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> – np array samples x features.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>np array samples x classes with the predicted class probabilities.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rule_bootstrap_results">
-<span class="sig-name descname"><span class="pre">print_rule_bootstrap_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.print_rule_bootstrap_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rule_bootstrap_results" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">print_rule_bootstrap_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.print_rule_bootstrap_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rule_bootstrap_results" title="Link to this definition">#</a></dt>
 <dd><p>Prints the bootstrap results for each rule.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.p_value_validation">
+<span class="sig-name descname"><span class="pre">p_value_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bootstrap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.p_value_validation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.p_value_validation" title="Link to this definition">#</a></dt>
+<dd><p>Computes the permutation and bootstrapping p-values for the classifier and its rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bootstrap_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – integer. Number of bootstraps samples to use.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base">
+<span class="sig-name descname"><span class="pre">load_master_rule_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.load_master_rule_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base" title="Link to this definition">#</a></dt>
+<dd><p>Loads a master rule base to be used in the prediction process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rule_base</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – ruleBase object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.explainable_predict">
+<span class="sig-name descname"><span class="pre">explainable_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.explainable_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.explainable_predict" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class for each sample.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – np array samples x features.</p></li>
+<li><p><strong>out_class_names</strong> – if True, the output will be the class names instead of the class index.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples (x 1) with the predicted class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – np array samples x features.</p></li>
+<li><p><strong>out_class_names</strong> – if True, the output will be the class names instead of the class index.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples (x 1) with the predicted class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba_rules">
+<span class="sig-name descname"><span class="pre">predict_proba_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truth_degrees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.predict_proba_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba_rules" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class probabilities for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – np array samples x features.</p></li>
+<li><p><strong>truth_degrees</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the output will be the truth degrees of the rules. If false, will return the association degrees i.e. the truth degree multiplied by the weights/dominance of the rules. (depending on the inference mode chosen)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples x classes with the predicted class probabilities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_membership_class">
+<span class="sig-name descname"><span class="pre">predict_membership_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.predict_membership_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_membership_class" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class memberships for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>array</em>) – np array samples x features.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples x classes with the predicted class probabilities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class probabilities for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>array</em>) – np array samples x features.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples x classes with the predicted class probabilities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules">
-<span class="sig-name descname"><span class="pre">print_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.print_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">print_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.print_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules" title="Link to this definition">#</a></dt>
 <dd><p>Print the rules contained in the fitted rulebase.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables">
+<span class="sig-name descname"><span class="pre">plot_fuzzy_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.plot_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables" title="Link to this definition">#</a></dt>
+<dd><p>Plot the fuzzy partitions in each fuzzy variable.</p>
+<dl class="field-list simple">
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables">
-<span class="sig-name descname"><span class="pre">rename_fuzzy_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.rename_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">rename_fuzzy_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.rename_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables" title="Link to this definition">#</a></dt>
 <dd><p>Renames the linguist labels so that high, low and so on are consistent. It does so usually after an optimization process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None. Names are sorted accorded to the central point of the fuzzy memberships.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase">
+<span class="sig-name descname"><span class="pre">get_rulebase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.get_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase" title="Link to this definition">#</a></dt>
+<dd><p>Get the rulebase obtained after fitting the classifier to the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a matrix format for the rulebase.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<em>array</em>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss">
-<span class="sig-name descname"><span class="pre">reparametrice_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.reparametrice_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">reparametrice_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.reparametrice_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss" title="Link to this definition">#</a></dt>
 <dd><p>Changes the parameters in the loss function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Note<span class="colon">:</span></dt>
@@ -280,9 +1024,26 @@
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>alpha</strong> – controls the MCC term.</p></li>
-<li><p><strong>beta</strong> – controls the average rule size loss.</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – controls the MCC term.</p></li>
+<li><p><strong>beta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – controls the average rule size loss.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#BaseFuzzyRulesClassifier.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__call__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the predicted class for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>array</em>) – np array samples x features.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples (x 1) with the predicted class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -291,32 +1052,86 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.ExploreRuleBases">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">ExploreRuleBases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StarmapParallelization</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#ExploreRuleBases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">ExploreRuleBases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#ExploreRuleBases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Problem</span></code></p>
 <p>Class to model as pymoo problem the fitting of a rulebase to a set of data given a series of candidate rules for a classification problem using Evolutionary strategies
 Supports type 1 and t2.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.ExploreRuleBases.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#ExploreRuleBases.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – np array or pandas dataframe samples x features.</p></li>
+<li><p><strong>y</strong> (<em>array</em>) – np vector containing the target classes. vector sample</p></li>
+<li><p><strong>n_class</strong> – number of classes in the problem. If None (as default) it will be computed from the data.</p></li>
+<li><p><strong>cancidate_rules</strong> – MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func">
-<span class="sig-name descname"><span class="pre">fitness_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruleBase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#ExploreRuleBases.fitness_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fitness_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruleBase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#ExploreRuleBases.fitness_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func" title="Link to this definition">#</a></dt>
 <dd><p>Fitness function for the optimization problem.
 :param ruleBase: RuleBase object
 :param X: array of train samples. X shape = (n_samples, n_features)
 :param y: array of train labels. y shape = (n_samples,)
 :param tolerance: float. Tolerance for the size evaluation.
 :return: float. Fitness value.</p>
+<dl class="field-list simple">
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">FitRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StarmapParallelization</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">ex_fuzzy.fuzzy_sets.fuzzyVariable</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">FitRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Problem</span></code></p>
-<p>Class to model as pymoo problem the fitting of a rulebase for a classification problem using Evolutionary strategies. 
+<p>Class to model as pymoo problem the fitting of a rulebase for a classification problem using Evolutionary strategies.
 Supports type 1 and iv fs (iv-type 2)</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase.vl_names">
+<span class="sig-name descname"><span class="pre">vl_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[],</span> <span class="pre">[],</span> <span class="pre">['Low',</span> <span class="pre">'High'],</span> <span class="pre">['Low',</span> <span class="pre">'Medium',</span> <span class="pre">'High'],</span> <span class="pre">['Low',</span> <span class="pre">'Medium',</span> <span class="pre">'High',</span> <span class="pre">'Very</span> <span class="pre">High'],</span> <span class="pre">['Very</span> <span class="pre">Low',</span> <span class="pre">'Low',</span> <span class="pre">'Medium',</span> <span class="pre">'High',</span> <span class="pre">'Very</span> <span class="pre">High']]</span></em><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.vl_names" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – np array or pandas dataframe samples x features.</p></li>
+<li><p><strong>y</strong> (<em>array</em>) – np vector containing the target classes. vector sample</p></li>
+<li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
+<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
+<li><p><strong>n_class</strong> – number of classes in the problem. If None (as default) it will be computed from the data.</p></li>
+<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of linguistic variables precomputed. If given, the rest of conflicting arguments are ignored.</p></li>
+<li><p><strong>n_linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of linguistic variables per antecedent.</p></li>
+<li><p><strong>fuzzy_type</strong> – Define the fuzzy set or fuzzy set extension used as linguistic variable.</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list with the upper and lower domains of each input variable. If None (as default) it will stablish the empirical min/max as the limits.</p></li>
+<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Tolerance for the size evaluation.</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Weight for the rulebase size term in the fitness function. (Penalizes number of rules)</p></li>
+<li><p><strong>beta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Weight for the average rule size term in the fitness function.</p></li>
+<li><p><strong>ds_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.</p></li>
+<li><p><strong>encode_mods</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – bool. If True, the optimization process will include the modifiers for the membership functions.</p></li>
+<li><p><strong>allow_unknown</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">
-<span class="sig-name descname"><span class="pre">encode_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_lv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.encode_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">encode_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_lv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.encode_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase" title="Link to this definition">#</a></dt>
 <dd><p>Given a rule base, constructs the corresponding gene associated with that rule base.</p>
 <p>GENE STRUCTURE</p>
 <p>First: antecedents chosen by each rule. Size: nAnts * nRules (index of the antecedent)
@@ -326,20 +1141,23 @@ Four: Consequent classes. Size: nRules</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rule_base</strong> – rule base object.</p></li>
-<li><p><strong>optimize_lv</strong> – if True, the gene is prepared to optimize the membership functions.</p></li>
-<li><p><strong>encode_mods</strong> – if True, the gene is prepared to encode the modifiers for the membership functions.</p></li>
+<li><p><strong>rule_base</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – rule base object.</p></li>
+<li><p><strong>optimize_lv</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the gene is prepared to optimize the membership functions.</p></li>
+<li><p><strong>encode_mods</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the gene is prepared to encode the modifiers for the membership functions.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>np array of size self.single_gen_size.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func">
-<span class="sig-name descname"><span class="pre">fitness_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruleBase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><span class="pre">RuleBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.fitness_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fitness_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruleBase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precomputed_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.fitness_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func" title="Link to this definition">#</a></dt>
 <dd><p>Fitness function for the optimization problem.
 :param ruleBase: RuleBase object
 :param X: array of train samples. X shape = (n_samples, n_features)
@@ -349,6 +1167,8 @@ Four: Consequent classes. Size: nRules</p>
 :param beta: float. Weight for the average rule size term.
 :param precomputed_truth: np array. If given, it will be used as the truth values for the evaluation.
 :return: float. Fitness value.</p>
+<dl class="field-list simple">
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -356,34 +1176,121 @@ Four: Consequent classes. Size: nRules</p>
 </section>
 
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__init__"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.customized_loss"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.customized_loss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.fit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rule_bootstrap_results"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.print_rule_bootstrap_results()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.p_value_validation"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.p_value_validation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.load_master_rule_base"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.load_master_rule_base()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.explainable_predict"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.explainable_predict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.forward"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.forward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.predict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba_rules"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.predict_proba_rules()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_membership_class"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.predict_membership_class()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict_proba"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.predict_proba()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.print_rules"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.print_rules()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.plot_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.plot_fuzzy_variables()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.rename_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.rename_fuzzy_variables()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.get_rulebase"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.get_rulebase()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.reparametrice_loss"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.reparametrice_loss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__call__"><code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases"><code class="docutils literal notranslate"><span class="pre">ExploreRuleBases</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases.__init__"><code class="docutils literal notranslate"><span class="pre">ExploreRuleBases.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.ExploreRuleBases.fitness_func"><code class="docutils literal notranslate"><span class="pre">ExploreRuleBases.fitness_func()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.FitRuleBase"><code class="docutils literal notranslate"><span class="pre">FitRuleBase</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.vl_names"><code class="docutils literal notranslate"><span class="pre">FitRuleBase.vl_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.__init__"><code class="docutils literal notranslate"><span class="pre">FitRuleBase.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase"><code class="docutils literal notranslate"><span class="pre">FitRuleBase.encode_rulebase()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.fitness_func"><code class="docutils literal notranslate"><span class="pre">FitRuleBase.fitness_func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/function_resume/evolutionary_fit.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="vis_rules.html" class="btn btn-neutral float-left" title="Rule Visualization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="rule_mining.html" class="btn btn-neutral float-right" title="Rule Mining methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
 
-</body>
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

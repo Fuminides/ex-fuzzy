@@ -4,50 +4,35 @@ Examples
 
 Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples demonstrating how to use Ex-Fuzzy for various machine learning tasks.
 
-.. grid:: 2
+.. grid:: 1
     :gutter: 3
 
-    .. grid-item-card:: 🌸 Basic Classification
-        :link: basic-classification
+    .. grid-item-card:: 🌸 Classification Examples
+        :link: classification
         :link-type: doc
 
-        Learn the fundamentals with the classic Iris dataset. Perfect for beginners!
-
-    .. grid-item-card:: 🧠 Advanced Features  
-        :link: advanced-features
-        :link-type: doc
-
-        Explore Type-2 fuzzy sets, custom membership functions, and optimization techniques.
-
-    .. grid-item-card:: 📊 Pattern Stability
-        :link: pattern-stability
-        :link-type: doc
-
-        Analyze the consistency and reliability of discovered fuzzy rules.
-
-    .. grid-item-card:: 🎨 Custom Fuzzy Sets
-        :link: custom-fuzzy-sets
-        :link-type: doc
-
-        Create your own fuzzy variables and membership functions.
+        Learn fuzzy classification with practical examples using the Iris dataset and other scenarios.
 
 .. toctree::
    :maxdepth: 2
    :hidden:
 
-   basic-classification
    classification
-   advanced-features
-   pattern-stability
-   custom-fuzzy-sets
 
-Real-World Applications
-=======================
+Working Examples
+===============
 
-.. toctree::
-   :maxdepth: 1
+The Ex-Fuzzy repository includes several working Jupyter notebooks in the `Demos/` directory:
 
-   healthcare-classification
+- **iris_demo.ipynb**: Basic classification with the Iris dataset
+- **iris_demo_advanced_classifiers.ipynb**: Comparison of different classifier types
+- **iris_demo_persistence.ipynb**: Saving and loading trained models
+- **heart_attack.ipynb**: Medical diagnosis classification
+- **occupancy_demo_temporal.ipynb**: Time-series occupancy detection
+- **regression_demo.ipynb**: Fuzzy regression examples
+- **pattern_analysis_demo.ipynb**: Pattern stability analysis
+
+These notebooks provide complete, working examples that you can run directly.
    financial-risk-assessment
    image-classification
    time-series-prediction

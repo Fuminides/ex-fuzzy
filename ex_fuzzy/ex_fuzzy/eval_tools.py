@@ -11,7 +11,6 @@ Main Components:
     - Statistical analysis: Bootstrap confidence intervals and significance testing
     - Rule analysis: Rule importance, coverage, and interpretability metrics
     - Visualization integration: Hooks for rule and partition plotting
-    - Model comparison: Tools for comparing different fuzzy models
 
 Key Features:
     - Scikit-learn compatible metric evaluation

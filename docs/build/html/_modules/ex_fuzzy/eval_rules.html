@@ -1,113 +1,747 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ex_fuzzy.eval_rules &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ex_fuzzy.eval_rules &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=edfbbfd1" />
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/ex_fuzzy/eval_rules';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-          
-          
-          <a href="../../index.html" class="icon icon-home">
-            Ex-Fuzzy
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step2.html">Using Fuzzy Rules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../step4.html">Visualize rules and results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../precom.html">Computing fuzzy partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../optimize.html">Genetic algorithm details</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../gt2.html">General Type 2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tmpfs.html">Temporal Fuzzy Sets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../extending.html">Extending Ex-Fuzzy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../persistence.html">Persistence</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pattern_stats.html">Bootstrapping and rule robustness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
-</ul>
 
-        </div>
-      </div>
-    </nav>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Ex-Fuzzy</a>
-      </nav>
+  
+    
+  
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">ex_fuzzy.eval_rules</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo-light.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
   </ul>
-  <hr/>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">ex_fuzzy.eval_rules</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <h1>Source code for ex_fuzzy.eval_rules</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This file contains the classes to perform rule classification evaluation.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">permutation_test</span> <span class="k">as</span> <span class="n">pt</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">bootstrapping_test</span> <span class="k">as</span> <span class="n">bt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">rules</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">permutation_test</span> <span class="k">as</span> <span class="n">pt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstrapping_test</span> <span class="k">as</span> <span class="n">bt</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">rules</span>
-    <span class="kn">import</span> <span class="nn">fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
-    <span class="kn">import</span> <span class="nn">permutation_test</span> <span class="k">as</span> <span class="nn">pt</span>
-    <span class="kn">import</span> <span class="nn">bootstrapping_test</span> <span class="k">as</span> <span class="nn">bt</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">rules</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">permutation_test</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pt</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">bootstrapping_test</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bt</span>
 
 
-<div class="viewcode-block" id="evalRuleBase"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase">[docs]</a><span class="k">class</span> <span class="nc">evalRuleBase</span><span class="p">():</span>
+<div class="viewcode-block" id="evalRuleBase">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">evalRuleBase</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Class to evaluate a set of rules given a evaluation dataset.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mrule_base</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.__init__">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mrule_base</span><span class="p">:</span> <span class="n">rules</span><span class="o">.</span><span class="n">MasterRuleBase</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_moments</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Creates the object with the rulebase to evaluate and the data to use in the evaluation.</span>
 
@@ -124,14 +758,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">precomputed_truth</span> <span class="o">=</span> <span class="n">precomputed_truth</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">consequents_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">get_consequents_names</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">consequents_names</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">consequents_names</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span></div>
 
 
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_antecedent_pattern_support"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_antecedent_pattern_support">[docs]</a>    <span class="k">def</span> <span class="nf">compute_antecedent_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.compute_antecedent_pattern_support">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_antecedent_pattern_support">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_antecedent_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern support for each of the rules for the given X.</span>
 <span class="sd">        Each pattern support firing strength is the result of the tnorm for all the antecedent memeberships,</span>
@@ -168,7 +805,10 @@
 
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="evalRuleBase.compute_pattern_support"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support">[docs]</a>    <span class="k">def</span> <span class="nf">compute_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.compute_pattern_support">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_support">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern support for each of the rules for the given X.</span>
@@ -188,7 +828,6 @@
             <span class="n">antecedent_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">compute_firing_strenghts</span><span class="p">(</span>
                 <span class="n">data_X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_moments</span><span class="p">)</span>
 
-
         <span class="n">patterns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_rules</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">:</span>
@@ -197,14 +836,17 @@
             <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">patterns</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">patterns</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+
         <span class="n">consequents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">get_consequents</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">patterns</span><span class="p">):</span>
             <span class="n">consequent_match</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">data_y</span><span class="p">,</span> <span class="n">consequents</span><span class="p">[</span><span class="n">ix</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">consequent_match</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">consequent_match</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
             <span class="n">pattern_firing_strength</span> <span class="o">=</span> <span class="n">antecedent_memberships</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]</span>
-
-
             
-            <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pattern_firing_strength</span> <span class="o">*</span> <span class="n">consequent_match</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pattern_firing_strength</span> <span class="o">*</span> <span class="n">consequent_match</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">fuzzy_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -212,7 +854,10 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_support"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support">[docs]</a>    <span class="k">def</span> <span class="nf">compute_aux_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_support">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_support">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_aux_pattern_support</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern support for each of the rules for each of the classes for the given X.</span>
@@ -253,7 +898,8 @@
 
 
 
-    <span class="k">def</span> <span class="nf">_get_all_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">rules</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">]:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_all_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">rules</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a list of all the rules in the master rule base.</span>
 
@@ -266,7 +912,9 @@
         <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_pattern_confidence"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">compute_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.compute_pattern_confidence">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_pattern_confidence">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern confidence for each of the rules for the given X.</span>
 <span class="sd">        Each pattern confidence is the normalized firing strength.</span>
@@ -299,8 +947,6 @@
             <span class="n">pattern_firing_strength</span> <span class="o">=</span> <span class="n">antecedent_memberships</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">]</span>
             <span class="n">dem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pattern_firing_strength</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">dem</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-
-
                 <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">res</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
@@ -313,7 +959,10 @@
 
 
 
-<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_confidence"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">compute_aux_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.compute_aux_pattern_confidence">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.compute_aux_pattern_confidence">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_aux_pattern_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Computes the pattern confidence for each of the rules for the given X.</span>
@@ -355,7 +1004,10 @@
 
 
 
-<div class="viewcode-block" id="evalRuleBase.dominance_scores"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores">[docs]</a>    <span class="k">def</span> <span class="nf">dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.dominance_scores">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.dominance_scores">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the dominance score of each pattern for each rule.</span>
 
@@ -364,7 +1016,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_pattern_confidence</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_pattern_support</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.association_degree"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.association_degree">[docs]</a>    <span class="k">def</span> <span class="nf">association_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.association_degree">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.association_degree">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">association_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the association degree of each rule for each sample.</span>
 
@@ -379,7 +1034,10 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.aux_dominance_scores"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores">[docs]</a>    <span class="k">def</span> <span class="nf">aux_dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.aux_dominance_scores">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.aux_dominance_scores">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">aux_dominance_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the dominance score of each pattern for each rule.</span>
 
@@ -388,7 +1046,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_aux_pattern_confidence</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_aux_pattern_support</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.add_rule_weights"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.add_rule_weights">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_rule_weights">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add dominance score field to each of the rules present in the master Rule Base.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -404,9 +1065,12 @@
                 <span class="n">rules</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">confidences</span><span class="p">[</span><span class="n">aux_counter</span><span class="p">]</span>
                 
                 <span class="n">aux_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
     
 
-<div class="viewcode-block" id="evalRuleBase.add_auxiliary_rule_weights"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights">[docs]</a>    <span class="k">def</span> <span class="nf">add_auxiliary_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.add_auxiliary_rule_weights">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_auxiliary_rule_weights">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_auxiliary_rule_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add dominance score field to each of the rules present in the master Rule Base for each consequent.</span>
 <span class="sd">        They are labeled as aux_score, aux_support and aux_confidence. (Because they are not the main rule weights)</span>
@@ -425,7 +1089,10 @@
                 <span class="n">aux_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.add_classification_metrics"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">add_classification_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.add_classification_metrics">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_classification_metrics">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_classification_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Adds the accuracy of each rule in the master rule base. It also adds the f1, precision and recall scores.</span>
 <span class="sd">        If X and y are None uses the train set.</span>
@@ -476,16 +1143,19 @@
                     <span class="n">rules</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span><span class="o">.</span><span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">relevant_labels</span><span class="p">,</span> <span class="n">relevant_preds</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">rules</span><span class="p">[</span><span class="n">jx</span><span class="p">]</span><span class="o">.</span><span class="n">accuracy</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
                 
     
-<div class="viewcode-block" id="evalRuleBase.classification_eval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.classification_eval">[docs]</a>    <span class="k">def</span> <span class="nf">classification_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.classification_eval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.classification_eval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">classification_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the matthews correlation coefficient for a classification task using</span>
 <span class="sd">        the rules evaluated.</span>
 
 <span class="sd">        :return: mattews correlation coefficient. (float in [-1, 1])</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">matthews_corrcoef</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">matthews_corrcoef</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_rule_weights</span><span class="p">()</span>
         <span class="n">preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">winning_rule_predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">precomputed_truth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">precomputed_truth</span><span class="p">)</span>
 
@@ -495,7 +1165,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcc</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.size_antecedents_eval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval">[docs]</a>    <span class="k">def</span> <span class="nf">size_antecedents_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.size_antecedents_eval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.size_antecedents_eval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size_antecedents_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.</span>
 
@@ -530,9 +1203,12 @@
             <span class="n">rule_density</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="k">return</span> <span class="n">rule_density</span></div>
+
     
 
-<div class="viewcode-block" id="evalRuleBase.effective_rulesize_eval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval">[docs]</a>    <span class="k">def</span> <span class="nf">effective_rulesize_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.effective_rulesize_eval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.effective_rulesize_eval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">effective_rulesize_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.</span>
 
@@ -565,7 +1241,10 @@
         <span class="k">return</span> <span class="n">rule_density</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.p_permutation_classifier_validation"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation">[docs]</a>    <span class="k">def</span> <span class="nf">p_permutation_classifier_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="evalRuleBase.p_permutation_classifier_validation">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.p_permutation_classifier_validation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">p_permutation_classifier_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Performs a boostrap test to evaluate the performance of the rule base.</span>
 <span class="sd">        Returns the p-valuefor the label permutation test and the feature coalition test.</span>
@@ -584,9 +1263,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">p_value_feature_coalition</span> <span class="o">=</span> <span class="n">test2</span>
 
         <span class="k">return</span> <span class="n">test1</span><span class="p">,</span> <span class="n">test2</span></div>
+
     
 
-    <span class="k">def</span> <span class="nf">p_bootstrapping_rules_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="evalRuleBase.p_bootstrapping_rules_validation">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.p_bootstrapping_rules_validation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">p_bootstrapping_rules_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">rules_p_values</span> <span class="o">=</span>  <span class="n">bt</span><span class="o">.</span><span class="n">compute_rule_p_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()):</span>
@@ -597,11 +1279,14 @@
 
         <span class="k">for</span> <span class="n">jx</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mrule_base</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()):</span>
             <span class="n">rule</span><span class="o">.</span><span class="n">boot_confidence_interval</span> <span class="o">=</span> <span class="n">confidence_interval</span><span class="p">[:,</span> <span class="n">jx</span><span class="p">]</span>
-            <span class="n">rule</span><span class="o">.</span><span class="n">boot_support_interval</span> <span class="o">=</span> <span class="n">support_interval</span><span class="p">[:,</span> <span class="n">jx</span><span class="p">]</span>
+            <span class="n">rule</span><span class="o">.</span><span class="n">boot_support_interval</span> <span class="o">=</span> <span class="n">support_interval</span><span class="p">[:,</span> <span class="n">jx</span><span class="p">]</span></div>
 
 
 
-<div class="viewcode-block" id="evalRuleBase.add_full_evaluation"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation">[docs]</a>    <span class="k">def</span> <span class="nf">add_full_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="evalRuleBase.add_full_evaluation">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.add_full_evaluation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_full_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Adds classification scores, both Dominance Scores and accuracy metrics, for each individual rule.</span>
@@ -609,9 +1294,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_rule_weights</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_classification_metrics</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classification_eval</span><span class="p">()</span></div>
+
     
 
-<div class="viewcode-block" id="evalRuleBase.bootstrap_support_rules"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_support_rules">[docs]</a>    <span class="k">def</span> <span class="nf">bootstrap_support_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="evalRuleBase.bootstrap_support_rules">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_support_rules">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_support_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Bootstraps the support of the rules in the classifier.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -625,7 +1313,10 @@
         <span class="k">return</span> <span class="n">supports</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.bootstrap_confidence_rules"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_confidence_rules">[docs]</a>    <span class="k">def</span> <span class="nf">bootstrap_confidence_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="evalRuleBase.bootstrap_confidence_rules">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_confidence_rules">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_confidence_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Bootstraps the confidence of the rules in the classifier.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -638,7 +1329,10 @@
         <span class="k">return</span> <span class="n">confidences</span></div>
 
 
-<div class="viewcode-block" id="evalRuleBase.bootstrap_support_confinterval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_support_confinterval">[docs]</a>    <span class="k">def</span> <span class="nf">bootstrap_support_confinterval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="evalRuleBase.bootstrap_support_confinterval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_support_confinterval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_support_confinterval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Bootstraps the support of the rules in the classifier.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -648,40 +1342,77 @@
 
 
 
-<div class="viewcode-block" id="evalRuleBase.bootstrap_confidence_confinterval"><a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_confidence_confinterval">[docs]</a>    <span class="k">def</span> <span class="nf">bootstrap_confidence_confinterval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="evalRuleBase.bootstrap_confidence_confinterval">
+<a class="viewcode-back" href="../../function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.bootstrap_confidence_confinterval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_confidence_confinterval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Bootstraps the confidence of the rules in the classifier.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">confidences</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_confidence_rules</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">n_samples</span><span class="p">)</span>
         <span class="n">conf_interval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">confidences</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">conf_interval</span></div></div>
+        <span class="k">return</span> <span class="n">conf_interval</span></div>
+</div>
+
 </pre></div>
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
 
-</body>
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

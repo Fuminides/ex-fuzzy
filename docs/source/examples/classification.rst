@@ -17,19 +17,20 @@ A complete walkthrough using the classic Iris dataset:
 
 .. code-block:: python
 
-   import numpy as np
    import pandas as pd
    from sklearn.datasets import load_iris
-   from sklearn.model_selection import train_test_split, cross_val_score
-   from sklearn.metrics import classification_report, confusion_matrix
+   from sklearn.model_selection import train_test_split
+   from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
    
    import ex_fuzzy.fuzzy_sets as fs
    import ex_fuzzy.classifiers as clf
+   import ex_fuzzy.utils as utils
    import ex_fuzzy.eval_tools as eval_tools
 
    # Load the Iris dataset
    iris = load_iris()
-   X, y = iris.data, iris.target
+   X = pd.DataFrame(iris.data, columns=iris.feature_names)
+   y = iris.target
    feature_names = iris.feature_names
    class_names = iris.target_names
 
@@ -42,25 +43,27 @@ A complete walkthrough using the classic Iris dataset:
        X, y, test_size=0.3, random_state=42, stratify=y
    )
 
-   # Create and train the fuzzy classifier
+   # Compute linguistic variables (fuzzy partitions) for each feature
+   precomputed_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1)
+
+   # Create and train the rule-mining fuzzy classifier
    classifier = clf.RuleMineClassifier(
-       nRules=15,          # Number of rules to discover
-       nAnts=3,            # Maximum antecedents per rule
-       fuzzy_type=fs.FUZZY_SETS.t1,  # Type-1 fuzzy sets
-       tolerance=0.0,      # Tolerance for rule matching
-       verbose=True        # Show training progress
+       nRules=15,                                    # Number of rules to optimize
+       nAnts=4,                                      # Maximum antecedents per rule
+       fuzzy_type=fs.FUZZY_SETS.t1,                 # Type-1 fuzzy sets
+       tolerance=0.01,                              # Tolerance for rule dominance
+       linguistic_variables=precomputed_partitions  # Precomputed fuzzy partitions
    )
 
-   # Fit the classifier
+   # Fit the classifier with genetic algorithm parameters
    print("Training fuzzy classifier...")
-   classifier.fit(X_train, y_train)
+   classifier.fit(X_train, y_train, n_gen=30, pop_size=50)
 
    # Make predictions
    y_pred = classifier.predict(X_test)
-   y_proba = classifier.predict_proba(X_test)
 
    # Evaluate performance
-   accuracy = classifier.score(X_test, y_test)
+   accuracy = accuracy_score(y_test, y_pred)
    print(f"\\nTest Accuracy: {accuracy:.3f}")
 
    # Detailed evaluation
@@ -94,107 +97,65 @@ Expected output:
   weighted avg       0.96      0.96      0.96        45
 
 Custom Fuzzy Variables
+Advanced Usage
+~~~~~~~~~~~~~
+
+Using the comprehensive evaluation function:
+
+.. code-block:: python
+
+   # Use the comprehensive evaluation function
+   evaluation_report = eval_tools.eval_fuzzy_model(
+       classifier, X_train, y_train, X_test, y_test,
+       plot_rules=True,           # Generate rule plots
+       print_rules=True,          # Print rule text
+       plot_partitions=True,      # Plot fuzzy partitions
+       return_rules=True,         # Return rule text
+       bootstrap_results_print=True  # Statistical analysis
+   )
+   
+   print(evaluation_report)
+
+   # Or use the FuzzyEvaluator class directly for more control
+   evaluator = eval_tools.FuzzyEvaluator(classifier)
+   
+   # Get specific metrics
+   accuracy = evaluator.get_metric('accuracy_score', X_test, y_test)
+   f1_score = evaluator.get_metric('f1_score', X_test, y_test, average='weighted')
+   precision = evaluator.get_metric('precision_score', X_test, y_test, average='weighted')
+   recall = evaluator.get_metric('recall_score', X_test, y_test, average='weighted')
+   
+   print(f"Accuracy: {accuracy:.3f}")
+   print(f"F1-Score: {f1_score:.3f}")
+   print(f"Precision: {precision:.3f}")
+   print(f"Recall: {recall:.3f}")
+
+Alternative Classifiers
 ~~~~~~~~~~~~~~~~~~~~~
 
-Creating custom linguistic variables for better interpretability:
+Ex-fuzzy provides multiple classifier options:
 
 .. code-block:: python
 
-   # Define custom fuzzy variables with meaningful names
-   sepal_length = fs.fuzzyVariable(
-       "sepal_length", 
-       X_train[:, 0],  # Use training data for range
-       3,              # 3 linguistic terms
-       fs.FUZZY_SETS.t1,
-       terms=['short', 'medium', 'long']
-   )
-
-   sepal_width = fs.fuzzyVariable(
-       "sepal_width",
-       X_train[:, 1],
-       3,
-       fs.FUZZY_SETS.t1,
-       terms=['narrow', 'medium', 'wide']
-   )
-
-   petal_length = fs.fuzzyVariable(
-       "petal_length",
-       X_train[:, 2],
-       3,
-       fs.FUZZY_SETS.t1,
-       terms=['short', 'medium', 'long']
-   )
-
-   petal_width = fs.fuzzyVariable(
-       "petal_width",
-       X_train[:, 3],
-       3,
-       fs.FUZZY_SETS.t1,
-       terms=['narrow', 'medium', 'wide']
-   )
-
-   # Combine into list
-   custom_variables = [sepal_length, sepal_width, petal_length, petal_width]
-
-   # Create classifier with custom variables
-   custom_classifier = clf.RuleMineClassifier(
-       nRules=12,
-       nAnts=2,
-       linguistic_variables=custom_variables,
-       verbose=True
-   )
-
-   # Train and evaluate
-   custom_classifier.fit(X_train, y_train)
-   custom_accuracy = custom_classifier.score(X_test, y_test)
-   
-   print(f"Custom classifier accuracy: {custom_accuracy:.3f}")
-
-   # The rules will now be more interpretable:
-   # Example: IF sepal_length is long AND petal_width is wide THEN class is virginica
-
-Advanced Classification
-----------------------
-
-Imbalanced Dataset Handling
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Working with imbalanced datasets:
-
-.. code-block:: python
-
-   from sklearn.datasets import make_classification
-   from sklearn.utils import resample
-   from imblearn.over_sampling import SMOTE
-
-   # Create imbalanced dataset
-   X_imb, y_imb = make_classification(
-       n_samples=1000,
-       n_features=4,
-       n_informative=3,
-       n_redundant=1,
-       n_clusters_per_class=1,
-       weights=[0.7, 0.2, 0.1],  # Imbalanced classes
-       random_state=42
-   )
-
-   print(f"Class distribution: {np.bincount(y_imb)}")
-
-   # Split data
-   X_train_imb, X_test_imb, y_train_imb, y_test_imb = train_test_split(
-       X_imb, y_imb, test_size=0.3, random_state=42, stratify=y_imb
-   )
-
-   # Strategy 1: Weighted classifier
-   weighted_classifier = clf.RuleMineClassifier(
+   # Two-stage classifier with rule mining and optimization
+   fuzzy_classifier = clf.FuzzyRulesClassifier(
        nRules=20,
-       nAnts=3,
-       class_weights='balanced',  # Handle imbalance
-       verbose=False
+       nAnts=4,
+       fuzzy_type=fs.FUZZY_SETS.t1,
+       tolerance=0.01,
+       linguistic_variables=precomputed_partitions
    )
+   fuzzy_classifier.fit(X_train, y_train, n_gen=40, pop_size=60)
 
-   weighted_classifier.fit(X_train_imb, y_train_imb)
-   weighted_score = weighted_classifier.score(X_test_imb, y_test_imb)
+   # Rule fine-tuning classifier
+   fine_tune_classifier = clf.RuleFineTuneClassifier(
+       nRules=15,
+       nAnts=3,
+       fuzzy_type=fs.FUZZY_SETS.t1,
+       tolerance=0.01,
+       linguistic_variables=precomputed_partitions
+   )
+   fine_tune_classifier.fit(X_train, y_train, n_gen=30, pop_size=50)
 
    # Strategy 2: SMOTE + Fuzzy classifier
    smote = SMOTE(random_state=42)
@@ -236,207 +197,124 @@ Working with datasets having many classes:
 
    # Load digits dataset (10 classes)
    digits = load_digits()
-   X_digits, y_digits = digits.data, digits.target
 
-   print(f"Digits dataset: {X_digits.shape}, {len(np.unique(y_digits))} classes")
+Example Output
+~~~~~~~~~~~~
 
-   # Split data
-   X_train_dig, X_test_dig, y_train_dig, y_test_dig = train_test_split(
-       X_digits, y_digits, test_size=0.3, random_state=42, stratify=y_digits
+Expected performance on the Iris dataset:
+
+.. code-block:: text
+
+   Training fuzzy classifier...
+   ------------
+   ACCURACY
+   Train performance: 0.943
+   Test performance: 0.956
+   ------------
+   MATTHEW CORRCOEF
+   Train performance: 0.914
+   Test performance: 0.933
+   ------------
+
+   Rule 1: IF petal length (cm) is low AND petal width (cm) is low THEN setosa
+   Rule 2: IF petal length (cm) is medium AND petal width (cm) is medium THEN versicolor
+   Rule 3: IF petal length (cm) is high AND petal width (cm) is high THEN virginica
+   ...
+
+Working with Different Fuzzy Set Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Ex-fuzzy supports different types of fuzzy sets:
+
+.. code-block:: python
+
+   # Type-1 fuzzy sets (default)
+   classifier_t1 = clf.RuleMineClassifier(
+       nRules=15,
+       nAnts=4,
+       fuzzy_type=fs.FUZZY_SETS.t1,  # Type-1 fuzzy sets
+       tolerance=0.01
    )
 
-   # Create classifier for high-dimensional, multi-class problem
-   digits_classifier = clf.RuleMineClassifier(
-       nRules=50,          # More rules for complex problem
-       nAnts=4,            # Slightly more complex rules
+   # Type-2 fuzzy sets
+   classifier_t2 = clf.RuleMineClassifier(
+       nRules=15,
+       nAnts=4,
+       fuzzy_type=fs.FUZZY_SETS.t2,  # Type-2 fuzzy sets
+       tolerance=0.01
+   )
+
+   # General Type-2 fuzzy sets
+   classifier_gt2 = clf.RuleMineClassifier(
+       nRules=15,
+       nAnts=4,
+       fuzzy_type=fs.FUZZY_SETS.gt2,  # General Type-2 fuzzy sets
+       tolerance=0.01
+   )
+
+Direct Use of BaseFuzzyRulesClassifier
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For more direct control, you can use the underlying classifier:
+
+.. code-block:: python
+
+   import ex_fuzzy.evolutionary_fit as evf
+
+   # Create linguistic variables manually
+   precomputed_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1)
+
+   # Create the base classifier directly
+   base_classifier = evf.BaseFuzzyRulesClassifier(
+       nRules=15,
+       linguistic_variables=precomputed_partitions,
+       nAnts=4,
+       n_linguistic_variables=3,
        fuzzy_type=fs.FUZZY_SETS.t1,
-       tolerance=0.1,      # Some tolerance for high-dimensional data
-       verbose=True
+       verbose=True,
+       tolerance=0.01
    )
 
-   # Train (this may take a few minutes)
-   print("Training on digits dataset...")
-   digits_classifier.fit(X_train_dig, y_train_dig)
+   # Fit with genetic algorithm parameters
+   base_classifier.fit(X_train, y_train, n_gen=50, pop_size=30)
 
    # Evaluate
-   digits_accuracy = digits_classifier.score(X_test_dig, y_test_dig)
-   print(f"Digits classification accuracy: {digits_accuracy:.3f}")
+   y_pred = base_classifier.predict(X_test)
+   accuracy = accuracy_score(y_test, y_pred)
+   print(f"Base classifier accuracy: {accuracy:.3f}")
 
-   # Per-class performance
-   y_pred_dig = digits_classifier.predict(X_test_dig)
-   
-   from sklearn.metrics import classification_report
-   print("\\nPer-class performance:")
-   print(classification_report(y_test_dig, y_pred_dig))
+   # Print and visualize rules
+   rule_text = base_classifier.print_rules(return_rules=True)
+   print(rule_text)
 
-Hyperparameter Tuning
-~~~~~~~~~~~~~~~~~~~~
+   # Plot fuzzy variables
+   base_classifier.plot_fuzzy_variables()
 
-Optimizing fuzzy classifier parameters:
+Available Evaluation Tools
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
-
-   from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-   from sklearn.metrics import make_scorer, f1_score
-
-   # Define parameter grid
-   param_grid = {
-       'nRules': [10, 15, 20, 25],
-       'nAnts': [2, 3, 4],
-       'tolerance': [0.0, 0.1, 0.2],
-       'fuzzy_type': [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2]
-   }
-
-   # Create base classifier
-   base_classifier = clf.RuleMineClassifier(verbose=False)
-
-   # Grid search with F1-score
-   f1_scorer = make_scorer(f1_score, average='macro')
-   
-   grid_search = GridSearchCV(
-       base_classifier,
-       param_grid,
-       cv=5,
-       scoring=f1_scorer,
-       n_jobs=-1,
-       verbose=1
-   )
-
-   # Fit grid search
-   print("Performing grid search...")
-   grid_search.fit(X_train, y_train)
-
-   print(f"Best parameters: {grid_search.best_params_}")
-   print(f"Best CV score: {grid_search.best_score_:.3f}")
-
-   # Test best model
-   best_classifier = grid_search.best_estimator_
-   best_accuracy = best_classifier.score(X_test, y_test)
-   print(f"Best model test accuracy: {best_accuracy:.3f}")
-
-   # Alternative: Randomized search for larger spaces
-   from scipy.stats import randint, uniform
-
-   param_distributions = {
-       'nRules': randint(10, 50),
-       'nAnts': randint(2, 5),
-       'tolerance': uniform(0, 0.3),
-   }
-
-   random_search = RandomizedSearchCV(
-       base_classifier,
-       param_distributions,
-       n_iter=20,
-       cv=3,
-       scoring=f1_scorer,
-       random_state=42,
-       n_jobs=-1
-   )
-
-   random_search.fit(X_train, y_train)
-   print(f"Random search best score: {random_search.best_score_:.3f}")
-
-Real-World Applications
-----------------------
-
-Heart Disease Prediction
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Medical diagnosis using fuzzy classification:
+Ex-fuzzy provides comprehensive evaluation capabilities:
 
 .. code-block:: python
 
-   # Load heart disease dataset (assuming it's available)
-   # This is a hypothetical example - adapt to your actual data
-   
-   def load_heart_disease_data():
-       """Load and preprocess heart disease dataset."""
-       # Example features that might be in such a dataset
-       np.random.seed(42)
-       n_samples = 500
-       
-       # Generate synthetic heart disease data
-       age = np.random.normal(55, 15, n_samples)
-       cholesterol = np.random.normal(220, 50, n_samples)
-       max_heart_rate = np.random.normal(140, 30, n_samples)
-       blood_pressure = np.random.normal(130, 20, n_samples)
-       
-       # Create target based on realistic relationships
-       risk_score = (
-           0.3 * (age - 40) / 30 +
-           0.2 * (cholesterol - 200) / 100 +
-           0.2 * (blood_pressure - 120) / 40 +
-           0.3 * (160 - max_heart_rate) / 60 +
-           np.random.normal(0, 0.1, n_samples)
-       )
-       
-       # Convert to binary classification
-       y = (risk_score > 0.5).astype(int)
-       
-       X = np.column_stack([age, cholesterol, max_heart_rate, blood_pressure])
-       feature_names = ['age', 'cholesterol', 'max_heart_rate', 'blood_pressure']
-       
-       return X, y, feature_names
+   # Create evaluator
+   evaluator = eval_tools.FuzzyEvaluator(classifier)
 
-   # Load data
-   X_heart, y_heart, heart_features = load_heart_disease_data()
-   print(f"Heart disease dataset: {X_heart.shape}")
-   print(f"Positive cases: {np.sum(y_heart)} / {len(y_heart)} ({np.mean(y_heart):.1%})")
+   # Get individual metrics
+   metrics_to_compute = [
+       'accuracy_score',
+       'precision_score',
+       'recall_score', 
+       'f1_score',
+       'matthews_corrcoef'
+   ]
 
-   # Split data
-   X_train_heart, X_test_heart, y_train_heart, y_test_heart = train_test_split(
-       X_heart, y_heart, test_size=0.3, random_state=42, stratify=y_heart
-   )
-
-   # Create meaningful fuzzy variables for medical context
-   age_var = fs.fuzzyVariable(
-       "age", X_train_heart[:, 0], 4, fs.FUZZY_SETS.t1,
-       terms=['young', 'middle_aged', 'senior', 'elderly']
-   )
-
-   cholesterol_var = fs.fuzzyVariable(
-       "cholesterol", X_train_heart[:, 1], 3, fs.FUZZY_SETS.t1,
-       terms=['normal', 'elevated', 'high']
-   )
-
-   heart_rate_var = fs.fuzzyVariable(
-       "max_heart_rate", X_train_heart[:, 2], 3, fs.FUZZY_SETS.t1,
-       terms=['low', 'normal', 'high']
-   )
-
-   bp_var = fs.fuzzyVariable(
-       "blood_pressure", X_train_heart[:, 3], 3, fs.FUZZY_SETS.t1,
-       terms=['normal', 'elevated', 'high']
-   )
-
-   medical_variables = [age_var, cholesterol_var, heart_rate_var, bp_var]
-
-   # Train medical classifier
-   medical_classifier = clf.RuleMineClassifier(
-       nRules=15,
-       nAnts=3,
-       linguistic_variables=medical_variables,
-       verbose=True
-   )
-
-   medical_classifier.fit(X_train_heart, y_train_heart)
-
-   # Evaluate with medical-relevant metrics
-   y_pred_heart = medical_classifier.predict(X_test_heart)
-   y_proba_heart = medical_classifier.predict_proba(X_test_heart)
-
-   from sklearn.metrics import roc_auc_score, precision_recall_curve
-
-   auc_score = roc_auc_score(y_test_heart, y_proba_heart[:, 1])
-   precision, recall, _ = precision_recall_curve(y_test_heart, y_proba_heart[:, 1])
-
-   print(f"Medical classifier AUC: {auc_score:.3f}")
-   print(f"Classification Report:")
-   print(classification_report(y_test_heart, y_pred_heart, 
-                             target_names=['No Disease', 'Disease']))
-
-   # Example interpretable rules (hypothetical output)
-   print("\\nExample interpretable rules:")
+   for metric in metrics_to_compute:
+       if metric in ['precision_score', 'recall_score', 'f1_score']:
+           score = evaluator.get_metric(metric, X_test, y_test, average='weighted')
+       else:
+           score = evaluator.get_metric(metric, X_test, y_test)
+       print(f"{metric}: {score:.3f}")
    print("IF age is elderly AND cholesterol is high THEN high_risk")
    print("IF blood_pressure is high AND heart_rate is low THEN high_risk")
    print("IF age is young AND cholesterol is normal THEN low_risk")

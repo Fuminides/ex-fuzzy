@@ -1,200 +1,1036 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Classification persistence &mdash; Ex-Fuzzy  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Classification persistence &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'function_resume/persistence';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Fuzzy Cognitive Maps" href="cognitive_maps.html" />
-    <link rel="prev" title="Advanced Classifiers" href="classifiers.html" /> 
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            Ex-Fuzzy
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step1.html">Creating fuzzy sets and fuzzy variables</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step2.html">Using Fuzzy Rules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step3.html">Optimizing a Fuzzy rule base for a classification problem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../step4.html">Visualize rules and results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../precom.html">Computing fuzzy partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../optimize.html">Genetic algorithm details</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gt2.html">General Type 2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tmpfs.html">Temporal Fuzzy Sets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../extending.html">Extending Ex-Fuzzy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../persistence.html">Persistence</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../classifiers.html">Advanced classifiers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../pattern_stats.html">Bootstrapping and rule robustness</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="fuzzy_sets.html">Fuzzy Sets Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rules.html">Fuzzy Rules Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eval_rules.html">Rule Evaluation Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eval_tools.html">Classification evaluation tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vis_rules.html">Rule Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evolutionary_fit.html">Evolutionary Algorithms to Fit the rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rule_mining.html">Rule Mining methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classifiers.html">Advanced Classifiers</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Classification persistence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cognitive_maps.html">Fuzzy Cognitive Maps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html">Partition utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="centroid.html">T2 Centroid compute</a></li>
-<li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal fuzzy sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pattern_stability.html">Pattern stability analysis</a></li>
-</ul>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
 </li>
-</ul>
 
-        </div>
-      </div>
-    </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Ex-Fuzzy</a>
-      </nav>
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">Classification persistence</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/function_resume/persistence.rst.txt" rel="nofollow"> View page source</a>
-      </li>
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
   </ul>
-  <hr/>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Classificati...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="module-ex_fuzzy.persistence">
-<span id="classification-persistence"></span><h1>Classification persistence<a class="headerlink" href="#module-ex_fuzzy.persistence" title="Permalink to this heading"></a></h1>
-<p>Load the rules of a fuzzy rules system using plain text format.</p>
+<span id="classification-persistence"></span><h1>Classification persistence<a class="headerlink" href="#module-ex_fuzzy.persistence" title="Link to this heading">#</a></h1>
+<p>Persistence Module for Ex-Fuzzy Library</p>
+<p>This module provides functionality for loading and saving fuzzy rule systems and fuzzy variables
+from/to plain text format. It enables serialization and deserialization of fuzzy systems
+for persistence and portability.</p>
+<dl class="simple">
+<dt>Main Components:</dt><dd><ul class="simple">
+<li><p>Fuzzy rule loading and saving</p></li>
+<li><p>Fuzzy variable loading and saving</p></li>
+<li><p>Text-based serialization format support</p></li>
+<li><p>Support for Type-1 and Type-2 fuzzy systems</p></li>
+</ul>
+</dd>
+</dl>
+<p>The text format follows a specific structure that allows complete reconstruction
+of fuzzy systems including membership functions, linguistic variables, and rule bases.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.persistence.remove_parentheses">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">remove_parentheses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#remove_parentheses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.remove_parentheses" title="Link to this definition">#</a></dt>
+<dd><p>Remove all content within parentheses from text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Input text that may contain parentheses</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Text with all parenthetical content removed</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">remove_parentheses</span><span class="p">(</span><span class="s2">&quot;DS 0.85 (ACC 0.92), (WGHT 1.0)&quot;</span><span class="p">)</span>
+<span class="go">&#39;DS 0.85 , &#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.persistence.load_fuzzy_rules">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">load_fuzzy_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules_printed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><span class="pre">MasterRuleBase</span></a></span></span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#load_fuzzy_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.load_fuzzy_rules" title="Permalink to this definition"></a></dt>
-<dd><p>Load the rules from a string.</p>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">load_fuzzy_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules_printed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#load_fuzzy_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.load_fuzzy_rules" title="Link to this definition">#</a></dt>
+<dd><p>Load fuzzy rules from a text string representation.</p>
+<p>This function parses a text-based representation of fuzzy rules and constructs
+a MasterRuleBase object containing all the rules organized by consequent classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rules_printed</strong> – string with the rules. Follows the specification given by the same printing method of rules.MasterRuleBase</p></li>
-<li><p><strong>fuzzy_variables</strong> – list with the linguistic variables. Objects of FuzzyVariable class.</p></li>
+<li><p><strong>rules_printed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Text representation of fuzzy rules following the
+ex-fuzzy format. Each rule should start with “IF” and contain
+antecedents connected by “AND”, followed by “WITH” and consequent
+information including dominance score (DS), accuracy (ACC), and
+optionally weight (WGHT).</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of fuzzyVariable objects that define the
+linguistic variables and their membership functions used in the rules.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return mrule_base<span class="colon">:</span></dt>
-<dd class="field-even"><p>object of MasterRuleBase class that contains the rules.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A MasterRuleBase object containing all parsed rules</dt><dd><p>organized by consequent classes, with proper rule bases for each class.</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase">rules.MasterRuleBase</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the text format is invalid or contains unrecognized elements</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.13)"><strong>IndexError</strong></a> – If referenced linguistic variables or values are not found</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rules_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;Rules for class_1:</span>
+<span class="gp">... </span><span class="s1">IF var1 IS low AND var2 IS high WITH DS 0.85 (ACC 0.92)</span>
+<span class="gp">... </span><span class="s1">Rules for class_2:</span>
+<span class="gp">... </span><span class="s1">IF var1 IS high WITH DS 0.78 (ACC 0.88)&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">master_rb</span> <span class="o">=</span> <span class="n">load_fuzzy_rules</span><span class="p">(</span><span class="n">rules_text</span><span class="p">,</span> <span class="n">fuzzy_variables</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The text format supports:
+- Multiple rule bases for different consequent classes
+- Rule modifiers using (MOD modifier_name) syntax
+- Accuracy and weight information in parentheses
+- Don’t care conditions (variables not mentioned in antecedents)</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.persistence.load_fuzzy_variables">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">load_fuzzy_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variables_printed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#load_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.load_fuzzy_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Load the linguistic variables from a string.</p>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">load_fuzzy_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variables_printed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#load_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.load_fuzzy_variables" title="Link to this definition">#</a></dt>
+<dd><p>Load fuzzy variables from a text string representation.</p>
+<p>This function parses a text-based representation of fuzzy variables and constructs
+a list of fuzzyVariable objects with their associated fuzzy sets and membership functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fuzzy_variables_printed</strong> – string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.</p>
+<dd class="field-odd"><p><strong>fuzzy_variables_printed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Text representation of fuzzy variables following
+the ex-fuzzy format. Should contain variable definitions starting with
+‘$$$’ (for fuzzy variables) or ‘$Categorical’ (for categorical variables),
+followed by fuzzy set definitions with membership function parameters.</p>
 </dd>
-<dt class="field-even">Return fuzzy_variables<span class="colon">:</span></dt>
-<dd class="field-even"><p>list with the linguistic variables. Objects of FuzzyVariable class.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of fuzzyVariable objects containing all parsed linguistic variables</dt><dd><p>with their fuzzy sets and membership functions properly configured.</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the text format is invalid or contains unrecognized elements</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If membership function parameters cannot be converted to proper types</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fvars_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;$$$ Linguistic variable: temperature</span>
+<span class="gp">... </span><span class="s1">low;0.0,50.0;trap;0.0,0.0,20.0,30.0</span>
+<span class="gp">... </span><span class="s1">high;0.0,50.0;trap;25.0,35.0,50.0,50.0&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fuzzy_vars</span> <span class="o">=</span> <span class="n">load_fuzzy_variables</span><span class="p">(</span><span class="n">fvars_text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The text format supports:
+- Type-1 and Type-2 fuzzy sets (trapezoidal and gaussian)
+- Categorical variables with different data types
+- Variable units specification
+- Multiple membership function types per variable</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.persistence.print_fuzzy_variable">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">print_fuzzy_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><span class="pre">fuzzyVariable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#print_fuzzy_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.print_fuzzy_variable" title="Permalink to this definition"></a></dt>
-<dd><p>Save the linguistic variable to a string.</p>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">print_fuzzy_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#print_fuzzy_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.print_fuzzy_variable" title="Link to this definition">#</a></dt>
+<dd><p>Convert a fuzzy variable to its text string representation.</p>
+<p>This function serializes a fuzzyVariable object into a text format that can be
+saved to files and later loaded using load_fuzzy_variables().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fuzzy_variable</strong> – linguistic variable. Object of FuzzyVariable class.</p>
+<dd class="field-odd"><p><strong>fuzzy_variable</strong> (<em>fs.fuzzyVariable</em>) – The fuzzy variable object to be serialized.
+Should contain properly configured fuzzy sets with membership functions.</p>
 </dd>
-<dt class="field-even">Return fuzzy_variable_printed<span class="colon">:</span></dt>
-<dd class="field-even"><p>string with the linguistic variable. Follows the specification given by the same printing method of FuzzyVariable class.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Text representation of the fuzzy variable following the ex-fuzzy format.</dt><dd><p>Includes variable name, units (if any), and all fuzzy set definitions
+with their membership function parameters.</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># For a fuzzy variable with trapezoidal sets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">print_fuzzy_variable</span><span class="p">(</span><span class="n">temperature_var</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="go">$$$ Linguistic variable: temperature</span>
+<span class="go">low;0.0,50.0;trap;0.0,0.0,20.0,30.0</span>
+<span class="go">high;0.0,50.0;trap;25.0,35.0,50.0,50.0</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The output format varies based on fuzzy set types:
+- Categorical variables use ‘$Categorical variable:’ prefix
+- Regular fuzzy variables use ‘$$$ Linguistic variable:’ prefix
+- Type-2 fuzzy sets include additional parameters for upper membership functions
+- Supports trapezoidal, triangular, and gaussian membership functions</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ex_fuzzy.persistence.save_fuzzy_variables">
-<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">save_fuzzy_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#save_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.save_fuzzy_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Save the linguistic variables to a string.</p>
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.persistence.</span></span><span class="sig-name descname"><span class="pre">save_fuzzy_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/persistence.html#save_fuzzy_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.persistence.save_fuzzy_variables" title="Link to this definition">#</a></dt>
+<dd><p>Save multiple fuzzy variables to a text string representation.</p>
+<p>This function serializes a list of fuzzyVariable objects into a single text string
+that can be saved to files and later loaded using load_fuzzy_variables().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fuzzy_variables</strong> – list with the linguistic variables. Objects of FuzzyVariable class.</p>
+<dd class="field-odd"><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of fuzzyVariable objects to be serialized.
+Each variable should contain properly configured fuzzy sets with
+membership functions.</p>
 </dd>
-<dt class="field-even">Return fuzzy_variables_printed<span class="colon">:</span></dt>
-<dd class="field-even"><p>string with the linguistic variables. Follows the specification given by the same printing method of FuzzyVariable class.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Text representation of all fuzzy variables concatenated with newlines.</dt><dd><p>Each variable is separated and formatted according to the ex-fuzzy
+text specification.</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">temperature_var</span><span class="p">,</span> <span class="n">pressure_var</span><span class="p">,</span> <span class="n">flow_var</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">save_fuzzy_variables</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Save to file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;fuzzy_vars.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function calls print_fuzzy_variable() for each variable and concatenates
+the results with newline separators for proper file formatting.</p>
+</div>
 </dd></dl>
 
 </section>
 
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.persistence.remove_parentheses"><code class="docutils literal notranslate"><span class="pre">remove_parentheses()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.persistence.load_fuzzy_rules"><code class="docutils literal notranslate"><span class="pre">load_fuzzy_rules()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.persistence.load_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">load_fuzzy_variables()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.persistence.print_fuzzy_variable"><code class="docutils literal notranslate"><span class="pre">print_fuzzy_variable()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.persistence.save_fuzzy_variables"><code class="docutils literal notranslate"><span class="pre">save_fuzzy_variables()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/function_resume/persistence.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="classifiers.html" class="btn btn-neutral float-left" title="Advanced Classifiers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="cognitive_maps.html" class="btn btn-neutral float-right" title="Fuzzy Cognitive Maps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Javier Fumanal Idocin.</p>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
 
-</body>
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>
