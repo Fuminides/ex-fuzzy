@@ -47,7 +47,7 @@ Development Setup
 
    .. code-block:: bash
 
-       git clone https://github.com/your-username/ex-fuzzy.git
+       git clone https://github.com/fuminides/ex-fuzzy.git
        cd ex-fuzzy
 
 3. **Create a virtual environment**:
@@ -360,4 +360,4 @@ Thank You!
 
 Thank you for considering contributing to Ex-Fuzzy! Every contribution, no matter how small, helps make the library better for everyone.
 
-Ready to contribute? Check out our `good first issues <https://github.com/your-username/ex-fuzzy/labels/good%20first%20issue>`_ to get started!
+Ready to contribute? Check out our `good first issues <https://github.com/fuminides/ex-fuzzy/labels/good%20first%20issue>`_ to get started!

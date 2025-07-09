@@ -116,7 +116,7 @@ For contributors or users who want the latest features:
 .. code-block:: bash
 
     # Clone the repository
-    git clone https://github.com/your-username/ex-fuzzy.git
+    git clone https://github.com/fuminides/ex-fuzzy.git
     cd ex-fuzzy
 
     # Install in development mode
@@ -135,7 +135,7 @@ Download and install from a source archive:
 .. code-block:: bash
 
     # Download the latest release
-    wget https://github.com/your-username/ex-fuzzy/archive/v1.0.0.tar.gz
+    wget https://github.com/fuminides/ex-fuzzy/archive/v1.0.0.tar.gz
     tar -xzf v1.0.0.tar.gz
     cd ex-fuzzy-1.0.0
 
@@ -411,7 +411,7 @@ If you encounter issues during installation:
 2. **Update pip**: ``pip install --upgrade pip``
 3. **Clear cache**: ``pip cache purge``
 4. **Check dependencies**: Ensure all required packages are compatible
-5. **Ask for help**: Open an issue on `GitHub <https://github.com/your-username/ex-fuzzy/issues>`_
+5. **Ask for help**: Open an issue on `GitHub <https://github.com/fuminides/ex-fuzzy/issues>`_
 
 Next Steps
 ==========

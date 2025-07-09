@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -52,6 +55,7 @@
     <link rel="prev" title="ex_fuzzy.fuzzy_sets.FS.membership" href="generated/ex_fuzzy.fuzzy_sets.FS.membership.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -67,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -87,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -95,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
     
     
     <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -182,7 +174,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -340,13 +334,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -361,7 +351,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -380,15 +370,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -397,13 +383,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -422,7 +404,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -632,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -651,15 +634,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -679,9 +658,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -699,8 +683,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -712,7 +694,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Classifiers Module</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Classifiers Module</span></li>
   </ul>
 </nav>
 </div>
@@ -731,32 +713,16 @@ document.write(`
                   
   <section id="classifiers-module">
 <h1>Classifiers Module<a class="headerlink" href="#classifiers-module" title="Link to this heading">#</a></h1>
-<p>The <a class="reference internal" href="../function_resume/classifiers.html#module-ex_fuzzy.classifiers" title="ex_fuzzy.classifiers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers</span></code></a> module provides high-level classification algorithms that combine rule mining, genetic optimization, and fuzzy inference for pattern classification tasks.</p>
+<p>The <a class="reference internal" href="../function_resume/classifiers.html#module-ex_fuzzy.classifiers" title="ex_fuzzy.classifiers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers</span></code></a> module provides the main classification interface for the ex-fuzzy library.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>The classifiers module implements sophisticated two-stage optimization approaches:</p>
-<ol class="arabic simple">
-<li><p><strong>Rule Discovery</strong>: Mine candidate rules from training data using support, confidence, and lift thresholds</p></li>
-<li><p><strong>Rule Optimization</strong>: Use evolutionary algorithms to find optimal rule combinations</p></li>
-</ol>
-<p>All classifiers follow scikit-learn conventions with standard <code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code> interfaces.</p>
-<section id="key-features">
-<h3>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p><strong>Automatic Feature Fuzzification</strong>: Optimal partitioning with various fuzzy set types</p></li>
-<li><p><strong>Rule Mining</strong>: Support, confidence, and lift-based rule discovery</p></li>
-<li><p><strong>Multi-objective Optimization</strong>: Balance accuracy and interpretability</p></li>
-<li><p><strong>Imbalanced Dataset Support</strong>: Specialized fitness functions</p></li>
-<li><p><strong>Cross-validation Fitness</strong>: Robust model evaluation</p></li>
-<li><p><strong>Fuzzy Set Integration</strong>: Support for Type-1, Type-2, and GT2 fuzzy sets</p></li>
-</ul>
-</section>
+<p>This module contains the high-level classifier that combines rule mining and genetic optimization for fuzzy classification tasks.</p>
 </section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier" title="ex_fuzzy.classifiers.RuleMineClassifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleMineClassifier</span></code></a>([nRules, nAnts, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier" title="ex_fuzzy.classifiers.RuleMineClassifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleMineClassifier</span></code></a>([nRules, nAnts, ...])</p></td>
 <td><p>A classifier that works by mining a set of candidate rules with a minimum support, confidence and lift, and then using a genetic algorithm that chooses the optimal combination of those rules.</p></td>
 </tr>
 </tbody>
@@ -771,21 +737,7 @@ document.write(`
 <dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a></p>
 <p>A classifier that works by mining a set of candidate rules with a minimum support, confidence and lift, and then using a genetic algorithm that chooses
 the optimal combination of those rules.</p>
-<p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.fit" title="ex_fuzzy.classifiers.RuleMineClassifier.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a></p></td>
-<td><p>Trains the model with the given data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.predict" title="ex_fuzzy.classifiers.RuleMineClassifier.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a></p></td>
-<td><p>Predict for each sample the corresponding class.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.classifiers.RuleMineClassifier.score" title="ex_fuzzy.classifiers.RuleMineClassifier.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a></p></td>
-<td><p>Return the mean accuracy on the given test data and labels.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>The main classifier that mines candidate rules and then optimizes them using genetic algorithms.</p>
 <p><strong>Constructor Parameters</strong></p>
 <dl class="field-list simple">
 </dl>
@@ -803,32 +755,13 @@ the optimal combination of those rules.</p>
 <li><p><strong>verbose</strong> – if True, prints the progress of the optimization.</p></li>
 <li><p><strong>n_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of classes in the problem. If None (default) the classifier will compute it empirically.</p></li>
 <li><p><strong>runner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of threads to use.</p></li>
-<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – linguistic variables per antecedent.</p></li>
+<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – linguistic variables per antecedent.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/classifiers.html#RuleMineClassifier.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
-<dd><p>Inits the optimizer with the corresponding parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
-<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
-<li><p><strong>type</strong> (<em>fuzzy</em>) – FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.</p></li>
-<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – tolerance for the support/dominance score of the rules.</p></li>
-<li><p><strong>verbose</strong> – if True, prints the progress of the optimization.</p></li>
-<li><p><strong>n_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of classes in the problem. If None (default) the classifier will compute it empirically.</p></li>
-<li><p><strong>runner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of threads to use.</p></li>
-<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – linguistic variables per antecedent.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<p><strong>Main Methods</strong></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.classifiers.RuleMineClassifier.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_gen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/classifiers.html#RuleMineClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.classifiers.RuleMineClassifier.fit" title="Link to this definition">#</a></dt>
@@ -871,6 +804,67 @@ the optimal combination of those rules.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/classifiers.html#RuleMineClassifier.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
+<dd><p>Inits the optimizer with the corresponding parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
+<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
+<li><p><strong>type</strong> (<em>fuzzy</em>) – FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.</p></li>
+<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – tolerance for the support/dominance score of the rules.</p></li>
+<li><p><strong>verbose</strong> – if True, prints the progress of the optimization.</p></li>
+<li><p><strong>n_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of classes in the problem. If None (default) the classifier will compute it empirically.</p></li>
+<li><p><strong>runner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of threads to use.</p></li>
+<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – linguistic variables per antecedent.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_gen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/classifiers.html#RuleMineClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition">#</a></dt>
+<dd><p>Trains the model with the given data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – samples to train.</p></li>
+<li><p><strong>y</strong> (<em>array</em>) – labels for each sample.</p></li>
+<li><p><strong>n_gen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of generations to compute in the genetic optimization.</p></li>
+<li><p><strong>pop_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of subjects per generation.</p></li>
+<li><p><strong>kwargs</strong> – additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/classifiers.html#RuleMineClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition">#</a></dt>
+<dd><p>Predict for each sample the corresponding class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>array</em>) – samples to predict.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a class for each sample.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">internal_classifier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/classifiers.html#RuleMineClassifier.internal_classifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.classifiers.RuleMineClassifier.score">
 <span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ex_fuzzy.classifiers.RuleMineClassifier.score" title="Link to this definition">#</a></dt>
 <dd><p>Return the mean accuracy on the given test data and labels.</p>
@@ -899,11 +893,11 @@ each label set be correctly predicted.</p>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
-<section id="basic-classification">
-<h3>Basic Classification<a class="headerlink" href="#basic-classification" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.classifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RuleMineClassifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ex_fuzzy.classifiers</span> <span class="kn">import</span> <span class="n">RuleMineClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 
 <span class="c1"># Load data</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -920,88 +914,14 @@ each label set be correctly predicted.</p>
 </pre></div>
 </div>
 </section>
-<section id="advanced-configuration">
-<h3>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-
-<span class="c1"># Create custom fuzzy variables</span>
-<span class="n">fuzzy_vars</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;feature_1&quot;</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">),</span>
-    <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;feature_2&quot;</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">),</span>
-    <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;feature_3&quot;</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">),</span>
-    <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;feature_4&quot;</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
-<span class="p">]</span>
-
-<span class="c1"># Create classifier with custom settings</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
-    <span class="n">nRules</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
-    <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">fuzzy_vars</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-
-<span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="with-cross-validation">
-<h3>With Cross-Validation<a class="headerlink" href="#with-cross-validation" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_val_score</span>
-
-<span class="c1"># Evaluate with cross-validation</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CV Accuracy: </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> (+/- </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="parameter-tuning">
-<h3>Parameter Tuning<a class="headerlink" href="#parameter-tuning" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridSearchCV</span>
-
-<span class="c1"># Define parameter grid</span>
-<span class="n">param_grid</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;nRules&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
-    <span class="s1">&#39;nAnts&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
-    <span class="s1">&#39;tolerance&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
-<span class="p">}</span>
-
-<span class="c1"># Grid search</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">()</span>
-<span class="n">grid_search</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">param_grid</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
-<span class="n">grid_search</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best parameters: </span><span class="si">{</span><span class="n">grid_search</span><span class="o">.</span><span class="n">best_params_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best score: </span><span class="si">{</span><span class="n">grid_search</span><span class="o">.</span><span class="n">best_score_</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets" title="ex_fuzzy.fuzzy_sets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.fuzzy_sets</span></code></a> : Fuzzy set definitions and operations</p></li>
-<li><p><a class="reference internal" href="../function_resume/rule_mining.html#module-ex_fuzzy.rule_mining" title="ex_fuzzy.rule_mining"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.rule_mining</span></code></a> : Rule discovery algorithms</p></li>
-<li><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#module-ex_fuzzy.evolutionary_fit" title="ex_fuzzy.evolutionary_fit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit</span></code></a> : Genetic optimization algorithms</p></li>
-<li><p><a class="reference internal" href="../function_resume/eval_tools.html#module-ex_fuzzy.eval_tools" title="ex_fuzzy.eval_tools"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.eval_tools</span></code></a> : Performance evaluation utilities</p></li>
+<li><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#module-ex_fuzzy.evolutionary_fit" title="ex_fuzzy.evolutionary_fit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit</span></code></a> : Underlying genetic optimization</p></li>
+<li><p><a class="reference internal" href="../function_resume/rule_mining.html#module-ex_fuzzy.rule_mining" title="ex_fuzzy.rule_mining"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.rule_mining</span></code></a> : Rule mining functionality</p></li>
+<li><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets" title="ex_fuzzy.fuzzy_sets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.fuzzy_sets</span></code></a> : Fuzzy set definitions</p></li>
 </ul>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id1" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Alcalá-Fdez, J., et al. “KEEL: a software tool to assess evolutionary algorithms for data mining problems.”
-Soft Computing 13.3 (2009): 307-318.</p>
-</aside>
-<aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<p>Herrera, F. “Genetic fuzzy systems: taxonomy, current research trends and prospects.”
-Evolutionary Intelligence 1.1 (2008): 27-46.</p>
-</aside>
-</aside>
 </section>
 </section>
 
@@ -1016,7 +936,8 @@ Evolutionary Intelligence 1.1 (2008): 27-46.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1027,43 +948,39 @@ Evolutionary Intelligence 1.1 (2008): 27-46.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rulemineclassifier">RuleMineClassifier</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.classifiers.RuleMineClassifier"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.classifiers.RuleMineClassifier.__init__"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.__init__()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.__init__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.classifiers.RuleMineClassifier.fit"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.fit()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.classifiers.RuleMineClassifier.predict"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.predict()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.internal_classifier()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.fit()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.predict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.internal_classifier()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.classifiers.RuleMineClassifier.score"><code class="docutils literal notranslate"><span class="pre">RuleMineClassifier.score()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-classification">Basic Classification</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-configuration">Advanced Configuration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-cross-validation">With Cross-Validation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-tuning">Parameter Tuning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic Usage</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../_sources/api/classifiers.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/classifiers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -1078,8 +995,8 @@ Evolutionary Intelligence 1.1 (2008): 27-46.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

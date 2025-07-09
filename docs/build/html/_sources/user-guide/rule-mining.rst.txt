@@ -49,55 +49,78 @@ Basic Rule Mining
 
    import ex_fuzzy.rule_mining as rm
    import ex_fuzzy.fuzzy_sets as fs
+   import ex_fuzzy.utils as utils
+   import pandas as pd
    import numpy as np
    from sklearn.datasets import load_iris
 
    # Load data
-   X, y = load_iris(return_X_y=True)
+   iris = load_iris()
+   X = pd.DataFrame(iris.data, columns=iris.feature_names)
+   y = iris.target
 
-   # Create linguistic variables
-   antecedents = []
-   feature_names = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-   
-   for i, name in enumerate(feature_names):
-       var = fs.fuzzyVariable(name, X[:, i], 3, fs.FUZZY_SETS.t1)
-       antecedents.append(var)
+   # Create linguistic variables from the data
+   fuzzy_variables = utils.construct_partitions(X, fs.FUZZY_SETS.t1, n_partitions=3)
 
-   # Mine rules with basic parameters
-   rules = rm.mine_fuzzy_rules(
-       antecedents=antecedents,
-       X=X,
-       y=y,
-       min_support=0.1,     # Rule must apply to at least 10% of data
-       min_confidence=0.6,  # Rule must be correct at least 60% of time
-       min_lift=1.0,        # Rule must be better than random
-       max_antecedents=3    # Limit rule complexity
+   # Mine rules for multiclass classification
+   rule_base = rm.multiclass_mine_rulebase(
+       x=X,
+       y=y, 
+       fuzzy_variables=fuzzy_variables,
+       support_threshold=0.05,  # Minimum support for rules
+       max_depth=3,             # Maximum antecedents per rule
+       min_conf=0.6             # Minimum confidence threshold
    )
 
-   print(f"Discovered {len(rules)} rules")
+   print(f"Discovered rule base with rules for each class")
+   
+   # Print the rules
+   print(rule_base.print_rules())
 
-   # Examine first few rules
-   for i, rule in enumerate(rules[:5]):
-       print(f"Rule {i+1}: {rule}")
+Understanding Rule Mining Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Understanding the Output
-~~~~~~~~~~~~~~~~~~~~~~~
+Ex-fuzzy provides several rule mining functions:
 
-Each mined rule contains:
+**multiclass_mine_rulebase()**
+  Main function for mining rules from labeled classification data
 
-- **Antecedents**: List of (variable_index, term_index) pairs
-- **Consequent**: Target class
-- **Weight**: Rule confidence/strength
-- **Support**: How often the rule pattern occurs
-- **Lift**: Performance vs. random
+**mine_rulebase_support()**  
+  Mine rules based on support threshold from unlabeled data
+
+**simple_multiclass_mine_rulebase()**
+  Simplified version that creates fuzzy variables automatically
+
+**simple_mine_rulebase()**
+  Basic rule mining without class labels
 
 .. code-block:: python
 
-   # Detailed rule analysis
-   for rule in rules[:3]:
-       print(f"\\nRule: {rule}")
-       print(f"Antecedents: {rule.antecedents}")
-       print(f"Consequent: class {rule.consequent}")
+   # Alternative: Simple automatic rule mining
+   simple_rule_base = rm.simple_multiclass_mine_rulebase(
+       x=X,
+       y=y,
+       fuzzy_type=fs.FUZZY_SETS.t1,
+       support_threshold=0.05,
+       max_depth=3,
+       min_conf=0.6,
+       n_partitions=3
+   )
+
+Parameters Explained
+~~~~~~~~~~~~~~~~~~
+
+**support_threshold (float)**
+  Minimum support a rule must have to be considered (0.0-1.0)
+
+**max_depth (int)**
+  Maximum number of antecedents (conditions) allowed per rule
+
+**min_conf (float)**
+  Minimum confidence a rule must achieve (0.0-1.0)
+
+**n_partitions (int)**
+  Number of fuzzy sets per variable (for automatic partitioning)
        print(f"Weight: {rule.weight:.3f}")
        
        # Calculate additional metrics

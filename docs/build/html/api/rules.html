@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -52,6 +55,7 @@
     <link rel="prev" title="Classifiers Module" href="classifiers.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -67,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -87,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -95,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
     
     
     <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -182,7 +174,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -340,13 +334,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -361,7 +351,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -380,15 +370,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -397,13 +383,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -422,7 +404,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -632,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -651,15 +634,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -760,7 +739,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit.FitRuleBase.html">ex_fuzzy.evolutionary_fit.FitRuleBase</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="rule_mining.html">Rule Mining Module</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="rule_mining.html">Rule Mining Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.rule_search.html">ex_fuzzy.rule_mining.rule_search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.generate_rules_from_itemsets.html">ex_fuzzy.rule_mining.generate_rules_from_itemsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.mine_rulebase_support.html">ex_fuzzy.rule_mining.mine_rulebase_support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.prune_rules_confidence_lift.html">ex_fuzzy.rule_mining.prune_rules_confidence_lift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.simple_mine_rulebase.html">ex_fuzzy.rule_mining.simple_mine_rulebase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.multiclass_mine_rulebase.html">ex_fuzzy.rule_mining.multiclass_mine_rulebase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase.html">ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="eval_tools.html">Evaluation Tools Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html">ex_fuzzy.eval_tools.FuzzyEvaluator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.eval_fuzzy_model.html">ex_fuzzy.eval_tools.eval_fuzzy_model</a></li>
@@ -773,9 +761,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -793,8 +786,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -806,7 +797,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Rules Module</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Rules Module</span></li>
   </ul>
 </nav>
 </div>
@@ -840,9 +831,9 @@ document.write(`
 <h3>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h3>
 <p>The module follows a hierarchical structure:</p>
 <ol class="arabic simple">
-<li><p><strong>Individual Rules</strong>: <a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleSimple</span></code></a> for single rule representation</p></li>
-<li><p><strong>Rule Collections</strong>: <a class="reference internal" href="#ex_fuzzy.rules.RuleBaseT1" title="ex_fuzzy.rules.RuleBaseT1"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBaseT1</span></code></a>, <a class="reference internal" href="#ex_fuzzy.rules.RuleBaseT2" title="ex_fuzzy.rules.RuleBaseT2"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBaseT2</span></code></a>, <a class="reference internal" href="#ex_fuzzy.rules.RuleBaseGT2" title="ex_fuzzy.rules.RuleBaseGT2"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code></a></p></li>
-<li><p><strong>Multi-class Systems</strong>: <a class="reference internal" href="#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MasterRuleBase</span></code></a> for complete fuzzy systems</p></li>
+<li><p><strong>Individual Rules</strong>: <a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleSimple</span></code></a> for single rule representation</p></li>
+<li><p><strong>Rule Collections</strong>: <a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1" title="ex_fuzzy.rules.RuleBaseT1"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBaseT1</span></code></a>, <a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2" title="ex_fuzzy.rules.RuleBaseT2"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBaseT2</span></code></a>, <a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2" title="ex_fuzzy.rules.RuleBaseGT2"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code></a></p></li>
+<li><p><strong>Multi-class Systems</strong>: <a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MasterRuleBase</span></code></a> for complete fuzzy systems</p></li>
 <li><p><strong>Inference Support</strong>: Functions for membership computation and aggregation</p></li>
 </ol>
 </section>
@@ -851,19 +842,19 @@ document.write(`
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleSimple</span></code></a>(antecedents[, consequent, modifiers])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleSimple</span></code></a>(antecedents[, consequent, modifiers])</p></td>
 <td><p>Simplified Rule Representation for Optimized Computation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.rules.RuleBaseT1" title="ex_fuzzy.rules.RuleBaseT1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleBaseT1</span></code></a>(antecedents, rules[, consequent, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT1" title="ex_fuzzy.rules.RuleBaseT1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleBaseT1</span></code></a>(antecedents, rules[, consequent, ...])</p></td>
 <td><p>Class optimized to work with multiple rules at the same time.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rules.RuleBaseT2" title="ex_fuzzy.rules.RuleBaseT2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleBaseT2</span></code></a>(antecedents, rules[, consequent, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBaseT2" title="ex_fuzzy.rules.RuleBaseT2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleBaseT2</span></code></a>(antecedents, rules[, consequent, ...])</p></td>
 <td><p>Class optimized to work with multiple rules at the same time.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.rules.RuleBaseGT2" title="ex_fuzzy.rules.RuleBaseGT2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code></a>(antecedents, rules[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBaseGT2" title="ex_fuzzy.rules.RuleBaseGT2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuleBaseGT2</span></code></a>(antecedents, rules[, ...])</p></td>
 <td><p>Class optimized to work with multiple rules at the same time.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MasterRuleBase</span></code></a>(rule_base[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MasterRuleBase</span></code></a>(rule_base[, ...])</p></td>
 <td><p>This Class encompasses a list of rule bases where each one corresponds to a different class.</p></td>
 </tr>
 </tbody>
@@ -874,7 +865,7 @@ document.write(`
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rules.compute_antecedents_memberships" title="ex_fuzzy.rules.compute_antecedents_memberships"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_antecedents_memberships</span></code></a>(antecedents, x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.compute_antecedents_memberships" title="ex_fuzzy.rules.compute_antecedents_memberships"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_antecedents_memberships</span></code></a>(antecedents, x)</p></td>
 <td><p>Compute membership degrees for input values across all fuzzy variables.</p></td>
 </tr>
 </tbody>
@@ -1058,7 +1049,7 @@ Defaults to None.</p></li>
 <dd><p>Returns True if the two rules are equal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – Another rule to compare with</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – Another rule to compare with</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if rules have identical antecedents and consequent</p>
@@ -1102,9 +1093,9 @@ Defaults to None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
-<li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules. ONLY on regression problems.</p></li>
+<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
+<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>consequent</strong> (<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules. ONLY on regression problems.</p></li>
 <li><p><strong>tnorm</strong> – t-norm used to compute the fuzzy output.</p></li>
 </ul>
 </dd>
@@ -1156,7 +1147,7 @@ Defaults to None.</p></li>
 <dd class="field-odd"><p>the corresponding fuzzy set type of the RuleBase.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1185,7 +1176,7 @@ Defaults to None.</p></li>
 <dd class="field-even"><p>the corresponding rule.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1216,7 +1207,7 @@ Defaults to None.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule.</p></li>
-<li><p><strong>value</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
+<li><p><strong>value</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1243,7 +1234,7 @@ Defaults to None.</p></li>
 <dd><p>Adds a list of new rules to the rulebase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
+<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1426,9 +1417,9 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
-<li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules.</p></li>
+<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
+<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>consequent</strong> (<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules.</p></li>
 <li><p><strong>tnorm</strong> – t-norm used to compute the fuzzy output.</p></li>
 </ul>
 </dd>
@@ -1480,7 +1471,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>the corresponding fuzzy set type of the RuleBase.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1509,7 +1500,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-even"><p>the corresponding rule.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1540,7 +1531,7 @@ x must be a vector (only one sample)</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule.</p></li>
-<li><p><strong>value</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
+<li><p><strong>value</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1567,7 +1558,7 @@ x must be a vector (only one sample)</p>
 <dd><p>Adds a list of new rules to the rulebase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
+<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1750,9 +1741,9 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
-<li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules.</p></li>
+<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
+<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>consequent</strong> (<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules.</p></li>
 <li><p><strong>tnorm</strong> – t-norm used to compute the fuzzy output.</p></li>
 </ul>
 </dd>
@@ -1804,7 +1795,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>the corresponding fuzzy set type of the RuleBase.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1875,7 +1866,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-even"><p>the corresponding rule.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1906,7 +1897,7 @@ x must be a vector (only one sample)</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule.</p></li>
-<li><p><strong>value</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
+<li><p><strong>value</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1933,7 +1924,7 @@ x must be a vector (only one sample)</p>
 <dd><p>Adds a list of new rules to the rulebase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
+<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2115,7 +2106,7 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rule</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – rule to add.</p></li>
+<li><p><strong>rule</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – rule to add.</p></li>
 <li><p><strong>consequent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule base to add the rule.</p></li>
 </ul>
 </dd>
@@ -2301,7 +2292,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>list with all the rules.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2315,7 +2306,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>the corresponding fuzzy set type of the RuleBase.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2541,9 +2532,9 @@ useful for debugging membership degree calculations or analyzing input fuzzifica
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <section id="creating-simple-rules">
 <h3>Creating Simple Rules<a class="headerlink" href="#creating-simple-rules" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.rules</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rules</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.rules</span> <span class="k">as</span> <span class="nn">rules</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># Create fuzzy variables</span>
 <span class="n">temp_var</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;Temperature&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
@@ -2631,7 +2622,7 @@ useful for debugging membership degree calculations or analyzing input fuzzifica
 <section id="advanced-inference">
 <h3>Advanced Inference<a class="headerlink" href="#advanced-inference" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Custom t-norm and aggregation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">t_norm_operators</span><span class="p">,</span> <span class="n">aggregation_operators</span>
+<span class="kn">from</span> <span class="nn">ex_fuzzy.rules</span> <span class="kn">import</span> <span class="n">t_norm_operators</span><span class="p">,</span> <span class="n">aggregation_operators</span>
 
 <span class="c1"># Use different t-norms for rule evaluation</span>
 <span class="n">rule_base</span><span class="o">.</span><span class="n">set_tnorm</span><span class="p">(</span><span class="n">t_norm_operators</span><span class="o">.</span><span class="n">product_tnorm</span><span class="p">)</span>
@@ -2704,7 +2695,8 @@ Prentice-Hall, 2001.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -2905,13 +2897,13 @@ Prentice-Hall, 2001.</p>
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../_sources/api/rules.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/rules.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -2926,8 +2918,8 @@ Prentice-Hall, 2001.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

@@ -52,5 +52,5 @@ If you can't find what you're looking for in this guide:
 
 - Check the :doc:`../examples/index` for practical examples
 - Consult the :doc:`../api/index` for detailed API documentation
-- Ask questions on our `GitHub Discussions <https://github.com/your-username/ex-fuzzy/discussions>`_
-- Report bugs on our `Issue Tracker <https://github.com/your-username/ex-fuzzy/issues>`_
+- Ask questions on our `GitHub Discussions <https://github.com/fuminides/ex-fuzzy/discussions>`_
+- Report bugs on our `Issue Tracker <https://github.com/fuminides/ex-fuzzy/issues>`_

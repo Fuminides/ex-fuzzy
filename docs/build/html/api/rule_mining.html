@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -45,15 +48,14 @@
     <script src="../_static/copybutton.js?v=30646c52"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/rule_mining';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Evaluation Tools Module" href="eval_tools.html" />
+    <link rel="next" title="ex_fuzzy.rule_mining.rule_search" href="generated/ex_fuzzy.rule_mining.rule_search.html" />
     <link rel="prev" title="ex_fuzzy.evolutionary_fit.FitRuleBase" href="generated/ex_fuzzy.evolutionary_fit.FitRuleBase.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -69,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -89,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -97,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +122,7 @@
     
     
     <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -184,7 +174,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -342,13 +334,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -363,7 +351,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -382,15 +370,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -399,13 +383,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -424,7 +404,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -634,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -653,15 +634,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -762,7 +739,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit.FitRuleBase.html">ex_fuzzy.evolutionary_fit.FitRuleBase</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Rule Mining Module</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Rule Mining Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.rule_search.html">ex_fuzzy.rule_mining.rule_search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.generate_rules_from_itemsets.html">ex_fuzzy.rule_mining.generate_rules_from_itemsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.mine_rulebase_support.html">ex_fuzzy.rule_mining.mine_rulebase_support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.prune_rules_confidence_lift.html">ex_fuzzy.rule_mining.prune_rules_confidence_lift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.simple_mine_rulebase.html">ex_fuzzy.rule_mining.simple_mine_rulebase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.multiclass_mine_rulebase.html">ex_fuzzy.rule_mining.multiclass_mine_rulebase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase.html">ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="eval_tools.html">Evaluation Tools Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html">ex_fuzzy.eval_tools.FuzzyEvaluator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.eval_fuzzy_model.html">ex_fuzzy.eval_tools.eval_fuzzy_model</a></li>
@@ -775,9 +761,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -795,8 +786,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -808,7 +797,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Rule Mining Module</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Rule Mining Module</span></li>
   </ul>
 </nav>
 </div>
@@ -827,376 +816,254 @@ document.write(`
                   
   <section id="rule-mining-module">
 <h1>Rule Mining Module<a class="headerlink" href="#rule-mining-module" title="Link to this heading">#</a></h1>
-<p>The <a class="reference internal" href="../function_resume/rule_mining.html#module-ex_fuzzy.rule_mining" title="ex_fuzzy.rule_mining"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.rule_mining</span></code></a> module provides comprehensive fuzzy rule mining capabilities for extracting meaningful rules from datasets.</p>
+<p>The <a class="reference internal" href="../function_resume/rule_mining.html#module-ex_fuzzy.rule_mining" title="ex_fuzzy.rule_mining"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.rule_mining</span></code></a> module provides fuzzy rule mining capabilities for extracting meaningful rules from datasets.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>This module implements efficient algorithms for discovering frequent fuzzy patterns and generating fuzzy association rules using support-based itemset mining.</p>
-<p><strong>Key Capabilities:</strong></p>
-<ul class="simple">
-<li><p><strong>Itemset Mining</strong>: Discovery of frequent fuzzy itemsets using support thresholds</p></li>
-<li><p><strong>Rule Generation</strong>: Conversion of frequent itemsets into fuzzy association rules</p></li>
-<li><p><strong>Support Calculation</strong>: Efficient computation of fuzzy support measures</p></li>
-<li><p><strong>Quality Filtering</strong>: Support, confidence, and lift-based rule filtering</p></li>
-<li><p><strong>Evolutionary Integration</strong>: Seamless compatibility with genetic optimization</p></li>
-</ul>
-<p><strong>Workflow:</strong></p>
-<ol class="arabic simple">
-<li><p><strong>Pattern Discovery</strong>: Mine frequent fuzzy itemsets from training data</p></li>
-<li><p><strong>Rule Extraction</strong>: Generate candidate rules from frequent patterns</p></li>
-<li><p><strong>Quality Assessment</strong>: Filter rules based on support, confidence, lift</p></li>
-<li><p><strong>Optimization Ready</strong>: Provide candidate rules for evolutionary algorithms</p></li>
-</ol>
+<p>This module implements algorithms for discovering frequent fuzzy patterns and generating fuzzy rules using support-based itemset mining.</p>
 </section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.rule_search" title="ex_fuzzy.rule_mining.rule_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rule_search</span></code></a>(data, fuzzy_variables[, ...])</p></td>
+<td><p>Computes the apriori algorithm for the given dataframe and threshold the support.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets" title="ex_fuzzy.rule_mining.generate_rules_from_itemsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rules_from_itemsets</span></code></a>(itemsets, nAnts)</p></td>
+<td><p>Given a list of itemsets, it creates the rules for each one and returns a list of rules containing them.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.mine_rulebase_support" title="ex_fuzzy.rule_mining.mine_rulebase_support"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mine_rulebase_support</span></code></a>(x, fuzzy_variables[, ...])</p></td>
+<td><p>Search the data for associations that are frequent given a list of fuzzy variables for each antecedent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift" title="ex_fuzzy.rule_mining.prune_rules_confidence_lift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_rules_confidence_lift</span></code></a>(x, y, rules, ...)</p></td>
+<td><p>Removes the rules from the rule base that do not meet a minimum value for confidence and lift measures.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_mine_rulebase" title="ex_fuzzy.rule_mining.simple_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_mine_rulebase</span></code></a>(x[, fuzzy_type, ...])</p></td>
+<td><p>Search the data for associations that are frequent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase" title="ex_fuzzy.rule_mining.multiclass_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiclass_mine_rulebase</span></code></a>(x, y, fuzzy_variables)</p></td>
+<td><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase" title="ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_multiclass_mine_rulebase</span></code></a>(x, y, fuzzy_type)</p></td>
+<td><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 </section>
 <section id="core-functions">
 <h2>Core Functions<a class="headerlink" href="#core-functions" title="Link to this heading">#</a></h2>
-<section id="rule-mining">
-<h3>Rule Mining<a class="headerlink" href="#rule-mining" title="Link to this heading">#</a></h3>
+<section id="rule-search">
+<h3>Rule Search<a class="headerlink" href="#rule-search" title="Link to this heading">#</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.rule_search">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">rule_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#rule_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.rule_search" title="Link to this definition">#</a></dt>
+<dd><p>Computes the apriori algorithm for the given dataframe and threshold the support.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – Dataframe of shape: samples x features</p></li>
+<li><p><strong>variables</strong> (<em>fuzzy</em>) – dict that maps each feature name with a fuzzy variable.</p></li>
+<li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum support to consider frequent an itemset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>all the frequent itemsets as a list.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="support-calculation">
-<h3>Support Calculation<a class="headerlink" href="#support-calculation" title="Link to this heading">#</a></h3>
+<section id="rule-generation">
+<h3>Rule Generation<a class="headerlink" href="#rule-generation" title="Link to this heading">#</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.generate_rules_from_itemsets">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">generate_rules_from_itemsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">itemsets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#generate_rules_from_itemsets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.generate_rules_from_itemsets" title="Link to this definition">#</a></dt>
+<dd><p>Given a list of itemsets, it creates the rules for each one and returns a list of rules containing them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>itemsets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list of tuple (antecedent, linguistic variable value)</p></li>
+<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of possible antecedents.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the rules for ech itemset.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="itemset-generation">
-<h3>Itemset Generation<a class="headerlink" href="#itemset-generation" title="Link to this heading">#</a></h3>
+<section id="mining-functions">
+<h3>Mining Functions<a class="headerlink" href="#mining-functions" title="Link to this heading">#</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.mine_rulebase_support">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">mine_rulebase_support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#mine_rulebase_support"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.mine_rulebase_support" title="Link to this definition">#</a></dt>
+<dd><p>Search the data for associations that are frequent given a list of fuzzy variables for each antecedent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of the fuzzy variables for each of the input variables.</p></li>
+<li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><em>RuleBase</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.multiclass_mine_rulebase">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">multiclass_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#multiclass_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.multiclass_mine_rulebase" title="Link to this definition">#</a></dt>
+<dd><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent. Computes a different ruleBase for each
+class and then uses them to form a MasterRuleBase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of the fuzzy variables for each of the input variables.</p></li>
+<li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
+<li><p><strong>confidence_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum confidence value.</p></li>
+<li><p><strong>lift_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.simple_mine_rulebase">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">simple_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#simple_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.simple_mine_rulebase" title="Link to this definition">#</a></dt>
+<dd><p>Search the data for associations that are frequent. Computes the fuzzy variables using a 3 label partition (low, medium, high).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_type</strong> (<a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.temporal.FUZZY_SETS"><em>FUZZY_SETS</em></a>) – fuzzy type to use.</p></li>
+<li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><em>RuleBase</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">simple_multiclass_mine_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#simple_multiclass_mine_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase" title="Link to this definition">#</a></dt>
+<dd><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent.
+Computes a different ruleBase for each class and then uses them to form a MasterRuleBase.</p>
+<p>Computes the fuzzy variables using a 3 label partition (low, medium, high).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
+<li><p><strong>fuzzy_type</strong> (<a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.temporal.FUZZY_SETS"><em>FUZZY_SETS</em></a>) – fuzzy type to use.</p></li>
+<li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
+<li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="quality-metrics">
-<h3>Quality Metrics<a class="headerlink" href="#quality-metrics" title="Link to this heading">#</a></h3>
+<section id="rule-pruning">
+<h3>Rule Pruning<a class="headerlink" href="#rule-pruning" title="Link to this heading">#</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.rule_mining.prune_rules_confidence_lift">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rule_mining.</span></span><span class="sig-name descname"><span class="pre">prune_rules_confidence_lift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lift_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rule_mining.html#prune_rules_confidence_lift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rule_mining.prune_rules_confidence_lift" title="Link to this definition">#</a></dt>
+<dd><p>Removes the rules from the rule base that do not meet a minimum value for confidence and lift measures.</p>
+<p>Confidence is the ratio of rules that have a particular antecedent and consequent, and those that only have the antecedent.
+Lift is ratio between confidence and expected confidence, which is the percentage of class samples in the original data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – data to mine. samples x features.</p></li>
+<li><p><strong>y</strong> (<em>array</em>) – class vector.</p></li>
+<li><p><strong>rules</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – MasterRuleBase object with the rules to prune.</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – a list of the fuzzy variables per antecedent.</p></li>
+<li><p><strong>confidence_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum confidence required to the rules.</p></li>
+<li><p><strong>lift_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum lift required to the rules.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <section id="basic-rule-mining">
 <h3>Basic Rule Mining<a class="headerlink" href="#basic-rule-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.rule_mining</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rm</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.rule_mining</span> <span class="k">as</span> <span class="nn">rm</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="c1"># Load and prepare data</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Prepare data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="c1"># Create linguistic variables</span>
-<span class="n">antecedents</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;feature_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="p">]</span>
+<span class="c1"># Create fuzzy variables</span>
+<span class="n">fuzzy_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;var_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
 
-<span class="c1"># Mine fuzzy rules</span>
-<span class="n">candidate_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
-    <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+<span class="c1"># Mine rules</span>
+<span class="n">itemsets</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">rule_search</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fuzzy_vars</span><span class="p">,</span> <span class="n">support_threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">generate_rules_from_itemsets</span><span class="p">(</span><span class="n">itemsets</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multiclass-rule-mining">
+<h3>Multiclass Rule Mining<a class="headerlink" href="#multiclass-rule-mining" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mine rules for multiclass problem</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">multiclass_mine_rulebase</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-    <span class="n">min_support</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
-    <span class="n">min_lift</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">max_antecedents</span><span class="o">=</span><span class="mi">3</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discovered </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_rules</span><span class="p">)</span><span class="si">}</span><span class="s2"> candidate rules&quot;</span><span class="p">)</span>
-
-<span class="c1"># Display some rules</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">candidate_rules</span><span class="p">[:</span><span class="mi">5</span><span class="p">]):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rule </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="advanced-rule-mining">
-<h3>Advanced Rule Mining<a class="headerlink" href="#advanced-rule-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mine rules with specific quality thresholds</span>
-<span class="n">high_quality_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
-    <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-    <span class="n">min_support</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>      <span class="c1"># Higher support threshold</span>
-    <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>    <span class="c1"># Higher confidence threshold</span>
-    <span class="n">min_lift</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>          <span class="c1"># Higher lift threshold</span>
-    <span class="n">max_antecedents</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>     <span class="c1"># Simpler rules</span>
-    <span class="n">target_classes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Focus on specific classes</span>
-<span class="p">)</span>
-
-<span class="c1"># Additional filtering</span>
-<span class="n">filtered_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">filter_rules_by_quality</span><span class="p">(</span>
-    <span class="n">high_quality_rules</span><span class="p">,</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-    <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-    <span class="n">min_coverage</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>     <span class="c1"># Minimum rule coverage</span>
-    <span class="n">max_overlap</span><span class="o">=</span><span class="mf">0.3</span>        <span class="c1"># Maximum rule overlap</span>
+    <span class="n">fuzzy_variables</span><span class="o">=</span><span class="n">fuzzy_vars</span><span class="p">,</span>
+    <span class="n">support_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="support-based-itemset-mining">
-<h3>Support-based Itemset Mining<a class="headerlink" href="#support-based-itemset-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate frequent itemsets</span>
-<span class="n">frequent_itemsets</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">generate_itemsets</span><span class="p">(</span>
-    <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-    <span class="n">min_support</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">max_size</span><span class="o">=</span><span class="mi">3</span>
-<span class="p">)</span>
-
-<span class="c1"># Examine itemset support values</span>
-<span class="k">for</span> <span class="n">itemset</span><span class="p">,</span> <span class="n">support</span> <span class="ow">in</span> <span class="n">frequent_itemsets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Itemset </span><span class="si">{</span><span class="n">itemset</span><span class="si">}</span><span class="s2">: Support = </span><span class="si">{</span><span class="n">support</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Compute support for specific patterns</span>
-<span class="n">pattern</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>  <span class="c1"># Variable 0, term 1 AND Variable 1, term 2</span>
-<span class="n">support</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">compute_support</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern support: </span><span class="si">{</span><span class="n">support</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="rule-quality-assessment">
-<h3>Rule Quality Assessment<a class="headerlink" href="#rule-quality-assessment" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate rule quality metrics</span>
-<span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">candidate_rules</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
-    <span class="c1"># Calculate confidence</span>
-    <span class="n">confidence</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">calculate_confidence</span><span class="p">(</span>
-        <span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">,</span>
-        <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-        <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-        <span class="n">y</span><span class="o">=</span><span class="n">y</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Calculate lift</span>
-    <span class="n">lift</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">calculate_lift</span><span class="p">(</span>
-        <span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">,</span>
-        <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-        <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-        <span class="n">y</span><span class="o">=</span><span class="n">y</span>
-    <span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rule: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Confidence: </span><span class="si">{</span><span class="n">confidence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Lift: </span><span class="si">{</span><span class="n">lift</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-<section id="custom-mining-parameters">
-<h3>Custom Mining Parameters<a class="headerlink" href="#custom-mining-parameters" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mine rules for each class separately</span>
-<span class="n">class_specific_rules</span> <span class="o">=</span> <span class="p">{}</span>
-
-<span class="k">for</span> <span class="n">class_id</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-    <span class="c1"># Filter data for current class</span>
-    <span class="n">class_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">class_id</span><span class="p">)</span>
-    <span class="n">X_class</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">class_mask</span><span class="p">]</span>
-    <span class="n">y_class</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">class_mask</span><span class="p">]</span>
-
-    <span class="c1"># Mine rules for this class</span>
-    <span class="n">rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
-        <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-        <span class="n">X</span><span class="o">=</span><span class="n">X_class</span><span class="p">,</span>
-        <span class="n">y</span><span class="o">=</span><span class="n">y_class</span><span class="p">,</span>
-        <span class="n">min_support</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-        <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
-        <span class="n">min_lift</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-        <span class="n">max_antecedents</span><span class="o">=</span><span class="mi">2</span>
-    <span class="p">)</span>
-
-    <span class="n">class_specific_rules</span><span class="p">[</span><span class="n">class_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">rules</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="n">class_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span><span class="si">}</span><span class="s2"> rules&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="integration-with-classifiers">
-<h3>Integration with Classifiers<a class="headerlink" href="#integration-with-classifiers" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.classifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RuleMineClassifier</span>
-
-<span class="c1"># Use mined rules as initial population for genetic algorithm</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
-    <span class="n">nRules</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-    <span class="n">initial_rules</span><span class="o">=</span><span class="n">candidate_rules</span><span class="p">[:</span><span class="mi">50</span><span class="p">],</span>  <span class="c1"># Use mined rules as starting point</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-
-<span class="c1"># Fit classifier</span>
-<span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="c1"># The genetic algorithm will optimize the mined rules</span>
-<span class="n">optimized_rules</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">get_rules</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimized to </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">optimized_rules</span><span class="p">)</span><span class="si">}</span><span class="s2"> rules&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="large-dataset-mining">
-<h3>Large Dataset Mining<a class="headerlink" href="#large-dataset-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Efficient mining for large datasets</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">mine_large_dataset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mine rules from large dataset using batching.&quot;&quot;&quot;</span>
-    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">all_itemsets</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="c1"># Process in batches</span>
-    <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
-        <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
-        <span class="n">X_batch</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
-
-        <span class="c1"># Mine itemsets from batch</span>
-        <span class="n">batch_itemsets</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">generate_itemsets</span><span class="p">(</span>
-            <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X_batch</span><span class="p">,</span>
-            <span class="n">min_support</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
-            <span class="n">max_size</span><span class="o">=</span><span class="mi">2</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Merge with global itemsets</span>
-        <span class="k">for</span> <span class="n">itemset</span><span class="p">,</span> <span class="n">support</span> <span class="ow">in</span> <span class="n">batch_itemsets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">itemset</span> <span class="ow">in</span> <span class="n">all_itemsets</span><span class="p">:</span>
-                <span class="n">all_itemsets</span><span class="p">[</span><span class="n">itemset</span><span class="p">]</span> <span class="o">+=</span> <span class="n">support</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">all_itemsets</span><span class="p">[</span><span class="n">itemset</span><span class="p">]</span> <span class="o">=</span> <span class="n">support</span>
-
-    <span class="c1"># Normalize supports</span>
-    <span class="k">for</span> <span class="n">itemset</span> <span class="ow">in</span> <span class="n">all_itemsets</span><span class="p">:</span>
-        <span class="n">all_itemsets</span><span class="p">[</span><span class="n">itemset</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="n">n_samples</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">all_itemsets</span>
-
-<span class="c1"># Use for large dataset</span>
-<span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">:</span>
-    <span class="n">itemsets</span> <span class="o">=</span> <span class="n">mine_large_dataset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">itemsets</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">generate_itemsets</span><span class="p">(</span><span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">min_support</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="rule-pattern-analysis">
-<h3>Rule Pattern Analysis<a class="headerlink" href="#rule-pattern-analysis" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze patterns in mined rules</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">analyze_rule_patterns</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyze patterns in rule antecedents.&quot;&quot;&quot;</span>
-    <span class="n">variable_usage</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">antecedents</span><span class="p">))}</span>
-    <span class="n">term_usage</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">var_idx</span><span class="p">,</span> <span class="n">term_idx</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span><span class="p">:</span>
-            <span class="n">variable_usage</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="p">(</span><span class="n">var_idx</span><span class="p">,</span> <span class="n">term_idx</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">term_usage</span><span class="p">:</span>
-                <span class="n">term_usage</span><span class="p">[(</span><span class="n">var_idx</span><span class="p">,</span> <span class="n">term_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">term_usage</span><span class="p">[(</span><span class="n">var_idx</span><span class="p">,</span> <span class="n">term_idx</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">variable_usage</span><span class="p">,</span> <span class="n">term_usage</span>
-
-<span class="c1"># Analyze mined rules</span>
-<span class="n">var_usage</span><span class="p">,</span> <span class="n">term_usage</span> <span class="o">=</span> <span class="n">analyze_rule_patterns</span><span class="p">(</span><span class="n">candidate_rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Variable usage frequency:&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">var_idx</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">var_usage</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Variable </span><span class="si">{</span><span class="n">var_idx</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> rules&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nMost common terms:&quot;</span><span class="p">)</span>
-<span class="n">sorted_terms</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">term_usage</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">for</span> <span class="p">(</span><span class="n">var_idx</span><span class="p">,</span> <span class="n">term_idx</span><span class="p">),</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">sorted_terms</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Var </span><span class="si">{</span><span class="n">var_idx</span><span class="si">}</span><span class="s2">, Term </span><span class="si">{</span><span class="n">term_idx</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> rules&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="performance-optimization">
-<h3>Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optimize mining performance</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">benchmark_mining_parameters</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare different mining parameters for performance.&quot;&quot;&quot;</span>
-    <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s1">&#39;min_support&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s1">&#39;max_antecedents&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
-        <span class="p">{</span><span class="s1">&#39;min_support&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;max_antecedents&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
-        <span class="p">{</span><span class="s1">&#39;min_support&#39;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;max_antecedents&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
-    <span class="p">]</span>
-
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
-        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-
-        <span class="n">rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
-            <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-            <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
-            <span class="n">min_lift</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">params</span>
-        <span class="p">)</span>
-
-        <span class="n">mining_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
-            <span class="s1">&#39;n_rules&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">),</span>
-            <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">mining_time</span>
-        <span class="p">})</span>
-
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameters </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span><span class="si">}</span><span class="s2"> rules in </span><span class="si">{</span><span class="n">mining_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">results</span>
-
-<span class="c1"># Run benchmark</span>
-<span class="n">benchmark_results</span> <span class="o">=</span> <span class="n">benchmark_mining_parameters</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="algorithmic-details">
-<h2>Algorithmic Details<a class="headerlink" href="#algorithmic-details" title="Link to this heading">#</a></h2>
-<section id="id1">
-<h3>Support Calculation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
-<p>The module uses fuzzy support measures that account for partial membership:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}Support(A) = \\frac{1}{n} \\sum_{i=1}^{n} \\mu_A(x_i)\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\\mu_A(x_i)\)</span> is the membership degree of sample <span class="math notranslate nohighlight">\(x_i\)</span> in fuzzy set <span class="math notranslate nohighlight">\(A\)</span>.</p>
-</section>
-<section id="confidence-calculation">
-<h3>Confidence Calculation<a class="headerlink" href="#confidence-calculation" title="Link to this heading">#</a></h3>
-<p>Fuzzy confidence measures the strength of the implication:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}Confidence(A \\rightarrow C) = \\frac{Support(A \\cup C)}{Support(A)}\end{split}\]</div>
-</section>
-<section id="lift-calculation">
-<h3>Lift Calculation<a class="headerlink" href="#lift-calculation" title="Link to this heading">#</a></h3>
-<p>Fuzzy lift measures how much more likely the consequent is given the antecedent:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}Lift(A \\rightarrow C) = \\frac{Confidence(A \\rightarrow C)}{Support(C)}\end{split}\]</div>
 </section>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#module-ex_fuzzy.evolutionary_fit" title="ex_fuzzy.evolutionary_fit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit</span></code></a> : Genetic optimization of mined rules</p></li>
-<li><p><a class="reference internal" href="../function_resume/rules.html#module-ex_fuzzy.rules" title="ex_fuzzy.rules"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.rules</span></code></a> : Rule representation and inference</p></li>
-<li><p><a class="reference internal" href="../function_resume/classifiers.html#module-ex_fuzzy.classifiers" title="ex_fuzzy.classifiers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.classifiers</span></code></a> : High-level classification interfaces</p></li>
-<li><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets" title="ex_fuzzy.fuzzy_sets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.fuzzy_sets</span></code></a> : Fuzzy variable and set definitions</p></li>
+<li><p><a class="reference internal" href="../function_resume/rules.html#module-ex_fuzzy.rules" title="ex_fuzzy.rules"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.rules</span></code></a> : Rule representation classes</p></li>
+<li><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets" title="ex_fuzzy.fuzzy_sets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.fuzzy_sets</span></code></a> : Fuzzy variable definitions</p></li>
+<li><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#module-ex_fuzzy.evolutionary_fit" title="ex_fuzzy.evolutionary_fit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ex_fuzzy.evolutionary_fit</span></code></a> : Rule optimization</p></li>
 </ul>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Agrawal, R., and R. Srikant. “Fast algorithms for mining association rules.”
-Proceedings of the 20th VLDB Conference, 1994.</p>
-</aside>
-<aside class="footnote brackets" id="id3" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<p>Delgado, M., et al. “Fuzzy association rules: general model and applications.”
-IEEE Transactions on Fuzzy Systems 11.2 (2003): 214-225.</p>
-</aside>
-<aside class="footnote brackets" id="id4" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
-<p>Hong, T.P., et al. “Mining fuzzy association rules from quantitative data.”
-Intelligent Data Analysis 3.5 (1999): 363-376.</p>
-</aside>
-</aside>
 </section>
 </section>
 
@@ -1211,7 +1078,8 @@ Intelligent Data Analysis 3.5 (1999): 363-376.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1225,43 +1093,44 @@ Intelligent Data Analysis 3.5 (1999): 363-376.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-functions">Core Functions</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-mining">Rule Mining</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#support-calculation">Support Calculation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#itemset-generation">Itemset Generation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-metrics">Quality Metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-search">Rule Search</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.rule_search"><code class="docutils literal notranslate"><span class="pre">rule_search()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-generation">Rule Generation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.generate_rules_from_itemsets"><code class="docutils literal notranslate"><span class="pre">generate_rules_from_itemsets()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mining-functions">Mining Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.mine_rulebase_support"><code class="docutils literal notranslate"><span class="pre">mine_rulebase_support()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.multiclass_mine_rulebase"><code class="docutils literal notranslate"><span class="pre">multiclass_mine_rulebase()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.simple_mine_rulebase"><code class="docutils literal notranslate"><span class="pre">simple_mine_rulebase()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase"><code class="docutils literal notranslate"><span class="pre">simple_multiclass_mine_rulebase()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-pruning">Rule Pruning</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rule_mining.prune_rules_confidence_lift"><code class="docutils literal notranslate"><span class="pre">prune_rules_confidence_lift()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-rule-mining">Basic Rule Mining</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-rule-mining">Advanced Rule Mining</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#support-based-itemset-mining">Support-based Itemset Mining</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-quality-assessment">Rule Quality Assessment</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-mining-parameters">Custom Mining Parameters</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-classifiers">Integration with Classifiers</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#large-dataset-mining">Large Dataset Mining</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-pattern-analysis">Rule Pattern Analysis</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-optimization">Performance Optimization</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithmic-details">Algorithmic Details</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Support Calculation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-calculation">Confidence Calculation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lift-calculation">Lift Calculation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiclass-rule-mining">Multiclass Rule Mining</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../_sources/api/rule_mining.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/rule_mining.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -1276,8 +1145,8 @@ Intelligent Data Analysis 3.5 (1999): 363-376.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

@@ -86,8 +86,8 @@ intersphinx_mapping = {
 
 # External links
 extlinks = {
-    'issue': ('https://github.com/your-username/ex-fuzzy/issues/%s', 'issue %s'),
-    'pr': ('https://github.com/your-username/ex-fuzzy/pull/%s', 'PR %s'),
+    'issue': ('https://github.com/fuminides/ex-fuzzy/issues/%s', 'issue %s'),
+    'pr': ('https://github.com/fuminides/ex-fuzzy/pull/%s', 'PR %s'),
 }
 
 # Todo configuration
@@ -110,7 +110,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/your-username/ex-fuzzy",
+            "url": "https://github.com/fuminides/ex-fuzzy",
             "icon": "fab fa-github-square",
             "type": "fontawesome",
         },
@@ -135,7 +135,7 @@ html_theme_options = {
 }
 
 html_context = {
-    "github_user": "your-username",
+    "github_user": "fuminides",
     "github_repo": "ex-fuzzy",
     "github_version": "main",
     "doc_path": "docs/source",

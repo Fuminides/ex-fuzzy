@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
@@ -52,6 +55,7 @@
     <link rel="prev" title="Ex-Fuzzy Documentation" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -67,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -87,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -95,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
     
     
     <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -182,7 +174,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -340,13 +334,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -361,7 +351,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -380,15 +370,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -397,13 +383,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -422,7 +404,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -632,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -651,15 +634,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -676,9 +655,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -696,8 +680,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -706,7 +688,7 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Getting Started</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Getting Started</span></li>
   </ul>
 </nav>
 </div>
@@ -747,8 +729,10 @@ document.write(`
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
 </pre></div>
 </div>
-<p>Or for the latest development version:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/your-username/ex-fuzzy.git
+<p>Or from source:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fuminides/ex-fuzzy.git
+<span class="nb">cd</span><span class="w"> </span>ex-fuzzy
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <section id="dependencies">
@@ -767,11 +751,13 @@ document.write(`
 <section id="your-first-fuzzy-classifier">
 <h2>Your First Fuzzy Classifier<a class="headerlink" href="#your-first-fuzzy-classifier" title="Link to this heading">#</a></h2>
 <p>Let’s start with a simple example using the famous Iris dataset:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.eval_tools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eval_tools</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.evolutionary_fit</span> <span class="k">as</span> <span class="nn">evf</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.eval_tools</span> <span class="k">as</span> <span class="nn">eval_tools</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="c1"># Load the Iris dataset</span>
 <span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
@@ -783,12 +769,16 @@ document.write(`
     <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
 
+<span class="c1"># Create linguistic variables (fuzzy partitions) from the data</span>
+<span class="n">linguistic_variables</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
+
 <span class="c1"># Create a fuzzy classifier</span>
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
-    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>       <span class="c1"># Number of rules to evolve</span>
-    <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>         <span class="c1"># Maximum antecedents per rule</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">evf</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>  <span class="c1"># Type-1 fuzzy sets</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>     <span class="c1"># Show training progress</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>                            <span class="c1"># Number of rules to evolve</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>                              <span class="c1"># Maximum antecedents per rule</span>
+    <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">linguistic_variables</span><span class="p">,</span>  <span class="c1"># Pre-computed fuzzy variables</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>         <span class="c1"># Type-1 fuzzy sets</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>                          <span class="c1"># Show training progress</span>
 <span class="p">)</span>
 
 <span class="c1"># Train the classifier</span>
@@ -796,7 +786,10 @@ document.write(`
 
 <span class="c1"># Make predictions</span>
 <span class="n">y_pred</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-<span class="n">accuracy</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+
+<span class="c1"># Calculate accuracy manually since score method requires X input too</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -805,25 +798,25 @@ document.write(`
 <h2>Understanding the Output<a class="headerlink" href="#understanding-the-output" title="Link to this heading">#</a></h2>
 <p>After training, you can examine the fuzzy rules that were learned:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print the learned rules</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">rule_base</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rule </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">rule_text</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">rule_text</span><span class="p">)</span>
 
-<span class="c1"># Visualize the fuzzy sets and rules</span>
-<span class="n">evaluator</span> <span class="o">=</span> <span class="n">eval_tools</span><span class="o">.</span><span class="n">FuzzyEvaluator</span><span class="p">(</span><span class="n">classifier</span><span class="p">)</span>
-<span class="n">evaluator</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span>
-    <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span>
+<span class="c1"># Use comprehensive evaluation</span>
+<span class="n">evaluation_report</span> <span class="o">=</span> <span class="n">eval_tools</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span>
+    <span class="n">classifier</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span>
     <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>      <span class="c1"># Show rule structure</span>
     <span class="n">print_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>     <span class="c1"># Print rules in readable format</span>
-    <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Show fuzzy partitions</span>
+    <span class="n">plot_partitions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># Show fuzzy partitions</span>
+    <span class="n">return_rules</span><span class="o">=</span><span class="kc">True</span>     <span class="c1"># Return rule text</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <section id="example-output">
 <h3>Example Output<a class="headerlink" href="#example-output" title="Link to this heading">#</a></h3>
 <p>Your fuzzy rules might look like this:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Rule 1: IF sepal_length is Medium AND petal_width is Low THEN class is setosa (DS: 0.85)
-Rule 2: IF petal_length is High AND petal_width is High THEN class is virginica (DS: 0.92)
-Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicolor (DS: 0.78)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Rule 1: IF sepal length (cm) is Low AND petal width (cm) is Low THEN setosa (DS: 0.85)
+Rule 2: IF petal length (cm) is High AND petal width (cm) is High THEN virginica (DS: 0.92)
+Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versicolor (DS: 0.78)
 </pre></div>
 </div>
 <p>Where DS is the Dominance Score indicating rule quality.</p>
@@ -831,17 +824,20 @@ Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicol
 </section>
 <section id="key-concepts">
 <h2>Key Concepts<a class="headerlink" href="#key-concepts" title="Link to this heading">#</a></h2>
-<section id="fuzzy-sets">
-<h3>Fuzzy Sets<a class="headerlink" href="#fuzzy-sets" title="Link to this heading">#</a></h3>
-<p>Fuzzy sets define how crisp values are mapped to linguistic terms like “Low”, “Medium”, “High”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<section id="fuzzy-variables">
+<h3>Fuzzy Variables<a class="headerlink" href="#fuzzy-variables" title="Link to this heading">#</a></h3>
+<p>Fuzzy variables define how crisp values are mapped to linguistic terms like “Low”, “Medium”, “High”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="c1"># Create a fuzzy variable for sepal length</span>
-<span class="n">sepal_length</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
-    <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">],</span>  <span class="c1"># Min and max values</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sepal_length&quot;</span><span class="p">,</span>
-    <span class="n">n_linguistic_vars</span><span class="o">=</span><span class="mi">3</span>  <span class="c1"># Low, Medium, High</span>
-<span class="p">)</span>
+<span class="c1"># Create sample data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Create fuzzy variables automatically from data</span>
+<span class="n">fuzzy_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># This creates linguistic variables with terms like &quot;Low&quot;, &quot;Medium&quot;, &quot;High&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -879,7 +875,7 @@ Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicol
 <section id="pattern-stability-analysis">
 <h3>Pattern Stability Analysis<a class="headerlink" href="#pattern-stability-analysis" title="Link to this heading">#</a></h3>
 <p>Analyze the consistency of discovered patterns:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.pattern_stability</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.pattern_stability</span> <span class="k">as</span> <span class="nn">ps</span>
 
 <span class="c1"># Analyze pattern stability across multiple runs</span>
 <span class="n">stabilizer</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">pattern_stabilizer</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -985,7 +981,8 @@ Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicol
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1007,7 +1004,7 @@ Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicol
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts">Key Concepts</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuzzy-sets">Fuzzy Sets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuzzy-variables">Fuzzy Variables</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuzzy-rules">Fuzzy Rules</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classification-process">Classification Process</a></li>
 </ul>
@@ -1034,13 +1031,13 @@ Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicol
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="_sources/getting-started.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/getting-started.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -1055,8 +1052,8 @@ Rule 3: IF petal_length is Medium AND sepal_width is High THEN class is versicol
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

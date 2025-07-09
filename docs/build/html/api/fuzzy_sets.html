@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -52,6 +55,7 @@
     <link rel="prev" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -67,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -87,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -95,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
     
     
     <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -182,7 +174,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -340,13 +334,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -361,7 +351,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -380,15 +370,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -397,13 +383,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -422,7 +404,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -632,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -651,15 +634,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -689,9 +668,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -709,8 +693,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -722,7 +704,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Fuzzy Sets</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fuzzy Sets</span></li>
   </ul>
 </nav>
 </div>
@@ -751,19 +733,19 @@ fuzzy sets assign membership degrees between 0 and 1, enabling more nuanced repr
 <h2>Key Classes<a class="headerlink" href="#key-classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FS</span></code></a>(name, membership_parameters, domain)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FS</span></code></a>(name, membership_parameters, domain)</p></td>
 <td><p>Base class for Type-1 fuzzy sets (Zadeh fuzzy sets).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.gaussianFS" title="ex_fuzzy.fuzzy_sets.gaussianFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gaussianFS</span></code></a>(name, membership_parameters, domain)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianFS" title="ex_fuzzy.fuzzy_sets.gaussianFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gaussianFS</span></code></a>(name, membership_parameters, domain)</p></td>
 <td><p>Gaussian Type-1 Fuzzy Set Implementation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS" title="ex_fuzzy.fuzzy_sets.gaussianIVFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gaussianIVFS</span></code></a>(name, secondMF_lower, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS" title="ex_fuzzy.fuzzy_sets.gaussianIVFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gaussianIVFS</span></code></a>(name, secondMF_lower, ...[, ...])</p></td>
 <td><p>Gaussian Interval-Valued (Type-2) Fuzzy Set Implementation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.categoricalFS" title="ex_fuzzy.fuzzy_sets.categoricalFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">categoricalFS</span></code></a>(name, category)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalFS" title="ex_fuzzy.fuzzy_sets.categoricalFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">categoricalFS</span></code></a>(name, category)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzyVariable</span></code></a>(name, fuzzy_sets[, units])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzyVariable</span></code></a>(name, fuzzy_sets[, units])</p></td>
 <td><p>Fuzzy Variable Container and Management Class.</p></td>
 </tr>
 </tbody>
@@ -774,7 +756,7 @@ fuzzy sets assign membership degrees between 0 and 1, enabling more nuanced repr
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FUZZY_SETS</span></code></a>(value[, names, module, qualname, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FUZZY_SETS</span></code></a>(value[, names, module, qualname, ...])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -844,7 +826,7 @@ and the interface that all fuzzy set types must implement.</p>
 <p><strong>Key Methods:</strong></p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS.membership" title="ex_fuzzy.fuzzy_sets.FS.membership"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FS.membership</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS.membership" title="ex_fuzzy.fuzzy_sets.FS.membership"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FS.membership</span></code></a>(x)</p></td>
 <td><p>Compute membership degrees for input values.</p></td>
 </tr>
 </tbody>
@@ -912,7 +894,7 @@ Can be a single value, list, or numpy array.</p>
 <dd class="field-odd"><p>The type identifier (FUZZY_SETS.t1 for Type-1 fuzzy sets)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -970,7 +952,7 @@ Can be a single value, list, or numpy array.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">gaussianFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
 <p>Gaussian Type-1 Fuzzy Set Implementation.</p>
 <p>This class implements a Gaussian fuzzy set with bell-shaped membership function.
 Gaussian fuzzy sets are characterized by their mean and standard deviation,
@@ -1025,7 +1007,7 @@ providing smooth membership transitions ideal for continuous variables.</p>
 <p>Implements Gaussian (normal) membership functions. These are the most commonly
 used fuzzy sets due to their smooth shape and mathematical properties.</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
 
 <span class="c1"># Create a Gaussian fuzzy set</span>
 <span class="n">gaussian_set</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">gaussianFS</span><span class="p">(</span>
@@ -1074,7 +1056,7 @@ the mean and standard deviation parameters.</p>
 <dd class="field-odd"><p>Always returns FUZZY_SETS.t1 for Type-1 fuzzy sets</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1201,7 +1183,7 @@ enabling Type-2 fuzzy set operations.</p>
 <dd class="field-odd"><p>Always returns FUZZY_SETS.t2 for Type-2 fuzzy sets</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1228,7 +1210,7 @@ enabling Type-2 fuzzy set operations.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">categoricalFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
 <p>Handles discrete, categorical variables by mapping categories to membership
 degrees. Useful for non-numeric data.</p>
 <dl class="field-list simple">
@@ -1351,7 +1333,7 @@ all fuzzy sets and manage the linguistic terms of the variable.</p>
 <dd><p>Type of fuzzy sets (t1 or t2)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1375,7 +1357,7 @@ all fuzzy sets and manage the linguistic terms of the variable.</p>
 <p>Represents a complete fuzzy variable with multiple linguistic terms (fuzzy sets).
 This is the main class users interact with for defining input and output variables.</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
 
 <span class="c1"># Create a fuzzy variable for temperature</span>
 <span class="n">temperature</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
@@ -1401,7 +1383,7 @@ This is the main class users interact with for defining input and output variabl
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of the fuzzy variable</p></li>
-<li><p><strong>fuzzy_sets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a><em>]</em>) – List of fuzzy sets that comprise the linguistic variables</p></li>
+<li><p><strong>fuzzy_sets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a><em>]</em>) – List of fuzzy sets that comprise the linguistic variables</p></li>
 <li><p><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Units of the fuzzy variable for display purposes</p></li>
 </ul>
 </dd>
@@ -1423,7 +1405,7 @@ This is the main class users interact with for defining input and output variabl
 <dd><p>Appends a fuzzy set to the fuzzy variable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fs</strong> (<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – FS. Fuzzy set to append.</p>
+<dd class="field-odd"><p><strong>fs</strong> (<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – FS. Fuzzy set to append.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1451,7 +1433,7 @@ This is the main class users interact with for defining input and output variabl
 <dd class="field-odd"><p>list of strings.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1496,7 +1478,7 @@ This is the main class users interact with for defining input and output variabl
 <dd class="field-odd"><p>the type of the fuzzy set present in the fuzzy variable.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1544,7 +1526,7 @@ This is the main class users interact with for defining input and output variabl
 <dd class="field-even"><p>FS. The corresponding FS.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1557,7 +1539,7 @@ This is the main class users interact with for defining input and output variabl
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>item</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. Index of the FS.</p></li>
-<li><p><strong>elem</strong> (<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – FS. The FS to set.</p></li>
+<li><p><strong>elem</strong> (<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – FS. The FS to set.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1575,7 +1557,7 @@ This is the main class users interact with for defining input and output variabl
 <dd class="field-even"><p>FS. The corresponding FS.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.13)"><em>Generator</em></a>[<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>, None, None]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.13)"><em>Generator</em></a>[<a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>, None, None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1681,9 +1663,9 @@ This is the main class users interact with for defining input and output variabl
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <section id="basic-usage">
 <h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="c1"># Create a fuzzy variable for age</span>
 <span class="n">age</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
@@ -1774,7 +1756,8 @@ This is the main class users interact with for defining input and output variabl
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1897,13 +1880,13 @@ This is the main class users interact with for defining input and output variabl
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../_sources/api/fuzzy_sets.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/fuzzy_sets.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -1918,8 +1901,8 @@ This is the main class users interact with for defining input and output variabl
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

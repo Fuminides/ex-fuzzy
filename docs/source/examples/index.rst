@@ -22,7 +22,38 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 Working Examples
 ===============
 
-The Ex-Fuzzy repository includes several working Jupyter notebooks in the `Demos/` directory:
+The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run these examples directly in Google Colab:
+
+.. list-table:: Interactive Examples
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Topic
+     - Description
+     - Colab Link
+   * - **Basic Classification**
+     - Introduction to fuzzy classification with the Iris dataset
+     - `Open in Colab <https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing>`_
+   * - **Custom Loss Functions**
+     - Advanced optimization techniques
+     - `Open in Colab <https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing>`_
+   * - **Rule File Loading**
+     - Working with text-based rule files
+     - `Open in Colab <https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing>`_
+   * - **Advanced Rules**
+     - Using pre-computed rule populations
+     - `Open in Colab <https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing>`_
+   * - **Temporal Fuzzy Sets**
+     - Time-aware fuzzy reasoning
+     - `Open in Colab <https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing>`_
+   * - **Rule Mining**
+     - Automatic rule discovery
+     - `Open in Colab <https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing>`_
+
+Local Examples
+=============
+
+The repository also contains local Jupyter notebooks in the `Demos/` directory:
 
 - **iris_demo.ipynb**: Basic classification with the Iris dataset
 - **iris_demo_advanced_classifiers.ipynb**: Comparison of different classifier types
@@ -32,7 +63,7 @@ The Ex-Fuzzy repository includes several working Jupyter notebooks in the `Demos
 - **regression_demo.ipynb**: Fuzzy regression examples
 - **pattern_analysis_demo.ipynb**: Pattern stability analysis
 
-These notebooks provide complete, working examples that you can run directly.
+These notebooks provide complete, working examples that demonstrate real-world applications of the ex-fuzzy library.
    financial-risk-assessment
    image-classification
    time-series-prediction
@@ -53,9 +84,9 @@ Interactive Notebooks
 
 All examples are available as interactive Jupyter notebooks:
 
-- `📓 Download Notebooks <https://github.com/your-username/ex-fuzzy/tree/main/notebooks>`_
-- `🚀 Open in Colab <https://colab.research.google.com/github/your-username/ex-fuzzy>`_
-- `🏗️ Open in Binder <https://mybinder.org/v2/gh/your-username/ex-fuzzy/main>`_
+- `📓 Download Notebooks <https://github.com/fuminides/ex-fuzzy/tree/main/notebooks>`_
+- `🚀 Open in Colab <https://colab.research.google.com/github/fuminides/ex-fuzzy>`_
+- `🏗️ Open in Binder <https://mybinder.org/v2/gh/fuminides/ex-fuzzy/main>`_
 
 Example Categories
 ==================

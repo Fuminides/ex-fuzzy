@@ -15,27 +15,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
@@ -49,6 +52,7 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -64,19 +68,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -84,7 +77,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -92,8 +84,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -127,7 +119,7 @@
     
     
     <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -179,7 +171,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -337,13 +331,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -358,7 +348,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -377,15 +367,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -394,13 +380,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -417,7 +399,8 @@ document.write(`
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -627,7 +610,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -646,15 +629,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -662,9 +641,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -790,7 +774,7 @@ document.write(`
 </li>
         <li><a href="function_resume/eval_rules.html#ex_fuzzy.eval_rules.evalRuleBase.__init__">(ex_fuzzy.eval_rules.evalRuleBase method)</a>
 </li>
-        <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.__init__">(ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.__init__">[1]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.__init__">[2]</a>
+        <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.__init__">(ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/eval_tools.html#id0">[1]</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.__init__">[2]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.__init__">[3]</a>
 </li>
         <li><a href="api/generated/ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__init__">(ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier method)</a>, <a href="api/generated/ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.html#id0">[1]</a>, <a href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.__init__">[2]</a>
 </li>
@@ -1167,7 +1151,7 @@ document.write(`
 </li>
       <li><a href="api/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">encode_rulebase() (ex_fuzzy.evolutionary_fit.FitRuleBase method)</a>, <a href="api/generated/ex_fuzzy.evolutionary_fit.FitRuleBase.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">[1]</a>, <a href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">[2]</a>
 </li>
-      <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">eval_fuzzy_model() (ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">[1]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">[2]</a>
+      <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">eval_fuzzy_model() (ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/eval_tools.html#id3">[1]</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">[2]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.eval_fuzzy_model">[3]</a>
 
       <ul>
         <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.eval_fuzzy_model">(in module ex_fuzzy.eval_tools)</a>, <a href="api/generated/ex_fuzzy.eval_tools.eval_fuzzy_model.html#ex_fuzzy.eval_tools.eval_fuzzy_model">[1]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.eval_fuzzy_model">[2]</a>
@@ -1302,7 +1286,7 @@ document.write(`
       <ul>
         <li><a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleFineTuneClassifier.fit">(ex_fuzzy.classifiers.RuleFineTuneClassifier method)</a>
 </li>
-        <li><a href="api/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.fit">(ex_fuzzy.classifiers.RuleMineClassifier method)</a>, <a href="api/generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.fit">[1]</a>, <a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.fit">[2]</a>
+        <li><a href="api/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.fit">(ex_fuzzy.classifiers.RuleMineClassifier method)</a>, <a href="api/classifiers.html#id1">[1]</a>, <a href="api/generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.fit">[2]</a>, <a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.fit">[3]</a>
 </li>
         <li><a href="api/generated/ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit">(ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier method)</a>, <a href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.fit">[1]</a>
 </li>
@@ -1387,7 +1371,7 @@ document.write(`
 </li>
       <li><a href="api/generated/ex_fuzzy.rules.generate_rule_string.html#ex_fuzzy.rules.generate_rule_string">generate_rule_string() (in module ex_fuzzy.rules)</a>, <a href="function_resume/rules.html#ex_fuzzy.rules.generate_rule_string">[1]</a>
 </li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets">generate_rules_from_itemsets() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.generate_rules_from_itemsets.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets">generate_rules_from_itemsets() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets">[2]</a>
 </li>
       <li><a href="api/generated/ex_fuzzy.pattern_stability.pattern_stabilizer.html#ex_fuzzy.pattern_stability.pattern_stabilizer.generate_solutions">generate_solutions() (ex_fuzzy.pattern_stability.pattern_stabilizer method)</a>, <a href="function_resume/pattern_stability.html#ex_fuzzy.pattern_stability.pattern_stabilizer.generate_solutions">[1]</a>
 </li>
@@ -1403,7 +1387,7 @@ document.write(`
 </li>
       <li><a href="api/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables">get_linguistic_variables() (ex_fuzzy.fuzzy_sets.fuzzyVariable method)</a>, <a href="api/generated/ex_fuzzy.fuzzy_sets.fuzzyVariable.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables">[1]</a>, <a href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables">[2]</a>
 </li>
-      <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">get_metric() (ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">[1]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">[2]</a>
+      <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">get_metric() (ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/eval_tools.html#id2">[1]</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">[2]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.get_metric">[3]</a>
 </li>
       <li><a href="api/generated/ex_fuzzy.pattern_stability.pattern_stabilizer.html#ex_fuzzy.pattern_stability.pattern_stabilizer.get_patterns_scores">get_patterns_scores() (ex_fuzzy.pattern_stability.pattern_stabilizer method)</a>, <a href="function_resume/pattern_stability.html#ex_fuzzy.pattern_stability.pattern_stabilizer.get_patterns_scores">[1]</a>
 </li>
@@ -1520,7 +1504,7 @@ document.write(`
       <ul>
         <li><a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleFineTuneClassifier.internal_classifier">(ex_fuzzy.classifiers.RuleFineTuneClassifier method)</a>
 </li>
-        <li><a href="api/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier">(ex_fuzzy.classifiers.RuleMineClassifier method)</a>, <a href="api/generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier">[1]</a>, <a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier">[2]</a>
+        <li><a href="api/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier">(ex_fuzzy.classifiers.RuleMineClassifier method)</a>, <a href="api/classifiers.html#id3">[1]</a>, <a href="api/generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier">[2]</a>, <a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.internal_classifier">[3]</a>
 </li>
       </ul></li>
       <li><a href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.IVFS">IVFS (class in ex_fuzzy.fuzzy_sets)</a>
@@ -1591,7 +1575,7 @@ document.write(`
       </ul></li>
       <li><a href="function_resume/rules.html#ex_fuzzy.rules.RuleError.message">message (ex_fuzzy.rules.RuleError attribute)</a>
 </li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.mine_rulebase_support">mine_rulebase_support() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.mine_rulebase_support.html#ex_fuzzy.rule_mining.mine_rulebase_support">mine_rulebase_support() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.mine_rulebase_support">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.mine_rulebase_support">[2]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -1632,7 +1616,7 @@ document.write(`
         <li><a href="function_resume/vis_rules.html#module-ex_fuzzy.vis_rules">ex_fuzzy.vis_rules</a>
 </li>
       </ul></li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase">multiclass_mine_rulebase() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.multiclass_mine_rulebase.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase">multiclass_mine_rulebase() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase">[2]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1715,9 +1699,9 @@ document.write(`
       <ul>
         <li><a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleFineTuneClassifier.predict">(ex_fuzzy.classifiers.RuleFineTuneClassifier method)</a>
 </li>
-        <li><a href="api/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.predict">(ex_fuzzy.classifiers.RuleMineClassifier method)</a>, <a href="api/generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.predict">[1]</a>, <a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.predict">[2]</a>
+        <li><a href="api/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.predict">(ex_fuzzy.classifiers.RuleMineClassifier method)</a>, <a href="api/classifiers.html#id2">[1]</a>, <a href="api/generated/ex_fuzzy.classifiers.RuleMineClassifier.html#ex_fuzzy.classifiers.RuleMineClassifier.predict">[2]</a>, <a href="function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier.predict">[3]</a>
 </li>
-        <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.predict">(ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.predict">[1]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.predict">[2]</a>
+        <li><a href="api/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.predict">(ex_fuzzy.eval_tools.FuzzyEvaluator method)</a>, <a href="api/eval_tools.html#id1">[1]</a>, <a href="api/generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html#ex_fuzzy.eval_tools.FuzzyEvaluator.predict">[2]</a>, <a href="function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator.predict">[3]</a>
 </li>
         <li><a href="api/generated/ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict">(ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier method)</a>, <a href="function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.predict">[1]</a>
 </li>
@@ -1774,7 +1758,7 @@ document.write(`
         <li><a href="api/rules.html#ex_fuzzy.rules.RuleBaseT2.prune_bad_rules">(ex_fuzzy.rules.RuleBaseT2 method)</a>
 </li>
       </ul></li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift">prune_rules_confidence_lift() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.prune_rules_confidence_lift.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift">prune_rules_confidence_lift() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift">[2]</a>
 </li>
       <li><a href="api/generated/ex_fuzzy.rules.MasterRuleBase.html#ex_fuzzy.rules.MasterRuleBase.purge_rules">purge_rules() (ex_fuzzy.rules.MasterRuleBase method)</a>, <a href="api/rules.html#ex_fuzzy.rules.MasterRuleBase.purge_rules">[1]</a>, <a href="function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase.purge_rules">[2]</a>
 
@@ -1828,7 +1812,7 @@ document.write(`
 </li>
       <li><a href="function_resume/rules.html#ex_fuzzy.rules.Rule">Rule (class in ex_fuzzy.rules)</a>
 </li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.rule_search">rule_search() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.rule_search.html#ex_fuzzy.rule_mining.rule_search">rule_search() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.rule_search">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.rule_search">[2]</a>
 </li>
       <li><a href="api/generated/ex_fuzzy.rules.RuleBase.html#ex_fuzzy.rules.RuleBase">RuleBase (class in ex_fuzzy.rules)</a>, <a href="function_resume/rules.html#ex_fuzzy.rules.RuleBase">[1]</a>
 </li>
@@ -1902,9 +1886,9 @@ document.write(`
         <li><a href="function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.triangularFS.shape">(ex_fuzzy.fuzzy_sets.triangularFS method)</a>
 </li>
       </ul></li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_mine_rulebase">simple_mine_rulebase() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.simple_mine_rulebase.html#ex_fuzzy.rule_mining.simple_mine_rulebase">simple_mine_rulebase() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.simple_mine_rulebase">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_mine_rulebase">[2]</a>
 </li>
-      <li><a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">simple_multiclass_mine_rulebase() (in module ex_fuzzy.rule_mining)</a>
+      <li><a href="api/generated/ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">simple_multiclass_mine_rulebase() (in module ex_fuzzy.rule_mining)</a>, <a href="api/rule_mining.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">[1]</a>, <a href="function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase">[2]</a>
 </li>
       <li><a href="function_resume/cognitive_maps.html#ex_fuzzy.cognitive_maps.FuzzyCognitiveMap.simulate">simulate() (ex_fuzzy.cognitive_maps.FuzzyCognitiveMap method)</a>
 </li>
@@ -2068,8 +2052,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

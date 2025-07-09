@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -52,6 +55,7 @@
     <link rel="prev" title="Core Concepts" href="core-concepts.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
   </head>
   
   
@@ -67,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -87,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs..."
          aria-label="Search the docs..."
          autocomplete="off"
@@ -95,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
     
     
     <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <script>document.write(`<img src="../_static/logo-dark.png" class="logo__image only-dark" alt=""/>`);</script>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
     <p class="title logo__title">Ex-Fuzzy</p>
@@ -182,7 +174,9 @@
 </li>
 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
@@ -340,13 +334,9 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
       
@@ -361,7 +351,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -380,15 +370,11 @@ document.write(`
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -397,13 +383,9 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
 
@@ -422,7 +404,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -632,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/your-username/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -651,15 +634,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -681,9 +660,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -701,8 +685,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -714,7 +696,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Rule Mining Guide</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Rule Mining Guide</span></li>
   </ul>
 </nav>
 </div>
@@ -746,57 +728,58 @@ document.write(`
 <li><p><a class="reference internal" href="#getting-started" id="id4">Getting Started</a></p>
 <ul>
 <li><p><a class="reference internal" href="#basic-rule-mining" id="id5">Basic Rule Mining</a></p></li>
-<li><p><a class="reference internal" href="#understanding-the-output" id="id6">Understanding the Output</a></p></li>
+<li><p><a class="reference internal" href="#understanding-rule-mining-functions" id="id6">Understanding Rule Mining Functions</a></p></li>
+<li><p><a class="reference internal" href="#parameters-explained" id="id7">Parameters Explained</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#mining-parameters" id="id7">Mining Parameters</a></p>
+<li><p><a class="reference internal" href="#mining-parameters" id="id8">Mining Parameters</a></p>
 <ul>
-<li><p><a class="reference internal" href="#support-threshold" id="id8">Support Threshold</a></p></li>
-<li><p><a class="reference internal" href="#confidence-threshold" id="id9">Confidence Threshold</a></p></li>
-<li><p><a class="reference internal" href="#lift-threshold" id="id10">Lift Threshold</a></p></li>
-<li><p><a class="reference internal" href="#rule-complexity" id="id11">Rule Complexity</a></p></li>
+<li><p><a class="reference internal" href="#support-threshold" id="id9">Support Threshold</a></p></li>
+<li><p><a class="reference internal" href="#confidence-threshold" id="id10">Confidence Threshold</a></p></li>
+<li><p><a class="reference internal" href="#lift-threshold" id="id11">Lift Threshold</a></p></li>
+<li><p><a class="reference internal" href="#rule-complexity" id="id12">Rule Complexity</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#advanced-mining-techniques" id="id12">Advanced Mining Techniques</a></p>
+<li><p><a class="reference internal" href="#advanced-mining-techniques" id="id13">Advanced Mining Techniques</a></p>
 <ul>
-<li><p><a class="reference internal" href="#class-specific-mining" id="id13">Class-Specific Mining</a></p></li>
-<li><p><a class="reference internal" href="#hierarchical-mining" id="id14">Hierarchical Mining</a></p></li>
-<li><p><a class="reference internal" href="#temporal-rule-mining" id="id15">Temporal Rule Mining</a></p></li>
-<li><p><a class="reference internal" href="#multi-target-mining" id="id16">Multi-Target Mining</a></p></li>
+<li><p><a class="reference internal" href="#class-specific-mining" id="id14">Class-Specific Mining</a></p></li>
+<li><p><a class="reference internal" href="#hierarchical-mining" id="id15">Hierarchical Mining</a></p></li>
+<li><p><a class="reference internal" href="#temporal-rule-mining" id="id16">Temporal Rule Mining</a></p></li>
+<li><p><a class="reference internal" href="#multi-target-mining" id="id17">Multi-Target Mining</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#rule-quality-assessment" id="id17">Rule Quality Assessment</a></p>
+<li><p><a class="reference internal" href="#rule-quality-assessment" id="id18">Rule Quality Assessment</a></p>
 <ul>
-<li><p><a class="reference internal" href="#comprehensive-quality-metrics" id="id18">Comprehensive Quality Metrics</a></p></li>
-<li><p><a class="reference internal" href="#rule-filtering-and-selection" id="id19">Rule Filtering and Selection</a></p></li>
-<li><p><a class="reference internal" href="#rule-redundancy-removal" id="id20">Rule Redundancy Removal</a></p></li>
+<li><p><a class="reference internal" href="#comprehensive-quality-metrics" id="id19">Comprehensive Quality Metrics</a></p></li>
+<li><p><a class="reference internal" href="#rule-filtering-and-selection" id="id20">Rule Filtering and Selection</a></p></li>
+<li><p><a class="reference internal" href="#rule-redundancy-removal" id="id21">Rule Redundancy Removal</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#visualization-and-analysis" id="id21">Visualization and Analysis</a></p>
+<li><p><a class="reference internal" href="#visualization-and-analysis" id="id22">Visualization and Analysis</a></p>
 <ul>
-<li><p><a class="reference internal" href="#rule-distribution-analysis" id="id22">Rule Distribution Analysis</a></p></li>
-<li><p><a class="reference internal" href="#variable-importance-analysis" id="id23">Variable Importance Analysis</a></p></li>
+<li><p><a class="reference internal" href="#rule-distribution-analysis" id="id23">Rule Distribution Analysis</a></p></li>
+<li><p><a class="reference internal" href="#variable-importance-analysis" id="id24">Variable Importance Analysis</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#integration-with-classifiers" id="id24">Integration with Classifiers</a></p>
+<li><p><a class="reference internal" href="#integration-with-classifiers" id="id25">Integration with Classifiers</a></p>
 <ul>
-<li><p><a class="reference internal" href="#using-mined-rules-for-classification" id="id25">Using Mined Rules for Classification</a></p></li>
-<li><p><a class="reference internal" href="#iterative-rule-refinement" id="id26">Iterative Rule Refinement</a></p></li>
+<li><p><a class="reference internal" href="#using-mined-rules-for-classification" id="id26">Using Mined Rules for Classification</a></p></li>
+<li><p><a class="reference internal" href="#iterative-rule-refinement" id="id27">Iterative Rule Refinement</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#large-dataset-strategies" id="id27">Large Dataset Strategies</a></p>
+<li><p><a class="reference internal" href="#large-dataset-strategies" id="id28">Large Dataset Strategies</a></p>
 <ul>
-<li><p><a class="reference internal" href="#sampling-based-mining" id="id28">Sampling-Based Mining</a></p></li>
-<li><p><a class="reference internal" href="#incremental-mining" id="id29">Incremental Mining</a></p></li>
+<li><p><a class="reference internal" href="#sampling-based-mining" id="id29">Sampling-Based Mining</a></p></li>
+<li><p><a class="reference internal" href="#incremental-mining" id="id30">Incremental Mining</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#best-practices" id="id30">Best Practices</a></p>
+<li><p><a class="reference internal" href="#best-practices" id="id31">Best Practices</a></p>
 <ul>
-<li><p><a class="reference internal" href="#parameter-selection-guidelines" id="id31">Parameter Selection Guidelines</a></p></li>
-<li><p><a class="reference internal" href="#common-pitfalls-and-solutions" id="id32">Common Pitfalls and Solutions</a></p></li>
+<li><p><a class="reference internal" href="#parameter-selection-guidelines" id="id32">Parameter Selection Guidelines</a></p></li>
+<li><p><a class="reference internal" href="#common-pitfalls-and-solutions" id="id33">Common Pitfalls and Solutions</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#next-steps" id="id33">Next Steps</a></p></li>
+<li><p><a class="reference internal" href="#next-steps" id="id34">Next Steps</a></p></li>
 </ul>
 </nav>
 <section id="overview">
@@ -831,74 +814,92 @@ document.write(`
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Getting Started</a><a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
 <section id="basic-rule-mining">
 <h3><a class="toc-backref" href="#id5" role="doc-backlink">Basic Rule Mining</a><a class="headerlink" href="#basic-rule-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.rule_mining</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rm</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.rule_mining</span> <span class="k">as</span> <span class="nn">rm</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
+<span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
 
 <span class="c1"># Load data</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
 
-<span class="c1"># Create linguistic variables</span>
-<span class="n">antecedents</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">feature_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sepal_length&#39;</span><span class="p">,</span> <span class="s1">&#39;sepal_width&#39;</span><span class="p">,</span> <span class="s1">&#39;petal_length&#39;</span><span class="p">,</span> <span class="s1">&#39;petal_width&#39;</span><span class="p">]</span>
+<span class="c1"># Create linguistic variables from the data</span>
+<span class="n">fuzzy_variables</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feature_names</span><span class="p">):</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
-    <span class="n">antecedents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-
-<span class="c1"># Mine rules with basic parameters</span>
-<span class="n">rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
-    <span class="n">antecedents</span><span class="o">=</span><span class="n">antecedents</span><span class="p">,</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+<span class="c1"># Mine rules for multiclass classification</span>
+<span class="n">rule_base</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">multiclass_mine_rulebase</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-    <span class="n">min_support</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>     <span class="c1"># Rule must apply to at least 10% of data</span>
-    <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>  <span class="c1"># Rule must be correct at least 60% of time</span>
-    <span class="n">min_lift</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>        <span class="c1"># Rule must be better than random</span>
-    <span class="n">max_antecedents</span><span class="o">=</span><span class="mi">3</span>    <span class="c1"># Limit rule complexity</span>
+    <span class="n">fuzzy_variables</span><span class="o">=</span><span class="n">fuzzy_variables</span><span class="p">,</span>
+    <span class="n">support_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>  <span class="c1"># Minimum support for rules</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>             <span class="c1"># Maximum antecedents per rule</span>
+    <span class="n">min_conf</span><span class="o">=</span><span class="mf">0.6</span>             <span class="c1"># Minimum confidence threshold</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discovered </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span><span class="si">}</span><span class="s2"> rules&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discovered rule base with rules for each class&quot;</span><span class="p">)</span>
 
-<span class="c1"># Examine first few rules</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rules</span><span class="p">[:</span><span class="mi">5</span><span class="p">]):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rule </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Print the rules</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">rule_base</span><span class="o">.</span><span class="n">print_rules</span><span class="p">())</span>
 </pre></div>
 </div>
 </section>
-<section id="understanding-the-output">
-<h3><a class="toc-backref" href="#id6" role="doc-backlink">Understanding the Output</a><a class="headerlink" href="#understanding-the-output" title="Link to this heading">#</a></h3>
-<p>Each mined rule contains:</p>
-<ul class="simple">
-<li><p><strong>Antecedents</strong>: List of (variable_index, term_index) pairs</p></li>
-<li><p><strong>Consequent</strong>: Target class</p></li>
-<li><p><strong>Weight</strong>: Rule confidence/strength</p></li>
-<li><p><strong>Support</strong>: How often the rule pattern occurs</p></li>
-<li><p><strong>Lift</strong>: Performance vs. random</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Detailed rule analysis</span>
-<span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nRule: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Antecedents: </span><span class="si">{</span><span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Consequent: class </span><span class="si">{</span><span class="n">rule</span><span class="o">.</span><span class="n">consequent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weight: </span><span class="si">{</span><span class="n">rule</span><span class="o">.</span><span class="n">weight</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Calculate additional metrics</span>
-    <span class="n">support</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">compute_support</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">antecedents</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
-    <span class="n">confidence</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">calculate_confidence</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">lift</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">calculate_lift</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Support: </span><span class="si">{</span><span class="n">support</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Confidence: </span><span class="si">{</span><span class="n">confidence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lift: </span><span class="si">{</span><span class="n">lift</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<section id="understanding-rule-mining-functions">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Understanding Rule Mining Functions</a><a class="headerlink" href="#understanding-rule-mining-functions" title="Link to this heading">#</a></h3>
+<p>Ex-fuzzy provides several rule mining functions:</p>
+<dl class="simple">
+<dt><strong>multiclass_mine_rulebase()</strong></dt><dd><p>Main function for mining rules from labeled classification data</p>
+</dd>
+<dt><strong>mine_rulebase_support()</strong></dt><dd><p>Mine rules based on support threshold from unlabeled data</p>
+</dd>
+<dt><strong>simple_multiclass_mine_rulebase()</strong></dt><dd><p>Simplified version that creates fuzzy variables automatically</p>
+</dd>
+<dt><strong>simple_mine_rulebase()</strong></dt><dd><p>Basic rule mining without class labels</p>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Alternative: Simple automatic rule mining</span>
+<span class="n">simple_rule_base</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">simple_multiclass_mine_rulebase</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
+    <span class="n">support_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">min_conf</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="parameters-explained">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Parameters Explained</a><a class="headerlink" href="#parameters-explained" title="Link to this heading">#</a></h3>
+<dl>
+<dt><strong>support_threshold (float)</strong></dt><dd><p>Minimum support a rule must have to be considered (0.0-1.0)</p>
+</dd>
+<dt><strong>max_depth (int)</strong></dt><dd><p>Maximum number of antecedents (conditions) allowed per rule</p>
+</dd>
+<dt><strong>min_conf (float)</strong></dt><dd><p>Minimum confidence a rule must achieve (0.0-1.0)</p>
+</dd>
+<dt><strong>n_partitions (int)</strong></dt><dd><dl>
+<dt>Number of fuzzy sets per variable (for automatic partitioning)</dt><dd><p>print(f”Weight: {rule.weight:.3f}”)</p>
+<p># Calculate additional metrics
+support = rm.compute_support(rule.antecedents, antecedents, X)
+confidence = rm.calculate_confidence(rule, antecedents, X, y)
+lift = rm.calculate_lift(rule, antecedents, X, y)</p>
+<p>print(f”Support: {support:.3f}”)
+print(f”Confidence: {confidence:.3f}”)
+print(f”Lift: {lift:.3f}”)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </section>
 <section id="mining-parameters">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Mining Parameters</a><a class="headerlink" href="#mining-parameters" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Mining Parameters</a><a class="headerlink" href="#mining-parameters" title="Link to this heading">#</a></h2>
 <section id="support-threshold">
-<h3><a class="toc-backref" href="#id8" role="doc-backlink">Support Threshold</a><a class="headerlink" href="#support-threshold" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Support Threshold</a><a class="headerlink" href="#support-threshold" title="Link to this heading">#</a></h3>
 <p>Controls the minimum frequency a pattern must have:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Conservative mining (fewer, more frequent rules)</span>
 <span class="n">conservative_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
@@ -924,7 +925,7 @@ document.write(`
 </div>
 </section>
 <section id="confidence-threshold">
-<h3><a class="toc-backref" href="#id9" role="doc-backlink">Confidence Threshold</a><a class="headerlink" href="#confidence-threshold" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Confidence Threshold</a><a class="headerlink" href="#confidence-threshold" title="Link to this heading">#</a></h3>
 <p>Controls rule accuracy requirements:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare different confidence levels</span>
 <span class="n">confidence_levels</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
@@ -944,7 +945,7 @@ document.write(`
 </div>
 </section>
 <section id="lift-threshold">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Lift Threshold</a><a class="headerlink" href="#lift-threshold" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Lift Threshold</a><a class="headerlink" href="#lift-threshold" title="Link to this heading">#</a></h3>
 <p>Controls how much better than random the rules must be:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># No lift requirement (includes random-level rules)</span>
 <span class="n">all_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
@@ -964,7 +965,7 @@ document.write(`
 </div>
 </section>
 <section id="rule-complexity">
-<h3><a class="toc-backref" href="#id11" role="doc-backlink">Rule Complexity</a><a class="headerlink" href="#rule-complexity" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Rule Complexity</a><a class="headerlink" href="#rule-complexity" title="Link to this heading">#</a></h3>
 <p>Control antecedent complexity:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simple rules (1-2 conditions)</span>
 <span class="n">simple_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
@@ -991,9 +992,9 @@ document.write(`
 </section>
 </section>
 <section id="advanced-mining-techniques">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Advanced Mining Techniques</a><a class="headerlink" href="#advanced-mining-techniques" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Advanced Mining Techniques</a><a class="headerlink" href="#advanced-mining-techniques" title="Link to this heading">#</a></h2>
 <section id="class-specific-mining">
-<h3><a class="toc-backref" href="#id13" role="doc-backlink">Class-Specific Mining</a><a class="headerlink" href="#class-specific-mining" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Class-Specific Mining</a><a class="headerlink" href="#class-specific-mining" title="Link to this heading">#</a></h3>
 <p>Mine rules for each class separately:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">class_rules</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;setosa&#39;</span><span class="p">,</span> <span class="s1">&#39;versicolor&#39;</span><span class="p">,</span> <span class="s1">&#39;virginica&#39;</span><span class="p">]</span>
@@ -1026,7 +1027,7 @@ document.write(`
 </div>
 </section>
 <section id="hierarchical-mining">
-<h3><a class="toc-backref" href="#id14" role="doc-backlink">Hierarchical Mining</a><a class="headerlink" href="#hierarchical-mining" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Hierarchical Mining</a><a class="headerlink" href="#hierarchical-mining" title="Link to this heading">#</a></h3>
 <p>Mine rules at different granularities:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Coarse-grained partitions (fewer, broader terms)</span>
 <span class="n">coarse_vars</span> <span class="o">=</span> <span class="p">[</span>
@@ -1057,10 +1058,10 @@ document.write(`
 </div>
 </section>
 <section id="temporal-rule-mining">
-<h3><a class="toc-backref" href="#id15" role="doc-backlink">Temporal Rule Mining</a><a class="headerlink" href="#temporal-rule-mining" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Temporal Rule Mining</a><a class="headerlink" href="#temporal-rule-mining" title="Link to this heading">#</a></h3>
 <p>For time-series or sequential data:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example with temporal features</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">add_temporal_features</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">add_temporal_features</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add temporal features like trends and moving averages.&quot;&quot;&quot;</span>
     <span class="n">X_temporal</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -1107,10 +1108,10 @@ document.write(`
 </div>
 </section>
 <section id="multi-target-mining">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">Multi-Target Mining</a><a class="headerlink" href="#multi-target-mining" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Multi-Target Mining</a><a class="headerlink" href="#multi-target-mining" title="Link to this heading">#</a></h3>
 <p>For problems with multiple output variables:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: Predict both class and confidence</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">mine_multi_target</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_primary</span><span class="p">,</span> <span class="n">y_secondary</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">mine_multi_target</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_primary</span><span class="p">,</span> <span class="n">y_secondary</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mine rules for multiple targets.&quot;&quot;&quot;</span>
     <span class="n">all_rules</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -1133,7 +1134,7 @@ document.write(`
     <span class="k">return</span> <span class="n">all_rules</span>
 
 <span class="c1"># Create secondary target (confidence levels)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
 <span class="n">lr</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span>
 <span class="n">lr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">y_proba</span> <span class="o">=</span> <span class="n">lr</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -1146,10 +1147,10 @@ document.write(`
 </section>
 </section>
 <section id="rule-quality-assessment">
-<h2><a class="toc-backref" href="#id17" role="doc-backlink">Rule Quality Assessment</a><a class="headerlink" href="#rule-quality-assessment" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Rule Quality Assessment</a><a class="headerlink" href="#rule-quality-assessment" title="Link to this heading">#</a></h2>
 <section id="comprehensive-quality-metrics">
-<h3><a class="toc-backref" href="#id18" role="doc-backlink">Comprehensive Quality Metrics</a><a class="headerlink" href="#comprehensive-quality-metrics" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">analyze_rule_quality</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Comprehensive Quality Metrics</a><a class="headerlink" href="#comprehensive-quality-metrics" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">analyze_rule_quality</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comprehensive quality analysis of mined rules.&quot;&quot;&quot;</span>
     <span class="n">quality_metrics</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1183,7 +1184,7 @@ document.write(`
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">quality_metrics</span><span class="p">)</span>
 
 <span class="c1"># Analyze rule quality</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="n">quality_df</span> <span class="o">=</span> <span class="n">analyze_rule_quality</span><span class="p">(</span><span class="n">rules</span><span class="p">[:</span><span class="mi">20</span><span class="p">],</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="c1"># Display top rules by different criteria</span>
@@ -1196,8 +1197,8 @@ document.write(`
 </div>
 </section>
 <section id="rule-filtering-and-selection">
-<h3><a class="toc-backref" href="#id19" role="doc-backlink">Rule Filtering and Selection</a><a class="headerlink" href="#rule-filtering-and-selection" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">filter_rules_advanced</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Rule Filtering and Selection</a><a class="headerlink" href="#rule-filtering-and-selection" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_rules_advanced</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced rule filtering with multiple criteria.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">criteria</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">criteria</span> <span class="o">=</span> <span class="p">{</span>
@@ -1252,8 +1253,8 @@ document.write(`
 </div>
 </section>
 <section id="rule-redundancy-removal">
-<h3><a class="toc-backref" href="#id20" role="doc-backlink">Rule Redundancy Removal</a><a class="headerlink" href="#rule-redundancy-removal" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">remove_redundant_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">similarity_threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Rule Redundancy Removal</a><a class="headerlink" href="#rule-redundancy-removal" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">remove_redundant_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">similarity_threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove redundant rules based on antecedent similarity.&quot;&quot;&quot;</span>
     <span class="n">unique_rules</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1284,13 +1285,13 @@ document.write(`
 </section>
 </section>
 <section id="visualization-and-analysis">
-<h2><a class="toc-backref" href="#id21" role="doc-backlink">Visualization and Analysis</a><a class="headerlink" href="#visualization-and-analysis" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Visualization and Analysis</a><a class="headerlink" href="#visualization-and-analysis" title="Link to this heading">#</a></h2>
 <section id="rule-distribution-analysis">
-<h3><a class="toc-backref" href="#id22" role="doc-backlink">Rule Distribution Analysis</a><a class="headerlink" href="#rule-distribution-analysis" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Rule Distribution Analysis</a><a class="headerlink" href="#rule-distribution-analysis" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">analyze_rule_distribution</span><span class="p">(</span><span class="n">rules</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">analyze_rule_distribution</span><span class="p">(</span><span class="n">rules</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyze distribution of rule characteristics.&quot;&quot;&quot;</span>
     <span class="c1"># Extract characteristics</span>
     <span class="n">rule_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">antecedents</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">]</span>
@@ -1343,8 +1344,8 @@ document.write(`
 </div>
 </section>
 <section id="variable-importance-analysis">
-<h3><a class="toc-backref" href="#id23" role="doc-backlink">Variable Importance Analysis</a><a class="headerlink" href="#variable-importance-analysis" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">analyze_variable_importance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Variable Importance Analysis</a><a class="headerlink" href="#variable-importance-analysis" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">analyze_variable_importance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyze which variables appear most frequently in rules.&quot;&quot;&quot;</span>
     <span class="n">variable_counts</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">))}</span>
     <span class="n">term_counts</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1393,10 +1394,10 @@ document.write(`
 </section>
 </section>
 <section id="integration-with-classifiers">
-<h2><a class="toc-backref" href="#id24" role="doc-backlink">Integration with Classifiers</a><a class="headerlink" href="#integration-with-classifiers" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id25" role="doc-backlink">Integration with Classifiers</a><a class="headerlink" href="#integration-with-classifiers" title="Link to this heading">#</a></h2>
 <section id="using-mined-rules-for-classification">
-<h3><a class="toc-backref" href="#id25" role="doc-backlink">Using Mined Rules for Classification</a><a class="headerlink" href="#using-mined-rules-for-classification" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.classifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RuleMineClassifier</span>
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Using Mined Rules for Classification</a><a class="headerlink" href="#using-mined-rules-for-classification" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ex_fuzzy.classifiers</span> <span class="kn">import</span> <span class="n">RuleMineClassifier</span>
 
 <span class="c1"># Use mined rules as initial population</span>
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
@@ -1411,7 +1412,7 @@ document.write(`
 <span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="c1"># Compare performance</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
 
 <span class="c1"># Classifier with mined rules</span>
 <span class="n">scores_mined</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -1426,8 +1427,8 @@ document.write(`
 </div>
 </section>
 <section id="iterative-rule-refinement">
-<h3><a class="toc-backref" href="#id26" role="doc-backlink">Iterative Rule Refinement</a><a class="headerlink" href="#iterative-rule-refinement" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">iterative_rule_mining</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Iterative Rule Refinement</a><a class="headerlink" href="#iterative-rule-refinement" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">iterative_rule_mining</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Iteratively refine rule mining parameters.&quot;&quot;&quot;</span>
     <span class="n">best_rules</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">best_score</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1486,10 +1487,10 @@ document.write(`
 </section>
 </section>
 <section id="large-dataset-strategies">
-<h2><a class="toc-backref" href="#id27" role="doc-backlink">Large Dataset Strategies</a><a class="headerlink" href="#large-dataset-strategies" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id28" role="doc-backlink">Large Dataset Strategies</a><a class="headerlink" href="#large-dataset-strategies" title="Link to this heading">#</a></h2>
 <section id="sampling-based-mining">
-<h3><a class="toc-backref" href="#id28" role="doc-backlink">Sampling-Based Mining</a><a class="headerlink" href="#sampling-based-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sample_based_mining</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">Sampling-Based Mining</a><a class="headerlink" href="#sampling-based-mining" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sample_based_mining</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mine rules from multiple random samples for large datasets.&quot;&quot;&quot;</span>
     <span class="n">all_rules</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1529,11 +1530,11 @@ document.write(`
 </div>
 </section>
 <section id="incremental-mining">
-<h3><a class="toc-backref" href="#id29" role="doc-backlink">Incremental Mining</a><a class="headerlink" href="#incremental-mining" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">IncrementalRuleMiner</span><span class="p">:</span>
+<h3><a class="toc-backref" href="#id30" role="doc-backlink">Incremental Mining</a><a class="headerlink" href="#incremental-mining" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IncrementalRuleMiner</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Incrementally update rules as new data arrives.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">min_support</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">antecedents</span><span class="p">,</span> <span class="n">min_support</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">antecedents</span> <span class="o">=</span> <span class="n">antecedents</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_support</span> <span class="o">=</span> <span class="n">min_support</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_confidence</span> <span class="o">=</span> <span class="n">min_confidence</span>
@@ -1541,7 +1542,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">seen_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seen_labels</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update rules with new data.&quot;&quot;&quot;</span>
         <span class="c1"># Add new data to history</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seen_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1566,7 +1567,7 @@ document.write(`
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span>
 
 <span class="c1"># Use incremental miner</span>
@@ -1585,10 +1586,10 @@ document.write(`
 </section>
 </section>
 <section id="best-practices">
-<h2><a class="toc-backref" href="#id30" role="doc-backlink">Best Practices</a><a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">Best Practices</a><a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
 <section id="parameter-selection-guidelines">
-<h3><a class="toc-backref" href="#id31" role="doc-backlink">Parameter Selection Guidelines</a><a class="headerlink" href="#parameter-selection-guidelines" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">recommend_parameters</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Parameter Selection Guidelines</a><a class="headerlink" href="#parameter-selection-guidelines" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">recommend_parameters</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Recommend mining parameters based on dataset characteristics.&quot;&quot;&quot;</span>
     <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
@@ -1636,7 +1637,7 @@ document.write(`
 </div>
 </section>
 <section id="common-pitfalls-and-solutions">
-<h3><a class="toc-backref" href="#id32" role="doc-backlink">Common Pitfalls and Solutions</a><a class="headerlink" href="#common-pitfalls-and-solutions" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">Common Pitfalls and Solutions</a><a class="headerlink" href="#common-pitfalls-and-solutions" title="Link to this heading">#</a></h3>
 <p><strong>Problem: Too many rules</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solution: Increase thresholds or add post-filtering</span>
 <span class="n">conservative_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
@@ -1676,7 +1677,7 @@ document.write(`
 </section>
 </section>
 <section id="next-steps">
-<h2><a class="toc-backref" href="#id33" role="doc-backlink">Next Steps</a><a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id34" role="doc-backlink">Next Steps</a><a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
 <p>After mastering rule mining:</p>
 <ol class="arabic simple">
 <li><p><strong>Integration</strong>: Learn to integrate mined rules with evolutionary optimization</p></li>
@@ -1705,7 +1706,8 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1723,7 +1725,8 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-rule-mining">Basic Rule Mining</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-the-output">Understanding the Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-rule-mining-functions">Understanding Rule Mining Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-explained">Parameters Explained</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mining-parameters">Mining Parameters</a><ul class="visible nav section-nav flex-column">
@@ -1771,13 +1774,13 @@ document.write(`
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../_sources/user-guide/rule-mining.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user-guide/rule-mining.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -1792,8 +1795,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

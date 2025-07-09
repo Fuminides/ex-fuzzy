@@ -10,12 +10,12 @@ Ex-Fuzzy Documentation
    :target: https://pypi.org/project/ex-fuzzy/
    :alt: Python versions
 
-.. image:: https://img.shields.io/github/license/your-username/ex-fuzzy.svg
-   :target: https://github.com/your-username/ex-fuzzy/blob/main/LICENSE
+.. image:: https://img.shields.io/github/license/fuminides/ex-fuzzy.svg
+   :target: https://github.com/fuminides/ex-fuzzy/blob/main/LICENSE
    :alt: License
 
-.. image:: https://img.shields.io/github/stars/your-username/ex-fuzzy.svg?style=social
-   :target: https://github.com/your-username/ex-fuzzy
+.. image:: https://img.shields.io/github/stars/fuminides/ex-fuzzy.svg?style=social
+   :target: https://github.com/fuminides/ex-fuzzy
    :alt: GitHub stars
 
 **Ex-Fuzzy** is a powerful Python library for explainable fuzzy logic inference and approximate reasoning. 
@@ -142,7 +142,7 @@ Or install from source:
 
 .. code-block:: bash
 
-    git clone https://github.com/your-username/ex-fuzzy.git
+    git clone https://github.com/fuminides/ex-fuzzy.git
     cd ex-fuzzy
     pip install -e .
 
@@ -235,13 +235,13 @@ Community and Support
     :gutter: 3
 
     .. grid-item-card:: 💬 Discussion
-        :link: https://github.com/your-username/ex-fuzzy/discussions
+        :link: https://github.com/fuminides/ex-fuzzy/discussions
         :link-type: url
 
         Join our community discussions, ask questions, and share your projects.
 
     .. grid-item-card:: 🐛 Report Issues
-        :link: https://github.com/your-username/ex-fuzzy/issues
+        :link: https://github.com/fuminides/ex-fuzzy/issues
         :link-type: url
 
         Found a bug or have a feature request? Let us know on GitHub.

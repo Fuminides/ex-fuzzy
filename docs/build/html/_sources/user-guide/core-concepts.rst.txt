@@ -65,16 +65,20 @@ Standard fuzzy sets where membership is a crisp value between 0 and 1.
 .. code-block:: python
 
    import ex_fuzzy.fuzzy_sets as fs
+   import ex_fuzzy.utils as utils
    import numpy as np
+   import pandas as pd
 
-   # Create a Type-1 triangular fuzzy set
-   x = np.linspace(0, 100, 101)
-   temperature = fs.fuzzyVariable("temperature", x, 3, fs.FUZZY_SETS.t1)
+   # Create sample data
+   data = np.array([[20, 30, 40], [25, 35, 45], [30, 40, 50]])
    
-   # Access individual fuzzy sets
-   cold = temperature[0]  # Low temperature
-   warm = temperature[1]  # Medium temperature  
-   hot = temperature[2]   # High temperature
+   # Create Type-1 fuzzy variables automatically from data
+   fuzzy_variables_t1 = utils.construct_partitions(data, fs.FUZZY_SETS.t1, n_partitions=3)
+   
+   # Each variable contains fuzzy sets for that feature
+   temperature_var = fuzzy_variables_t1[0]  # First feature
+   print(f"Variable name: {temperature_var.name}")
+   print(f"Number of fuzzy sets: {len(temperature_var.linguistic_variables)}")
 
 Type-2 Fuzzy Sets
 ^^^^^^^^^^^^^^^^^
@@ -83,11 +87,12 @@ Fuzzy sets where the membership function itself is fuzzy, represented by upper a
 
 .. code-block:: python
 
-   # Create Type-2 fuzzy sets with uncertainty
-   temperature_t2 = fs.fuzzyVariable("temperature", x, 3, fs.FUZZY_SETS.t2)
+   # Create Type-2 fuzzy variables with uncertainty
+   fuzzy_variables_t2 = utils.construct_partitions(data, fs.FUZZY_SETS.t2, n_partitions=3)
    
    # Type-2 sets have upper and lower membership functions
    # to model uncertainty in the membership itself
+   temperature_t2 = fuzzy_variables_t2[0]
 
 General Type-2 Fuzzy Sets
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -96,8 +101,8 @@ Most general form where membership is a fuzzy set in three dimensions.
 
 .. code-block:: python
 
-   # Create General Type-2 fuzzy sets
-   temperature_gt2 = fs.fuzzyVariable("temperature", x, 3, fs.FUZZY_SETS.gt2)
+   # Create General Type-2 fuzzy variables
+   fuzzy_variables_gt2 = utils.construct_partitions(data, fs.FUZZY_SETS.gt2, n_partitions=3)
 
 Membership Functions
 ~~~~~~~~~~~~~~~~~~~
@@ -112,30 +117,6 @@ Common membership function shapes supported:
 
 **Gaussian**
   Bell-shaped curve with center and width parameters
-
-**Sigmoidal**
-  S-shaped curve for monotonic transitions
-
-Example: Creating Custom Membership Functions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-   # Define universe of discourse
-   age_range = np.linspace(0, 100, 101)
-   
-   # Create age fuzzy variable with 4 terms
-   age = fs.fuzzyVariable("age", age_range, 4, fs.FUZZY_SETS.t1)
-   
-   # The variable now contains:
-   # age[0]: Young (0-30)
-   # age[1]: Adult (20-50) 
-   # age[2]: Middle-aged (40-70)
-   # age[3]: Senior (60-100)
-   
-   # Evaluate membership for specific values
-   membership_25 = age[0].evaluate(25)  # How "young" is 25?
-   print(f"Age 25 is {membership_25:.2f} young")
 
 Linguistic Variables
 -------------------
@@ -157,18 +138,22 @@ Creating Linguistic Variables
 
 .. code-block:: python
 
-   # Automatic partitioning
-   speed = fs.fuzzyVariable("speed", [0, 120], 3, fs.FUZZY_SETS.t1)
-   # Creates: slow, medium, fast
+   import ex_fuzzy.utils as utils
+   import ex_fuzzy.fuzzy_sets as fs
+   import numpy as np
 
-   # Custom partitioning
-   quality_levels = [
-       fs.fuzzySet("poor", [0, 0, 3, 5], fs.FUZZY_SETS.t1),
-       fs.fuzzySet("average", [3, 5, 7], fs.FUZZY_SETS.t1),
-       fs.fuzzySet("good", [6, 8, 10], fs.FUZZY_SETS.t1),
-       fs.fuzzySet("excellent", [8, 10, 10, 10], fs.FUZZY_SETS.t1)
-   ]
-   quality = fs.fuzzyVariable("quality", quality_levels)
+   # Create sample data
+   data = np.array([[20, 25, 30], [35, 40, 45], [50, 55, 60]])
+   
+   # Automatic partitioning creates linguistic variables from data
+   fuzzy_variables = utils.construct_partitions(
+       data, 
+       fz_type_studied=fs.FUZZY_SETS.t1, 
+       n_partitions=3
+   )
+   
+   # Each variable contains fuzzy sets representing linguistic terms
+   # like "low", "medium", "high" for each feature
 
 Fuzzy Rules
 -----------
@@ -184,14 +169,9 @@ Rule Structure
 **Components:**
   - **Antecedents**: Conditions (can be combined with AND/OR)
   - **Consequent**: Conclusion or action
-  - **Strength**: Rule weight or confidence
+  - **Confidence**: Rule strength or support
 
-Rule Examples
-~~~~~~~~~~~~
-
-.. code-block:: python
-
-   import ex_fuzzy.rules as rules
+Ex-fuzzy uses rule classes like `RuleSimple` and rule base classes like `RuleBaseT1`, `RuleBaseT2`, and `RuleBaseGT2` to manage collections of rules for different fuzzy set types.
 
    # Simple rule: IF temperature is high THEN comfort is low
    rule1 = rules.RuleSimple(

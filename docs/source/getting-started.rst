@@ -31,7 +31,7 @@ Or from source:
 
 .. code-block:: bash
 
-    git clone https://github.com/username/ex-fuzzy.git
+    git clone https://github.com/fuminides/ex-fuzzy.git
     cd ex-fuzzy
     pip install -e .
 
