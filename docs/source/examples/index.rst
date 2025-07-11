@@ -84,7 +84,7 @@ Interactive Notebooks
 
 All examples are available as interactive Jupyter notebooks:
 
-- `📓 Download Notebooks or use Colab with previous links.
+- 📓 Download Notebooks or use Colab with previous links.
 - `🏗️ Open in Binder <https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos>`_
 
 Example Categories
