@@ -1,6 +1,6 @@
-===========
+==========
 Fuzzy Sets
-===========
+==========
 
 .. currentmodule:: ex_fuzzy.fuzzy_sets
 

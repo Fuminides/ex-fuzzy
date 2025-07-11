@@ -48,7 +48,7 @@ Ex-Fuzzy requires:
 - PyMoo (for evolutionary optimization)
 
 Your First Fuzzy Classifier
-============================
+===========================
 
 Let's start with a simple example using the famous Iris dataset:
 
@@ -96,7 +96,7 @@ Let's start with a simple example using the famous Iris dataset:
     print(f"Accuracy: {accuracy:.3f}")
 
 Understanding the Output
-========================
+=======================
 
 After training, you can examine the fuzzy rules that were learned:
 

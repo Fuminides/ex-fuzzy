@@ -229,7 +229,7 @@ Documentation Contents
     pattern_stats
 
 Community and Support
-====================
+=====================
 
 .. grid:: 2
     :gutter: 3

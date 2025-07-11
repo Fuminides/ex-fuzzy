@@ -825,25 +825,25 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.rule_search" title="ex_fuzzy.rule_mining.rule_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rule_search</span></code></a>(data, fuzzy_variables[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.rule_search" title="ex_fuzzy.rule_mining.rule_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rule_search</span></code></a>(data, fuzzy_variables[, ...])</p></td>
 <td><p>Computes the apriori algorithm for the given dataframe and threshold the support.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.generate_rules_from_itemsets" title="ex_fuzzy.rule_mining.generate_rules_from_itemsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rules_from_itemsets</span></code></a>(itemsets, nAnts)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.generate_rules_from_itemsets" title="ex_fuzzy.rule_mining.generate_rules_from_itemsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rules_from_itemsets</span></code></a>(itemsets, nAnts)</p></td>
 <td><p>Given a list of itemsets, it creates the rules for each one and returns a list of rules containing them.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.mine_rulebase_support" title="ex_fuzzy.rule_mining.mine_rulebase_support"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mine_rulebase_support</span></code></a>(x, fuzzy_variables[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.mine_rulebase_support" title="ex_fuzzy.rule_mining.mine_rulebase_support"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mine_rulebase_support</span></code></a>(x, fuzzy_variables[, ...])</p></td>
 <td><p>Search the data for associations that are frequent given a list of fuzzy variables for each antecedent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.prune_rules_confidence_lift" title="ex_fuzzy.rule_mining.prune_rules_confidence_lift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_rules_confidence_lift</span></code></a>(x, y, rules, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.prune_rules_confidence_lift" title="ex_fuzzy.rule_mining.prune_rules_confidence_lift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_rules_confidence_lift</span></code></a>(x, y, rules, ...)</p></td>
 <td><p>Removes the rules from the rule base that do not meet a minimum value for confidence and lift measures.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_mine_rulebase" title="ex_fuzzy.rule_mining.simple_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_mine_rulebase</span></code></a>(x[, fuzzy_type, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.simple_mine_rulebase" title="ex_fuzzy.rule_mining.simple_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_mine_rulebase</span></code></a>(x[, fuzzy_type, ...])</p></td>
 <td><p>Search the data for associations that are frequent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.multiclass_mine_rulebase" title="ex_fuzzy.rule_mining.multiclass_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiclass_mine_rulebase</span></code></a>(x, y, fuzzy_variables)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.multiclass_mine_rulebase" title="ex_fuzzy.rule_mining.multiclass_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiclass_mine_rulebase</span></code></a>(x, y, fuzzy_variables)</p></td>
 <td><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rule_mining.html#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase" title="ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_multiclass_mine_rulebase</span></code></a>(x, y, fuzzy_type)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase" title="ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_multiclass_mine_rulebase</span></code></a>(x, y, fuzzy_type)</p></td>
 <td><p>Search the data for associations that are frequent and have good confidence/lift values given a list of fuzzy variables for each antecedent.</p></td>
 </tr>
 </tbody>
@@ -893,7 +893,7 @@
 <dd class="field-even"><p>the rules for ech itemset.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -909,7 +909,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of the fuzzy variables for each of the input variables.</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of the fuzzy variables for each of the input variables.</p></li>
 <li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
 <li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
 </ul>
@@ -932,7 +932,7 @@ class and then uses them to form a MasterRuleBase.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of the fuzzy variables for each of the input variables.</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of the fuzzy variables for each of the input variables.</p></li>
 <li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
 <li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
 <li><p><strong>confidence_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum confidence value.</p></li>
@@ -943,7 +943,7 @@ class and then uses them to form a MasterRuleBase.</p>
 <dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -956,7 +956,7 @@ class and then uses them to form a MasterRuleBase.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_type</strong> (<a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.temporal.FUZZY_SETS"><em>FUZZY_SETS</em></a>) – fuzzy type to use.</p></li>
+<li><p><strong>fuzzy_type</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.temporal.FUZZY_SETS"><em>FUZZY_SETS</em></a>) – fuzzy type to use.</p></li>
 <li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
 <li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
 </ul>
@@ -980,7 +980,7 @@ Computes a different ruleBase for each class and then uses them to form a Master
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – the data to mine. Dims: samples x features.</p></li>
-<li><p><strong>fuzzy_type</strong> (<a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.temporal.FUZZY_SETS"><em>FUZZY_SETS</em></a>) – fuzzy type to use.</p></li>
+<li><p><strong>fuzzy_type</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.temporal.FUZZY_SETS"><em>FUZZY_SETS</em></a>) – fuzzy type to use.</p></li>
 <li><p><strong>support_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum threshold to decide if prune or not the rule.</p></li>
 <li><p><strong>max_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of antecedents per rule.</p></li>
 </ul>
@@ -989,7 +989,7 @@ Computes a different ruleBase for each class and then uses them to form a Master
 <dd class="field-even"><p>a rulebase object with the rules denoted as good.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1008,8 +1008,8 @@ Lift is ratio between confidence and expected confidence, which is the percentag
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.1)"><em>DataFrame</em></a>) – data to mine. samples x features.</p></li>
 <li><p><strong>y</strong> (<em>array</em>) – class vector.</p></li>
-<li><p><strong>rules</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – MasterRuleBase object with the rules to prune.</p></li>
-<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – a list of the fuzzy variables per antecedent.</p></li>
+<li><p><strong>rules</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – MasterRuleBase object with the rules to prune.</p></li>
+<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – a list of the fuzzy variables per antecedent.</p></li>
 <li><p><strong>confidence_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum confidence required to the rules.</p></li>
 <li><p><strong>lift_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum lift required to the rules.</p></li>
 </ul>

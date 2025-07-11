@@ -737,7 +737,7 @@
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase" title="ex_fuzzy.evolutionary_fit.FitRuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitRuleBase</span></code></a>(X, y, nRules, nAnts, n_classes)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ex_fuzzy.evolutionary_fit.FitRuleBase" title="ex_fuzzy.evolutionary_fit.FitRuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitRuleBase</span></code></a>(X, y, nRules, nAnts, n_classes)</p></td>
 <td><p>Class to model as pymoo problem the fitting of a rulebase for a classification problem using Evolutionary strategies.</p></td>
 </tr>
 </tbody>
@@ -768,7 +768,7 @@ Supports type 1 and iv fs (iv-type 2)</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_evaluate</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase" title="ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encode_rulebase</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase" title="ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encode_rulebase</span></code></a></p></td>
 <td><p>Given a rule base, constructs the corresponding gene associated with that rule base.</p></td>
 </tr>
 </tbody>
@@ -793,7 +793,7 @@ Supports type 1 and iv fs (iv-type 2)</p>
 <li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
 <li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
 <li><p><strong>n_class</strong> – number of classes in the problem. If None (as default) it will be computed from the data.</p></li>
-<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of linguistic variables precomputed. If given, the rest of conflicting arguments are ignored.</p></li>
+<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of linguistic variables precomputed. If given, the rest of conflicting arguments are ignored.</p></li>
 <li><p><strong>n_linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of linguistic variables per antecedent.</p></li>
 <li><p><strong>fuzzy_type</strong> – Define the fuzzy set or fuzzy set extension used as linguistic variable.</p></li>
 <li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list with the upper and lower domains of each input variable. If None (as default) it will stablish the empirical min/max as the limits.</p></li>
@@ -875,7 +875,7 @@ Four: Consequent classes. Size: nRules</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rule_base</strong> (<a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – rule base object.</p></li>
+<li><p><strong>rule_base</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – rule base object.</p></li>
 <li><p><strong>optimize_lv</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the gene is prepared to optimize the membership functions.</p></li>
 <li><p><strong>encode_mods</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the gene is prepared to encode the modifiers for the membership functions.</p></li>
 </ul>
