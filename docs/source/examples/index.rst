@@ -84,9 +84,8 @@ Interactive Notebooks
 
 All examples are available as interactive Jupyter notebooks:
 
-- `📓 Download Notebooks <https://github.com/fuminides/ex-fuzzy/tree/main/notebooks>`_
-- `🚀 Open in Colab <https://colab.research.google.com/github/fuminides/ex-fuzzy>`_
-- `🏗️ Open in Binder <https://mybinder.org/v2/gh/fuminides/ex-fuzzy/main>`_
+- `📓 Download Notebooks or use Colab with previous links.
+- `🏗️ Open in Binder <https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos>`_
 
 Example Categories
 ==================
