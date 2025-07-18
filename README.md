@@ -15,6 +15,7 @@
   <a href="https://pypi.org/project/ex-fuzzy/">
     <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/ex-fuzzy?style=flat-square">
   </a>
+
   <a href="https://github.com/Fuminides/ex-fuzzy/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/Fuminides/ex-fuzzy?style=flat-square">
   </a>
@@ -125,7 +126,7 @@ Ex-Fuzzy provides beautiful visualizations to understand your fuzzy models:
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/0daf546a-6f8b-46dd-9d7e-f97242ea5324" height="280" title="Type-2 Fuzzy Sets">
+  <img src="https://github.com/user-attachments/assets/6ffff71c-49e5-4437-94e3-3b821f799643" height="280" title="Type-2 Fuzzy Sets">
   <img src="https://github.com/Fuminides/ex-fuzzy/assets/12574757/b356a09f-4c66-45c9-8362-ebdbda684669" height="280" title="General Type-2 Fuzzy Sets">
 </p>
 
