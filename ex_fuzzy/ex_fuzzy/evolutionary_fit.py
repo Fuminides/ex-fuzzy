@@ -267,7 +267,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                     checkpoint_rules = rule_base.print_rules(True, bootstrap_results=True)
 
                     if checkpoint_callback is None:
-                        with open(os.path.join(checkpoint_path,"checkpoint_" + str(algorithm.n_gen), "w")) as f:
+                        with open(os.path.join(checkpoint_path,"checkpoint_" + str(algorithm.n_gen)), "w") as f:
                             f.write(checkpoint_rules) 
                     else:
                         checkpoint_callback(k, rule_base)
