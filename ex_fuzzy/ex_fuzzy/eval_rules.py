@@ -121,7 +121,7 @@ class evalRuleBase():
                 pass
             pattern_firing_strength = antecedent_memberships[:, ix]
             
-            res[ix] = np.mean(pattern_firing_strength * consequent_match.reshape(-1, 1))
+            res[ix] = np.mean(pattern_firing_strength.reshape(-1, ) * consequent_match.reshape(-1, ))
             
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
             res = np.mean(res, axis=1)

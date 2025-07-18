@@ -506,7 +506,7 @@ def t2_fuzzy_partitions_dataset(x0: np.array, n_partition=3,  shape='trapezoid')
     res = []
     for fz_parameter in range(fz_memberships.shape[0]):
         fzs = [fs.IVFS(partition_names[ix], fz_memberships[fz_parameter, ix, :, 0], fz_memberships[fz_parameter, ix, :, 1], [
-                       mins[fz_parameter], maxs[fz_parameter]], lower_height=0.8) for ix in range(fz_memberships.shape[1])]
+                       mins[fz_parameter], maxs[fz_parameter]], lower_height=1.0) for ix in range(fz_memberships.shape[1])]
         res.append(fs.fuzzyVariable(fv_names[fz_parameter], fzs))
 
     return res
