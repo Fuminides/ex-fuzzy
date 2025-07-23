@@ -176,6 +176,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
         :return: None. The classifier is fitted to the data.
         '''
+
+        if isinstance(X, pd.DataFrame):
+            lvs_names = list(X.columns)
+            X = X.values
+        else:
+            lvs_names = [str(ix) for ix in range(X.shape[1])]
             
         if self.classes_names is None:
             self.classes_names = [aux for aux in np.unique(y)]
@@ -313,6 +319,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.rule_base.rename_cons(self.classes_names)
         if self.lvs is None:
             self.rename_fuzzy_variables()
+            for ix, lv in enumerate(self.rule_base.rule_bases[0].antecedents):
+                lv.name = lvs_names[ix]
         
     
     def print_rule_bootstrap_results(self) -> None:
