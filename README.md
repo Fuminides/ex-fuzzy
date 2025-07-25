@@ -295,7 +295,7 @@ If you use Ex-Fuzzy in your research, please cite our paper:
 ## 👥 Main Authors
 
 - **[Javier Fumanal-Idocin](https://github.com/Fuminides)** - *Lead Developer*
-- **[Javier Andreu-Perez](https://github.com/jandreu)** - *Co-author*
+- **[Javier Andreu-Perez](https://github.com/jandreu)** - *Co-lead and licensing officer*
 
 ## 🌟 Acknowledgments
 
