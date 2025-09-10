@@ -5,6 +5,7 @@ Main components:
 
 
 '''
+from xxlimited import new
 import numpy as np
 
 from sklearn.base import ClassifierMixin
@@ -19,6 +20,38 @@ except ImportError:
 def _calculate_coverage(truth_values: np.array, total_samples: int) -> float:
     """Calculate the proportion of samples covered by the given truth values."""
     return np.sum(truth_values) / total_samples
+
+
+def _weighted_gini_index(truth_values: np.array, y: np.array) -> float:
+    """
+    Compute the weighted Gini index for multiclass classification using fuzzy membership values.
+    
+    Args:
+        truth_values (np.array): The membership degrees/weights for each sample (0-1).
+        y (np.array): The class labels for all samples.
+    
+    Returns:
+        float: The weighted Gini index (0 = pure, higher = more impure).
+    """
+    if len(truth_values) == 0 or np.sum(truth_values) == 0:
+        return float('inf')
+    
+    unique_classes = np.unique(y)
+    total_weight = np.sum(truth_values)
+    
+    # Calculate weighted class proportions
+    weighted_proportions = []
+    for cls in unique_classes:
+        cls_mask = (y == cls)
+        cls_weight = np.sum(truth_values[cls_mask])
+        proportion = cls_weight / total_weight if total_weight > 0 else 0.0
+        weighted_proportions.append(proportion)
+    
+    # Compute weighted gini index (multiclass)
+    weighted_proportions = np.array(weighted_proportions)
+    weighted_gini = 1.0 - np.sum(weighted_proportions ** 2)
+    
+    return weighted_gini
 
 
 def _gini_index(y: np.array) -> float:
@@ -37,6 +70,42 @@ def _gini_index(y: np.array) -> float:
         return 0.0
     gini = 1.0 - np.sum((counts / total) ** 2)
     return gini
+
+
+def _complete_classification_index(y: np.array, pre_yhat: np.array, new_yhat: np.array) -> float:
+    """
+    Compute the complete classification index (CCI) to evaluate the improvement
+    in classification accuracy when moving from pre_yhat to new_yhat.
+    It uses MCC as a metric of the metaclassification improvement.
+
+    Args:
+        y (np.array): The true class labels.
+        pre_yhat (np.array): The previous predicted class labels.
+        new_yhat (np.array): The new predicted class labels.
+
+    Returns:
+        float: The CCI value, where higher values indicate better improvement.
+    """
+    if len(y) == 0:
+        return 0.0
+
+    correct_pre = (y == pre_yhat)
+    correct_new = (y == new_yhat)
+
+    TP = np.sum(correct_pre & correct_new)  # True Positives: Correctly classified in both
+    TN = np.sum(~correct_pre & ~correct_new)  # True Negatives: Incorrectly classified in both
+    FP = np.sum(~correct_pre & correct_new)  # False Positives: Improved classification
+    FN = np.sum(correct_pre & ~correct_new)  # False Negatives: Worsened classification
+
+    numerator = (TP * TN) - (FP * FN)
+    denominator = np.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+
+    if denominator == 0:
+        return 0.0
+
+    cci = numerator / denominator
+
+    return cci
 
 
 def compute_purity(thresholded_truth_values: np.array, y: np.array) -> float:
@@ -76,21 +145,8 @@ def compute_fuzzy_purity(truth_values: np.array, y: np.array, minimum_coverage_t
     if len(truth_values) == 0 or np.sum(truth_values) == 0:
         return float('inf')
     
-    unique_classes = np.unique(y)
-    total_weight = np.sum(truth_values)
-    
-    # Calculate weighted class proportions
-    weighted_proportions = []
-    for cls in unique_classes:
-        cls_mask = (y == cls)
-        cls_weight = np.sum(truth_values[cls_mask])
-        proportion = cls_weight / total_weight if total_weight > 0 else 0.0
-        weighted_proportions.append(proportion)
-    
-    # Compute weighted gini index (multiclass)
-    weighted_proportions = np.array(weighted_proportions)
-    weighted_gini = 1.0 - np.sum(weighted_proportions ** 2)
-    
+    # Use the extracted weighted Gini function
+    weighted_gini = _weighted_gini_index(truth_values, y)
     coverage = _calculate_coverage(truth_values, len(y))
 
     if coverage < minimum_coverage_threshold: # Minimum coverage threshold
@@ -99,13 +155,29 @@ def compute_fuzzy_purity(truth_values: np.array, y: np.array, minimum_coverage_t
         return weighted_gini
 
 
+def compute_fuzzy_cci(y: np.array, truth_values: np.array, pre_yhat: np.array, new_yhat: np.array, minimum_coverage_threshold: float = 0.0) -> float:
+    """
+    Compute the complete classification index (CCI) to evaluate the improvement
+    """
+    if len(truth_values) == 0 or np.sum(truth_values) == 0:
+        return float(0.0)
+
+    cci_index =  _complete_classification_index(y, pre_yhat, new_yhat)
+    coverage = _calculate_coverage(truth_values, len(y))
+
+    if coverage < minimum_coverage_threshold: # Minimum coverage threshold
+        return float('inf')
+    else:
+        return cci_index
+
+
 class FuzzyCART(ClassifierMixin):
 
-    def __init__(self, fuzzy_partitions: list[fs.fuzzyVariable], max_rules: int = 10, max_depth: int = 5, coverage_threshold: float = 0.10):
+    def __init__(self, fuzzy_partitions: list[fs.fuzzyVariable], max_rules: int = 10, max_depth: int = 5, coverage_threshold: float = 0.01):
         self.fuzzy_partitions = fuzzy_partitions
         self.max_depth = max_depth
         self.tree = None
-        self.tree_rules = 0
+        self.tree_rules = 1 # Start with 1 (so that the first split creates the first rule)
         self.max_rules = max_rules
         self.coverage_threshold = coverage_threshold
 
@@ -140,14 +212,14 @@ class FuzzyCART(ClassifierMixin):
         best_feature = -1
         best_fuzzy_set = -1
         best_coverage = 0.0
-        father_purity = compute_fuzzy_purity(existing_membership, y)
-
+        father_purity = compute_fuzzy_purity(existing_membership, y, self.coverage_threshold)
         # For debugging, save the purity of each possible split
         debug_cache = np.zeros((features, fuzzy_ll))
         coverage_cache = np.zeros((features, fuzzy_ll))
 
         for feature in range(features):
             fuzzy_var = self.fuzzy_partitions[feature]
+
             for fz_index in range(len(fuzzy_var)):
                 if actual_path[feature, fz_index]:
                     fz = fuzzy_var[fz_index]
@@ -158,11 +230,8 @@ class FuzzyCART(ClassifierMixin):
                     debug_cache[feature, fz_index] = purity
                     coverage = _calculate_coverage(full_path_membership, len(y))
                     coverage_cache[feature, fz_index] = coverage
-
-                    # Complementary coverage: the proportion of samples not covered by siblings
-                    #complementary_coverage = 1.0 - np.sum(node['actual_path'] * existing_membership) / len(y)
-
                     purity_improvement = father_purity - purity
+
                     if purity_improvement > best_purity_improvement:
                         best_purity_improvement = purity_improvement
                         best_feature = feature
@@ -179,7 +248,55 @@ class FuzzyCART(ClassifierMixin):
         return best_purity_improvement
 
 
-    def _get_best_node_split(self, node_father, X: np.array, y: np.array):
+    def _node_cci_checks(self, node, X: np.array, y: np.array, skeleton_memberships, skeleton_yhat, skeleton_predictors) -> float:
+        existing_membership = node['existing_membership']
+        actual_path = node['actual_path']
+
+        features, fuzzy_ll = actual_path.shape
+        best_cci = float('-inf')
+        best_feature = -1
+        best_fuzzy_set = -1
+        best_coverage = 0.0
+        my_predictions = skeleton_predictors == node['name']
+        # For debugging, save the cci of each possible split
+        debug_cache = np.zeros((features, fuzzy_ll))
+        coverage_cache = np.zeros((features, fuzzy_ll))
+
+        for feature in range(features):
+            fuzzy_var = self.fuzzy_partitions[feature]
+            for fz_index in range(len(fuzzy_var)):
+                if actual_path[feature, fz_index]:
+                    fz = fuzzy_var[fz_index]
+                    memberships = fz.membership(X[:, feature])
+                    full_path_membership = memberships * existing_membership
+
+                    relevant_cases = skeleton_memberships[my_predictions] < full_path_membership[my_predictions]
+                    modified_predictions = skeleton_yhat.copy()
+                    node_prediction = self._majority_class(y, full_path_membership)
+                    modified_predictions[my_predictions] = np.where(relevant_cases, node_prediction, skeleton_yhat[my_predictions])
+
+                    cci = compute_fuzzy_cci(full_path_membership, y, self.coverage_threshold)
+                    debug_cache[feature, fz_index] = cci
+                    coverage = _calculate_coverage(full_path_membership, len(y))
+                    coverage_cache[feature, fz_index] = coverage
+
+                    if cci > best_cci:
+                        best_cci = cci
+                        best_feature = feature
+                        best_fuzzy_set = fz_index
+                        best_coverage = coverage
+
+        node['aux_cci_cache'] = {
+            'cci': best_cci,
+            'feature': best_feature,
+            'fuzzy_set': best_fuzzy_set,
+            'coverage': best_coverage
+        }
+
+        return best_cci
+
+
+    def _get_best_node_split(self, node_father, X: np.array, y: np.array) -> tuple[float, str]:
         best_purity_improvement = self._node_purity_checks(node_father, X, y)
         best_node = node_father['name']
 
@@ -192,6 +309,21 @@ class FuzzyCART(ClassifierMixin):
                     best_node = child_name
 
         return best_purity_improvement, best_node
+    
+
+    def _get_best_node_split_cci(self, node_father, X: np.array, y: np.array, skeleton_yhat, skeleton_predictors) -> tuple[float, str]:
+        best_cci = self._node_cci_checks(node_father, X, y, skeleton_yhat, skeleton_predictors)
+        best_node = node_father['name']
+
+        if 'children' in node_father:
+            for child_name, child in node_father['children'].items():
+                child_cci, _split_name = self._get_best_node_split_cci(child, X, y, skeleton_yhat, skeleton_predictors)
+
+                if child_cci > best_cci:
+                    best_child_cci = child_cci
+                    best_node = child_name
+
+        return best_child_cci, best_node
 
 
     def _find_node_by_name(self, name: str):
@@ -245,6 +377,8 @@ class FuzzyCART(ClassifierMixin):
         self._build_root(X, y)
         best_coverage_achieable = 1.0
         while self.tree_rules < self.max_rules and best_coverage_achieable >= self.coverage_threshold:
+            skeleton_prediction, paths = self.predict_with_path(X)
+
             best_purity_improvement, best_node = self._get_best_node_split(self._root, X, y)
             
             # Split the best node
@@ -275,6 +409,16 @@ class FuzzyCART(ClassifierMixin):
         return np.array([self._predict_single(x[:], self._root)[0] for x in X])
     
 
+    def predict_with_path(self, X: np.array) -> tuple[np.array, list[str]]:
+        predictions = []
+        paths = []
+        for x in X:
+            pred, _, path = self._predict_single(x[:], self._root)
+            predictions.append(pred)
+            paths.append(path)
+        return np.array(predictions), paths
+
+
     def _predict_single(self, x: np.array, node, membership=None):
         if membership is None:
             if len(x.shape) > 1:
@@ -284,7 +428,10 @@ class FuzzyCART(ClassifierMixin):
 
        # If there are no children, return prediction
         if not node.get('children', False) or len(node['children']) == 0:
-            return node['prediction'], membership
+            if node['name'] == 'root':
+                return node['prediction'], membership * 0.0, node['name']
+            else:
+                return node['prediction'], membership, node['name']
         else:
             best_membership = -1
             for child_name, child in node['children'].items():
@@ -292,15 +439,16 @@ class FuzzyCART(ClassifierMixin):
                 relevant_fuzzy_set = child['fuzzy_set']
                 child_path_membership = self.fuzzy_partitions[relevant_feature][relevant_fuzzy_set].membership(x[relevant_feature])
 
-                child_pred, path_membership = self._predict_single(x, child, child_path_membership * membership)
+                child_pred, path_membership, predictor_name = self._predict_single(x, child, child_path_membership * membership)
 
                 if path_membership > best_membership:
                     best_membership = path_membership
                     prediction = child_pred
-            
-            return prediction, best_membership
-            
-            
+                    best_predictor_name = predictor_name
+
+            return prediction, best_membership, best_predictor_name
+
+
     def _get_best_possible_coverage(self):
         best_coverage = 0.0
 
@@ -380,7 +528,7 @@ if __name__ == "__main__":
     from sklearn.metrics import accuracy_score
     
     print("Testing with Iris dataset:")
-    iris = datasets.load_iris()
+    iris = datasets.load_wine()
     X = iris.data
     y = iris.target
 
@@ -391,7 +539,7 @@ if __name__ == "__main__":
     fuzzy_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1, n_partitions=3, shape='trapezoid')
     
     # Train classifier
-    classifier = FuzzyCART(fuzzy_partitions, max_depth=3, max_rules=5)
+    classifier = FuzzyCART(fuzzy_partitions, max_depth=3, max_rules=20)
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
