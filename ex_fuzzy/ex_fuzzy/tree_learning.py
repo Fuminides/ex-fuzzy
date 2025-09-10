@@ -288,14 +288,15 @@ class FuzzyCART(ClassifierMixin):
         else:
             best_membership = -1
             for child_name, child in node['children'].items():
-                self_membership = self.fuzzy_partitions[child['feature']][child['fuzzy_set']].membership(x[child['feature']])
-                # Find the path with highest membership
-                for child_name, child in node['children'].items():
-                    child_pred, path_membership = self._predict_single(x, child, self_membership * membership)
+                relevant_feature = child['feature']
+                relevant_fuzzy_set = child['fuzzy_set']
+                child_path_membership = self.fuzzy_partitions[relevant_feature][relevant_fuzzy_set].membership(x[relevant_feature])
 
-                    if path_membership > best_membership:
-                        best_membership = path_membership
-                        prediction = child_pred
+                child_pred, path_membership = self._predict_single(x, child, child_path_membership * membership)
+
+                if path_membership > best_membership:
+                    best_membership = path_membership
+                    prediction = child_pred
             
             return prediction, best_membership
             
