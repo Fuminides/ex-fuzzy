@@ -28,11 +28,28 @@ except:
     pass
 
 # You dont require torch to use this module, however, we need to import it to give support in case you feed these methods with torch tensors.
-try:
-    import torch
-    torch_available = True
-except:
-    torch_available = False
+# Torch is imported lazily only when needed to avoid expensive imports
+
+def _get_torch():
+    """Lazy import of torch to avoid expensive imports when not needed."""
+    try:
+        import torch
+        return torch
+    except ImportError:
+        return None
+
+def _is_torch_tensor(x):
+    """Check if x is a torch tensor without importing torch unless necessary."""
+    # First check the type name to avoid torch import if not needed
+    if type(x).__name__ != 'Tensor':
+        return False
+    
+    # Only import torch if we have a potential tensor
+    torch = _get_torch()
+    if torch is None:
+        return False
+    
+    return isinstance(x, torch.Tensor)
 
 
 class FUZZY_SETS(enum.Enum):
@@ -97,9 +114,9 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
         # If they are numpy arrays, we need to use the numpy function
         if isinstance(x, np.ndarray):
             return np.equal(x, a).astype(float)
-        if torch_available:
-            if isinstance(x, torch.Tensor):
-                return torch.eq(x, a).float()
+        if _is_torch_tensor(x):
+            torch = _get_torch()
+            return torch.eq(x, a).float()
             
 
     if b == a:
@@ -109,11 +126,10 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
 
     aux1 = (x - a) / (b - a)
     aux2 = (d - x) / (d - c)
-    try:
-        if isinstance(x, torch.Tensor):
-            return torch.clamp(torch.min(aux1, aux2), 0.0, 1.0) 
-    except NameError:
-        pass
+    
+    if _is_torch_tensor(x):
+        torch = _get_torch()
+        return torch.clamp(torch.min(aux1, aux2), 0.0, 1.0)
 
     if isinstance(x, np.ndarray):
         return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)        
@@ -277,7 +293,8 @@ class categoricalFS(FS):
         '''
         if isinstance(x, np.ndarray):
             res = np.equal(x, self.category).astype(float)
-        elif isinstance(x, torch.Tensor):
+        elif _is_torch_tensor(x):
+            torch = _get_torch()
             res = torch.eq(x, self.category).float()
         elif isinstance(x, list):
             res = [1.0 if elem == self.category else 0.0 for elem in x]
@@ -438,7 +455,8 @@ class categoricalIVFS(IVFS):
         if isinstance(x, np.ndarray):
             res = np.equal(x, self.category).astype(float)
             res = np.stack([res, res], axis=-1)
-        elif isinstance(x, torch.Tensor):
+        elif _is_torch_tensor(x):
+            torch = _get_torch()
             res = torch.eq(x, self.category).float()
             res = torch.stack([res, res], axis=-1)
         elif isinstance(x, list):
