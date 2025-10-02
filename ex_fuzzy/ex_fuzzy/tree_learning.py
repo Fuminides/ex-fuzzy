@@ -1355,7 +1355,7 @@ if __name__ == "__main__":
     fuzzy_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1, n_partitions=3, shape='trapezoid')
     
     # Train classifier
-    classifier = FuzzyCART(fuzzy_partitions, max_depth=4, max_rules=15, coverage_threshold=0.03, min_improvement=0.01)
+    classifier = FuzzyCART(fuzzy_partitions, max_depth=4, max_rules=15, coverage_threshold=0.03, min_improvement=0.01, target_metric='purity')
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -1379,14 +1379,15 @@ if __name__ == "__main__":
         max_rules=20,
         ccp_alpha=0.01,  # Set desired complexity parameter
         coverage_threshold=0.03,
-        min_improvement=0.01
+        min_improvement=0.01,
+        target_metric='cci'
     )
     print()
     
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1, random_state=33)
     
     # Fit with automatic pruning parameter selection
-    best_alpha, best_score = fuzzy_cart.fit_with_pruning(X_train, y_train, X_val, y_val)
+    '''best_alpha, best_score = fuzzy_cart.fit_with_pruning(X_train, y_train, X_val, y_val)
     final_score = fuzzy_cart.score(X_test, y_test)
     print(f"Best alpha: {best_alpha}, Final score: {final_score}")
     print("\nTree Statistics:")
@@ -1394,7 +1395,7 @@ if __name__ == "__main__":
     print(f"Total nodes: {stats['total_nodes']}")
     print(f"Leaf nodes: {stats['leaves']}")
     print(f"Internal nodes: {stats['internal']}")
-    print(f"Tree depth: {stats['depth']}")
+    print(f"Tree depth: {stats['depth']}")'''
 
     
     
