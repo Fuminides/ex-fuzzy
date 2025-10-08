@@ -140,9 +140,13 @@ def _complete_classification_index(y: np.array, pre_yhat: np.array, new_yhat: np
     FN = np.mean(correct_pre & ~correct_new)  # False Negatives: Worsened classification
 
     improvement = np.mean(correct_new) - np.mean(correct_pre)
-    
 
-    return improvement
+    if np.mean(correct_pre) == 0.0:
+        improvement_percentage = np.mean(correct_new)
+    else:
+        improvement_percentage = improvement / np.mean(correct_pre)
+
+    return improvement_percentage
 
 
 def compute_purity(thresholded_truth_values: np.array, y: np.array) -> float:
@@ -316,7 +320,7 @@ class FuzzyCART(ClassifierMixin):
         self.target_metric = target_metric
 
 
-    def fit(self, X: np.array, y: np.array):
+    def fit(self, X: np.array, y: np.array, patience:int = 3):
         """
         Train the Fuzzy CART classifier on the provided dataset.
         
@@ -334,7 +338,7 @@ class FuzzyCART(ClassifierMixin):
             Contains the class labels for each training sample.
         """
         self.classes_ = np.unique(y)
-        self._build_tree(X, y, self.target_metric)
+        self._build_tree(X, y, bad_cuts_limit=patience,index=self.target_metric)
 
 
     def _build_root(self, X: np.array, y: np.array):
@@ -802,7 +806,7 @@ class FuzzyCART(ClassifierMixin):
         return child_prediction
 
 
-    def _build_tree(self, X: np.array, y: np.array, bad_cuts_limit: int = 3, index: str='purity'):
+    def _build_tree(self, X: np.array, y: np.array, bad_cuts_limit: int = 3, index: str='cci'):
         """
         Main tree construction algorithm using iterative CCI-based splitting.
         
@@ -1067,8 +1071,8 @@ class FuzzyCART(ClassifierMixin):
         if node['name'] == 'root':
             print(f"{prefix}{current_prefix}Root: class={node['prediction']}, coverage={node['coverage']:.3f}")
         else:
-            feature_name = f"feature_{node['feature']}"
-            fuzzy_set_name = f"fuzzy_set_{node['fuzzy_set']}"
+            feature_name = fuzzy_partitions[node['feature']].name
+            fuzzy_set_name = fuzzy_partitions[node['feature']][node['fuzzy_set']].name
             
             # Get CCI/split criterion if available
             cci_info = ""
@@ -1077,7 +1081,7 @@ class FuzzyCART(ClassifierMixin):
                 if 'quality_improvement' in node:
                     cci_info = f", split_criterion={node['quality_improvement']:.3f}"
             
-            print(f"{prefix}{current_prefix}{node['name']}: {feature_name}[{fuzzy_set_name}] → class={node['prediction']}, coverage={node['coverage']:.3f}{cci_info}")
+            print(f"{prefix}{current_prefix}{node['name']}: {feature_name} IS {fuzzy_set_name} → class={node['prediction']}, coverage={node['coverage']:.3f}{cci_info}")
         
         # Print children
         if 'children' in node and node['children']:
@@ -1355,8 +1359,8 @@ if __name__ == "__main__":
     fuzzy_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1, n_partitions=3, shape='trapezoid')
     
     # Train classifier
-    classifier = FuzzyCART(fuzzy_partitions, max_depth=4, max_rules=15, coverage_threshold=0.03, min_improvement=0.01, target_metric='purity')
-    classifier.fit(X_train, y_train)
+    classifier = FuzzyCART(fuzzy_partitions, max_depth=4, max_rules=15, coverage_threshold=0.0, min_improvement=0.0, target_metric='cci')
+    classifier.fit(X_train, y_train, patience=20)
     y_pred = classifier.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     y_train_pred = classifier.predict(X_train)
