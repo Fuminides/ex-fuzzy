@@ -300,8 +300,7 @@ If you use Ex-Fuzzy in your research, please cite our paper:
 ## 🌟 Acknowledgments
 
 - Special thanks to all [contributors](https://github.com/Fuminides/ex-fuzzy/graphs/contributors)
-- This research has been supported by the European Union and the University of Essex under a Marie Sklodowska-Curie YUFE4 postdoc action.
-
+- This research has been supported by EU Horizon Europe under the Marie Skłodowska-Curie COFUND grant No 101081327 YUFE4Postdocs.
 ---
 
 <p align="center">
