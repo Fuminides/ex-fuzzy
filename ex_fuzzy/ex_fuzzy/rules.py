@@ -132,11 +132,13 @@ class Rule():
         :param x: input to compute the membership.
         :param tnorm: t-norm to use in the inference process.
         '''
+        if x.ndim == 1:
+            x = x.reshape(1, -1)
         for ix, antecedent in enumerate(self.antecedents):
             if ix == 0:
-                res = antecedent.membership(x)
+                res = antecedent.membership(x[:,ix])
             else:
-                res = tnorm(res, antecedent.membership(x))
+                res = tnorm(res, antecedent.membership(x[:,ix]))
 
         return res
 
