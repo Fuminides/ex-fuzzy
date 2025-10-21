@@ -5,7 +5,6 @@ Main components:
 
 
 '''
-from xxlimited import new
 import numpy as np
 
 from sklearn.base import ClassifierMixin
@@ -367,7 +366,8 @@ class FuzzyCART(ClassifierMixin):
             'child_splits': actual_path.copy(),
             'name': 'root',
             'prediction': -1, # No prediction at root
-            'coverage': 1.0
+            'coverage': 1.0,
+            'class_probabilities': self._class_probabilities(y, existing_membership)
         }
 
         self.node_dict_access = {'root': self._root}
@@ -707,7 +707,8 @@ class FuzzyCART(ClassifierMixin):
             'feature': best_feature,
             'fuzzy_set': best_fuzzy_set,
             'coverage': np.sum(child_existing_membership) / len(y),
-            'quality_improvement': best_purity_improvement
+            'quality_improvement': best_purity_improvement,
+            'class_probabilities': self._class_probabilities(y, child_existing_membership)
         }
 
         
@@ -793,6 +794,7 @@ class FuzzyCART(ClassifierMixin):
             'feature': feature,
             'fuzzy_set': fuzzy_set,
             'coverage': np.sum(child_existing_membership) / len(y),
+            'class_probabilities': self._class_probabilities(y, child_existing_membership)
         }
 
         
@@ -866,6 +868,8 @@ class FuzzyCART(ClassifierMixin):
         # Change the prediction in root node to majority class
         #          <self._majority_class(y, skeleton_memberships)>
         self._root['prediction'] = self._majority_class(y)
+        # Update root probabilities after tree construction
+        self._root['class_probabilities'] = self._class_probabilities(y)
         # print("Final tree built.")
 
 
@@ -905,6 +909,55 @@ class FuzzyCART(ClassifierMixin):
             counts = counts / np.sum(counts)  # Normalize to get probabilities
 
         return classes[np.argmax(counts)]
+
+    def _class_probabilities(self, y: np.array, membership: np.array = None):
+        """
+        Calculate class probabilities using weighted voting based on fuzzy membership.
+        
+        This method computes the probability distribution over all classes for a
+        dataset subset, weighting each sample's contribution by its fuzzy membership
+        value. This provides the probabilistic foundation for predict_proba.
+        
+        Parameters
+        ----------
+        y : np.array
+            Array of class labels for all samples.
+        membership : np.array, optional
+            Array of fuzzy membership weights for each sample. If None,
+            uniform weights are used.
+        
+        Returns
+        -------
+        np.array
+            Probability vector with length equal to number of classes, where
+            probabilities sum to 1.0. Each element represents the probability
+            of the corresponding class in self.classes_.
+        """
+        if membership is None:
+            membership = np.ones(len(y))
+
+        # Initialize probability vector for all classes
+        class_probs = np.zeros(len(self.classes_))
+        
+        if len(y) == 0:
+            # If no samples, return uniform distribution
+            class_probs.fill(1.0 / len(self.classes_))
+            return class_probs
+        
+        # Calculate weighted counts for each class
+        for i, cls in enumerate(self.classes_):
+            class_mask = (y == cls)
+            class_probs[i] = np.sum(membership[class_mask])
+        
+        # Normalize to get probabilities
+        total_weight = np.sum(class_probs)
+        if total_weight > 0:
+            class_probs = class_probs / total_weight
+        else:
+            # If no membership weight, return uniform distribution
+            class_probs.fill(1.0 / len(self.classes_))
+        
+        return class_probs
 
 
     def predict(self, X: np.array) -> np.array:
@@ -947,6 +1000,118 @@ class FuzzyCART(ClassifierMixin):
         
         predictions, memberships, paths = self._predict(X, self._root)
         return predictions, memberships, paths
+
+    def predict_proba(self, X: np.array) -> np.array:
+        """
+        Predict class probabilities for given samples using fuzzy membership weighting.
+        
+        This method computes probability distributions over all classes for each sample
+        by leveraging the fuzzy membership values from tree traversal. The probabilities
+        are derived from the weighted voting mechanism used in the fuzzy decision tree,
+        providing soft predictions that reflect the uncertainty in the classification.
+        
+        Parameters
+        ----------
+        X : np.array
+            Data to predict probabilities for. Each row is a sample.
+        
+        Returns
+        -------
+        np.array
+            Array of shape (n_samples, n_classes) where each row contains the
+            probability distribution over classes for the corresponding sample.
+            Probabilities sum to 1.0 for each sample.
+        """
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
+        
+        return self._predict_proba(X, self._root)
+
+
+    def _predict_proba(self, x: np.array, node, membership=None, best_membership=None, 
+                      class_probabilities=None) -> np.array:
+        """
+        Core recursive probability prediction method using batch processing with cached probabilities.
+        
+        This method traverses the fuzzy decision tree and uses pre-computed class probability
+        distributions stored at each node during tree construction. This approach is much more
+        efficient than recomputing probabilities on-the-fly and ensures consistency between
+        training and prediction phases.
+        
+        Parameters
+        ----------
+        x : np.array
+            Input data array with shape (n_samples, n_features).
+        node : dict
+            Current tree node being processed (contains 'class_probabilities').
+        membership : np.array, optional
+            Current membership values for each sample.
+        best_membership : np.array, optional
+            Best membership values found so far for each sample.
+        class_probabilities : np.array, optional
+            Current probability accumulation matrix (n_samples, n_classes).
+        
+        Returns
+        -------
+        np.array
+            Final probability matrix with shape (n_samples, n_classes).
+        """
+        n_samples = x.shape[0]
+        n_classes = len(self.classes_)
+        
+        if membership is None:
+            membership = np.ones(n_samples)
+            best_membership = np.zeros(n_samples) - 1.0
+            class_probabilities = np.zeros((n_samples, n_classes))
+
+        # If this is a leaf node or root with no children
+        if not node.get('children', False) or len(node['children']) == 0:
+            # Use cached probabilities from the node
+            if 'class_probabilities' in node:
+                node_probs = node['class_probabilities']
+            else:
+                # Fallback: uniform distribution if no cached probabilities
+                node_probs = np.ones(n_classes) / n_classes
+            
+            if node['name'] == 'root':
+                # For root node, apply to all samples
+                for i in range(n_samples):
+                    class_probabilities[i] = node_probs
+            else:
+                # For leaf nodes, update probabilities for samples with higher membership
+                improved_samples = membership > best_membership
+                if np.any(improved_samples):
+                    class_probabilities[improved_samples] = node_probs
+                    best_membership[improved_samples] = membership[improved_samples]
+            
+            return class_probabilities
+        
+        # For internal nodes, process all children
+        for child_name, child in node['children'].items():
+            relevant_feature = child['feature']
+            relevant_fuzzy_set = child['fuzzy_set']
+            child_path_membership = self.fuzzy_partitions[relevant_feature][relevant_fuzzy_set].membership(x[:, relevant_feature])
+            full_path_membership = child_path_membership * membership
+            
+            # Recursively get probabilities from child
+            class_probabilities = self._predict_proba(
+                x, child, 
+                membership=full_path_membership,
+                best_membership=best_membership,
+                class_probabilities=class_probabilities
+            )
+        
+        # Handle samples that didn't reach any leaf (inactive samples)
+        inactive_samples = best_membership <= 0.0
+        if inactive_samples.any():
+            # Use root node cached probabilities for inactive samples
+            if 'class_probabilities' in self._root:
+                root_probs = self._root['class_probabilities']
+            else:
+                root_probs = np.ones(n_classes) / n_classes
+            class_probabilities[inactive_samples] = root_probs
+        
+        return class_probabilities
 
 
     def _predict(self, x: np.array, node, membership=None, paths=None, best_membership=None, prediction=None) -> tuple[np.array, np.array, np.array]:
@@ -1220,9 +1385,10 @@ class FuzzyCART(ClassifierMixin):
             leaves_removed = self._count_leaves(node)
             self.tree_rules -= (leaves_removed - 1)
             
-            # Recalculate prediction for this new leaf
+            # Recalculate prediction and probabilities for this new leaf
             membership = node['existing_membership']
             node['prediction'] = self._majority_class(y, membership)
+            node['class_probabilities'] = self._class_probabilities(y, membership)
 
     def _remove_from_node_dict(self, node: dict):
         """Recursively remove a node and its children from node_dict_access."""
@@ -1366,6 +1532,31 @@ if __name__ == "__main__":
     y_train_pred = classifier.predict(X_train)
     print(f"Iris Test Accuracy: {accuracy:.3f}")
     print(f"Iris Train Accuracy: {accuracy_score(y_train, y_train_pred):.3f}")
+
+    # Test probability predictions
+    y_proba = classifier.predict_proba(X_test)
+    print(f"\nProbability predictions shape: {y_proba.shape}")
+    print(f"Sample probabilities for first 5 test samples:")
+    for i in range(min(5, len(X_test))):
+        pred_class = y_pred[i]
+        true_class = y_test[i]
+        probs = y_proba[i]
+        print(f"  Sample {i}: True={true_class}, Pred={pred_class}, Probs={probs}")
+    
+    # Verify probabilities sum to 1
+    prob_sums = np.sum(y_proba, axis=1)
+    print(f"Probability sums (should be ~1.0): min={prob_sums.min():.6f}, max={prob_sums.max():.6f}")
+    
+    # Test that cached probabilities are consistent
+    y_proba2 = classifier.predict_proba(X_test)
+    consistency_check = np.allclose(y_proba, y_proba2)
+    print(f"Probability consistency check: {consistency_check}")
+    
+    # Show some node probabilities for verification
+    print(f"\nExample node probabilities (cached during tree construction):")
+    for node_name, node in list(classifier.node_dict_access.items())[:3]:
+        if 'class_probabilities' in node:
+            print(f"  {node_name}: {node['class_probabilities']}")
 
     print("\nTree Structure:")
     classifier.print_tree()
