@@ -438,15 +438,15 @@ class FuzzyCART(ClassifierMixin):
 
                     self._delete_node_dummy(node, feature, fz_index)
 
-   
-        node['aux_purity_cache'] = {
-            'feature': best_feature,
-            'fuzzy_set': best_fuzzy_set,
-            'coverage': best_coverage,
-            'split_criterion': best_purity_improvement,
-            'child_decision': child_decision,
-            'purity': best_purity_improvement
-        }
+        if best_feature != -1:
+            node['aux_purity_cache'] = {
+                'feature': best_feature,
+                'fuzzy_set': best_fuzzy_set,
+                'coverage': best_coverage,
+                'split_criterion': best_purity_improvement,
+                'child_decision': child_decision,
+                'purity': best_purity_improvement
+            }
 
         return best_purity_improvement
 
