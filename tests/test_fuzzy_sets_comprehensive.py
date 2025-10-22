@@ -41,7 +41,7 @@ class TestFS:
         fs_test = fs.FS('test', [0, 0.2, 0.8, 1.0], [0, 1])
         assert fs_test.name == 'test'
         assert fs_test.type() == fs.FUZZY_SETS.t1
-        assert fs_test.shape() == 'trapezoidal'
+        assert fs_test.shape() == 'trapezoid'
     
     def test_triangular_fs_creation(self):
         """Test creation of triangular fuzzy set."""
@@ -111,7 +111,7 @@ class TestIVFS:
         ivfs_test = fs.IVFS('test_t2', [0, 0.2, 0.8, 1.0], [0, 0.3, 0.7, 1.0], [0, 1])
         assert ivfs_test.name == 'test_t2'
         assert ivfs_test.type() == fs.FUZZY_SETS.t2
-        assert ivfs_test.shape() == 'trapezoidal'
+        assert ivfs_test.shape() == 'trapezoid'
     
     def test_ivfs_membership_function(self):
         """Test IVFS membership function returns interval values."""
