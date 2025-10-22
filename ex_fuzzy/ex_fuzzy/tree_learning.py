@@ -16,6 +16,8 @@ except ImportError:
     import utils
 
 
+
+
 def _calculate_coverage(truth_values: np.array, total_samples: int) -> float:
     """
     Calculate the proportion of samples covered by the given truth values.
@@ -304,6 +306,13 @@ class FuzzyCART(ClassifierMixin):
         Dictionary for fast access to tree nodes by name.
     """
 
+    def _clear_all_split_caches(self):
+        """Clear cached split evaluations from all nodes."""
+        for node in self.node_dict_access.values():
+            if 'aux_purity_cache' in node:
+                del node['aux_purity_cache']
+
+
     def __init__(self, fuzzy_partitions: list[fs.fuzzyVariable], max_rules: int = 10, max_depth: int = 5, coverage_threshold: float = 0.00, min_improvement=0.01, ccp_alpha: float = 0.0, target_metric: str = 'cci'):
         """
         Initialize the Fuzzy CART classifier.
@@ -447,6 +456,15 @@ class FuzzyCART(ClassifierMixin):
                 'child_decision': child_decision,
                 'purity': best_purity_improvement
             }
+        else:
+            node['aux_purity_cache'] = {
+                'feature': -1,
+                'fuzzy_set': -1,
+                'coverage': 0.0,
+                'split_criterion': 0.0,
+                'child_decision': None,
+                'purity': 0.0
+            }
 
         return best_purity_improvement
 
@@ -574,16 +592,26 @@ class FuzzyCART(ClassifierMixin):
 
                     self._delete_node_dummy(node, feature, fz_index)
 
-
-        node['aux_purity_cache'] = {
-            'cci': best_cci,
-            'feature': best_feature,
-            'fuzzy_set': best_fuzzy_set,
-            'coverage': best_coverage,
-            'split_criterion': best_cci,
-            'child_decision': child_decision,
-            'purity': best_purity
-        }
+        if best_feature != -1:
+            node['aux_purity_cache'] = {
+                'cci': best_cci,
+                'feature': best_feature,
+                'fuzzy_set': best_fuzzy_set,
+                'coverage': best_coverage,
+                'split_criterion': best_cci,
+                'child_decision': child_decision,
+                'purity': best_purity
+            }
+        else:
+            node['aux_purity_cache'] = {
+                'cci': 0.0,
+                'feature': -1,
+                'fuzzy_set': -1,
+                'coverage': 0.0,
+                'split_criterion': 0.0,
+                'child_decision': None,
+                'purity': 0.0
+            }
 
         return best_cci, best_purity
     
@@ -837,8 +865,12 @@ class FuzzyCART(ClassifierMixin):
         bad_cuts = 0
 
         while self.tree_rules < self.max_rules and best_coverage_achievable >= self.coverage_threshold:
+            self._clear_all_split_caches()
+
             skeleton_prediction, skeleton_memberships, paths = self.predict_with_path(X)
             # print('Accuracy:', np.mean(skeleton_prediction == y), 'Rules:', self.tree_rules, 'Best achievable coverage:', best_coverage_achievable)
+            
+
             if index == 'purity':
                 best_purity, best_node = self._get_best_node_split(self._root, X, y)
                 _best_cci = None
