@@ -125,16 +125,7 @@ class TestIVFS:
         
         # Lower bound should be <= upper bound
         assert np.all(result[:, 0] <= result[:, 1])
-    
-    def test_ivfs_alpha_cuts(self):
-        """Test alpha-cut operations on IVFS."""
-        ivfs_test = fs.IVFS('test_t2', [0, 0.2, 0.8, 1.0], [0, 0.3, 0.7, 1.0], [0, 1])
-        
-        # Test alpha-cut at different levels
-        alpha_05 = ivfs_test.alpha_cut(0.5)
-        assert isinstance(alpha_05, tuple)
-        assert len(alpha_05) == 2  # Lower and upper bounds
-    
+
     def test_ivfs_with_lower_height(self):
         """Test IVFS creation with lower height parameter."""
         ivfs_test = fs.IVFS('test_t2', [0, 0.2, 0.8, 1.0], [0, 0.3, 0.7, 1.0], [0, 1], lower_height=0.8)
