@@ -146,7 +146,7 @@ class TestGaussianFS:
     
     def test_gaussian_fs_creation(self):
         """Test creation of Gaussian fuzzy set."""
-        gauss_fs = fs.gaussianFS([0.5, 0.2], 'gaussian_test', 100)
+        gauss_fs = fs.gaussianFS('gaussian_test', [0.5, 0.2], 100)
         assert gauss_fs.name == 'gaussian_test'
         assert gauss_fs.type() == fs.FUZZY_SETS.t1
         assert gauss_fs.shape() == 'gaussian'
@@ -154,7 +154,7 @@ class TestGaussianFS:
     def test_gaussian_membership_peak(self):
         """Test that Gaussian fuzzy set has peak at mean."""
         mean, std = 0.5, 0.2
-        gauss_fs = fs.gaussianFS([mean, std], 'gaussian_test', 100)
+        gauss_fs = fs.gaussianFS('gaussian_test', [mean, std], 100)
         
         # Membership at mean should be 1.0
         result = gauss_fs.membership(np.array([mean]))
@@ -163,7 +163,7 @@ class TestGaussianFS:
     def test_gaussian_membership_symmetry(self):
         """Test that Gaussian membership is symmetric around mean."""
         mean, std = 0.5, 0.2
-        gauss_fs = fs.gaussianFS([mean, std], 'gaussian_test', 100)
+        gauss_fs = fs.gaussianFS('gaussian_test', [mean, std], 100)
         
         # Test symmetry
         offset = 0.1
@@ -174,7 +174,7 @@ class TestGaussianFS:
     def test_gaussian_membership_decreases_with_distance(self):
         """Test that Gaussian membership decreases with distance from mean."""
         mean, std = 0.5, 0.2
-        gauss_fs = fs.gaussianFS([mean, std], 'gaussian_test', 100)
+        gauss_fs = fs.gaussianFS('gaussian_test', [mean, std], 100)
         
         val_at_mean = gauss_fs.membership(np.array([mean]))[0]
         val_at_std = gauss_fs.membership(np.array([mean + std]))[0]
@@ -188,14 +188,14 @@ class TestGaussianIVFS:
     
     def test_gaussian_ivfs_creation(self):
         """Test creation of Gaussian interval-valued fuzzy set."""
-        gauss_ivfs = fs.gaussianIVFS([0.5, 0.15], [0.5, 0.25], 'gaussian_t2_test', 100)
+        gauss_ivfs = fs.gaussianIVFS('gaussian_t2_test', [0.5, 0.15], [0.5, 0.25], 100)
         assert gauss_ivfs.name == 'gaussian_t2_test'
         assert gauss_ivfs.type() == fs.FUZZY_SETS.t2
         assert gauss_ivfs.shape() == 'gaussian'
     
     def test_gaussian_ivfs_membership_interval(self):
         """Test that Gaussian IVFS returns interval values."""
-        gauss_ivfs = fs.gaussianIVFS([0.5, 0.15], [0.5, 0.25], 'gaussian_t2_test', 100)
+        gauss_ivfs = fs.gaussianIVFS('gaussian_t2_test', [0.5, 0.15], [0.5, 0.25], 100)
         
         input_values = np.array([0.3, 0.5, 0.7])
         result = gauss_ivfs.membership(input_values)
@@ -222,7 +222,7 @@ class TestFuzzyVariable:
         fv = fs.fuzzyVariable('test_var', sample_fuzzy_sets['t1_sets'])
         
         input_values = np.array([0.1, 0.5, 0.9])
-        memberships = fv.membership(input_values)
+        memberships = fv.compute_memberships(input_values)
         
         # Should return matrix: samples x linguistic_variables
         expected_shape = (len(input_values), len(sample_fuzzy_sets['t1_sets']))
@@ -326,7 +326,7 @@ class TestFuzzySetIntegration:
         
         # Test that we can evaluate membership
         input_data = np.array([0.1, 0.5, 0.9])
-        memberships = fv.membership(input_data)
+        memberships = fv.compute_memberships(input_data)
         
         # Verify the shape and content
         assert memberships.shape[0] == len(input_data)
@@ -361,7 +361,7 @@ class TestFuzzySetPerformance:
         
         import time
         start_time = time.time()
-        memberships = fv.membership(large_input)
+        memberships = fv.compute_memberships(large_input)
         end_time = time.time()
         
         # Basic performance check (should complete in reasonable time)
