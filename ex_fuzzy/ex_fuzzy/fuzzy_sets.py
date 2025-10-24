@@ -849,7 +849,7 @@ class fuzzyVariable():
         for fuzzy_set in self.linguistic_variables:
             res.append(fuzzy_set.membership(x))
 
-        return res
+        return np.array(res)
 
 
     def domain(self) -> list[float]:
