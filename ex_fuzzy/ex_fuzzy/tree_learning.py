@@ -16,6 +16,8 @@ except ImportError:
     import utils
 
 
+
+
 def _calculate_coverage(truth_values: np.array, total_samples: int) -> float:
     """
     Calculate the proportion of samples covered by the given truth values.
@@ -304,6 +306,13 @@ class FuzzyCART(ClassifierMixin):
         Dictionary for fast access to tree nodes by name.
     """
 
+    def _clear_all_split_caches(self):
+        """Clear cached split evaluations from all nodes."""
+        for node in self.node_dict_access.values():
+            if 'aux_purity_cache' in node:
+                del node['aux_purity_cache']
+
+
     def __init__(self, fuzzy_partitions: list[fs.fuzzyVariable], max_rules: int = 10, max_depth: int = 5, coverage_threshold: float = 0.00, min_improvement=0.01, ccp_alpha: float = 0.0, target_metric: str = 'cci'):
         """
         Initialize the Fuzzy CART classifier.
@@ -357,13 +366,14 @@ class FuzzyCART(ClassifierMixin):
             Training data labels used for initial tree setup.
         """
         existing_membership = np.ones(X.shape[0])
-        actual_path = np.ones([len(self.fuzzy_partitions), len(self.fuzzy_partitions[0])], dtype=bool)
+        # Create flexible path structure - list of boolean arrays, one per feature
+        actual_path = [np.ones(len(fuzzy_var), dtype=bool) for fuzzy_var in self.fuzzy_partitions]
 
         self._root  = {
             'depth': 0,
             'existing_membership': existing_membership,
             'father_path': actual_path,
-            'child_splits': actual_path.copy(),
+            'child_splits': [path.copy() for path in actual_path],  # Deep copy of the list structure
             'name': 'root',
             'prediction': -1, # No prediction at root
             'coverage': 1.0,
@@ -400,32 +410,33 @@ class FuzzyCART(ClassifierMixin):
         existing_membership = node['existing_membership']
         father_path = node['father_path']
         child_splits = node['child_splits']
-        actual_path = np.logical_and(father_path, child_splits)
+        # Combine paths: element-wise AND for each feature
+        actual_path = [np.logical_and(father_path[i], child_splits[i]) for i in range(len(father_path))]
 
-
-        features, fuzzy_ll = actual_path.shape
+        n_features = len(self.fuzzy_partitions)
         best_purity_improvement = float('-inf')
         best_feature = -1
         best_fuzzy_set = -1
         best_coverage = 0.0
         father_purity = compute_fuzzy_purity(existing_membership, y, self.coverage_threshold)
-        # For debugging, save the purity of each possible split
-        debug_cache = np.zeros((features, fuzzy_ll))
-        coverage_cache = np.zeros((features, fuzzy_ll))
+        
+        # For debugging, create cache structures that accommodate variable fuzzy set counts
+        debug_cache = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
+        coverage_cache = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
 
-        for feature in range(features):
+        for feature in range(n_features):
             fuzzy_var = self.fuzzy_partitions[feature]
 
             for fz_index in range(len(fuzzy_var)):
-                if actual_path[feature, fz_index]:
+                if actual_path[feature][fz_index]:
                     fz = fuzzy_var[fz_index]
                     memberships = fz.membership(X[:, feature])
                     full_path_membership = memberships * existing_membership
                     
                     purity = compute_fuzzy_purity(full_path_membership, y, self.coverage_threshold)
-                    debug_cache[feature, fz_index] = purity
+                    debug_cache[feature][fz_index] = purity
                     coverage = _calculate_coverage(full_path_membership, len(y))
-                    coverage_cache[feature, fz_index] = coverage
+                    coverage_cache[feature][fz_index] = coverage
                     purity_improvement = father_purity - purity
                     node_prediction = self._split_node_dummy(node, feature, fz_index, X, y)
 
@@ -446,6 +457,15 @@ class FuzzyCART(ClassifierMixin):
                 'split_criterion': best_purity_improvement,
                 'child_decision': child_decision,
                 'purity': best_purity_improvement
+            }
+        else:
+            node['aux_purity_cache'] = {
+                'feature': -1,
+                'fuzzy_set': -1,
+                'coverage': 0.0,
+                'split_criterion': 0.0,
+                'child_decision': None,
+                'purity': 0.0
             }
 
         return best_purity_improvement
@@ -518,7 +538,7 @@ class FuzzyCART(ClassifierMixin):
         """
         existing_membership = node['existing_membership']
         child_decision = node['prediction']
-        features, fuzzy_ll = node['father_path'].shape
+        n_features = len(self.fuzzy_partitions)
 
         if self.tree_rules <= 3:
             best_cci = float('-inf')
@@ -529,18 +549,19 @@ class FuzzyCART(ClassifierMixin):
         best_fuzzy_set = -1
         best_coverage = 0.0
 
-        # For debugging, save the cci of each possible split
-        debug_cache_purity = np.zeros((features, fuzzy_ll))
-        debug_cache_cci = np.zeros((features, fuzzy_ll))
-        coverage_cache = np.zeros((features, fuzzy_ll))
+        # For debugging, create cache structures that accommodate variable fuzzy set counts
+        debug_cache_purity = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
+        debug_cache_cci = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
+        coverage_cache = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
 
-        legal_paths = np.logical_and(node['father_path'], node['child_splits'])
+        # Combine paths: element-wise AND for each feature
+        legal_paths = [np.logical_and(node['father_path'][i], node['child_splits'][i]) for i in range(len(node['father_path']))]
         skeleton_yhat = self.predict(X)
 
-        for feature in range(features):
+        for feature in range(n_features):
             fuzzy_var = self.fuzzy_partitions[feature]
             for fz_index in range(len(fuzzy_var)):
-                if legal_paths[feature, fz_index]:
+                if legal_paths[feature][fz_index]:
                     fz = fuzzy_var[fz_index]
                     memberships = fz.membership(X[:, feature])
                     full_path_membership = memberships * existing_membership
@@ -551,11 +572,11 @@ class FuzzyCART(ClassifierMixin):
                     cci = compute_fuzzy_cci(y, full_path_membership, skeleton_yhat, skeleton_yhat_child, self.coverage_threshold)
                     purity = compute_fuzzy_purity(full_path_membership, y, self.coverage_threshold)
 
-                    debug_cache_cci[feature, fz_index] = cci
-                    debug_cache_purity[feature, fz_index] = purity
+                    debug_cache_cci[feature][fz_index] = cci
+                    debug_cache_purity[feature][fz_index] = purity
 
                     coverage = _calculate_coverage(full_path_membership, len(y))
-                    coverage_cache[feature, fz_index] = coverage
+                    coverage_cache[feature][fz_index] = coverage
 
                     if cci > best_cci:
                         best_cci = cci
@@ -574,16 +595,26 @@ class FuzzyCART(ClassifierMixin):
 
                     self._delete_node_dummy(node, feature, fz_index)
 
-
-        node['aux_purity_cache'] = {
-            'cci': best_cci,
-            'feature': best_feature,
-            'fuzzy_set': best_fuzzy_set,
-            'coverage': best_coverage,
-            'split_criterion': best_cci,
-            'child_decision': child_decision,
-            'purity': best_purity
-        }
+        if best_feature != -1:
+            node['aux_purity_cache'] = {
+                'cci': best_cci,
+                'feature': best_feature,
+                'fuzzy_set': best_fuzzy_set,
+                'coverage': best_coverage,
+                'split_criterion': best_cci,
+                'child_decision': child_decision,
+                'purity': best_purity
+            }
+        else:
+            node['aux_purity_cache'] = {
+                'cci': 0.0,
+                'feature': -1,
+                'fuzzy_set': -1,
+                'coverage': 0.0,
+                'split_criterion': 0.0,
+                'child_decision': None,
+                'purity': 0.0
+            }
 
         return best_cci, best_purity
     
@@ -683,11 +714,17 @@ class FuzzyCART(ClassifierMixin):
         # Update existing membership and actual path
         existing_membership = node['existing_membership']
         child_existing_membership = existing_membership * self.fuzzy_partitions[best_feature][best_fuzzy_set].membership(X[:, best_feature])
-        node['child_splits'][best_feature, best_fuzzy_set] = False
-        child_actual_path = node['father_path'].copy()
-        child_actual_path[best_feature, best_fuzzy_set] = False
+        
+        # Update parent's child_splits to mark this fuzzy set as used
+        node['child_splits'][best_feature][best_fuzzy_set] = False
+        
+        # Create child's father_path (copy parent's father_path and mark this fuzzy set as unavailable)
+        child_actual_path = [path.copy() for path in node['father_path']]
+        child_actual_path[best_feature][best_fuzzy_set] = False
+        
         child_prediction = cache['child_decision']
-        child_new_child_splits = np.ones_like(node['child_splits'], dtype=bool)
+        # Create fresh child_splits for the new child (all available initially)
+        child_new_child_splits = [np.ones(len(fuzzy_var), dtype=bool) for fuzzy_var in self.fuzzy_partitions]
 
 
         # Create children dictionary if not exists
@@ -837,8 +874,12 @@ class FuzzyCART(ClassifierMixin):
         bad_cuts = 0
 
         while self.tree_rules < self.max_rules and best_coverage_achievable >= self.coverage_threshold:
+            self._clear_all_split_caches()
+
             skeleton_prediction, skeleton_memberships, paths = self.predict_with_path(X)
             # print('Accuracy:', np.mean(skeleton_prediction == y), 'Rules:', self.tree_rules, 'Best achievable coverage:', best_coverage_achievable)
+            
+
             if index == 'purity':
                 best_purity, best_node = self._get_best_node_split(self._root, X, y)
                 _best_cci = None
