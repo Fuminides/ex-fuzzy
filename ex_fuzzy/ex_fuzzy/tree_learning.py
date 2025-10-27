@@ -54,22 +54,22 @@ def _weighted_gini_index(truth_values: np.array, y: np.array) -> float:
     Returns:
         float: The weighted Gini index (0 = pure, higher = more impure).
     """
-    if len(truth_values) == 0 or np.sum(truth_values) == 0:
+    if len(truth_values) == 0:
+        return float('inf')
+    
+    total_weight = np.sum(truth_values)
+    if total_weight == 0:
         return float('inf')
     
     unique_classes = np.unique(y)
-    total_weight = np.sum(truth_values)
     
-    # Calculate weighted class proportions
-    weighted_proportions = []
-    for cls in unique_classes:
-        cls_mask = (y == cls)
-        cls_weight = np.sum(truth_values[cls_mask])
-        proportion = cls_weight / total_weight if total_weight > 0 else 0.0
-        weighted_proportions.append(proportion)
+    # OPTIMIZATION: Vectorized class proportion calculation
+    weighted_proportions = np.zeros(len(unique_classes))
+    for i, cls in enumerate(unique_classes):
+        cls_weight = np.sum(truth_values[y == cls])
+        weighted_proportions[i] = cls_weight / total_weight
     
     # Compute weighted gini index (multiclass)
-    weighted_proportions = np.array(weighted_proportions)
     weighted_gini = 1.0 - np.sum(weighted_proportions ** 2)
     
     return weighted_gini
@@ -313,9 +313,51 @@ class FuzzyCART(ClassifierMixin):
                 del node['aux_purity_cache']
 
 
-    def __init__(self, fuzzy_partitions: list[fs.fuzzyVariable], max_rules: int = 10, max_depth: int = 5, coverage_threshold: float = 0.00, min_improvement=0.01, ccp_alpha: float = 0.0, target_metric: str = 'cci'):
+    def _get_cached_memberships(self, X: np.array) -> dict:
+        """
+        Get cached membership values or compute them if not cached.
+        
+        OPTIMIZATION: Cache membership computations to avoid redundant calculations
+        across multiple split evaluations.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input data array.
+            
+        Returns
+        -------
+        dict
+            Cached membership values for all fuzzy sets.
+        """
+        # Check if we need to recompute cache
+        if (self._last_X_shape != X.shape or 
+            len(self._membership_cache) == 0):
+            
+            self._membership_cache = {}
+            self._last_X_shape = X.shape
+            
+            # Pre-compute all memberships
+            for feature_idx, fuzzy_var in enumerate(self.fuzzy_partitions):
+                feature_memberships = np.zeros((len(fuzzy_var), X.shape[0]))
+                for fz_idx, fuzzy_set in enumerate(fuzzy_var):
+                    feature_memberships[fz_idx] = fuzzy_set.membership(X[:, feature_idx])
+                self._membership_cache[feature_idx] = feature_memberships
+        
+        return self._membership_cache
+
+
+    def __init__(self, fuzzy_partitions: list[fs.fuzzyVariable], max_rules: int = 10, max_depth: int = 5, coverage_threshold: float = 0.00, min_improvement=0.01, ccp_alpha: float = 0.0, target_metric: str = 'cci', sample_for_splits: bool = None, sample_size: int = 10000):
         """
         Initialize the Fuzzy CART classifier.
+        
+        Parameters
+        ----------
+        sample_for_splits : bool, optional
+            If True, use sampling for split evaluation on large datasets.
+            If None, automatically enabled for datasets > 50,000 samples.
+        sample_size : int, default=10000
+            Number of samples to use for split evaluation when sampling is enabled.
         """
         self.fuzzy_partitions = fuzzy_partitions
         self.max_depth = max_depth
@@ -326,6 +368,17 @@ class FuzzyCART(ClassifierMixin):
         self.min_improvement = min_improvement
         self.ccp_alpha = ccp_alpha
         self.target_metric = target_metric
+        self.sample_for_splits = sample_for_splits
+        self.sample_size = sample_size
+        
+        # OPTIMIZATION: Add membership cache to avoid recomputing
+        self._membership_cache = {}
+        self._last_X_shape = None
+        
+        # OPTIMIZATION: Add computation caches for large datasets
+        self._coverage_cache = {}
+        self._gini_cache = {}
+        self._prediction_cache = None
 
 
     def fit(self, X: np.array, y: np.array, patience:int = 3):
@@ -407,7 +460,24 @@ class FuzzyCART(ClassifierMixin):
             Maximum purity improvement achievable from this node.
             Higher values indicate better potential splits.
         """
-        existing_membership = node['existing_membership']
+        # OPTIMIZATION: Use sampling for very large datasets
+        use_sampling = self.sample_for_splits
+        if use_sampling is None:
+            use_sampling = X.shape[0] > 50000
+        
+        if use_sampling and X.shape[0] > self.sample_size:
+            # Sample for split evaluation
+            n_samples = min(self.sample_size, X.shape[0])
+            sample_indices = np.random.choice(X.shape[0], n_samples, replace=False)
+            X_sample = X[sample_indices]
+            y_sample = y[sample_indices]
+            existing_membership_sample = node['existing_membership'][sample_indices]
+        else:
+            X_sample = X
+            y_sample = y
+            existing_membership_sample = node['existing_membership']
+
+        existing_membership = existing_membership_sample
         father_path = node['father_path']
         child_splits = node['child_splits']
         # Combine paths: element-wise AND for each feature
@@ -418,27 +488,39 @@ class FuzzyCART(ClassifierMixin):
         best_feature = -1
         best_fuzzy_set = -1
         best_coverage = 0.0
-        father_purity = compute_fuzzy_purity(existing_membership, y, self.coverage_threshold)
+        father_purity = compute_fuzzy_purity(existing_membership, y_sample, self.coverage_threshold)
         
         # For debugging, create cache structures that accommodate variable fuzzy set counts
         debug_cache = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
         coverage_cache = [np.zeros(len(self.fuzzy_partitions[i])) for i in range(n_features)]
 
-        for feature in range(n_features):
-            fuzzy_var = self.fuzzy_partitions[feature]
+        # OPTIMIZATION: Use cached memberships instead of recomputing
+        if use_sampling and X.shape[0] > self.sample_size:
+            # Compute memberships for sample
+            cached_memberships = {}
+            for feature_idx, fuzzy_var in enumerate(self.fuzzy_partitions):
+                feature_memberships = np.zeros((len(fuzzy_var), X_sample.shape[0]))
+                for fz_idx, fuzzy_set in enumerate(fuzzy_var):
+                    feature_memberships[fz_idx] = fuzzy_set.membership(X_sample[:, feature_idx])
+                cached_memberships[feature_idx] = feature_memberships
+        else:
+            cached_memberships = self._get_cached_memberships(X_sample)
 
-            for fz_index in range(len(fuzzy_var)):
+        for feature in range(n_features):
+            for fz_index in range(len(self.fuzzy_partitions[feature])):
                 if actual_path[feature][fz_index]:
-                    fz = fuzzy_var[fz_index]
-                    memberships = fz.membership(X[:, feature])
+                    # Use cached membership
+                    memberships = cached_memberships[feature][fz_index]
                     full_path_membership = memberships * existing_membership
                     
-                    purity = compute_fuzzy_purity(full_path_membership, y, self.coverage_threshold)
+                    purity = compute_fuzzy_purity(full_path_membership, y_sample, self.coverage_threshold)
                     debug_cache[feature][fz_index] = purity
-                    coverage = _calculate_coverage(full_path_membership, len(y))
+                    coverage = _calculate_coverage(full_path_membership, len(y_sample))
                     coverage_cache[feature][fz_index] = coverage
                     purity_improvement = father_purity - purity
-                    node_prediction = self._split_node_dummy(node, feature, fz_index, X, y)
+                    
+                    # OPTIMIZATION: Compute child prediction directly without dummy nodes
+                    node_prediction = self._majority_class(y_sample, full_path_membership)
 
                     if purity_improvement > best_purity_improvement:
                         best_purity_improvement = purity_improvement
@@ -446,8 +528,6 @@ class FuzzyCART(ClassifierMixin):
                         best_fuzzy_set = fz_index
                         best_coverage = coverage
                         child_decision = node_prediction
-
-                    self._delete_node_dummy(node, feature, fz_index)
 
         if best_feature != -1:
             node['aux_purity_cache'] = {
@@ -536,7 +616,24 @@ class FuzzyCART(ClassifierMixin):
         tuple[float, float]
             Best CCI improvement value and corresponding purity for the optimal split.
         """
-        existing_membership = node['existing_membership']
+        # OPTIMIZATION: Use sampling for very large datasets
+        use_sampling = self.sample_for_splits
+        if use_sampling is None:
+            use_sampling = X.shape[0] > 50000
+        
+        if use_sampling and X.shape[0] > self.sample_size:
+            # Sample for split evaluation
+            n_samples = min(self.sample_size, X.shape[0])
+            sample_indices = np.random.choice(X.shape[0], n_samples, replace=False)
+            X_sample = X[sample_indices]
+            y_sample = y[sample_indices]
+            existing_membership_sample = node['existing_membership'][sample_indices]
+        else:
+            X_sample = X
+            y_sample = y
+            existing_membership_sample = node['existing_membership']
+
+        existing_membership = existing_membership_sample
         child_decision = node['prediction']
         n_features = len(self.fuzzy_partitions)
 
@@ -556,26 +653,52 @@ class FuzzyCART(ClassifierMixin):
 
         # Combine paths: element-wise AND for each feature
         legal_paths = [np.logical_and(node['father_path'][i], node['child_splits'][i]) for i in range(len(node['father_path']))]
-        skeleton_yhat = self.predict(X)
+        
+        # OPTIMIZATION: Get baseline prediction only once
+        if use_sampling and X.shape[0] > self.sample_size:
+            skeleton_yhat = self.predict(X_sample)
+        else:
+            skeleton_yhat = self.predict(X_sample)
+
+        # OPTIMIZATION: Use cached memberships instead of recomputing
+        if use_sampling and X.shape[0] > self.sample_size:
+            # Compute memberships for sample
+            cached_memberships = {}
+            for feature_idx, fuzzy_var in enumerate(self.fuzzy_partitions):
+                feature_memberships = np.zeros((len(fuzzy_var), X_sample.shape[0]))
+                for fz_idx, fuzzy_set in enumerate(fuzzy_var):
+                    feature_memberships[fz_idx] = fuzzy_set.membership(X_sample[:, feature_idx])
+                cached_memberships[feature_idx] = feature_memberships
+        else:
+            cached_memberships = self._get_cached_memberships(X_sample)
 
         for feature in range(n_features):
-            fuzzy_var = self.fuzzy_partitions[feature]
-            for fz_index in range(len(fuzzy_var)):
+            for fz_index in range(len(self.fuzzy_partitions[feature])):
                 if legal_paths[feature][fz_index]:
-                    fz = fuzzy_var[fz_index]
-                    memberships = fz.membership(X[:, feature])
+                    # Use cached membership
+                    memberships = cached_memberships[feature][fz_index]
                     full_path_membership = memberships * existing_membership
 
-                    node_prediction = self._split_node_dummy(node, feature, fz_index, X, y)
-                    skeleton_yhat_child = self.predict(X)
+                    # OPTIMIZATION: Early skip for very low coverage splits (large datasets)
+                    coverage = np.sum(full_path_membership) / len(y_sample)
+                    if coverage < self.coverage_threshold:
+                        continue
+
+                    # OPTIMIZATION: Compute child prediction directly without dummy nodes
+                    child_prediction = self._majority_class(y_sample, full_path_membership)
                     
-                    cci = compute_fuzzy_cci(y, full_path_membership, skeleton_yhat, skeleton_yhat_child, self.coverage_threshold)
-                    purity = compute_fuzzy_purity(full_path_membership, y, self.coverage_threshold)
+                    # OPTIMIZATION: Compute CCI directly without full tree prediction
+                    # Create a modified prediction where samples with this membership get the child prediction
+                    skeleton_yhat_child = skeleton_yhat.copy()
+                    # Only update predictions for samples with significant membership (threshold to avoid noise)
+                    significant_membership = full_path_membership > 0.01
+                    skeleton_yhat_child[significant_membership] = child_prediction
+                    
+                    cci = compute_fuzzy_cci(y_sample, full_path_membership, skeleton_yhat, skeleton_yhat_child, self.coverage_threshold)
+                    purity = compute_fuzzy_purity(full_path_membership, y_sample, self.coverage_threshold)
 
                     debug_cache_cci[feature][fz_index] = cci
                     debug_cache_purity[feature][fz_index] = purity
-
-                    coverage = _calculate_coverage(full_path_membership, len(y))
                     coverage_cache[feature][fz_index] = coverage
 
                     if cci > best_cci:
@@ -583,17 +706,15 @@ class FuzzyCART(ClassifierMixin):
                         best_feature = feature
                         best_fuzzy_set = fz_index
                         best_coverage = coverage
-                        child_decision = node_prediction
+                        child_decision = child_prediction
                         best_purity = purity
                     elif cci == best_cci and purity < best_purity:
                         best_cci = cci
                         best_feature = feature
                         best_fuzzy_set = fz_index
                         best_coverage = coverage
-                        child_decision = node_prediction
+                        child_decision = child_prediction
                         best_purity = purity
-
-                    self._delete_node_dummy(node, feature, fz_index)
 
         if best_feature != -1:
             node['aux_purity_cache'] = {
@@ -756,6 +877,9 @@ class FuzzyCART(ClassifierMixin):
             node['children'][new_node['name']] = new_node
 
         self.node_dict_access[new_node['name']] = new_node
+        
+        # Invalidate leaf cache since tree structure changed
+        self._invalidate_leaf_cache()
 
 
     def _delete_node_dummy(self, node, feature, fuzzy_set):
@@ -873,10 +997,22 @@ class FuzzyCART(ClassifierMixin):
         best_coverage_achievable = 1.0
         bad_cuts = 0
 
-        while self.tree_rules < self.max_rules and best_coverage_achievable >= self.coverage_threshold:
-            self._clear_all_split_caches()
+        # OPTIMIZATION: Cache baseline prediction to avoid repeated computation
+        baseline_prediction = None
 
-            skeleton_prediction, skeleton_memberships, paths = self.predict_with_path(X)
+        while self.tree_rules < self.max_rules and best_coverage_achievable >= self.coverage_threshold:
+            # OPTIMIZATION: Clear caches and update cached memberships
+            self._clear_all_split_caches()
+            # Pre-warm the membership cache for this iteration
+            self._get_cached_memberships(X)
+
+            # OPTIMIZATION: Only compute predictions when tree structure changes
+            if baseline_prediction is None:
+                skeleton_prediction, skeleton_memberships, paths = self.predict_with_path(X)
+                baseline_prediction = skeleton_prediction.copy()
+            else:
+                skeleton_prediction = baseline_prediction.copy()
+            
             # print('Accuracy:', np.mean(skeleton_prediction == y), 'Rules:', self.tree_rules, 'Best achievable coverage:', best_coverage_achievable)
             
 
@@ -904,7 +1040,9 @@ class FuzzyCART(ClassifierMixin):
                 break
             else:
                 self._split_node(node_to_split, X, y)
-                best_coverage_achievable = self._get_best_possible_coverage()
+                best_coverage_achievable = self._get_best_possible_coverage(X, y)
+                # Invalidate cached prediction since tree structure changed
+                baseline_prediction = None
             
         # Change the prediction in root node to majority class
         #          <self._majority_class(y, skeleton_memberships)>
@@ -912,6 +1050,13 @@ class FuzzyCART(ClassifierMixin):
         # Update root probabilities after tree construction
         self._root['class_probabilities'] = self._class_probabilities(y)
         # print("Final tree built.")
+        
+        # OPTIMIZATION: Clear all caches after training to save memory
+        self._membership_cache = {}
+        self._coverage_cache = {}
+        self._gini_cache = {}
+        self._prediction_cache = None
+        self._last_X_shape = None
 
 
     def _majority_class(self, y: np.array, membership: np.array = None):
@@ -1001,9 +1146,154 @@ class FuzzyCART(ClassifierMixin):
         return class_probs
 
 
+    def _get_best_possible_coverage(self, X, y, sample_weight=None):
+        """
+        Calculate the best possible coverage that could be achieved by adding a new node.
+        
+        This method evaluates all possible splits across all features and fuzzy sets
+        to find the maximum coverage that any new child node could achieve. This is used
+        for early termination - if no possible new node could meet the coverage threshold,
+        we can stop splitting.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input samples
+        y : np.array
+            Target values
+        sample_weight : np.array, optional
+            Sample weights
+            
+        Returns
+        -------
+        float
+            Best possible coverage value achievable by any new node
+        """
+        if len(X) == 0:
+            return 0.0
+            
+        if sample_weight is None:
+            sample_weight = np.ones(len(X))
+            
+        max_coverage = 0.0
+        
+        # Check all leaf nodes that could potentially be split
+        for node_name, node in self.node_dict_access.items():
+            if len(node.get('children', {})) == 0:  # This is a leaf node
+                # Get samples that reach this node
+                node_samples_mask = self._get_node_samples_mask(node, X)
+                if not np.any(node_samples_mask):
+                    continue
+                    
+                node_X = X[node_samples_mask]
+                node_y = y[node_samples_mask]
+                node_weights = sample_weight[node_samples_mask]
+                
+                if len(node_X) == 0:
+                    continue
+                
+                # Check all possible splits for this node
+                for feature_idx in range(len(self.fuzzy_partitions)):
+                    fuzzy_sets = self.fuzzy_partitions[feature_idx]
+                    
+                    for fuzzy_set_idx in range(len(fuzzy_sets)):
+                        # Calculate potential membership for this split
+                        feature_values = node_X[:, feature_idx]
+                        memberships = fuzzy_sets[fuzzy_set_idx](feature_values)
+                        
+                        # Calculate coverage as weighted membership sum normalized by total weight
+                        weighted_memberships = memberships * node_weights
+                        total_weight = np.sum(node_weights)
+                        
+                        if total_weight > 0:
+                            coverage = np.sum(weighted_memberships) / total_weight
+                            max_coverage = max(max_coverage, coverage)
+            
+        return max_coverage
+
+    def _get_node_samples_mask(self, node, X):
+        """
+        Get a boolean mask indicating which samples reach a specific node.
+        
+        Parameters
+        ----------
+        node : dict
+            The node to check
+        X : np.array
+            Input samples
+            
+        Returns
+        -------
+        np.array
+            Boolean mask indicating which samples reach this node
+        """
+        if node == self._root:
+            return np.ones(len(X), dtype=bool)
+            
+        # Get the path from root to this node
+        path = self._get_node_path(node)
+        
+        # Calculate membership along the path
+        membership = np.ones(len(X))
+        for feature_idx, fuzzy_set_idx in path:
+            if feature_idx < len(self.fuzzy_partitions):
+                fuzzy_sets = self.fuzzy_partitions[feature_idx]
+                if fuzzy_set_idx < len(fuzzy_sets):
+                    feature_values = X[:, feature_idx]
+                    node_membership = fuzzy_sets[fuzzy_set_idx](feature_values)
+                    membership *= node_membership
+        
+        # Return samples with non-zero membership (considering floating point precision)
+        return membership > 1e-10
+
+    def _get_node_path(self, target_node):
+        """
+        Get the path from root to a target node.
+        
+        Parameters
+        ----------
+        target_node : dict
+            The target node
+            
+        Returns
+        -------
+        list
+            List of (feature, fuzzy_set) tuples representing the path from root to target
+        """
+        if target_node == self._root:
+            return []
+            
+        path = []
+        node_name = target_node['name']
+        
+        # Parse the node name to extract the path
+        # Node names follow pattern: root_F{feature}_L{fuzzy_set}_F{feature}_L{fuzzy_set}...
+        if node_name == 'root':
+            return []
+            
+        # Split by '_' and process pairs of F{feature}_L{fuzzy_set}
+        name_parts = node_name.split('_')
+        
+        # Skip 'root' and process remaining parts in pairs
+        i = 1
+        while i < len(name_parts) - 1:
+            if name_parts[i].startswith('F') and name_parts[i+1].startswith('L'):
+                feature_idx = int(name_parts[i][1:])  # Remove 'F' prefix
+                fuzzy_set_idx = int(name_parts[i+1][1:])  # Remove 'L' prefix
+                path.append((feature_idx, fuzzy_set_idx))
+                i += 2
+            else:
+                i += 1
+        
+        return path
+
     def predict(self, X: np.array) -> np.array:
         """
-        Predicts the class for given samples using batch processing.
+        Predicts the class for given samples using fuzzy membership evaluation across ALL nodes.
+
+        In fuzzy decision trees, any node can provide the best prediction based on membership
+        strength, not just leaf nodes. This method evaluates all nodes in the tree and selects
+        the prediction from the node with highest membership for each sample.
 
         Parameters
         ----------
@@ -1018,13 +1308,17 @@ class FuzzyCART(ClassifierMixin):
         if X.ndim == 1:
             X = X.reshape(1, -1)
         
-        prediction, _, _ = self._predict(X, self._root)
+        # Use fuzzy membership evaluation across all nodes
+        prediction, _, _ = self._predict_all_nodes(X)
         return prediction
     
 
     def predict_with_path(self, X: np.array) -> tuple[np.array, np.array, np.array]:
         """
-        Predicts the class for given samples along with membership and path information using batch processing.
+        Predicts the class for given samples along with membership and path information.
+
+        In fuzzy decision trees, evaluates all nodes to find the one with highest membership
+        for each sample, providing the prediction from the best-matching node.
 
         Parameters
         ----------
@@ -1039,17 +1333,18 @@ class FuzzyCART(ClassifierMixin):
         if X.ndim == 1:
             X = X.reshape(1, -1)
         
-        predictions, memberships, paths = self._predict(X, self._root)
+        # Use fuzzy membership evaluation across all nodes with full output
+        predictions, memberships, paths = self._predict_all_nodes(X)
         return predictions, memberships, paths
 
     def predict_proba(self, X: np.array) -> np.array:
         """
-        Predict class probabilities for given samples using fuzzy membership weighting.
+        Predict class probabilities for given samples using fuzzy membership weighting across ALL nodes.
         
         This method computes probability distributions over all classes for each sample
-        by leveraging the fuzzy membership values from tree traversal. The probabilities
-        are derived from the weighted voting mechanism used in the fuzzy decision tree,
-        providing soft predictions that reflect the uncertainty in the classification.
+        by evaluating fuzzy membership to all nodes in the tree, not just leaves. The probabilities
+        are derived from the weighted voting mechanism across all nodes, providing soft predictions
+        that reflect the true fuzzy nature of decision tree classification.
         
         Parameters
         ----------
@@ -1066,7 +1361,143 @@ class FuzzyCART(ClassifierMixin):
         if X.ndim == 1:
             X = X.reshape(1, -1)
         
-        return self._predict_proba(X, self._root)
+        return self._predict_proba_all_nodes(X)
+    
+    def _predict_proba_direct_leaves(self, X: np.array) -> np.array:
+        """
+        Fast probability prediction using direct leaf iteration.
+        
+        Computes class probabilities by evaluating membership to all leaves
+        and weighting predictions by membership strength.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input data array with shape (n_samples, n_features).
+        
+        Returns
+        -------
+        np.array
+            Probability matrix of shape (n_samples, n_classes).
+        """
+        n_samples = X.shape[0]
+        
+        # Get all unique classes from training data
+        unique_classes = np.unique([leaf['prediction'] for leaf in self._get_leaves()])
+        n_classes = len(unique_classes)
+        class_to_idx = {cls: i for i, cls in enumerate(unique_classes)}
+        
+        # Initialize probability matrix
+        probabilities = np.zeros((n_samples, n_classes))
+        total_memberships = np.zeros(n_samples)
+        
+        # Get cached leaves
+        leaves = self._get_leaves()
+        
+        # For each leaf, compute membership and accumulate weighted votes
+        for leaf in leaves:
+            # Compute path membership for all samples
+            path_membership = np.ones(n_samples)
+            
+            # Multiply membership along the path
+            for feature_idx, fuzzy_set_idx in zip(leaf['path_features'], leaf['path_fuzzy_sets']):
+                fuzzy_set = self.fuzzy_partitions[feature_idx][fuzzy_set_idx]
+                feature_membership = fuzzy_set.membership(X[:, feature_idx])
+                path_membership *= feature_membership
+            
+            # Add weighted vote for this leaf's prediction
+            class_idx = class_to_idx[leaf['prediction']]
+            probabilities[:, class_idx] += path_membership
+            total_memberships += path_membership
+        
+        # Normalize probabilities (handle division by zero)
+        for i in range(n_samples):
+            if total_memberships[i] > 0:
+                probabilities[i] /= total_memberships[i]
+            else:
+                # Uniform distribution if no membership
+                probabilities[i] = 1.0 / n_classes
+        
+        return probabilities
+    
+    def _get_leaves(self):
+        """Get cached leaves, creating cache if necessary."""
+        if not hasattr(self, '_cached_leaves'):
+            self._cached_leaves = self._extract_leaves()
+        return self._cached_leaves
+
+    def predict_all_leaves(self, X: np.array) -> tuple[dict, dict]:
+        """
+        Get membership values and predictions for all leaf nodes for each sample.
+        
+        This method computes the fuzzy membership degree of each sample to every
+        leaf node in the tree, along with each leaf's prediction. This provides
+        a complete picture of how samples relate to all possible decision paths.
+        
+        Parameters
+        ----------
+        X : np.array
+            Data to predict. Each row is a sample.
+        
+        Returns
+        -------
+        tuple[dict, dict]
+            Two dictionaries:
+            - memberships_dict: {leaf_name: np.array of memberships for each sample}
+            - predictions_dict: {leaf_name: prediction_class}
+        """
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
+        
+        # Get all leaf nodes
+        leaf_nodes = self._get_all_leaf_nodes()
+        
+        # Initialize results
+        memberships_dict = {}
+        predictions_dict = {}
+        
+        # Calculate membership to each leaf for each sample
+        for leaf_name, leaf_node in leaf_nodes.items():
+            memberships = self._calculate_membership_to_leaf(X, leaf_node)
+            memberships_dict[leaf_name] = memberships
+            predictions_dict[leaf_name] = leaf_node['prediction']
+        
+        return memberships_dict, predictions_dict
+
+    def predict_all_leaves_matrix(self, X: np.array) -> tuple[np.array, np.array, list]:
+        """
+        Get memberships and predictions for all leaves in matrix format.
+        
+        This is a convenience method that returns the same information as
+        predict_all_leaves but in matrix format for easier analysis.
+        
+        Parameters
+        ----------
+        X : np.array
+            Data to predict. Each row is a sample.
+        
+        Returns
+        -------
+        tuple[np.array, np.array, list]
+            - membership_matrix: (n_samples, n_leaves) matrix of memberships
+            - predictions_array: (n_leaves,) array of leaf predictions
+            - leaf_names: list of leaf node names in same order as columns
+        """
+        memberships_dict, predictions_dict = self.predict_all_leaves(X)
+        
+        leaf_names = list(memberships_dict.keys())
+        n_samples = X.shape[0] if X.ndim > 1 else 1
+        n_leaves = len(leaf_names)
+        
+        # Create membership matrix
+        membership_matrix = np.zeros((n_samples, n_leaves))
+        predictions_array = np.zeros(n_leaves, dtype=int)
+        
+        for i, leaf_name in enumerate(leaf_names):
+            membership_matrix[:, i] = memberships_dict[leaf_name]
+            predictions_array[i] = predictions_dict[leaf_name]
+        
+        return membership_matrix, predictions_array, leaf_names
 
 
     def _predict_proba(self, x: np.array, node, membership=None, best_membership=None, 
@@ -1231,7 +1662,426 @@ class FuzzyCART(ClassifierMixin):
             return prediction, best_membership, paths
 
 
-    def _get_best_possible_coverage(self):
+    def _extract_leaves(self) -> list:
+        """
+        Extract all leaf nodes from the tree for direct iteration.
+        
+        This method traverses the tree once to collect all leaf nodes,
+        allowing for direct iteration instead of recursive traversal
+        during prediction, which significantly improves prediction speed.
+        
+        Returns
+        -------
+        list
+            List of leaf node dictionaries with their paths and predictions.
+        """
+        leaves = []
+        
+        def collect_leaves(node, path_features=None, path_fuzzy_sets=None, path_name=""):
+            if path_features is None:
+                path_features = []
+                path_fuzzy_sets = []
+            
+            # If no children, this is a leaf
+            if not node.get('children', False) or len(node['children']) == 0:
+                leaves.append({
+                    'prediction': node['prediction'],
+                    'name': node['name'] if node['name'] != 'root' else path_name,
+                    'path_features': path_features.copy(),
+                    'path_fuzzy_sets': path_fuzzy_sets.copy(),
+                    'path_length': len(path_features)
+                })
+            else:
+                # Recursively collect from children
+                for child_name, child in node['children'].items():
+                    new_path_features = path_features + [child['feature']]
+                    new_path_fuzzy_sets = path_fuzzy_sets + [child['fuzzy_set']]
+                    new_path_name = child_name if path_name == "" else f"{path_name}->{child_name}"
+                    
+                    collect_leaves(child, new_path_features, new_path_fuzzy_sets, new_path_name)
+        
+        collect_leaves(self._root)
+        
+        # Sort leaves by path length (shorter paths first for efficiency)
+        leaves.sort(key=lambda x: x['path_length'])
+        
+        return leaves
+    
+    def _predict_direct_leaves(self, X: np.array) -> tuple[np.array, np.array, np.array]:
+        """
+        Fast prediction using direct leaf iteration instead of recursion.
+        
+        This method iterates through all leaf nodes directly and computes
+        membership for each sample to each leaf, selecting the leaf with
+        the highest membership. This approach is significantly faster than
+        recursive tree traversal, especially for deep trees.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input data array with shape (n_samples, n_features).
+        
+        Returns
+        -------
+        tuple[np.array, np.array, np.array]
+            Predictions, membership values, and path names for all samples.
+        """
+        n_samples = X.shape[0]
+        
+        # Initialize output arrays
+        predictions = np.full(n_samples, self._root['prediction'])
+        best_memberships = np.zeros(n_samples)
+        paths = np.full(n_samples, 'root', dtype=object)
+        
+        # Get all leaves if not cached
+        if not hasattr(self, '_cached_leaves'):
+            self._cached_leaves = self._extract_leaves()
+        
+        # Handle root-only case
+        if not self._cached_leaves:
+            return predictions, best_memberships, paths
+        
+        # For each leaf, compute membership for all samples
+        for leaf in self._cached_leaves:
+            # Compute path membership for all samples
+            path_membership = np.ones(n_samples)
+            
+            # Multiply membership along the path
+            for feature_idx, fuzzy_set_idx in zip(leaf['path_features'], leaf['path_fuzzy_sets']):
+                fuzzy_set = self.fuzzy_partitions[feature_idx][fuzzy_set_idx]
+                feature_membership = fuzzy_set.membership(X[:, feature_idx])
+                path_membership *= feature_membership
+            
+            # Update best predictions where this leaf has higher membership
+            better_samples = path_membership > best_memberships
+            
+            predictions[better_samples] = leaf['prediction']
+            best_memberships[better_samples] = path_membership[better_samples]
+            paths[better_samples] = leaf['name']
+        
+        return predictions, best_memberships, paths
+    
+    def _invalidate_leaf_cache(self):
+        """
+        Invalidate the cached leaf nodes when the tree structure changes.
+        
+        This should be called whenever a new node is added to the tree
+        to ensure the leaf cache is updated for the next prediction.
+        """
+        if hasattr(self, '_cached_leaves'):
+            delattr(self, '_cached_leaves')
+        if hasattr(self, '_cached_all_nodes'):
+            delattr(self, '_cached_all_nodes')
+
+    def _extract_all_nodes(self) -> list:
+        """
+        Extract all nodes from the tree for fuzzy prediction evaluation.
+        
+        In fuzzy decision trees, any node can provide the best prediction based
+        on membership strength. This method collects all nodes with their paths
+        and predictions for direct evaluation during prediction.
+        
+        Returns
+        -------
+        list
+            List of all node dictionaries with their paths and predictions.
+        """
+        all_nodes = []
+        
+        def collect_nodes(node, path_features=None, path_fuzzy_sets=None):
+            if path_features is None:
+                path_features = []
+                path_fuzzy_sets = []
+            
+            # Add current node (use actual node name for lookups)
+            actual_node_name = node['name']
+                
+            all_nodes.append({
+                'prediction': node['prediction'],
+                'name': actual_node_name,  # Use actual node name, not display name
+                'path_features': path_features.copy(),
+                'path_fuzzy_sets': path_fuzzy_sets.copy(),
+                'path_length': len(path_features)
+            })
+            
+            # Recursively collect from children
+            if node.get('children', False) and len(node['children']) > 0:
+                for child_name, child in node['children'].items():
+                    new_path_features = path_features + [child['feature']]
+                    new_path_fuzzy_sets = path_fuzzy_sets + [child['fuzzy_set']]
+                    
+                    collect_nodes(child, new_path_features, new_path_fuzzy_sets)
+        
+        collect_nodes(self._root)
+        
+        # Sort nodes by path length (shorter paths first for efficiency)
+        all_nodes.sort(key=lambda x: x['path_length'])
+        
+        return all_nodes
+
+    def _predict_all_nodes(self, X: np.array, epsilon: float = 1e-6) -> tuple[np.array, np.array, np.array]:
+        """
+        Fuzzy prediction using ALL nodes in the tree, with proper internal node constraints.
+        
+        This method implements the correct fuzzy decision tree semantics: internal nodes 
+        can only be used for prediction when ALL their children have membership ≤ epsilon.
+        This ensures children are preferred when they have meaningful membership, while
+        internal nodes serve as fallback predictions.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input data array with shape (n_samples, n_features).
+        epsilon : float, default=1e-6
+            Threshold below which child membership is considered zero.
+        
+        Returns
+        -------
+        tuple[np.array, np.array, np.array]
+            Predictions, membership values, and path names for all samples.
+        """
+        n_samples = X.shape[0]
+        
+        # Initialize output arrays - start with invalid values, not root defaults
+        predictions = np.full(n_samples, -1)  # Invalid prediction initially
+        best_memberships = np.full(n_samples, -1.0)  # Invalid membership initially  
+        paths = np.full(n_samples, '', dtype=object)  # Empty path initially
+        
+        # Get all nodes if not cached
+        if not hasattr(self, '_cached_all_nodes'):
+            self._cached_all_nodes = self._extract_all_nodes()
+        
+        # First pass: collect all node memberships
+        node_memberships = {}
+        
+        for node in self._cached_all_nodes:
+            # Compute path membership for all samples
+            if node['path_length'] == 0:
+                # Root node
+                path_membership = np.ones(n_samples)
+            else:
+                path_membership = np.ones(n_samples)
+                # Multiply membership along the path
+                for feature_idx, fuzzy_set_idx in zip(node['path_features'], node['path_fuzzy_sets']):
+                    fuzzy_set = self.fuzzy_partitions[feature_idx][fuzzy_set_idx]
+                    feature_membership = fuzzy_set.membership(X[:, feature_idx])
+                    path_membership *= feature_membership
+            
+            node_memberships[node['name']] = {
+                'membership': path_membership,
+                'prediction': node['prediction'],
+                'path_length': node['path_length']
+            }
+        
+        # Second pass: apply predictions with internal node constraints
+        # Process leaf nodes first (deepest first), then internal nodes (shallowest last)
+        node_items = list(node_memberships.items())
+        
+        # Separate leaf and internal nodes
+        leaf_nodes = []
+        internal_nodes = []
+        
+        for node_name, node_data in node_items:
+            if self._node_has_children(node_name):
+                internal_nodes.append((node_name, node_data))
+            else:
+                leaf_nodes.append((node_name, node_data))
+        
+        # Sort internal nodes by path length (deepest first, then root last)
+        internal_nodes.sort(key=lambda x: x[1]['path_length'], reverse=True)
+        
+        # Process leaf nodes first
+        for node_name, node_data in leaf_nodes:
+            current_membership = node_data['membership']
+            current_prediction = node_data['prediction']
+            
+            # Leaf nodes can always be considered - update where membership is better
+            better_samples = current_membership > best_memberships
+            
+            predictions[better_samples] = current_prediction
+            best_memberships[better_samples] = current_membership[better_samples]
+            paths[better_samples] = node_name
+        
+        # Then process internal nodes with constraints
+        for node_name, node_data in internal_nodes:
+            current_membership = node_data['membership']
+            current_prediction = node_data['prediction']
+            
+            # For internal nodes, check if all children have membership ≤ epsilon
+            children_names = self._get_node_children_names(node_name)
+            
+            # For each sample, check if ALL children have low membership
+            can_use_internal = np.ones(n_samples, dtype=bool)
+            
+            for child_name in children_names:
+                if child_name in node_memberships:
+                    child_membership = node_memberships[child_name]['membership']
+                    # If any child has membership > epsilon, can't use internal node for those samples
+                    high_child_membership = child_membership > epsilon
+                    can_use_internal = can_use_internal & (~high_child_membership)
+            
+            # Only consider internal node for samples where all children have low membership
+            valid_membership = np.where(can_use_internal, current_membership, 0.0)
+            
+            # Update predictions where this internal node has higher valid membership
+            better_samples = valid_membership > best_memberships
+            
+            predictions[better_samples] = current_prediction
+            best_memberships[better_samples] = valid_membership[better_samples]
+            paths[better_samples] = node_name
+        
+        # Handle any samples that still have no prediction (fallback to root)
+        no_prediction = best_memberships < 0
+        if np.any(no_prediction):
+            predictions[no_prediction] = self._root['prediction']
+            best_memberships[no_prediction] = 1.0
+            paths[no_prediction] = 'root'
+        
+        return predictions, best_memberships, paths
+
+    def _node_has_children(self, node_name: str) -> bool:
+        """
+        Check if a node has children (is an internal node).
+        
+        Parameters
+        ----------
+        node_name : str
+            Name of the node to check.
+            
+        Returns
+        -------
+        bool
+            True if the node has children, False otherwise.
+        """
+        if node_name not in self.node_dict_access:
+            return False
+        
+        node = self.node_dict_access[node_name]
+        return 'children' in node and len(node['children']) > 0
+
+    def _get_node_children_names(self, node_name: str) -> list:
+        """
+        Get the names of all direct children of a node.
+        
+        Parameters
+        ----------
+        node_name : str
+            Name of the parent node.
+            
+        Returns
+        -------
+        list
+            List of child node names.
+        """
+        if node_name not in self.node_dict_access:
+            return []
+        
+        node = self.node_dict_access[node_name]
+        if 'children' not in node:
+            return []
+        
+        return list(node['children'].keys())
+
+    def _predict_proba_all_nodes(self, X: np.array, epsilon: float = 1e-6) -> np.array:
+        """
+        Predict class probabilities using fuzzy membership across ALL nodes with internal node constraints.
+        
+        This method computes probability distributions by evaluating membership
+        to all nodes in the tree. Internal nodes can only contribute when ALL their 
+        children have membership ≤ epsilon, ensuring proper fuzzy tree semantics.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input data array with shape (n_samples, n_features).
+        epsilon : float, default=1e-6
+            Threshold below which child membership is considered zero.
+        
+        Returns
+        -------
+        np.array
+            Array of shape (n_samples, n_classes) with probability distributions.
+        """
+        n_samples = X.shape[0]
+        n_classes = len(self.classes_)
+        
+        # Get all nodes if not cached
+        if not hasattr(self, '_cached_all_nodes'):
+            self._cached_all_nodes = self._extract_all_nodes()
+        
+        # Initialize probability accumulator and total membership
+        class_memberships = np.zeros((n_samples, n_classes))
+        total_memberships = np.zeros(n_samples)
+        
+        # First pass: collect all node memberships
+        node_memberships = {}
+        
+        for node in self._cached_all_nodes:
+            # Compute path membership for all samples
+            if node['path_length'] == 0:
+                # Root node has membership 1.0 for all samples
+                path_membership = np.ones(n_samples)
+            else:
+                path_membership = np.ones(n_samples)
+                # Multiply membership along the path
+                for feature_idx, fuzzy_set_idx in zip(node['path_features'], node['path_fuzzy_sets']):
+                    fuzzy_set = self.fuzzy_partitions[feature_idx][fuzzy_set_idx]
+                    feature_membership = fuzzy_set.membership(X[:, feature_idx])
+                    path_membership *= feature_membership
+            
+            node_memberships[node['name']] = {
+                'membership': path_membership,
+                'prediction': node['prediction']
+            }
+        
+        # Second pass: apply memberships with internal node constraints
+        # Process nodes in REVERSE order (longest paths first) so children are processed before parents
+        node_items = list(node_memberships.items())
+        node_items.sort(key=lambda x: x[1]['prediction'], reverse=False)  # Just to have consistent ordering
+        
+        for node_name, node_data in node_items:
+            current_membership = node_data['membership']
+            current_prediction = node_data['prediction']
+            
+            # Check if this is an internal node (has children)
+            is_internal_node = self._node_has_children(node_name)
+            
+            if is_internal_node:
+                # For internal nodes, check if all children have membership ≤ epsilon
+                children_names = self._get_node_children_names(node_name)
+                
+                # For each sample, check if ALL children have low membership
+                can_use_internal = np.ones(n_samples, dtype=bool)
+                
+                for child_name in children_names:
+                    if child_name in node_memberships:
+                        child_membership = node_memberships[child_name]['membership']
+                        # If any child has membership > epsilon, can't use internal node for those samples
+                        high_child_membership = child_membership > epsilon
+                        can_use_internal = can_use_internal & (~high_child_membership)
+                
+                # Only consider internal node for samples where all children have low membership
+                valid_membership = np.where(can_use_internal, current_membership, 0.0)
+            else:
+                # Leaf nodes can always be considered
+                valid_membership = current_membership
+            
+            # Accumulate membership for this node's prediction class
+            class_idx = np.where(self.classes_ == current_prediction)[0][0]
+            class_memberships[:, class_idx] += valid_membership
+            total_memberships += valid_membership
+        
+        # Normalize to get probabilities
+        # Avoid division by zero
+        nonzero_total = total_memberships > 0
+        probabilities = np.zeros((n_samples, n_classes))
+        probabilities[nonzero_total] = class_memberships[nonzero_total] / total_memberships[nonzero_total, np.newaxis]
+        
+        # For samples with zero total membership, use uniform distribution
+        zero_total = total_memberships == 0
+        probabilities[zero_total] = 1.0 / n_classes
+        
+        return probabilities
         """
         Calculate the maximum coverage achievable by any remaining valid split.
         
@@ -1257,6 +2107,120 @@ class FuzzyCART(ClassifierMixin):
         
         return best_coverage
 
+    def _get_all_leaf_nodes(self) -> dict:
+        """
+        Get all leaf nodes in the tree.
+        
+        Returns
+        -------
+        dict
+            Dictionary of {leaf_name: leaf_node} for all leaf nodes.
+        """
+        leaf_nodes = {}
+        
+        def traverse(node):
+            if 'children' not in node or not node['children']:
+                # This is a leaf node
+                leaf_nodes[node['name']] = node
+            else:
+                # Traverse children
+                for child in node['children'].values():
+                    traverse(child)
+        
+        traverse(self._root)
+        return leaf_nodes
+
+    def _calculate_membership_to_leaf(self, X: np.array, leaf_node: dict) -> np.array:
+        """
+        Calculate fuzzy membership of samples to a specific leaf node.
+        
+        This method traces the path from root to the specified leaf and computes
+        the combined membership by multiplying memberships at each step.
+        
+        Parameters
+        ----------
+        X : np.array
+            Input samples with shape (n_samples, n_features).
+        leaf_node : dict
+            The target leaf node.
+        
+        Returns
+        -------
+        np.array
+            Membership values for each sample to this leaf node.
+        """
+        # Get the path from root to leaf
+        path_to_leaf = self._get_path_to_leaf(leaf_node)
+        
+        # Start with full membership at root
+        membership = np.ones(X.shape[0])
+        
+        # OPTIMIZATION: Use cached memberships when available
+        try:
+            cached_memberships = self._get_cached_memberships(X)
+            use_cache = True
+        except:
+            use_cache = False
+        
+        # Apply each step in the path
+        for step in path_to_leaf:
+            if step['type'] == 'split':
+                feature_idx = step['feature']
+                fuzzy_set_idx = step['fuzzy_set']
+                
+                if use_cache:
+                    step_membership = cached_memberships[feature_idx][fuzzy_set_idx]
+                else:
+                    fuzzy_set = self.fuzzy_partitions[feature_idx][fuzzy_set_idx]
+                    step_membership = fuzzy_set.membership(X[:, feature_idx])
+                
+                membership = membership * step_membership
+        
+        return membership
+
+    def _get_path_to_leaf(self, leaf_node: dict) -> list:
+        """
+        Get the sequence of splits from root to a leaf node.
+        
+        Parameters
+        ----------
+        leaf_node : dict
+            The target leaf node.
+        
+        Returns
+        -------
+        list
+            List of dictionaries describing each split step.
+        """
+        # Reconstruct path by analyzing node name
+        node_name = leaf_node['name']
+        
+        if node_name == 'root':
+            return []  # Root has no path
+        
+        # Parse node name to extract path
+        # Format: root_F0_L1_F2_L0 means: feature 0, fuzzy set 1, then feature 2, fuzzy set 0
+        path_steps = []
+        parts = node_name.split('_')
+        
+        i = 1  # Skip 'root'
+        while i < len(parts):
+            if parts[i].startswith('F') and i + 1 < len(parts) and parts[i + 1].startswith('L'):
+                feature_idx = int(parts[i][1:])  # Remove 'F' prefix
+                fuzzy_set_idx = int(parts[i + 1][1:])  # Remove 'L' prefix
+                
+                path_steps.append({
+                    'type': 'split',
+                    'feature': feature_idx,
+                    'fuzzy_set': fuzzy_set_idx
+                })
+                
+                i += 2  # Skip both F and L parts
+            else:
+                i += 1
+        
+        return path_steps
+
     def print_tree(self, node=None, prefix="", is_last=True):
         """
         Print the tree structure in a hierarchical format showing coverage information.
@@ -1277,8 +2241,8 @@ class FuzzyCART(ClassifierMixin):
         if node['name'] == 'root':
             print(f"{prefix}{current_prefix}Root: class={node['prediction']}, coverage={node['coverage']:.3f}")
         else:
-            feature_name = fuzzy_partitions[node['feature']].name
-            fuzzy_set_name = fuzzy_partitions[node['feature']][node['fuzzy_set']].name
+            feature_name = self.fuzzy_partitions[node['feature']].name
+            fuzzy_set_name = self.fuzzy_partitions[node['feature']][node['fuzzy_set']].name
             
             # Get CCI/split criterion if available
             cci_info = ""
