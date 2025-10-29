@@ -1024,8 +1024,8 @@ class FitRuleBase(Problem):
         '''
         GEN STRUCTURE
 
-        First: antecedents chosen by each rule. Size: nAnts * nRules
-        Second: Variable linguistics used. Size: nAnts * nRules
+        First: features chosen by each rule. Size: nAnts * nRules
+        Second: linguistic labels used. Size: nAnts * nRules
         Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)
         Four: Consequent classes. Size: nRules
         Five: Weights for each rule. Size: nRules (only if ds_mode == 2)

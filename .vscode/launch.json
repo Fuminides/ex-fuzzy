@@ -5,6 +5,61 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Test Modular FuzzyCART",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test_modular_fuzzycart.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [],
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "presentation": {
+                "hidden": false,
+                "group": "FuzzyCART Testing",
+                "order": 1
+            }
+        },
+        {
+            "name": "Test FuzzyCART (Debug Mode)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test_modular_fuzzycart.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [],
+            "justMyCode": false,
+            "stopOnEntry": true,
+            "presentation": {
+                "hidden": false,
+                "group": "FuzzyCART Testing",
+                "order": 2
+            }
+        },
+        {
+            "name": "Quick FuzzyCART Test",
+            "type": "debugpy",
+            "request": "launch", 
+            "program": "${workspaceFolder}/quick_test_fuzzycart.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "justMyCode": false,
+            "presentation": {
+                "hidden": false,
+                "group": "FuzzyCART Testing",
+                "order": 3
+            }
+        },
+        {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",

@@ -177,7 +177,7 @@ class FS():
         use specialized subclasses like gaussianFS or triangularFS.
     """
 
-    def __init__(self, name: str, membership_parameters: list[float], domain: list[float]) -> None:
+    def __init__(self, name: str, membership_parameters: list[float], domain: list[float]=None) -> None:
         """
         Initialize a Type-1 fuzzy set.
 

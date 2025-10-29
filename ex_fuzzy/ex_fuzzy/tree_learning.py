@@ -9,8 +9,8 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin
 try:
-    from . import fuzzy_sets as fs
-    from . import utils
+    from .tree_learning_new import fuzzy_sets as fs
+    from .tree_learning_new import utils
 except ImportError:
     import fuzzy_sets as fs
     import utils
