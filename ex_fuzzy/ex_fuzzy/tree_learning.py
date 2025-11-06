@@ -9,8 +9,8 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin
 try:
-    from .tree_learning_new import fuzzy_sets as fs
-    from .tree_learning_new import utils
+    from . import fuzzy_sets as fs
+    from . import utils
 except ImportError:
     import fuzzy_sets as fs
     import utils
@@ -2067,9 +2067,13 @@ class FuzzyCART(ClassifierMixin):
                 valid_membership = current_membership
             
             # Accumulate membership for this node's prediction class
-            class_idx = np.where(self.classes_ == current_prediction)[0][0]
-            class_memberships[:, class_idx] += valid_membership
-            total_memberships += valid_membership
+            if current_prediction != -1:
+                class_idx = np.where(self.classes_ == current_prediction)[0][0]
+
+                class_memberships[:, class_idx] += valid_membership
+                total_memberships += valid_membership
+
+            
         
         # Normalize to get probabilities
         # Avoid division by zero
