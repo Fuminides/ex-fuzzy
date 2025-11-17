@@ -1123,6 +1123,16 @@ class MasterRuleBase():
         :param consequent: index of the rule base to add the rule.
         '''
         self.rule_bases[consequent].add_rule(rule)
+
+    
+    def remove_rule(self, consequent: int, ix: int) -> None:
+        '''
+        Remove a rule from the rule base of the given consequent.
+
+        :param consequent: index of the rule base to remove the rule from.
+        :param idx: index of the rule to remove.
+        '''
+        self.rule_bases[consequent].remove_rule(ix)
     
 
     def get_consequents(self) -> list[int]:
