@@ -881,7 +881,11 @@ class fuzzyVariable():
         from scipy.stats import permutation_test
 
         # Perform permutation test
-        result = permutation_test((mu_A, mu_B), lambda x, y: np.mean(np.abs(x - y)), n_resamples=1000)
+        result = permutation_test(
+            (mu_A, mu_B), 
+            lambda x, y: np.mean(np.abs(x - y)) / (np.sqrt(np.var(x, ddof=1) * np.var(y, ddof=1)) + 1e-10), 
+            n_resamples=1000
+        )
         statistic, p_value, null_distribution = result.statistic, result.pvalue, result.null_distribution
 
         return p_value < p_value_need
@@ -937,14 +941,13 @@ class fuzzyVariable():
         # Property 6: The population of the fuzzy sets-induced memberships must be statistically different from each other
         cond6 = True
         if len(self.linguistic_variables) > 1:
-            from scipy.stats import wilcoxon
             for i in range(len(self.linguistic_variables) - 1):
                 # Wilcoxon signed-rank test is a paired difference test
                 if not self._permutation_validation(memberships[i, :], memberships[i + 1, :], p_value_need=0.05):
                     cond6 = False
                     break
         if not cond6 and verbose:
-            print('Property 6 violated: The fuzzy sets must be statistically different from each other. Use permutation test to check this. (' + str(i) + ',' + str(i+1) + ')')
+            print('Property 6 violated: The fuzzy sets must be statistically different from each other. Used permutation test to check this. (' + str(i) + ',' + str(i+1) + ')')
 
         valid = cond1 and cond2 and cond3 and cond4 and cond5 and cond6
 
