@@ -27,14 +27,7 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="#-features">Features</a> •
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-examples">Examples</a> •
-  <a href="#-documentation">Documentation</a> •
-  <a href="#-contributing">Contributing</a> •
-  <a href="#-citation">Citation</a>
-</p>
+
 
 ---
 
