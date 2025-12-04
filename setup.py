@@ -21,7 +21,11 @@ LICENSE = "GPL-3.0"
 DOWNLOAD_URL = "https://pypi.org/project/ex-fuzzy/"
 VERSION = "2.1.5"
 INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo", "pandas", "scikit-learn"]
-OPTIONAL_REQUIRES = {"Rule visualization": ["networkx"], "GPU inference": ["torch"]}
+OPTIONAL_REQUIRES = {
+    "Rule visualization": ["networkx"], 
+    "GPU inference": ["torch"],
+    "evox": ["evox[jax]"]
+}
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",

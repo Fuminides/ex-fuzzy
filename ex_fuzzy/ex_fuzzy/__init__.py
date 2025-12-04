@@ -2,6 +2,7 @@ from . import centroid
 from . import eval_rules
 from . import eval_tools
 from . import evolutionary_fit
+from . import evolutionary_backends
 from . import fuzzy_sets
 from . import rules
 from . import vis_rules

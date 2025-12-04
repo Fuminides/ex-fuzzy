@@ -35,24 +35,21 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import matthews_corrcoef
 from sklearn.base import ClassifierMixin
-from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.core.problem import Problem
-from pymoo.optimize import minimize
-from pymoo.operators.repair.rounding import RoundingRepair
-from pymoo.operators.sampling.rnd import IntegerRandomSampling
-from pymoo.operators.crossover.sbx import SBX
-from pymoo.operators.mutation.pm import PolynomialMutation
 from pymoo.core.variable import Integer
 from multiprocessing.pool import ThreadPool
-from pymoo.core.problem import StarmapParallelization
+from pymoo.parallelization.starmap import StarmapParallelization
 
+# Import backend abstraction
 try:
+    from . import evolutionary_backends as ev_backends
     from . import fuzzy_sets as fs
     from . import rules
     from . import eval_rules as evr
     from . import vis_rules
     
 except ImportError:
+    import evolutionary_backends as ev_backends
     import fuzzy_sets as fs
     import rules
     import eval_rules as evr
@@ -67,7 +64,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: list[int]|int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
-                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, fuzzy_modifiers:bool=False, allow_unknown:bool=False) -> None:
+                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, fuzzy_modifiers:bool=False, allow_unknown:bool=False, backend: str='pymoo') -> None:
         '''
         Inits the optimizer with the corresponding parameters.
 
@@ -85,6 +82,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :param ds_mode: mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         :param fuzzy_modifiers: if True, the classifier will use the modifiers in the optimization process.
         :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
+        :param backend: evolutionary backend to use. Options: 'pymoo' (default, CPU) or 'evox' (GPU-accelerated). Install with: pip install ex-fuzzy[evox]
         '''
         if precomputed_rules is not None:
             self.nRules = len(precomputed_rules.get_rules())
@@ -112,6 +110,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         self.ds_mode = ds_mode
         self.fuzzy_modifiers = fuzzy_modifiers
         self.allow_unknown = allow_unknown
+        
+        # Initialize evolutionary backend
+        try:
+            self.backend = ev_backends.get_backend(backend)
+            if verbose:
+                print(f"Using evolutionary backend: {self.backend.name()}")
+        except ValueError as e:
+            if verbose:
+                print(f"Warning: {e}. Falling back to pymoo backend.")
+            self.backend = ev_backends.get_backend('pymoo')
 
         if runner > 1:
             pool = ThreadPool(runner)
@@ -229,22 +237,35 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
 
+        # Prepare initial population
         if initial_rules is None:
-            rules_gene = IntegerRandomSampling()
+            rules_gene = None  # Will use default random sampling
         else:
             rules_gene = problem.encode_rulebase(initial_rules, self.lvs is None)
             rules_gene = (np.ones((pop_size, len(rules_gene))) * rules_gene).astype(int)
 
-        algorithm = GA(
-            pop_size=pop_size,
-            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
-            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
-            tournament_size=tournament_size,
-            sampling=rules_gene,
-            eliminate_duplicates=False)
+        # Use backend for optimization
+        if checkpoints > 0 and self.backend.name() == 'pymoo':
+            # Checkpoint mode only supported for pymoo backend currently
+            from pymoo.algorithms.soo.nonconvex.ga import GA
+            from pymoo.operators.repair.rounding import RoundingRepair
+            from pymoo.operators.crossover.sbx import SBX
+            from pymoo.operators.mutation.pm import PolynomialMutation
+            from pymoo.operators.sampling.rnd import IntegerRandomSampling
+            
+            if rules_gene is None:
+                rules_gene = IntegerRandomSampling()
+                
+            algorithm = GA(
+                pop_size=pop_size,
+                crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
+                mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
+                tournament_size=tournament_size,
+                sampling=rules_gene,
+                eliminate_duplicates=False)
         
 
-        if checkpoints > 0:
+        if checkpoints > 0 and self.backend.name() == 'pymoo':
             if self.verbose:
                 print('=================================================')
                 print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
@@ -277,24 +298,52 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                             f.write(checkpoint_rules) 
                     else:
                         checkpoint_callback(k, rule_base)
-
+            
+            # Extract final results from checkpoint mode
+            pop = algorithm.pop
+            fitness_last_gen = pop.get('F')
+            best_solution = np.argmin(fitness_last_gen)
+            best_individual = pop.get('X')[best_solution, :]
+            self.performance = 1 - fitness_last_gen[best_solution]
+            
+        elif checkpoints > 0 and self.backend.name() == 'evox':
+            # Checkpoints not yet implemented for EvoX backend
+            if self.verbose:
+                print("Warning: Checkpoints are not yet supported with EvoX backend. Running without checkpoints.")
+            # Run optimization using backend
+            result = self.backend.optimize(
+                problem=problem,
+                n_gen=n_gen,
+                pop_size=pop_size,
+                random_state=random_state,
+                verbose=self.verbose,
+                var_prob=var_prob,
+                sbx_eta=sbx_eta,
+                mutation_eta=mutation_eta,
+                tournament_size=tournament_size,
+                sampling=rules_gene
+            )
+            
+            best_individual = result['X']
+            self.performance = 1 - result['F']
+            
         else:
-            res = minimize(problem,
-                        algorithm,
-                        # termination,
-                        ("n_gen", n_gen),
-                        seed=random_state,
-                        copy_algorithm=False,
-                        save_history=False,
-                        verbose=self.verbose)
-        
-        pop = res.pop
-        fitness_last_gen = pop.get('F')
-        best_solution = np.argmin(fitness_last_gen)
-        best_individual = pop.get('X')[best_solution, :]
-
-        
-        self.performance = 1 - fitness_last_gen[best_solution]
+            # Normal optimization without checkpoints
+            result = self.backend.optimize(
+                problem=problem,
+                n_gen=n_gen,
+                pop_size=pop_size,
+                random_state=random_state,
+                verbose=self.verbose,
+                var_prob=var_prob,
+                sbx_eta=sbx_eta,
+                mutation_eta=mutation_eta,
+                tournament_size=tournament_size,
+                sampling=rules_gene
+            )
+            
+            best_individual = result['X']
+            self.performance = 1 - result['F']
 
         try:
             self.var_names = list(X.columns)

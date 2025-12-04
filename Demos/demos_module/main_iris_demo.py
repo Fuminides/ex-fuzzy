@@ -43,7 +43,7 @@ nRules = 15 # Number of maximum rules
 nAnts = 3 # Number of maximum antecedents per rule
 vl = 3 # Number of linguistic variables
 tolerance = 0.001 # Minimum dominance score to accept a rule
-fz_type_studied = fs.FUZZY_SETS.t1 # Fuzzy set type
+fz_type_studied = fs.FUZZY_SETS.t2 # Fuzzy set type
 
 
 iris = datasets.load_iris()
@@ -55,6 +55,7 @@ class_names = iris.target_names
 precomputed_partitions_vl = utils.construct_partitions(X, fz_type_studied, n_partitions=vl, shape='triangular')
 valid = utils.validate_partitions(X, precomputed_partitions_vl, verbose=True)
 print(f'Partitions valid: {valid}')
+
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 

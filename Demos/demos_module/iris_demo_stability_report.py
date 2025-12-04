@@ -41,7 +41,7 @@ import ex_fuzzy.pattern_stability as pattern_stability
 runner = 1 # 1: single thread, 2+: corresponding multi-thread
 
 n_gen = 20
-n_pop = 50
+n_pop = 10
     
 nRules = 15
 nAnts = 2
