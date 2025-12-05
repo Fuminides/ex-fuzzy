@@ -402,6 +402,7 @@ class EvoXProblemWrapper:
         self.problem = problem
         self.n_eval = 0
         self.use_gpu_eval = use_gpu_eval
+        self._jax_eval_func = None
         
         # Try to create vectorized GPU evaluation if possible
         if use_gpu_eval:
@@ -417,7 +418,15 @@ class EvoXProblemWrapper:
         import jax
         import jax.numpy as jnp
         
-        # Create a vectorized version of the evaluation function
+        # Check if problem has a JAX-compatible evaluation function
+        if hasattr(self.problem, 'create_jax_evaluate_func'):
+            self._jax_eval_func = self.problem.create_jax_evaluate_func()
+            if self._jax_eval_func is not None:
+                # Vectorize the JAX evaluation function for batch processing
+                self._vmap_eval = jax.vmap(self._jax_eval_func)
+                return
+        
+        # Fallback: Create a basic vectorized version using the standard _evaluate
         def eval_single(individual):
             """Evaluate single individual - to be vectorized."""
             # Convert to numpy for compatibility with existing _evaluate
@@ -428,7 +437,7 @@ class EvoXProblemWrapper:
         
         # Vectorize the evaluation function for batch processing
         self._vmap_eval = jax.vmap(eval_single)
-        print("✅ GPU-accelerated evaluation enabled")
+        print("✅ GPU-accelerated evaluation enabled (basic vectorization)")
     
     def evaluate(self, population):
         """
