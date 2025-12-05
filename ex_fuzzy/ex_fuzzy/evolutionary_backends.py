@@ -281,8 +281,9 @@ class EvoXBackend(EvolutionaryBackend):
         # Create JAX random key
         key = jax.random.PRNGKey(random_state)
         
-        # Create EvoX problem wrapper
-        evox_problem = EvoXProblemWrapper(problem)
+        # Create EvoX problem wrapper with GPU evaluation
+        # GPU evaluation uses jax.vmap to vectorize fitness computation
+        evox_problem = EvoXProblemWrapper(problem, use_gpu_eval=True)
         
         # Initialize population
         if sampling is not None:
@@ -397,9 +398,37 @@ class EvoXBackend(EvolutionaryBackend):
 class EvoXProblemWrapper:
     """Wrapper to adapt ex-fuzzy Problem to EvoX interface."""
     
-    def __init__(self, problem):
+    def __init__(self, problem, use_gpu_eval: bool = True):
         self.problem = problem
         self.n_eval = 0
+        self.use_gpu_eval = use_gpu_eval
+        
+        # Try to create vectorized GPU evaluation if possible
+        if use_gpu_eval:
+            try:
+                self._setup_gpu_evaluation()
+            except Exception as e:
+                print(f"⚠️  Could not setup GPU evaluation: {e}")
+                print("   Falling back to CPU evaluation")
+                self.use_gpu_eval = False
+    
+    def _setup_gpu_evaluation(self):
+        """Setup vectorized GPU evaluation using JAX."""
+        import jax
+        import jax.numpy as jnp
+        
+        # Create a vectorized version of the evaluation function
+        def eval_single(individual):
+            """Evaluate single individual - to be vectorized."""
+            # Convert to numpy for compatibility with existing _evaluate
+            ind_np = np.array(individual)
+            out = {}
+            self.problem._evaluate(ind_np, out)
+            return out['F']
+        
+        # Vectorize the evaluation function for batch processing
+        self._vmap_eval = jax.vmap(eval_single)
+        print("✅ GPU-accelerated evaluation enabled")
     
     def evaluate(self, population):
         """
@@ -413,10 +442,20 @@ class EvoXProblemWrapper:
         """
         import jax.numpy as jnp
         
-        # Convert JAX array to numpy for compatibility with existing code
+        if self.use_gpu_eval:
+            try:
+                # Try GPU-accelerated vectorized evaluation
+                fitness = self._vmap_eval(population)
+                self.n_eval += len(population)
+                return fitness
+            except Exception as e:
+                # Fall back to CPU if GPU evaluation fails
+                print(f"⚠️  GPU evaluation failed: {e}, using CPU")
+                self.use_gpu_eval = False
+        
+        # CPU evaluation (fallback or when GPU disabled)
         pop_np = np.array(population)
         
-        # Evaluate each individual
         fitness = []
         for individual in pop_np:
             out = {}
