@@ -166,22 +166,84 @@ class EvoXBackend(EvolutionaryBackend):
         """Setup JAX configuration for GPU usage."""
         try:
             import jax
-            # Try to use GPU if available, otherwise fall back to CPU
             devices = jax.devices()
             self._device = devices[0]
+            
             if self._device.platform == 'gpu':
                 print(f"EvoX backend using GPU: {self._device}")
             else:
                 print(f"EvoX backend using CPU (GPU not available)")
+                    
         except Exception as e:
-            print(f"Warning: Could not setup JAX device: {e}")
-            self._device = None
+            raise RuntimeError(
+                f"Failed to initialize JAX for EvoX backend: {e}\n"
+                f"This is likely a JAX/CUDA version mismatch.\n"
+                f"Solutions:\n"
+                f"  1. For Colab GPU: !pip uninstall jax jaxlib -y && !pip install 'jax[cuda12]'\n"
+                f"  2. For local GPU: Install JAX with matching CUDA version\n"
+                f"  3. Use pymoo backend instead: backend='pymoo'"
+            ) from e
     
     def is_available(self) -> bool:
         return self._available
     
     def name(self) -> str:
         return "evox"
+    
+    def _tournament_selection_jax(self, key, fitness, pop_size, tournament_size):
+        """Manual tournament selection for JAX."""
+        import jax
+        import jax.numpy as jnp
+        
+        selected = []
+        for _ in range(pop_size):
+            key, subkey = jax.random.split(key)
+            competitors = jax.random.choice(subkey, len(fitness), shape=(tournament_size,), replace=False)
+            winner = competitors[jnp.argmin(fitness[competitors])]
+            selected.append(winner)
+        return jnp.array(selected)
+    
+    def _sbx_crossover_jax(self, key, population, xl, xu, eta, prob):
+        """Manual Simulated Binary Crossover for JAX (adapted for integers)."""
+        import jax
+        import jax.numpy as jnp
+        
+        offspring = population.copy()
+        n_parents, n_var = population.shape
+        
+        for i in range(0, n_parents - 1, 2):
+            key, subkey = jax.random.split(key)
+            if jax.random.uniform(subkey) < prob:
+                key, subkey1, subkey2 = jax.random.split(key, 3)
+                
+                parent1 = population[i]
+                parent2 = population[i + 1]
+                
+                # Simple blend crossover for integers
+                mask = jax.random.uniform(subkey1, (n_var,)) < 0.5
+                offspring = offspring.at[i].set(jnp.where(mask, parent1, parent2))
+                offspring = offspring.at[i + 1].set(jnp.where(mask, parent2, parent1))
+        
+        return offspring
+    
+    def _pm_mutation_jax(self, key, population, xl, xu, eta, prob):
+        """Manual Polynomial Mutation for JAX (adapted for integers)."""
+        import jax
+        import jax.numpy as jnp
+        
+        n_pop, n_var = population.shape
+        offspring = population.copy()
+        
+        for i in range(n_pop):
+            for j in range(n_var):
+                key, subkey = jax.random.split(key)
+                if jax.random.uniform(subkey) < prob:
+                    key, subkey = jax.random.split(key)
+                    # Random perturbation for integers
+                    delta = jax.random.randint(subkey, (), minval=-2, maxval=3)
+                    offspring = offspring.at[i, j].set(population[i, j] + delta)
+        
+        return offspring
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int,
                  random_state: int, verbose: bool,
@@ -209,7 +271,6 @@ class EvoXBackend(EvolutionaryBackend):
         """
         import jax
         import jax.numpy as jnp
-        from evox import algorithms, problems, workflows
         from evox.operators import mutation, crossover, selection
         
         # Extract problem information
@@ -247,11 +308,16 @@ class EvoXBackend(EvolutionaryBackend):
                 maxval=jnp.array(xu, dtype=jnp.int32) + 1
             )
         
-        # Create evolutionary operators
-        # Note: EvoX uses different operator interfaces than pymoo
-        mutation_op = mutation.PolynomialMutation(eta=mutation_eta, prob=1.0/n_var)
-        crossover_op = crossover.SimulatedBinaryCrossover(eta=sbx_eta, prob=var_prob)
-        selection_op = selection.TournamentSelection(n_round=tournament_size)
+        # Create evolutionary operators using EvoX API
+        try:
+            mutation_op = mutation.Polynomial(eta=mutation_eta, prob=1.0/n_var)
+            crossover_op = crossover.SBX(eta=sbx_eta, prob=var_prob)
+            selection_op = selection.Tournament(n_round=tournament_size)
+        except AttributeError:
+            # Fall back to manual implementations if operators not available
+            mutation_op = None
+            crossover_op = None
+            selection_op = None
         
         # Create a simple GA workflow
         best_solutions = []
@@ -262,18 +328,31 @@ class EvoXBackend(EvolutionaryBackend):
         fitness = evox_problem.evaluate(population)
         
         for gen in range(n_gen):
-            # Selection
+            # Selection (tournament selection)
             key, subkey = jax.random.split(key)
-            selected_idx = selection_op(subkey, fitness, pop_size)
-            selected_pop = population[selected_idx]
+            if selection_op is not None:
+                selected_idx = selection_op(subkey, fitness, pop_size)
+                selected_pop = population[selected_idx]
+            else:
+                # Manual tournament selection
+                selected_idx = self._tournament_selection_jax(subkey, fitness, pop_size, tournament_size)
+                selected_pop = population[selected_idx]
             
-            # Crossover
+            # Crossover (SBX)
             key, subkey = jax.random.split(key)
-            offspring = crossover_op(subkey, selected_pop)
+            if crossover_op is not None:
+                offspring = crossover_op(subkey, selected_pop)
+            else:
+                # Manual SBX crossover for integers
+                offspring = self._sbx_crossover_jax(subkey, selected_pop, xl, xu, sbx_eta, var_prob)
             
-            # Mutation
+            # Mutation (polynomial mutation)
             key, subkey = jax.random.split(key)
-            offspring = mutation_op(subkey, offspring)
+            if mutation_op is not None:
+                offspring = mutation_op(subkey, offspring)
+            else:
+                # Manual polynomial mutation for integers
+                offspring = self._pm_mutation_jax(subkey, offspring, xl, xu, mutation_eta, 1.0/n_var)
             
             # Clip to bounds
             offspring = jnp.clip(offspring, xl, xu).astype(jnp.int32)
