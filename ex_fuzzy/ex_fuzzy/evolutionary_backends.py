@@ -344,7 +344,7 @@ class EvoXBackend(EvolutionaryBackend):
         fitness_list = []
         for ind in population:
             out = {}
-            self.problem._evaluate(ind.cpu().numpy().astype(int), out)
+            problem._evaluate(ind.cpu().numpy().astype(int), out)
             fitness_list.append(out['F'])
         fitness = torch.tensor(fitness_list, dtype=torch.float32, device=device)
         
