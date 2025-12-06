@@ -329,32 +329,38 @@ class EvoXBackend(EvolutionaryBackend):
                 maxval=jnp.array(xu, dtype=jnp.int32) + 1
             )
         
-        # Create evolutionary operators using EvoX API
-        mutation_op = mutation.Polynomial(eta=mutation_eta, prob=1.0/n_var)
-        crossover_op = crossover.SBX(eta=sbx_eta, prob=var_prob)
-        selection_op = selection.Tournament(n_round=tournament_size)
-        
         # Create a simple GA workflow
         best_solutions = []
         best_fitness = []
+        
+        # Convert bounds to JAX arrays for mutation
+        lb_jax = jnp.array(xl, dtype=jnp.float32)
+        ub_jax = jnp.array(xu, dtype=jnp.float32)
         
         population = init_pop
         key, subkey = jax.random.split(key)
         fitness = evox_problem.evaluate(population)
         
         for gen in range(n_gen):
-            # Selection using EvoX tournament selection
+            # Selection - use tournament selection manually
             key, subkey = jax.random.split(key)
-            selected_idx = selection_op(subkey, fitness, pop_size)
+            # For tournament selection: randomly select tournament_size individuals and pick best
+            selected_idx = []
+            for _ in range(pop_size):
+                key, subkey = jax.random.split(key)
+                candidates = jax.random.choice(subkey, pop_size, shape=(tournament_size,), replace=False)
+                best_in_tournament = candidates[jnp.argmin(fitness[candidates])]
+                selected_idx.append(best_in_tournament)
+            selected_idx = jnp.array(selected_idx)
             selected_pop = population[selected_idx]
             
-            # Crossover using EvoX SBX
+            # Crossover using EvoX simulated_binary function
             key, subkey = jax.random.split(key)
-            offspring = crossover_op(subkey, selected_pop)
+            offspring = crossover.simulated_binary(selected_pop.astype(jnp.float32), pro_c=var_prob, dis_c=sbx_eta)
             
-            # Mutation using EvoX polynomial mutation
+            # Mutation using EvoX polynomial_mutation function
             key, subkey = jax.random.split(key)
-            offspring = mutation_op(subkey, offspring)
+            offspring = mutation.polynomial_mutation(offspring, lb=lb_jax, ub=ub_jax, pro_m=1.0/n_var, dis_m=mutation_eta)
             
             # Clip to bounds
             offspring = jnp.clip(offspring, xl, xu).astype(jnp.int32)
