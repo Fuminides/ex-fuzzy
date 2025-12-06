@@ -144,6 +144,91 @@ class PyMooBackend(EvolutionaryBackend):
             'algorithm': res.algorithm,
             'res': res
         }
+    
+    def optimize_with_checkpoints(self, problem: Any, n_gen: int, pop_size: int,
+                                   random_state: int, verbose: bool,
+                                   checkpoint_freq: int, checkpoint_callback: Callable,
+                                   var_prob: float = 0.3, sbx_eta: float = 3.0,
+                                   mutation_eta: float = 7.0, tournament_size: int = 3,
+                                   sampling: Any = None, **kwargs) -> dict:
+        """
+        Optimize with checkpoint callbacks at specified intervals.
+        
+        Args:
+            problem: pymoo Problem instance
+            n_gen: Number of generations
+            pop_size: Population size
+            random_state: Random seed
+            verbose: Print progress
+            checkpoint_freq: Call checkpoint_callback every N generations
+            checkpoint_callback: Callable(gen: int, best_individual: np.array) to call at checkpoints
+            var_prob: Crossover probability
+            sbx_eta: SBX crossover eta parameter
+            mutation_eta: Polynomial mutation eta parameter
+            tournament_size: Tournament selection size
+            sampling: Initial population sampling strategy
+            **kwargs: Additional parameters
+            
+        Returns:
+            dict with optimization results
+        """
+        from pymoo.algorithms.soo.nonconvex.ga import GA
+        from pymoo.operators.repair.rounding import RoundingRepair
+        from pymoo.operators.sampling.rnd import IntegerRandomSampling
+        from pymoo.operators.crossover.sbx import SBX
+        from pymoo.operators.mutation.pm import PolynomialMutation
+        
+        if sampling is None:
+            sampling = IntegerRandomSampling()
+        
+        algorithm = GA(
+            pop_size=pop_size,
+            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
+            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
+            tournament_size=tournament_size,
+            sampling=sampling,
+            eliminate_duplicates=False
+        )
+        
+        if verbose:
+            print('=================================================')
+            print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
+            print('=================================================')
+        
+        algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen))
+        
+        for k in range(n_gen):
+            algorithm.next()
+            res = algorithm
+            
+            if verbose:
+                print('%-6s | %-8s | %-8s | %-8s' % (
+                    res.n_gen, res.evaluator.n_eval, 
+                    res.pop.get('F').mean(), res.pop.get('F').min()
+                ))
+            
+            if k % checkpoint_freq == 0:
+                pop = algorithm.pop
+                fitness_last_gen = pop.get('F')
+                best_solution_arg = np.argmin(fitness_last_gen)
+                best_individual = pop.get('X')[best_solution_arg, :]
+                
+                # Call user-provided checkpoint callback
+                checkpoint_callback(k, best_individual)
+        
+        # Extract final results
+        pop = algorithm.pop
+        fitness_last_gen = pop.get('F')
+        best_solution = np.argmin(fitness_last_gen)
+        best_individual = pop.get('X')[best_solution, :]
+        
+        return {
+            'X': best_individual,
+            'F': fitness_last_gen[best_solution],
+            'pop': pop,
+            'algorithm': algorithm,
+            'res': algorithm
+        }
 
 
 class EvoXBackend(EvolutionaryBackend):
@@ -164,86 +249,21 @@ class EvoXBackend(EvolutionaryBackend):
     
     def _setup_jax(self):
         """Setup JAX configuration for GPU usage."""
-        try:
-            import jax
-            devices = jax.devices()
-            self._device = devices[0]
-            
-            if self._device.platform == 'gpu':
-                print(f"EvoX backend using GPU: {self._device}")
-            else:
-                print(f"EvoX backend using CPU (GPU not available)")
-                    
-        except Exception as e:
-            raise RuntimeError(
-                f"Failed to initialize JAX for EvoX backend: {e}\n"
-                f"This is likely a JAX/CUDA version mismatch.\n"
-                f"Solutions:\n"
-                f"  1. For Colab GPU: !pip uninstall jax jaxlib -y && !pip install 'jax[cuda12]'\n"
-                f"  2. For local GPU: Install JAX with matching CUDA version\n"
-                f"  3. Use pymoo backend instead: backend='pymoo'"
-            ) from e
-    
+        import jax
+        devices = jax.devices()
+        self._device = devices[0]
+        
+        if self._device.platform == 'gpu':
+            print(f"EvoX backend using GPU: {self._device}")
+        else:
+            print(f"EvoX backend using CPU (GPU not available)")
+                
+        
     def is_available(self) -> bool:
         return self._available
     
     def name(self) -> str:
         return "evox"
-    
-    def _tournament_selection_jax(self, key, fitness, pop_size, tournament_size):
-        """Manual tournament selection for JAX."""
-        import jax
-        import jax.numpy as jnp
-        
-        selected = []
-        for _ in range(pop_size):
-            key, subkey = jax.random.split(key)
-            competitors = jax.random.choice(subkey, len(fitness), shape=(tournament_size,), replace=False)
-            winner = competitors[jnp.argmin(fitness[competitors])]
-            selected.append(winner)
-        return jnp.array(selected)
-    
-    def _sbx_crossover_jax(self, key, population, xl, xu, eta, prob):
-        """Manual Simulated Binary Crossover for JAX (adapted for integers)."""
-        import jax
-        import jax.numpy as jnp
-        
-        offspring = population.copy()
-        n_parents, n_var = population.shape
-        
-        for i in range(0, n_parents - 1, 2):
-            key, subkey = jax.random.split(key)
-            if jax.random.uniform(subkey) < prob:
-                key, subkey1, subkey2 = jax.random.split(key, 3)
-                
-                parent1 = population[i]
-                parent2 = population[i + 1]
-                
-                # Simple blend crossover for integers
-                mask = jax.random.uniform(subkey1, (n_var,)) < 0.5
-                offspring = offspring.at[i].set(jnp.where(mask, parent1, parent2))
-                offspring = offspring.at[i + 1].set(jnp.where(mask, parent2, parent1))
-        
-        return offspring
-    
-    def _pm_mutation_jax(self, key, population, xl, xu, eta, prob):
-        """Manual Polynomial Mutation for JAX (adapted for integers)."""
-        import jax
-        import jax.numpy as jnp
-        
-        n_pop, n_var = population.shape
-        offspring = population.copy()
-        
-        for i in range(n_pop):
-            for j in range(n_var):
-                key, subkey = jax.random.split(key)
-                if jax.random.uniform(subkey) < prob:
-                    key, subkey = jax.random.split(key)
-                    # Random perturbation for integers
-                    delta = jax.random.randint(subkey, (), minval=-2, maxval=3)
-                    offspring = offspring.at[i, j].set(population[i, j] + delta)
-        
-        return offspring
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int,
                  random_state: int, verbose: bool,
@@ -310,15 +330,9 @@ class EvoXBackend(EvolutionaryBackend):
             )
         
         # Create evolutionary operators using EvoX API
-        try:
-            mutation_op = mutation.Polynomial(eta=mutation_eta, prob=1.0/n_var)
-            crossover_op = crossover.SBX(eta=sbx_eta, prob=var_prob)
-            selection_op = selection.Tournament(n_round=tournament_size)
-        except AttributeError:
-            # Fall back to manual implementations if operators not available
-            mutation_op = None
-            crossover_op = None
-            selection_op = None
+        mutation_op = mutation.Polynomial(eta=mutation_eta, prob=1.0/n_var)
+        crossover_op = crossover.SBX(eta=sbx_eta, prob=var_prob)
+        selection_op = selection.Tournament(n_round=tournament_size)
         
         # Create a simple GA workflow
         best_solutions = []
@@ -329,31 +343,18 @@ class EvoXBackend(EvolutionaryBackend):
         fitness = evox_problem.evaluate(population)
         
         for gen in range(n_gen):
-            # Selection (tournament selection)
+            # Selection using EvoX tournament selection
             key, subkey = jax.random.split(key)
-            if selection_op is not None:
-                selected_idx = selection_op(subkey, fitness, pop_size)
-                selected_pop = population[selected_idx]
-            else:
-                # Manual tournament selection
-                selected_idx = self._tournament_selection_jax(subkey, fitness, pop_size, tournament_size)
-                selected_pop = population[selected_idx]
+            selected_idx = selection_op(subkey, fitness, pop_size)
+            selected_pop = population[selected_idx]
             
-            # Crossover (SBX)
+            # Crossover using EvoX SBX
             key, subkey = jax.random.split(key)
-            if crossover_op is not None:
-                offspring = crossover_op(subkey, selected_pop)
-            else:
-                # Manual SBX crossover for integers
-                offspring = self._sbx_crossover_jax(subkey, selected_pop, xl, xu, sbx_eta, var_prob)
+            offspring = crossover_op(subkey, selected_pop)
             
-            # Mutation (polynomial mutation)
+            # Mutation using EvoX polynomial mutation
             key, subkey = jax.random.split(key)
-            if mutation_op is not None:
-                offspring = mutation_op(subkey, offspring)
-            else:
-                # Manual polynomial mutation for integers
-                offspring = self._pm_mutation_jax(subkey, offspring, xl, xu, mutation_eta, 1.0/n_var)
+            offspring = mutation_op(subkey, offspring)
             
             # Clip to bounds
             offspring = jnp.clip(offspring, xl, xu).astype(jnp.int32)
@@ -418,26 +419,151 @@ class EvoXProblemWrapper:
         import jax
         import jax.numpy as jnp
         
-        # Check if problem has a JAX-compatible evaluation function
-        if hasattr(self.problem, 'create_jax_evaluate_func'):
-            self._jax_eval_func = self.problem.create_jax_evaluate_func()
+        # Create JAX evaluation function for FitRuleBase
+        problem_class_name = self.problem.__class__.__name__
+        
+        if problem_class_name == 'FitRuleBase':
+            self._jax_eval_func = self._create_fitrulebase_jax_evaluate()
             if self._jax_eval_func is not None:
                 # Vectorize the JAX evaluation function for batch processing
                 self._vmap_eval = jax.vmap(self._jax_eval_func)
-                return
+                print(f"✅ GPU-accelerated evaluation enabled for {problem_class_name}")
+            else:
+                raise RuntimeError(f"Could not create JAX evaluation for {problem_class_name}")
+        else:
+            # Fallback for unsupported problem types
+            print(f"⚠️  GPU evaluation not implemented for {problem_class_name}")
+            print("   Falling back to CPU evaluation")
+            raise RuntimeError(f"GPU evaluation only supports FitRuleBase, got {problem_class_name}")
+    
+    def _create_fitrulebase_jax_evaluate(self):
+        """Create JAX evaluation function for FitRuleBase problem."""
+        import jax
+        import jax.numpy as jnp
         
-        # Fallback: Create a basic vectorized version using the standard _evaluate
-        def eval_single(individual):
-            """Evaluate single individual - to be vectorized."""
-            # Convert to numpy for compatibility with existing _evaluate
-            ind_np = np.array(individual)
-            out = {}
-            self.problem._evaluate(ind_np, out)
-            return out['F']
+        # Capture necessary data and parameters in closure
+        X = self.problem.X
+        y = self.problem.y
+        tolerance = self.problem.tolerance
+        alpha = self.problem.alpha_
+        beta = self.problem.beta_
+        precomputed_truth = self.problem._precomputed_truth
+        fuzzy_type = self.problem.fuzzy_type
+        n_classes = self.problem.n_classes
+        nRules = self.problem.nRules
+        nAnts = self.problem.nAnts
+        lvs = self.problem.lvs
+        n_lv_possible = self.problem.n_lv_possible
+        ds_mode = self.problem.ds_mode
         
-        # Vectorize the evaluation function for batch processing
-        self._vmap_eval = jax.vmap(eval_single)
-        print("✅ GPU-accelerated evaluation enabled (basic vectorization)")
+        def jax_evaluate(x):
+            """
+            JAX-native evaluation function using pure tensor operations.
+            Computes fitness directly from gene without constructing rule objects.
+            """
+            # Convert to JAX array and int
+            x_jax = jnp.array(x, dtype=jnp.int32)
+            
+            try:
+                # ============= JAX-NATIVE EVALUATION (no object construction) =============
+                # Convert data to JAX arrays
+                X_jax = jnp.array(X, dtype=jnp.float32)
+                y_jax = jnp.array(y, dtype=jnp.int32)
+                n_samples = X_jax.shape[0]
+                n_features = X_jax.shape[1]
+                
+                # Step 1: Decode gene structure
+                rule_features = x_jax[:nRules * nAnts].reshape(nRules, nAnts)
+                rule_labels = x_jax[nRules * nAnts:2 * nRules * nAnts].reshape(nRules, nAnts)
+                
+                # Calculate fourth pointer (consequents position)
+                if lvs is None:
+                    fourth_pointer = 2 * nAnts * nRules
+                else:
+                    fourth_pointer = 2 * nAnts * nRules
+                
+                # Extract consequents
+                rule_consequents = x_jax[fourth_pointer:fourth_pointer + nRules]
+                
+                # Extract weights if ds_mode == 2
+                if ds_mode == 2:
+                    fifth_pointer = fourth_pointer + nRules
+                    rule_weights = x_jax[fifth_pointer:fifth_pointer + nRules] / 100.0
+                else:
+                    rule_weights = jnp.ones(nRules)
+                
+                # Step 2: Build membership tensor from precomputed truth
+                if precomputed_truth is not None and lvs is not None:
+                    max_lvs = max([len(lv) for lv in lvs])
+                    
+                    # Build membership matrix: (n_samples, n_features, max_linguistic_vars)
+                    membership_matrix = []
+                    for sample_idx in range(n_samples):
+                        sample_memberships = []
+                        for feat_idx in range(n_features):
+                            truth_dict = precomputed_truth[sample_idx]
+                            if feat_idx in truth_dict:
+                                mems = list(truth_dict[feat_idx])
+                                mems = mems + [0.0] * (max_lvs - len(mems))
+                            else:
+                                mems = [0.0] * max_lvs
+                            sample_memberships.append(mems)
+                        membership_matrix.append(sample_memberships)
+                    
+                    membership_tensor = jnp.array(membership_matrix, dtype=jnp.float32)
+                else:
+                    # No precomputed truth - cannot proceed with JAX-only evaluation
+                    return jnp.array(1.0)
+                
+                # Step 3: Compute rule firing strengths using vectorized operations
+                def compute_rule_firing(rule_idx):
+                    """Compute firing strength for a single rule across all samples."""
+                    features = rule_features[rule_idx]
+                    labels = rule_labels[rule_idx]
+                    
+                    def get_antecedent_membership(ant_idx):
+                        feat_idx = features[ant_idx]
+                        label_idx = labels[ant_idx]
+                        return jnp.where(
+                            label_idx >= 0,
+                            membership_tensor[:, feat_idx, label_idx],
+                            jnp.ones(n_samples)
+                        )
+                    
+                    ant_memberships = jax.vmap(get_antecedent_membership)(jnp.arange(nAnts))
+                    firing_strength = jnp.min(ant_memberships, axis=0)
+                    return firing_strength
+                
+                # Vectorize over all rules
+                all_firing_strengths = jax.vmap(compute_rule_firing)(jnp.arange(nRules))
+                
+                # Step 4: Apply rule weights
+                weighted_firing = all_firing_strengths * rule_weights[:, jnp.newaxis]
+                
+                # Step 5: Aggregate by consequent class
+                class_activations = jnp.zeros((n_classes, n_samples))
+                for class_idx in range(n_classes):
+                    class_mask = (rule_consequents == class_idx)
+                    class_activations = class_activations.at[class_idx].set(
+                        jnp.sum(weighted_firing * class_mask[:, jnp.newaxis], axis=0)
+                    )
+                
+                # Step 6: Make predictions
+                predictions = jnp.argmax(class_activations, axis=0)
+                
+                # Step 7: Compute accuracy
+                correct = jnp.sum(predictions == y_jax)
+                accuracy = correct / n_samples
+                
+                # Step 8: Compute fitness
+                fitness = 1.0 - accuracy
+                
+                return jnp.array(fitness)
+                
+            except Exception as e:
+                return jnp.array(1.0)
+        
+        return jax_evaluate
     
     def evaluate(self, population):
         """
@@ -452,16 +578,12 @@ class EvoXProblemWrapper:
         import jax.numpy as jnp
         
         if self.use_gpu_eval:
-            try:
-                # Try GPU-accelerated vectorized evaluation
-                fitness = self._vmap_eval(population)
-                self.n_eval += len(population)
-                return fitness
-            except Exception as e:
-                # Fall back to CPU if GPU evaluation fails
-                print(f"⚠️  GPU evaluation failed: {e}, using CPU")
-                self.use_gpu_eval = False
-        
+            
+            # Try GPU-accelerated vectorized evaluation
+            fitness = self._vmap_eval(population)
+            self.n_eval += len(population)
+            return fitness
+
         # CPU evaluation (fallback or when GPU disabled)
         pop_np = np.array(population)
         

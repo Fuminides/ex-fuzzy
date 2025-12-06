@@ -637,7 +637,8 @@ class ExploreRuleBases(Problem):
         # Choose the selected ones in the gen
         total_rules = self.candidate_rules.get_rules()
         chosen_rules = [total_rules[ix] for ix, val in enumerate(x)]
-        rule_consequents = sum([[ix] * len(rule) for ix, rule in enumerate(self.candidate_rules)], [])
+        rule_consequents = sum([[ix] * l
+        en(rule) for ix, rule in enumerate(self.candidate_rules)], [])
         chosen_rules_consequents = [rule_consequents[val] for ix, val in enumerate(x)]
         # Create a rule base for each consequent with the selected rules
         rule_list = [[] for _ in range(self.n_classes)]
