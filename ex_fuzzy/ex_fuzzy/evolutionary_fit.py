@@ -35,9 +35,9 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import matthews_corrcoef
 from sklearn.base import ClassifierMixin
+from multiprocessing.pool import ThreadPool
 from pymoo.core.problem import Problem
 from pymoo.core.variable import Integer
-from multiprocessing.pool import ThreadPool
 from pymoo.parallelization.starmap import StarmapParallelization
 
 # Import backend abstraction
@@ -245,88 +245,61 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             rules_gene = (np.ones((pop_size, len(rules_gene))) * rules_gene).astype(int)
 
         # Use backend for optimization
-        if checkpoints > 0 and self.backend.name() == 'pymoo':
-            # Checkpoint mode only supported for pymoo backend currently
-            from pymoo.algorithms.soo.nonconvex.ga import GA
-            from pymoo.operators.repair.rounding import RoundingRepair
-            from pymoo.operators.crossover.sbx import SBX
-            from pymoo.operators.mutation.pm import PolynomialMutation
-            from pymoo.operators.sampling.rnd import IntegerRandomSampling
-            
-            if rules_gene is None:
-                rules_gene = IntegerRandomSampling()
-                
-            algorithm = GA(
-                pop_size=pop_size,
-                crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
-                mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
-                tournament_size=tournament_size,
-                sampling=rules_gene,
-                eliminate_duplicates=False)
-        
-
-        if checkpoints > 0 and self.backend.name() == 'pymoo':
-            if self.verbose:
-                print('=================================================')
-                print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
-                print('=================================================')
-            algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen)) 
-            for k in range(n_gen):
-                algorithm.next()
-                res = algorithm
-                if self.verbose:
-                    print('%-6s | %-8s | %-8s | %-8s' % (res.n_gen, res.evaluator.n_eval, res.pop.get('F').mean(), res.pop.get('F').min()))
-                if k % checkpoints == 0:
-                    pop = algorithm.pop
-                    fitness_last_gen = pop.get('F')
-                    best_solution_arg = np.argmin(fitness_last_gen)
-                    best_individual = pop.get('X')[best_solution_arg, :]
-
-                    rule_base = problem._construct_ruleBase(
-                        best_individual, self.fuzzy_type)
-                    eval_performance = evr.evalRuleBase(
-                        rule_base, np.array(X), y)
-                    
-                    eval_performance.add_full_evaluation()  
-                    # self.rename_fuzzy_variables() This wont work on checkpoints!
+        if checkpoints > 0:
+            # Checkpoint mode - delegate to backend if supported
+            if self.backend.name() == 'pymoo':
+                # Define checkpoint handler
+                def handle_checkpoint(gen: int, best_individual: np.array):
+                    rule_base = problem._construct_ruleBase(best_individual, self.fuzzy_type)
+                    eval_performance = evr.evalRuleBase(rule_base, np.array(X), y)
+                    eval_performance.add_full_evaluation()
                     rule_base.purge_rules(self.tolerance)
                     rule_base.rename_cons(self.classes_names)
                     checkpoint_rules = rule_base.print_rules(True, bootstrap_results=True)
-
+                    
                     if checkpoint_callback is None:
-                        with open(os.path.join(checkpoint_path,"checkpoint_" + str(algorithm.n_gen)), "w") as f:
-                            f.write(checkpoint_rules) 
+                        with open(os.path.join(checkpoint_path, "checkpoint_" + str(gen)), "w") as f:
+                            f.write(checkpoint_rules)
                     else:
-                        checkpoint_callback(k, rule_base)
-            
-            # Extract final results from checkpoint mode
-            pop = algorithm.pop
-            fitness_last_gen = pop.get('F')
-            best_solution = np.argmin(fitness_last_gen)
-            best_individual = pop.get('X')[best_solution, :]
-            self.performance = 1 - fitness_last_gen[best_solution]
-            
-        elif checkpoints > 0 and self.backend.name() == 'evox':
-            # Checkpoints not yet implemented for EvoX backend
-            if self.verbose:
-                print("Warning: Checkpoints are not yet supported with EvoX backend. Running without checkpoints.")
-            # Run optimization using backend
-            result = self.backend.optimize(
-                problem=problem,
-                n_gen=n_gen,
-                pop_size=pop_size,
-                random_state=random_state,
-                verbose=self.verbose,
-                var_prob=var_prob,
-                sbx_eta=sbx_eta,
-                mutation_eta=mutation_eta,
-                tournament_size=tournament_size,
-                sampling=rules_gene
-            )
-            
-            best_individual = result['X']
-            self.performance = 1 - result['F']
-            
+                        checkpoint_callback(gen, rule_base)
+                
+                # Call backend's checkpoint optimization
+                result = self.backend.optimize_with_checkpoints(
+                    problem=problem,
+                    n_gen=n_gen,
+                    pop_size=pop_size,
+                    random_state=random_state,
+                    verbose=self.verbose,
+                    checkpoint_freq=checkpoints,
+                    checkpoint_callback=handle_checkpoint,
+                    var_prob=var_prob,
+                    sbx_eta=sbx_eta,
+                    mutation_eta=mutation_eta,
+                    tournament_size=tournament_size,
+                    sampling=rules_gene
+                )
+                
+                best_individual = result['X']
+                self.performance = 1 - result['F']
+            else:
+                # EvoX or other backends: checkpoints not supported
+                if self.verbose:
+                    print(f"Warning: Checkpoints are not yet supported with {self.backend.name()} backend. Running without checkpoints.")
+                result = self.backend.optimize(
+                    problem=problem,
+                    n_gen=n_gen,
+                    pop_size=pop_size,
+                    random_state=random_state,
+                    verbose=self.verbose,
+                    var_prob=var_prob,
+                    sbx_eta=sbx_eta,
+                    mutation_eta=mutation_eta,
+                    tournament_size=tournament_size,
+                    sampling=rules_gene
+                )
+                
+                best_individual = result['X']
+                self.performance = 1 - result['F']
         else:
             # Normal optimization without checkpoints
             result = self.backend.optimize(
@@ -709,103 +682,6 @@ class ExploreRuleBases(Problem):
             out["F"] = 1 - score
         except rules.RuleError:
             out["F"] = 1
-    
-    def create_jax_evaluate_func(self):
-        """
-        Creates a JAX-compatible evaluation function for GPU acceleration.
-        This function can be used by the EvoX backend for faster fitness evaluation.
-        
-        Returns:
-            A callable that takes a JAX array (individual) and returns fitness value.
-            Returns None if JAX is not available or evaluation cannot be JAX-ified.
-        """
-        try:
-            import jax
-            import jax.numpy as jnp
-        except ImportError:
-            return None
-        
-        # Capture necessary data in closure - convert to JAX arrays for GPU
-        X = self.X
-        y = self.y
-        tolerance = self.tolerance
-        precomputed_truth = self._precomputed_truth
-        fuzzy_type = self.fuzzy_type
-        n_classes = self.n_classes
-        candidate_rules = self.candidate_rules
-        nRules = self.nRules
-        
-        def jax_evaluate(x):
-            """
-            JAX-compatible evaluation function.
-            This is a complete copy of the evaluation logic that you can modify for GPU.
-            
-            TODO: Replace the operations below with JAX equivalents for GPU acceleration:
-            - Replace np.array with jnp.array
-            - Replace Python loops with jax.lax.scan or jax.vmap
-            - Replace object creation with functional JAX operations
-            """
-            # Convert JAX array to numpy for current implementation
-            x_np = np.array(x)
-            
-            try:
-                # ============= CONSTRUCT RULEBASE (copy of _construct_ruleBase) =============
-                x_int = x_np.astype(int)
-                
-                # Get all rules and their consequents
-                diff_consequents = np.arange(len(candidate_rules))
-                
-                # Choose the selected ones in the gen
-                total_rules = candidate_rules.get_rules()
-                chosen_rules = [total_rules[ix] for ix, val in enumerate(x_int)]
-                rule_consequents = sum([[ix] * len(rule) for ix, rule in enumerate(candidate_rules)], [])
-                chosen_rules_consequents = [rule_consequents[val] for ix, val in enumerate(x_int)]
-                
-                # Create a rule base for each consequent with the selected rules
-                rule_list = [[] for _ in range(n_classes)]
-                rule_bases = []
-                
-                for ix, consequent in enumerate(diff_consequents):
-                    for rx, rule in enumerate(chosen_rules):
-                        if chosen_rules_consequents[rx] == consequent:
-                            rule_list[ix].append(rule)
-
-                    if len(rule_list[ix]) > 0:
-                        if fuzzy_type == fs.FUZZY_SETS.t1:
-                            rule_base_cons = rules.RuleBaseT1(
-                                candidate_rules[0].antecedents, rule_list[ix])
-                        elif fuzzy_type == fs.FUZZY_SETS.t2:
-                            rule_base_cons = rules.RuleBaseT2(
-                                candidate_rules[0].antecedents, rule_list[ix])
-                        elif fuzzy_type == fs.FUZZY_SETS.gt2:
-                            rule_base_cons = rules.RuleBaseGT2(
-                                candidate_rules[0].antecedents, rule_list[ix])
-                            
-                        rule_bases.append(rule_base_cons)
-                
-                # Create the Master Rule Base object
-                ruleBase = rules.MasterRuleBase(rule_bases, diff_consequents, ds_mode=0, allow_unknown=False)
-                
-                # ============= FITNESS FUNCTION (copy of fitness_func) =============
-                ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=precomputed_truth)
-                ev_object.add_rule_weights()
-
-                score_acc = ev_object.classification_eval()
-                score_rules_size = ev_object.size_antecedents_eval(tolerance)
-                score_nrules = ev_object.effective_rulesize_eval(tolerance)
-
-                score = score_acc + score_rules_size * 0.0 + score_nrules * 0.0
-                
-                fitness = 1.0 - score
-                
-            except Exception as e:
-                # Return worst fitness on error
-                fitness = 1.0
-            
-            return jnp.array(fitness)
-        
-        return jax_evaluate
-
     
     def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.0, beta:float=0.0, precomputed_truth=None) -> float:
         '''
@@ -1469,117 +1345,6 @@ class FitRuleBase(Problem):
             score = 0.0
         
         out["F"] = 1 - score
-    
-    def create_jax_evaluate_func(self):
-        """
-        Creates a JAX-compatible evaluation function for GPU acceleration.
-        This function can be used by the EvoX backend for faster fitness evaluation.
-        
-        Returns:
-            A callable that takes a JAX array (individual) and returns fitness value.
-            Returns None if JAX is not available or evaluation cannot be JAX-ified.
-        """
-        try:
-            import jax
-            import jax.numpy as jnp
-        except ImportError:
-            return None
-        
-        # Capture necessary data and parameters in closure
-        X = self.X
-        y = self.y
-        tolerance = self.tolerance
-        alpha = self.alpha_
-        beta = self.beta_
-        precomputed_truth = self._precomputed_truth
-        fuzzy_type = self.fuzzy_type
-        n_classes = self.n_classes
-        nRules = self.nRules
-        nAnts = self.nAnts
-        lvs = self.lvs
-        n_lv_possible = self.n_lv_possible
-        ds_mode = self.ds_mode
-        
-        def jax_evaluate(x):
-            """
-            JAX-compatible evaluation function.
-            This is a complete copy of the evaluation logic that you can modify for GPU.
-            
-            TODO: Replace the operations below with JAX equivalents for GPU acceleration:
-            - Replace np.array with jnp.array
-            - Replace Python loops with jax.lax.scan or jax.vmap
-            - Replace object creation with functional JAX operations
-            - Vectorize membership calculations
-            - Vectorize rule firing and aggregation
-            """
-            # Convert JAX array to numpy for current implementation
-            x_np = np.array(x)
-            
-            try:
-                # ============= CONSTRUCT RULEBASE (simplified copy of _construct_ruleBase) =============
-                # NOTE: This is a simplified version. For the full implementation, see the original _construct_ruleBase method.
-                # You'll need to adapt this based on your specific fuzzy_type, lvs settings, etc.
-                
-                rule_list = [[] for _ in range(n_classes)]
-                mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
-                
-                if lvs is None:
-                    if fuzzy_type == fs.FUZZY_SETS.t1:
-                        fourth_pointer = 2 * nAnts * nRules + len(n_lv_possible) * 3 + sum(np.array(n_lv_possible)-1) * 4
-                    elif fuzzy_type == fs.FUZZY_SETS.t2:
-                        fourth_pointer = 2 * nAnts * nRules + len(n_lv_possible) * 2 + sum(np.array(n_lv_possible)-1) * mf_size
-                else:
-                    fourth_pointer = 2 * nAnts * nRules
-
-                if ds_mode == 2:
-                    fifth_pointer = fourth_pointer + nRules
-                else:
-                    fifth_pointer = fourth_pointer
-                
-                # Convert to int
-                try:
-                    x_int = np.array(list(x_np.values())).astype(int)
-                except AttributeError:
-                    x_int = x_np.astype(int)
-                
-                # For full implementation, call the original construct method
-                # This is where you would implement the JAX version of rule construction
-                from . import evolutionary_fit as evfit
-                ruleBase = self._construct_ruleBase(x_int, fuzzy_type)
-                
-                # ============= FITNESS FUNCTION (copy of fitness_func) =============
-                if len(ruleBase.get_rules()) > 0:
-                    # Compute precomputed truth if needed
-                    if precomputed_truth is None:
-                        computed_truth = rules.compute_antecedents_memberships(ruleBase.antecedents, X)
-                    else:
-                        computed_truth = precomputed_truth
-
-                    ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=computed_truth)
-                    ev_object.add_full_evaluation()
-                    ruleBase.purge_rules(tolerance)
-
-                    if len(ruleBase.get_rules()) > 0: 
-                        score_acc = ev_object.classification_eval()
-                        score_rules_size = ev_object.size_antecedents_eval(tolerance)
-                        score_nrules = ev_object.effective_rulesize_eval(tolerance)
-
-                        score = score_acc + score_rules_size * alpha + score_nrules * beta
-                    else:
-                        score = 0.0
-                else:
-                    score = 0.0
-                    
-                fitness = 1.0 - score
-                
-            except Exception as e:
-                # Return worst fitness on error
-                fitness = 1.0
-            
-            return jnp.array(fitness)
-        
-        return jax_evaluate
-    
 
     def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.0, beta:float=0.0, precomputed_truth:np.array=None) -> float:
         '''
