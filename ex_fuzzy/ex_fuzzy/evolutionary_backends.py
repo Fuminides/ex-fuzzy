@@ -271,13 +271,13 @@ class EvoXBackend(EvolutionaryBackend):
                  mutation_eta: float = 20.0, tournament_size: int = 3,
                  sampling: Any = None, **kwargs) -> dict:
         """
-        Optimize using EvoX's genetic algorithm with JAX acceleration.
+        Optimize using EvoX's genetic algorithm with PyTorch backend.
         
         Args:
             problem: Problem wrapper compatible with EvoX
             n_gen: Number of generations
             pop_size: Population size
-            random_state: Random seed for JAX
+            random_state: Random seed
             verbose: Print progress
             var_prob: Crossover probability
             sbx_eta: SBX crossover distribution index
@@ -289,102 +289,109 @@ class EvoXBackend(EvolutionaryBackend):
         Returns:
             dict with optimization results
         """
-        import jax
-        import jax.numpy as jnp
-        from evox.operators import mutation, crossover, selection
+        import torch
+        from evox.operators import mutation, crossover
         
         # Extract problem information
         n_var = problem.n_var
         xl = problem.xl
         xu = problem.xu
         
-        # Create JAX random key
-        key = jax.random.PRNGKey(random_state)
+        # Set random seed for PyTorch
+        torch.manual_seed(random_state)
         
-        # Create EvoX problem wrapper with GPU evaluation
-        # GPU evaluation uses jax.vmap to vectorize fitness computation
-        evox_problem = EvoXProblemWrapper(problem, use_gpu_eval=True)
+        # Get device (GPU if available)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        # Create problem wrapper (CPU evaluation for now - PyTorch-based GPU eval would need different approach)
+        evox_problem = EvoXProblemWrapper(problem, use_gpu_eval=False)
         
         # Initialize population
         if sampling is not None:
             if isinstance(sampling, np.ndarray):
                 # Initial population provided
-                init_pop = jnp.array(sampling, dtype=jnp.int32)
+                init_pop = torch.tensor(sampling, dtype=torch.int32, device=device)
             else:
-                # sampling is a pymoo sampler, generate initial population
-                key, subkey = jax.random.split(key)
-                init_pop = jax.random.randint(
-                    subkey, 
-                    (pop_size, n_var), 
-                    minval=jnp.array(xl, dtype=jnp.int32), 
-                    maxval=jnp.array(xu, dtype=jnp.int32) + 1
+                # Random initialization
+                init_pop = torch.randint(
+                    low=int(xl[0]), 
+                    high=int(xu[0]) + 1,
+                    size=(pop_size, n_var), 
+                    dtype=torch.int32,
+                    device=device
                 )
         else:
             # Random initialization
-            key, subkey = jax.random.split(key)
-            init_pop = jax.random.randint(
-                subkey,
-                (pop_size, n_var),
-                minval=jnp.array(xl, dtype=jnp.int32),
-                maxval=jnp.array(xu, dtype=jnp.int32) + 1
+            init_pop = torch.randint(
+                low=int(xl[0]),
+                high=int(xu[0]) + 1,
+                size=(pop_size, n_var),
+                dtype=torch.int32,
+                device=device
             )
         
         # Create a simple GA workflow
         best_solutions = []
         best_fitness = []
         
-        # Convert bounds to JAX arrays for mutation
-        lb_jax = jnp.array(xl, dtype=jnp.float32)
-        ub_jax = jnp.array(xu, dtype=jnp.float32)
+        # Convert bounds to PyTorch tensors for mutation
+        lb_torch = torch.tensor(xl, dtype=torch.float32, device=device)
+        ub_torch = torch.tensor(xu, dtype=torch.float32, device=device)
         
-        population = init_pop
-        key, subkey = jax.random.split(key)
-        fitness = evox_problem.evaluate(population)
+        population = init_pop.float()  # Convert to float for operators
+        
+        # Initial evaluation
+        fitness_list = []
+        for ind in population:
+            out = {}
+            self.problem._evaluate(ind.cpu().numpy().astype(int), out)
+            fitness_list.append(out['F'])
+        fitness = torch.tensor(fitness_list, dtype=torch.float32, device=device)
         
         for gen in range(n_gen):
-            # Selection - use tournament selection manually
-            key, subkey = jax.random.split(key)
-            # For tournament selection: randomly select tournament_size individuals and pick best
+            # Selection - tournament selection
             selected_idx = []
             for _ in range(pop_size):
-                key, subkey = jax.random.split(key)
-                candidates = jax.random.choice(subkey, pop_size, shape=(tournament_size,), replace=False)
-                best_in_tournament = candidates[jnp.argmin(fitness[candidates])]
+                candidates = torch.randperm(pop_size, device=device)[:tournament_size]
+                best_in_tournament = candidates[torch.argmin(fitness[candidates])]
                 selected_idx.append(best_in_tournament)
-            selected_idx = jnp.array(selected_idx)
+            selected_idx = torch.tensor(selected_idx, device=device)
             selected_pop = population[selected_idx]
             
             # Crossover using EvoX simulated_binary function
-            key, subkey = jax.random.split(key)
-            offspring = crossover.simulated_binary(selected_pop.astype(jnp.float32), pro_c=var_prob, dis_c=sbx_eta)
+            offspring = crossover.simulated_binary(selected_pop, pro_c=var_prob, dis_c=sbx_eta)
             
             # Mutation using EvoX polynomial_mutation function
-            key, subkey = jax.random.split(key)
-            offspring = mutation.polynomial_mutation(offspring, lb=lb_jax, ub=ub_jax, pro_m=1.0/n_var, dis_m=mutation_eta)
+            offspring = mutation.polynomial_mutation(offspring, lb=lb_torch, ub=ub_torch, pro_m=1.0/n_var, dis_m=mutation_eta)
             
-            # Clip to bounds
-            offspring = jnp.clip(offspring, xl, xu).astype(jnp.int32)
+            # Clip to bounds and convert to int
+            offspring = torch.clamp(offspring, lb_torch[0], ub_torch[0]).int()
             
             # Evaluate offspring
-            offspring_fitness = evox_problem.evaluate(offspring)
+            offspring_fitness_list = []
+            for ind in offspring:
+                out = {}
+                problem._evaluate(ind.cpu().numpy(), out)
+                offspring_fitness_list.append(out['F'])
+            offspring_fitness = torch.tensor(offspring_fitness_list, dtype=torch.float32, device=device)
             
             # Survival selection (generational replacement)
-            population = offspring
+            population = offspring.float()
             fitness = offspring_fitness
             
             # Track best solution
-            best_idx = jnp.argmin(fitness)
-            best_solutions.append(population[best_idx])
-            best_fitness.append(fitness[best_idx])
+            best_idx = torch.argmin(fitness)
+            best_solutions.append(population[best_idx].cpu().numpy())
+            best_fitness.append(float(fitness[best_idx]))
             
             if verbose and gen % max(1, n_gen // 10) == 0:
-                print(f'Gen {gen:4d} | Best fitness: {float(fitness[best_idx]):.6f} | '
-                      f'Avg fitness: {float(jnp.mean(fitness)):.6f}')
+                print(f'Gen {gen:4d} | Best fitness: {fitness[best_idx]:.6f} | '
+                      f'Avg fitness: {torch.mean(fitness):.6f}')
         
         # Get final best solution
-        best_gen = int(jnp.argmin(jnp.array(best_fitness)))
-        best_individual = np.array(best_solutions[best_gen])
-        best_fit = float(best_fitness[best_gen])
+        best_gen = int(np.argmin(best_fitness))
+        best_individual = best_solutions[best_gen].astype(int)
+        best_fit = best_fitness[best_gen]
         
         if verbose:
             print(f'Optimization complete. Best fitness: {best_fit:.6f}')
@@ -392,12 +399,12 @@ class EvoXBackend(EvolutionaryBackend):
         return {
             'X': best_individual,
             'F': best_fit,
-            'pop': np.array(population),
-            'fitness': np.array(fitness),
+            'pop': population.cpu().numpy(),
+            'fitness': fitness.cpu().numpy(),
             'algorithm': None,  # EvoX doesn't have a single algorithm object
             'history': {
-                'best_solutions': [np.array(s) for s in best_solutions],
-                'best_fitness': [float(f) for f in best_fitness]
+                'best_solutions': best_solutions,
+                'best_fitness': best_fitness
             }
         }
 
