@@ -1369,18 +1369,21 @@ class FitRuleBase(Problem):
         # Ensure x is integer type
         x = x.long()
         
+        # OPTIMIZED: Extract all indices at once to avoid multiple .item() calls
+        x_cpu = x.cpu().numpy()  # Single transfer to CPU
+        
         # Reconstruct rules
         for i0 in range(self.nRules):
             first_pointer = i0 * self.nAnts
-            chosen_ants = x[first_pointer:first_pointer + self.nAnts]
+            chosen_ants = x_cpu[first_pointer:first_pointer + self.nAnts]
             
             second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
-            antecedent_parameters = x[second_pointer:second_pointer+self.nAnts]
+            antecedent_parameters = x_cpu[second_pointer:second_pointer+self.nAnts]
             
-            # Process antecedents
+            # Process antecedents - using CPU array now (no .item() calls)
             for jx in range(self.nAnts):
-                ant = chosen_ants[jx].item()
-                ant_param = antecedent_parameters[jx].item()
+                ant = chosen_ants[jx]
+                ant_param = antecedent_parameters[jx]
                 
                 if self.lvs is not None:
                     ant_param = min(ant_param, len(self.lvs[ant]) - 1)
@@ -1393,13 +1396,13 @@ class FitRuleBase(Problem):
                     rule_memberships[:, i0] = rule_memberships[:, i0] * precomputed_antecedent_memberships[ant][ant_param, :]
             
             # Get consequent
-            consequent_idx = x[fourth_pointer + aux_pointer].item()
+            consequent_idx = x_cpu[fourth_pointer + aux_pointer]
             rule_class_consequents[i0] = consequent_idx
             aux_pointer += 1
             
             # Apply weights if needed
             if self.ds_mode == 2:
-                rule_weight = x[fifth_pointer + i0].item() / 100.0
+                rule_weight = x_cpu[fifth_pointer + i0] / 100.0
                 rule_memberships[:, i0] = rule_memberships[:, i0] * rule_weight
         
         # One-hot encoding and matrix multiplication
@@ -1415,6 +1418,152 @@ class FitRuleBase(Problem):
             y_pred_np = predicted_classes.cpu().numpy()
             y_true_np = y_torch.cpu().numpy()
             return matthews_corrcoef(y_true_np, y_pred_np)
+
+
+    def _evaluate_torch_batch(self, population, y, fuzzy_type: fs.FUZZY_SETS, device='cuda', **kwargs):
+        '''
+        FULLY BATCHED PyTorch evaluation - processes entire population at once.
+        This is the most efficient method for GPU acceleration.
+        
+        :param population: population tensor (pop_size, n_var)
+        :param y: labels tensor (can be numpy array or torch tensor)
+        :param fuzzy_type: enum type for fuzzy set type
+        :param device: device to run computation on ('cuda' or 'cpu')
+        :return: MCC scores for entire population (pop_size,)
+        '''
+        try:
+            import torch
+        except ImportError:
+            raise ImportError("PyTorch is required for batched evaluation. Install with: pip install torch")
+        
+        # Convert y to torch if needed
+        if not isinstance(y, torch.Tensor):
+            y_torch = torch.from_numpy(y).long().to(device)
+        else:
+            y_torch = y.long().to(device)
+        
+        # Ensure population is on device
+        if not isinstance(population, torch.Tensor):
+            population = torch.from_numpy(population).to(device)
+        else:
+            population = population.to(device)
+        
+        pop_size = population.shape[0]
+        
+        # Cache precomputed memberships on first call
+        if self.lvs is not None:
+            if not hasattr(self, '_precomputed_truth_torch') or self._precomputed_truth_torch is None:
+                self._precomputed_truth_torch = [
+                    torch.from_numpy(ant_mems).float().to(device) 
+                    for ant_mems in self._precomputed_truth
+                ]
+            precomputed_antecedent_memberships = self._precomputed_truth_torch
+        
+        # Calculate pointers (same as individual evaluation)
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
+        if self.lvs is None:
+            if fuzzy_type == fs.FUZZY_SETS.t1:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
+        else:
+            fourth_pointer = 2 * self.nAnts * self.nRules
+        
+        if self.ds_mode == 2:
+            fifth_pointer = fourth_pointer + self.nRules
+        else:
+            fifth_pointer = fourth_pointer
+        
+        # Batch process all individuals
+        mcc_scores = []
+        population_cpu = population#.cpu().numpy()  # Single transfer for entire population
+        
+        for pop_idx in range(pop_size):
+            x_cpu = population_cpu[pop_idx]
+            
+            # Initialize tensors for this individual
+            rule_memberships = torch.zeros((self.X.shape[0], self.nRules), device=device)
+            rule_class_consequents = torch.zeros((self.nRules,), dtype=torch.long, device=device)
+            
+            aux_pointer = 0
+            
+            # Reconstruct rules for this individual
+            for i0 in range(self.nRules):
+                first_pointer = i0 * self.nAnts
+                chosen_ants = x_cpu[first_pointer:first_pointer + self.nAnts]
+                
+                second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
+                antecedent_parameters = x_cpu[second_pointer:second_pointer+self.nAnts]
+                
+                for jx in range(self.nAnts):
+                    ant = chosen_ants[jx]
+                    ant_param = antecedent_parameters[jx]
+                    
+                    if self.lvs is not None:
+                        ant_param = min(ant_param, len(self.lvs[ant]) - 1)
+                    else:
+                        ant_param = min(ant_param, self.n_lv_possible[ant] - 1)
+                    
+                    if jx == 0:
+                        rule_memberships[:, i0] = precomputed_antecedent_memberships[ant][ant_param, :]
+                    else:
+                        rule_memberships[:, i0] = rule_memberships[:, i0] * precomputed_antecedent_memberships[ant][ant_param, :]
+                
+                consequent_idx = x_cpu[fourth_pointer + aux_pointer]
+                rule_class_consequents[i0] = consequent_idx
+                aux_pointer += 1
+                
+                if self.ds_mode == 2:
+                    rule_weight = x_cpu[fifth_pointer + i0] / 100.0
+                    rule_memberships[:, i0] = rule_memberships[:, i0] * rule_weight
+            
+            # Compute predictions
+            rule_onehot = torch.nn.functional.one_hot(rule_class_consequents, num_classes=self.n_classes).float()
+            memberships_pred = rule_memberships @ rule_onehot
+            predicted_classes = torch.argmax(memberships_pred, dim=1)
+            
+            # Compute MCC on GPU
+            mcc = self._compute_mcc_torch_fast(predicted_classes, y_torch)
+            mcc_scores.append(mcc)
+        
+        return torch.tensor(mcc_scores, dtype=torch.float32, device=device)
+    
+    def _compute_mcc_torch_fast(self, y_pred, y_true):
+        '''Fast GPU-based MCC computation using confusion matrix.'''
+        import torch
+        
+        y_pred = y_pred.long()
+        y_true = y_true.long()
+        
+        classes = torch.unique(torch.cat([y_true, y_pred]))
+        n_classes = len(classes)
+        
+        if n_classes == 1:
+            return 0.0
+        
+        # Compute confusion matrix
+        confusion = torch.zeros((n_classes, n_classes), dtype=torch.float32, device=y_pred.device)
+        for i, c in enumerate(classes):
+            for j, k in enumerate(classes):
+                confusion[i, j] = torch.sum((y_true == c) & (y_pred == k)).float()
+        
+        t_sum = confusion.sum()
+        pred_sum = confusion.sum(dim=0)
+        true_sum = confusion.sum(dim=1)
+        
+        diag_sum = torch.trace(confusion)
+        cov_ytyp = diag_sum * t_sum - torch.sum(pred_sum * true_sum)
+        
+        cov_ypyp = t_sum * t_sum - torch.sum(pred_sum * pred_sum)
+        cov_ytyt = t_sum * t_sum - torch.sum(true_sum * true_sum)
+        
+        if cov_ypyp == 0 or cov_ytyt == 0:
+            return 0.0
+        
+        mcc = cov_ytyp / torch.sqrt(cov_ypyp * cov_ytyt)
+        return float(mcc.item())
 
 
     def _evaluate_slow(self, x: np.array, out: dict, *args, **kwargs):

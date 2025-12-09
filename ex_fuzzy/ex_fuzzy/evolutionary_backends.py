@@ -252,6 +252,10 @@ class EvoXBackend(EvolutionaryBackend):
         import torch
         
         if torch.cuda.is_available():
+            # Test CUDA initialization
+            test_tensor = torch.zeros(1, device='cuda')
+            del test_tensor
+            torch.cuda.synchronize()
             self._device = torch.device('cuda')
             print(f"EvoX backend using GPU: {torch.cuda.get_device_name(0)}")
         else:
@@ -322,17 +326,24 @@ class EvoXBackend(EvolutionaryBackend):
         """
         import torch
         
-        fitness_list = []
-        for ind in population:
-            # Get predictions and true labels as tensors
-            y_pred, y_true = problem._evaluate_torch_fast(
-                ind, problem.y, problem.fuzzy_type, device=device, return_tensor=True
-            )
-            # Compute MCC on GPU
-            mcc = self._compute_mcc_torch(y_pred, y_true)
-            fitness_list.append(1 - mcc)  # Convert MCC to minimization objective
-        
-        return torch.tensor(fitness_list, dtype=torch.float32, device=device)
+        # TRUE BATCHED EVALUATION - evaluate entire population at once
+        if hasattr(problem, '_evaluate_torch_batch'):
+            # Use fully batched evaluation if available
+            fitness = problem._evaluate_torch_batch(population, problem.y, problem.fuzzy_type, device=device)
+            return 1.0 - fitness  # Convert MCC to minimization
+        else:
+            # Fallback to individual evaluation (slower but works)
+            fitness_list = []
+            for ind in population:
+                # Get predictions and true labels as tensors
+                y_pred, y_true = problem._evaluate_torch_fast(
+                    ind, problem.y, problem.fuzzy_type, device=device, return_tensor=True
+                )
+                # Compute MCC on GPU
+                mcc = self._compute_mcc_torch(y_pred, y_true)
+                fitness_list.append(1 - mcc)  # Convert MCC to minimization objective
+            
+            return torch.tensor(fitness_list, dtype=torch.float32, device=device)
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int,
                  random_state: int, verbose: bool,
@@ -430,13 +441,11 @@ class EvoXBackend(EvolutionaryBackend):
             fitness = torch.tensor(fitness_list, dtype=torch.float32, device=device)
         
         for gen in range(n_gen):
-            # Selection - tournament selection (select pop_size parents for mating)
-            selected_idx = []
-            for _ in range(pop_size):
-                candidates = torch.randperm(pop_size, device=device)[:tournament_size]
-                best_in_tournament = candidates[torch.argmin(fitness[candidates])]
-                selected_idx.append(best_in_tournament)
-            selected_idx = torch.tensor(selected_idx, device=device)
+            # Selection - VECTORIZED tournament selection (select pop_size parents for mating)
+            # Generate all random tournaments at once
+            tournament_candidates = torch.randint(0, pop_size, (pop_size, tournament_size), device=device)
+            tournament_fitness = fitness[tournament_candidates]  # (pop_size, tournament_size)
+            selected_idx = tournament_candidates[torch.arange(pop_size, device=device), torch.argmin(tournament_fitness, dim=1)]
             selected_pop = population[selected_idx].float()
             
             # Crossover using EvoX simulated_binary function
@@ -445,9 +454,8 @@ class EvoXBackend(EvolutionaryBackend):
             # Mutation using EvoX polynomial_mutation function
             offspring = mutation.polynomial_mutation(offspring, lb=lb_torch, ub=ub_torch, pro_m=1.0/n_var, dis_m=mutation_eta)
             
-            # Clip to bounds (per-variable) and round to integers (repair)
-            for var_idx in range(n_var):
-                offspring[:, var_idx] = torch.clamp(offspring[:, var_idx], lb_torch[var_idx], ub_torch[var_idx])
+            # VECTORIZED clipping to bounds (per-variable) and round to integers (repair)
+            offspring = torch.clamp(offspring, lb_torch.unsqueeze(0), ub_torch.unsqueeze(0))
             offspring = torch.round(offspring).int()
             
             # Evaluate offspring

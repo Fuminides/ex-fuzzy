@@ -17,6 +17,10 @@ Requirements:
     - matplotlib
 """
 
+# Force CPU for debugging (disable CUDA before importing torch)
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 # ======================================================================
 # CONFIGURATION - Modify these parameters to customize the experiments
 # ======================================================================
