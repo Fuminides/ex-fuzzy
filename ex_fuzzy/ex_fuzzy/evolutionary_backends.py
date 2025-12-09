@@ -2,11 +2,11 @@
 Backend abstraction layer for evolutionary optimization.
 
 This module provides a unified interface for different evolutionary computation backends,
-allowing users to choose between pymoo (CPU-based) and EvoX (GPU-accelerated with JAX).
+allowing users to choose between pymoo (CPU-based) and EvoX (GPU-accelerated with PyTorch).
 
 Backends:
     - PyMooBackend: Default CPU-based backend using the pymoo library
-    - EvoXBackend: GPU-accelerated backend using EvoX with JAX
+    - EvoXBackend: GPU-accelerated backend using EvoX with PyTorch
     
 Usage:
     Users can specify the backend when creating a classifier:
@@ -232,30 +232,30 @@ class PyMooBackend(EvolutionaryBackend):
 
 
 class EvoXBackend(EvolutionaryBackend):
-    """Backend using EvoX for GPU-accelerated evolutionary optimization with JAX."""
+    """Backend using EvoX for GPU-accelerated evolutionary optimization with PyTorch."""
     
     def __init__(self):
         self._available = self._check_availability()
         if self._available:
-            self._setup_jax()
+            self._setup_pytorch()
     
     def _check_availability(self) -> bool:
         try:
             import evox
-            import jax
+            import torch
             return True
         except ImportError:
             return False
     
-    def _setup_jax(self):
-        """Setup JAX configuration for GPU usage."""
-        import jax
-        devices = jax.devices()
-        self._device = devices[0]
+    def _setup_pytorch(self):
+        """Setup PyTorch configuration for GPU usage."""
+        import torch
         
-        if self._device.platform == 'gpu':
-            print(f"EvoX backend using GPU: {self._device}")
+        if torch.cuda.is_available():
+            self._device = torch.device('cuda')
+            print(f"EvoX backend using GPU: {torch.cuda.get_device_name(0)}")
         else:
+            self._device = torch.device('cpu')
             print(f"EvoX backend using CPU (GPU not available)")
                 
         
@@ -264,6 +264,75 @@ class EvoXBackend(EvolutionaryBackend):
     
     def name(self) -> str:
         return "evox"
+    
+    def _compute_mcc_torch(self, y_pred: 'torch.Tensor', y_true: 'torch.Tensor') -> float:
+        """
+        Compute Matthews Correlation Coefficient on GPU using PyTorch.
+        
+        :param y_pred: predicted labels (tensor)
+        :param y_true: true labels (tensor)
+        :return: MCC value as Python float
+        """
+        import torch
+        
+        # Ensure tensors are on same device and type
+        y_pred = y_pred.long()
+        y_true = y_true.long()
+        
+        # Get unique classes
+        classes = torch.unique(torch.cat([y_true, y_pred]))
+        n_classes = len(classes)
+        
+        if n_classes == 1:
+            return 0.0
+        
+        # Compute confusion matrix on GPU
+        confusion = torch.zeros((n_classes, n_classes), dtype=torch.float32, device=y_pred.device)
+        for i, c in enumerate(classes):
+            for j, k in enumerate(classes):
+                confusion[i, j] = torch.sum((y_true == c) & (y_pred == k)).float()
+        
+        # Compute MCC components
+        t_sum = confusion.sum()
+        pred_sum = confusion.sum(dim=0)
+        true_sum = confusion.sum(dim=1)
+        
+        # MCC numerator: sum of correct predictions * total - sum of (row_sum * col_sum)
+        diag_sum = torch.trace(confusion)
+        cov_ytyp = diag_sum * t_sum - torch.sum(pred_sum * true_sum)
+        
+        # MCC denominator
+        cov_ypyp = t_sum * t_sum - torch.sum(pred_sum * pred_sum)
+        cov_ytyt = t_sum * t_sum - torch.sum(true_sum * true_sum)
+        
+        if cov_ypyp == 0 or cov_ytyt == 0:
+            return 0.0
+        
+        mcc = cov_ytyp / torch.sqrt(cov_ypyp * cov_ytyt)
+        return float(mcc.cpu().item())
+    
+    def _batch_evaluate_torch(self, population: 'torch.Tensor', problem: Any, device: 'torch.device') -> 'torch.Tensor':
+        """
+        Batch evaluate population using PyTorch with GPU-accelerated MCC computation.
+        
+        :param population: population tensor (pop_size, n_var)
+        :param problem: problem instance with _evaluate_torch_fast method
+        :param device: torch device
+        :return: fitness tensor (pop_size,)
+        """
+        import torch
+        
+        fitness_list = []
+        for ind in population:
+            # Get predictions and true labels as tensors
+            y_pred, y_true = problem._evaluate_torch_fast(
+                ind, problem.y, problem.fuzzy_type, device=device, return_tensor=True
+            )
+            # Compute MCC on GPU
+            mcc = self._compute_mcc_torch(y_pred, y_true)
+            fitness_list.append(1 - mcc)  # Convert MCC to minimization objective
+        
+        return torch.tensor(fitness_list, dtype=torch.float32, device=device)
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int,
                  random_state: int, verbose: bool,
@@ -312,25 +381,29 @@ class EvoXBackend(EvolutionaryBackend):
                 # Initial population provided
                 init_pop = torch.tensor(sampling, dtype=torch.int32, device=device)
             else:
-                # Random initialization
-                init_pop = torch.randint(
-                    low=int(xl[0]), 
-                    high=int(xu[0]) + 1,
-                    size=(pop_size, n_var), 
+                # Random initialization with per-variable bounds
+                init_pop = torch.zeros((pop_size, n_var), dtype=torch.int32, device=device)
+                for var_idx in range(n_var):
+                    init_pop[:, var_idx] = torch.randint(
+                        low=int(xl[var_idx]),
+                        high=int(xu[var_idx]) + 1,
+                        size=(pop_size,),
+                        dtype=torch.int32,
+                        device=device
+                    )
+        else:
+            # Random initialization with per-variable bounds
+            init_pop = torch.zeros((pop_size, n_var), dtype=torch.int32, device=device)
+            for var_idx in range(n_var):
+                init_pop[:, var_idx] = torch.randint(
+                    low=int(xl[var_idx]),
+                    high=int(xu[var_idx]) + 1,
+                    size=(pop_size,),
                     dtype=torch.int32,
                     device=device
                 )
-        else:
-            # Random initialization
-            init_pop = torch.randint(
-                low=int(xl[0]),
-                high=int(xu[0]) + 1,
-                size=(pop_size, n_var),
-                dtype=torch.int32,
-                device=device
-            )
         
-        # Create a simple GA workflow
+        # Create a simple GA workflow with elitism
         best_solutions = []
         best_fitness = []
         
@@ -338,25 +411,33 @@ class EvoXBackend(EvolutionaryBackend):
         lb_torch = torch.tensor(xl, dtype=torch.float32, device=device)
         ub_torch = torch.tensor(xu, dtype=torch.float32, device=device)
         
-        population = init_pop.float()  # Convert to float for operators
+        population = init_pop  # Keep as integers
+        
+        # Check if problem has torch evaluation method
+        has_torch_eval = hasattr(problem, '_evaluate_torch_fast')
         
         # Initial evaluation
-        fitness_list = []
-        for ind in population:
-            out = {}
-            problem._evaluate(ind.cpu().numpy().astype(int), out)
-            fitness_list.append(out['F'])
-        fitness = torch.tensor(fitness_list, dtype=torch.float32, device=device)
+        if has_torch_eval:
+            # Use PyTorch evaluation for GPU acceleration with batched MCC computation
+            fitness = self._batch_evaluate_torch(population, problem, device)
+        else:
+            # Fallback to numpy evaluation
+            fitness_list = []
+            for ind in population:
+                out = {}
+                problem._evaluate(ind.cpu().numpy().astype(int), out)
+                fitness_list.append(out['F'])
+            fitness = torch.tensor(fitness_list, dtype=torch.float32, device=device)
         
         for gen in range(n_gen):
-            # Selection - tournament selection
+            # Selection - tournament selection (select pop_size parents for mating)
             selected_idx = []
             for _ in range(pop_size):
                 candidates = torch.randperm(pop_size, device=device)[:tournament_size]
                 best_in_tournament = candidates[torch.argmin(fitness[candidates])]
                 selected_idx.append(best_in_tournament)
             selected_idx = torch.tensor(selected_idx, device=device)
-            selected_pop = population[selected_idx]
+            selected_pop = population[selected_idx].float()
             
             # Crossover using EvoX simulated_binary function
             offspring = crossover.simulated_binary(selected_pop, pro_c=var_prob, dis_c=sbx_eta)
@@ -364,20 +445,32 @@ class EvoXBackend(EvolutionaryBackend):
             # Mutation using EvoX polynomial_mutation function
             offspring = mutation.polynomial_mutation(offspring, lb=lb_torch, ub=ub_torch, pro_m=1.0/n_var, dis_m=mutation_eta)
             
-            # Clip to bounds and convert to int
-            offspring = torch.clamp(offspring, lb_torch[0], ub_torch[0]).int()
+            # Clip to bounds (per-variable) and round to integers (repair)
+            for var_idx in range(n_var):
+                offspring[:, var_idx] = torch.clamp(offspring[:, var_idx], lb_torch[var_idx], ub_torch[var_idx])
+            offspring = torch.round(offspring).int()
             
             # Evaluate offspring
-            offspring_fitness_list = []
-            for ind in offspring:
-                out = {}
-                problem._evaluate(ind.cpu().numpy(), out)
-                offspring_fitness_list.append(out['F'])
-            offspring_fitness = torch.tensor(offspring_fitness_list, dtype=torch.float32, device=device)
+            if has_torch_eval:
+                # Use PyTorch evaluation for GPU acceleration with batched MCC computation
+                offspring_fitness = self._batch_evaluate_torch(offspring, problem, device)
+            else:
+                # Fallback to numpy evaluation
+                offspring_fitness_list = []
+                for ind in offspring:
+                    out = {}
+                    problem._evaluate(ind.cpu().numpy().astype(int), out)
+                    offspring_fitness_list.append(out['F'])
+                offspring_fitness = torch.tensor(offspring_fitness_list, dtype=torch.float32, device=device)
             
-            # Survival selection (generational replacement)
-            population = offspring.float()
-            fitness = offspring_fitness
+            # Elitist survival selection: combine parents and offspring, select best pop_size
+            combined_pop = torch.cat([population, offspring], dim=0)
+            combined_fitness = torch.cat([fitness, offspring_fitness], dim=0)
+            
+            # Select best pop_size individuals
+            sorted_indices = torch.argsort(combined_fitness)[:pop_size]
+            population = combined_pop[sorted_indices]
+            fitness = combined_fitness[sorted_indices]
             
             # Track best solution
             best_idx = torch.argmin(fitness)
@@ -428,31 +521,29 @@ class EvoXProblemWrapper:
                 self.use_gpu_eval = False
     
     def _setup_gpu_evaluation(self):
-        """Setup vectorized GPU evaluation using JAX."""
-        import jax
-        import jax.numpy as jnp
+        """Setup vectorized GPU evaluation using PyTorch."""
+        import torch
         
-        # Create JAX evaluation function for FitRuleBase
+        # Create PyTorch evaluation function for FitRuleBase
         problem_class_name = self.problem.__class__.__name__
         
         if problem_class_name == 'FitRuleBase':
-            self._jax_eval_func = self._create_fitrulebase_jax_evaluate()
-            if self._jax_eval_func is not None:
-                # Vectorize the JAX evaluation function for batch processing
-                self._vmap_eval = jax.vmap(self._jax_eval_func)
+            self._torch_eval_func = self._create_fitrulebase_torch_evaluate()
+            if self._torch_eval_func is not None:
+                # Vectorize the PyTorch evaluation function for batch processing
+                self._vmap_eval = torch.vmap(self._torch_eval_func)
                 print(f"✅ GPU-accelerated evaluation enabled for {problem_class_name}")
             else:
-                raise RuntimeError(f"Could not create JAX evaluation for {problem_class_name}")
+                raise RuntimeError(f"Could not create PyTorch evaluation for {problem_class_name}")
         else:
             # Fallback for unsupported problem types
             print(f"⚠️  GPU evaluation not implemented for {problem_class_name}")
             print("   Falling back to CPU evaluation")
             raise RuntimeError(f"GPU evaluation only supports FitRuleBase, got {problem_class_name}")
     
-    def _create_fitrulebase_jax_evaluate(self):
-        """Create JAX evaluation function for FitRuleBase problem."""
-        import jax
-        import jax.numpy as jnp
+    def _create_fitrulebase_torch_evaluate(self):
+        """Create PyTorch evaluation function for FitRuleBase problem."""
+        import torch
         
         # Capture necessary data and parameters in closure
         X = self.problem.X
@@ -469,25 +560,25 @@ class EvoXProblemWrapper:
         n_lv_possible = self.problem.n_lv_possible
         ds_mode = self.problem.ds_mode
         
-        def jax_evaluate(x):
+        def torch_evaluate(x):
             """
-            JAX-native evaluation function using pure tensor operations.
+            PyTorch-native evaluation function using pure tensor operations.
             Computes fitness directly from gene without constructing rule objects.
             """
-            # Convert to JAX array and int
-            x_jax = jnp.array(x, dtype=jnp.int32)
+            # Convert to PyTorch tensor and int
+            x_torch = torch.tensor(x, dtype=torch.int32)
             
             try:
-                # ============= JAX-NATIVE EVALUATION (no object construction) =============
-                # Convert data to JAX arrays
-                X_jax = jnp.array(X, dtype=jnp.float32)
-                y_jax = jnp.array(y, dtype=jnp.int32)
-                n_samples = X_jax.shape[0]
-                n_features = X_jax.shape[1]
+                # ============= PYTORCH-NATIVE EVALUATION (no object construction) =============
+                # Convert data to PyTorch tensors
+                X_torch = torch.tensor(X, dtype=torch.float32)
+                y_torch = torch.tensor(y, dtype=torch.int32)
+                n_samples = X_torch.shape[0]
+                n_features = X_torch.shape[1]
                 
                 # Step 1: Decode gene structure
-                rule_features = x_jax[:nRules * nAnts].reshape(nRules, nAnts)
-                rule_labels = x_jax[nRules * nAnts:2 * nRules * nAnts].reshape(nRules, nAnts)
+                rule_features = x_torch[:nRules * nAnts].reshape(nRules, nAnts)
+                rule_labels = x_torch[nRules * nAnts:2 * nRules * nAnts].reshape(nRules, nAnts)
                 
                 # Calculate fourth pointer (consequents position)
                 if lvs is None:
@@ -496,14 +587,14 @@ class EvoXProblemWrapper:
                     fourth_pointer = 2 * nAnts * nRules
                 
                 # Extract consequents
-                rule_consequents = x_jax[fourth_pointer:fourth_pointer + nRules]
+                rule_consequents = x_torch[fourth_pointer:fourth_pointer + nRules]
                 
                 # Extract weights if ds_mode == 2
                 if ds_mode == 2:
                     fifth_pointer = fourth_pointer + nRules
-                    rule_weights = x_jax[fifth_pointer:fifth_pointer + nRules] / 100.0
+                    rule_weights = x_torch[fifth_pointer:fifth_pointer + nRules] / 100.0
                 else:
-                    rule_weights = jnp.ones(nRules)
+                    rule_weights = torch.ones(nRules)
                 
                 # Step 2: Build membership tensor from precomputed truth
                 if precomputed_truth is not None and lvs is not None:
@@ -523,10 +614,10 @@ class EvoXProblemWrapper:
                             sample_memberships.append(mems)
                         membership_matrix.append(sample_memberships)
                     
-                    membership_tensor = jnp.array(membership_matrix, dtype=jnp.float32)
+                    membership_tensor = torch.tensor(membership_matrix, dtype=torch.float32)
                 else:
-                    # No precomputed truth - cannot proceed with JAX-only evaluation
-                    return jnp.array(1.0)
+                    # No precomputed truth - cannot proceed with PyTorch-only evaluation
+                    return torch.tensor(1.0)
                 
                 # Step 3: Compute rule firing strengths using vectorized operations
                 def compute_rule_firing(rule_idx):
@@ -537,58 +628,58 @@ class EvoXProblemWrapper:
                     def get_antecedent_membership(ant_idx):
                         feat_idx = features[ant_idx]
                         label_idx = labels[ant_idx]
-                        return jnp.where(
+                        return torch.where(
                             label_idx >= 0,
                             membership_tensor[:, feat_idx, label_idx],
-                            jnp.ones(n_samples)
+                            torch.ones(n_samples)
                         )
                     
-                    ant_memberships = jax.vmap(get_antecedent_membership)(jnp.arange(nAnts))
-                    firing_strength = jnp.min(ant_memberships, axis=0)
+                    ant_memberships = torch.vmap(get_antecedent_membership)(torch.arange(nAnts))
+                    firing_strength = torch.min(ant_memberships, dim=0)[0]
                     return firing_strength
                 
                 # Vectorize over all rules
-                all_firing_strengths = jax.vmap(compute_rule_firing)(jnp.arange(nRules))
+                all_firing_strengths = torch.vmap(compute_rule_firing)(torch.arange(nRules))
                 
                 # Step 4: Apply rule weights
-                weighted_firing = all_firing_strengths * rule_weights[:, jnp.newaxis]
+                weighted_firing = all_firing_strengths * rule_weights[:, None]
                 
                 # Step 5: Aggregate by consequent class
-                class_activations = jnp.zeros((n_classes, n_samples))
+                class_activations = torch.zeros((n_classes, n_samples))
                 for class_idx in range(n_classes):
                     class_mask = (rule_consequents == class_idx)
-                    class_activations = class_activations.at[class_idx].set(
-                        jnp.sum(weighted_firing * class_mask[:, jnp.newaxis], axis=0)
+                    class_activations[class_idx] = torch.sum(
+                        weighted_firing * class_mask[:, None], dim=0
                     )
                 
                 # Step 6: Make predictions
-                predictions = jnp.argmax(class_activations, axis=0)
+                predictions = torch.argmax(class_activations, dim=0)
                 
                 # Step 7: Compute accuracy
-                correct = jnp.sum(predictions == y_jax)
+                correct = torch.sum(predictions == y_torch)
                 accuracy = correct / n_samples
                 
                 # Step 8: Compute fitness
                 fitness = 1.0 - accuracy
                 
-                return jnp.array(fitness)
+                return torch.tensor(fitness)
                 
             except Exception as e:
-                return jnp.array(1.0)
+                return torch.tensor(1.0)
         
-        return jax_evaluate
+        return torch_evaluate
     
     def evaluate(self, population):
         """
         Evaluate a population using the original problem's fitness function.
         
         Args:
-            population: JAX array of shape (pop_size, n_var)
+            population: PyTorch tensor of shape (pop_size, n_var)
             
         Returns:
-            JAX array of fitness values
+            PyTorch tensor of fitness values
         """
-        import jax.numpy as jnp
+        import torch
         
         if self.use_gpu_eval:
             
@@ -607,7 +698,7 @@ class EvoXProblemWrapper:
             fitness.append(out['F'])
             self.n_eval += 1
         
-        return jnp.array(fitness)
+        return torch.tensor(fitness)
 
 
 def get_backend(backend_name: str = 'pymoo') -> EvolutionaryBackend:
