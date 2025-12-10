@@ -1,0 +1,2094 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fuzzy Sets Functions &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'function_resume/fuzzy_sets';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/regression.html">
+    Fuzzy Regression
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/regression.html">
+    Fuzzy Regression (API)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/regression.html">
+    Fuzzy Regression
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/regression.html">
+    Fuzzy Regression (API)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fuzzy Sets Functions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-ex_fuzzy.fuzzy_sets">
+<span id="fuzzy-sets-functions"></span><h1>Fuzzy Sets Functions<a class="headerlink" href="#module-ex_fuzzy.fuzzy_sets" title="Link to this heading">#</a></h1>
+<p>Fuzzy Sets Module for Ex-Fuzzy Library</p>
+<p>This module contains the core fuzzy set classes and functionality for the ex-fuzzy library.
+It implements Type-1, Type-2, and General Type-2 fuzzy sets with their associated
+membership functions and operations.</p>
+<dl class="simple">
+<dt>Main Components:</dt><dd><ul class="simple">
+<li><p>FUZZY_SETS enum: Defines the types of fuzzy sets supported</p></li>
+<li><p>Membership function implementations (trapezoidal, triangular, gaussian)</p></li>
+<li><p>Fuzzy set classes: FS, IVFS, gaussianFS, gaussianIVFS, categoricalFS, etc.</p></li>
+<li><p>fuzzyVariable class: Container for linguistic variables with multiple fuzzy sets</p></li>
+<li><p>Validation and statistical testing methods for fuzzy variables</p></li>
+</ul>
+</dd>
+</dl>
+<p>The module supports both numerical computation and provides interfaces for
+PyTorch tensors when available, making it suitable for both traditional fuzzy
+logic applications and modern machine learning workflows.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.trapezoidal_membership">
+<span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">trapezoidal_membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#trapezoidal_membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.trapezoidal_membership" title="Link to this definition">#</a></dt>
+<dd><p>Compute trapezoidal membership function values.</p>
+<p>This function computes the membership degree for input values using a trapezoidal
+membership function defined by four parameters representing the trapezoid vertices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Input values in the fuzzy set domain for which to compute membership</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Four numbers [a, b, c, d] defining the trapezoid:
+- a: left foot (membership starts rising)
+- b: left shoulder (membership reaches 1.0)
+- c: right shoulder (membership starts falling)
+- d: right foot (membership reaches 0.0)</p></li>
+<li><p><strong>epsilon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Small value for numerical stability. Defaults to 10E-5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Membership values in [0, 1] for each input value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>  <span class="c1"># trapezoid from 1 to 4, flat from 2 to 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">membership</span> <span class="o">=</span> <span class="n">trapezoidal_membership</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">membership</span><span class="p">)</span>  <span class="c1"># [0, 0, 1, 1, 0, 0]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Special case: if a == d (singleton), returns 1.0 for exact matches, 0.0 otherwise.
+This handles degenerate trapezoids that collapse to single points.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">FS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for Type-1 fuzzy sets (Zadeh fuzzy sets).</p>
+<p>This class implements the fundamental Type-1 fuzzy set with crisp membership functions.
+It serves as the base class for more specialized fuzzy set types like triangular,
+gaussian, and categorical fuzzy sets.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.name" title="Link to this definition">#</a></dt>
+<dd><p>The linguistic name of the fuzzy set (e.g., “low”, “medium”, “high”)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.membership_parameters">
+<span class="sig-name descname"><span class="pre">membership_parameters</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.membership_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Parameters defining the membership function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.domain" title="Link to this definition">#</a></dt>
+<dd><p>Two-element list defining the universe of discourse [min, max]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FS</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>  <span class="c1"># Trapezoidal fuzzy set</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">membership</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">membership</span><span class="p">)</span>  <span class="c1"># Should be 1.0 (fully in the set)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class uses trapezoidal membership functions by default. For other shapes,
+use specialized subclasses like gaussianFS or triangularFS.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a Type-1 fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Linguistic name for the fuzzy set</p></li>
+<li><p><strong>membership_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Four parameters [a, b, c, d] defining
+the trapezoidal membership function where:
+- a: left foot (membership starts rising from 0)
+- b: left shoulder (membership reaches 1.0)
+- c: right shoulder (membership starts falling from 1.0)
+- d: right foot (membership reaches 0)</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Two-element list [min, max] defining the universe
+of discourse for this fuzzy set</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FS</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Creates a trapezoidal set: rises from 2-3, flat 3-7, falls 7-8</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.membership" title="Link to this definition">#</a></dt>
+<dd><p>Compute membership degrees for input values.</p>
+<p>This method calculates the membership degree(s) for the given input value(s)
+using the trapezoidal membership function defined by this fuzzy set’s parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>np.array</em>) – Input value(s) for which to compute membership degrees.
+Can be a single value, list, or numpy array.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Membership degree(s) in the range [0, 1]. Shape matches input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FS</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>    <span class="c1"># 1.0 (in flat region)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="mf">2.5</span><span class="p">))</span> <span class="c1"># 0.5 (on rising slope)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">membership</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">]))</span> <span class="c1"># [0.0, 1.0, 0.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.type" title="Link to this definition">#</a></dt>
+<dd><p>Return the fuzzy set type identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The type identifier (FUZZY_SETS.t1 for Type-1 fuzzy sets)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../api/generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.__call__" title="Link to this definition">#</a></dt>
+<dd><p>Calling the Fuzzy set returns its membership.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – input values in the fuzzy set referencial domain.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>membership of the fuzzy set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.__str__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the fuzzy set, its type and its parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.FS.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#FS.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.FS.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns the shape of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.triangularFS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">triangularFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#triangularFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.triangularFS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.triangularFS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#triangularFS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.triangularFS.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a Type-1 fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Linguistic name for the fuzzy set</p></li>
+<li><p><strong>membership_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Four parameters [a, b, c, d] defining
+the trapezoidal membership function where:
+- a: left foot (membership starts rising from 0)
+- b: left shoulder (membership reaches 1.0)
+- c: right shoulder (membership starts falling from 1.0)
+- d: right foot (membership reaches 0)</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Two-element list [min, max] defining the universe
+of discourse for this fuzzy set</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FS</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Creates a trapezoidal set: rises from 2-3, flat 3-7, falls 7-8</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.triangularFS.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#triangularFS.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.triangularFS.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns the shape of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">categoricalFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Creates a categorical fuzzy set. It gives 1 to the category and 0 to the rest.
+Use it when the variable is categorical and the categories are known, so that rule inference systems
+can naturally support both crisp and fuzzy variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – string.</p></li>
+<li><p><strong>categories</strong> – list of strings. Possible categories.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS.membership" title="Link to this definition">#</a></dt>
+<dd><p>Computes the membership of a point or vector of elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – input values in the referencial domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS.type" title="Link to this definition">#</a></dt>
+<dd><p>Returns the corresponding fuzzy set type according to FUZZY_SETS enum.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS.__str__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the fuzzy set, its type and its parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalFS.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalFS.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalFS.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns the shape of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">IVFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondMF_lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondMF_upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#IVFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<p>Interval-Valued Fuzzy Set (Type-2 Fuzzy Set) class.</p>
+<p>This class implements Type-2 fuzzy sets using interval-valued membership functions.
+Each point in the domain has an interval [lower, upper] representing the uncertainty
+in the membership degree, providing a more flexible representation than Type-1 sets.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.name" title="Link to this definition">#</a></dt>
+<dd><p>Linguistic name of the fuzzy set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.domain" title="Link to this definition">#</a></dt>
+<dd><p>Universe of discourse [min, max]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.secondMF_lower">
+<span class="sig-name descname"><span class="pre">secondMF_lower</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.secondMF_lower" title="Link to this definition">#</a></dt>
+<dd><p>Parameters for the lower membership function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.secondMF_upper">
+<span class="sig-name descname"><span class="pre">secondMF_upper</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.secondMF_upper" title="Link to this definition">#</a></dt>
+<dd><p>Parameters for the upper membership function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.lower_height">
+<span class="sig-name descname"><span class="pre">lower_height</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.lower_height" title="Link to this definition">#</a></dt>
+<dd><p>Height of the lower membership function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ivfs</span> <span class="o">=</span> <span class="n">IVFS</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">membership</span> <span class="o">=</span> <span class="n">ivfs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">membership</span><span class="p">)</span>  <span class="c1"># Returns [lower_membership, upper_membership]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The upper membership function should be contained within the lower membership
+function to maintain mathematical consistency of Type-2 fuzzy sets.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondMF_lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondMF_upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#IVFS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize an Interval-Valued Fuzzy Set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Linguistic name for the fuzzy set</p></li>
+<li><p><strong>secondMF_lower</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Four parameters [a,b,c,d] for lower trapezoidal
+membership function (outer boundary)</p></li>
+<li><p><strong>secondMF_upper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Four parameters [a,b,c,d] for upper trapezoidal
+membership function (inner boundary)</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Two-element list [min, max] defining universe of discourse</p></li>
+<li><p><strong>lower_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum height of lower membership function.
+Defaults to 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.14)"><strong>AssertionError</strong></a> – If membership function parameters are inconsistent or invalid</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ivfs</span> <span class="o">=</span> <span class="n">IVFS</span><span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.5</span><span class="p">,</span><span class="mf">7.5</span><span class="p">,</span><span class="mf">8.5</span><span class="p">,</span><span class="mf">9.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#IVFS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.membership" title="Link to this definition">#</a></dt>
+<dd><p>Computes the iv-membership of a point or a vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – input values in the fuzzy set referencial domain.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>iv-membership of the fuzzy set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#IVFS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.type" title="Link to this definition">#</a></dt>
+<dd><p>Returns the corresponding fuzzy set type according to FUZZY_SETS enum: (t2)</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.IVFS.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#IVFS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.IVFS.__str__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the fuzzy set, its type and its parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalIVFS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">categoricalIVFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalIVFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.IVFS" title="ex_fuzzy.fuzzy_sets.IVFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">IVFS</span></code></a></p>
+<p>Class to define a iv fuzzy set with categorical membership.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalIVFS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalIVFS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Creates a categorical iv fuzzy set. It gives 1 to the category and 0 to the rest.
+Use it when the variable is categorical and the categories are known, so that rule inference systems
+can naturally support both crisp and fuzzy variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – string.</p></li>
+<li><p><strong>categories</strong> – list of strings. Possible categories.</p></li>
+<li><p><strong>domain</strong> – list of two numbers. Limits of the domain if the fuzzy set.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalIVFS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalIVFS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.membership" title="Link to this definition">#</a></dt>
+<dd><p>Computes the membership of a point or vector of elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – input values in the referencial domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalIVFS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalIVFS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.type" title="Link to this definition">#</a></dt>
+<dd><p>Returns the corresponding fuzzy set type according to FUZZY_SETS enum.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalIVFS.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalIVFS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.__str__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the fuzzy set, its type and its parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.categoricalIVFS.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#categoricalIVFS.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns the shape of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.GT2">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">GT2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_memberships</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">significant_decimals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.2,</span> <span class="pre">0.4,</span> <span class="pre">0.5,</span> <span class="pre">0.7,</span> <span class="pre">0.9,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#GT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.GT2" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<p>Class to define a gt2 fuzzy set.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.GT2.MAX_RES_SUPPORT">
+<span class="sig-name descname"><span class="pre">MAX_RES_SUPPORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.GT2.MAX_RES_SUPPORT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.GT2.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_memberships</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">significant_decimals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.2,</span> <span class="pre">0.4,</span> <span class="pre">0.5,</span> <span class="pre">0.7,</span> <span class="pre">0.9,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#GT2.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.GT2.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Creates a GT2 fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – string.</p></li>
+<li><p><strong>secondary_memberships</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a><em>]</em>) – list of fuzzy sets. Secondary membership that maps original domain to [0, 1]</p></li>
+<li><p><strong>secondMF_upper</strong> – four real numbers. Parameters of the upper trapezoid/gaussian function.</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – list of two numbers. Limits of the domain if the fuzzy set.</p></li>
+<li><p><strong>alpha_cuts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – list of real numbers. Alpha cuts of the fuzzy set.</p></li>
+<li><p><strong>unit_resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – real number. Resolution of the primary membership function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.GT2.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#GT2.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.GT2.membership" title="Link to this definition">#</a></dt>
+<dd><p>Computes the alpha cut memberships of a point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – input values in the fuzzy set referencial domain.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np array samples x alpha_cuts x 2</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.GT2.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#GT2.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.GT2.type" title="Link to this definition">#</a></dt>
+<dd><p>Return the fuzzy set type identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The type identifier (FUZZY_SETS.t1 for Type-1 fuzzy sets)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../api/generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.GT2.alpha_reduction">
+<span class="sig-name descname"><span class="pre">alpha_reduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#GT2.alpha_reduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.GT2.alpha_reduction" title="Link to this definition">#</a></dt>
+<dd><p>Computes the type reduction to reduce the alpha cuts to one value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – array with the values of the inputs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>array with the memberships of the consequents for each sample.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">gaussianIVFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondMF_lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondMF_upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianIVFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.IVFS" title="ex_fuzzy.fuzzy_sets.IVFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">IVFS</span></code></a></p>
+<p>Gaussian Interval-Valued (Type-2) Fuzzy Set Implementation.</p>
+<p>This class implements a Gaussian interval-valued fuzzy set with two Gaussian
+membership functions (upper and lower) representing the uncertainty boundaries.
+This allows for modeling higher-order uncertainty in fuzzy systems.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.secondMF_lower">
+<span class="sig-name descname"><span class="pre">secondMF_lower</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.secondMF_lower" title="Link to this definition">#</a></dt>
+<dd><p>Parameters [mean, std] for the lower membership function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.secondMF_upper">
+<span class="sig-name descname"><span class="pre">secondMF_upper</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.secondMF_upper" title="Link to this definition">#</a></dt>
+<dd><p>Parameters [mean, std] for the upper membership function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.name" title="Link to this definition">#</a></dt>
+<dd><p>Human-readable name for the fuzzy set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.universe_size">
+<span class="sig-name descname"><span class="pre">universe_size</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.universe_size" title="Link to this definition">#</a></dt>
+<dd><p>Size of the universe of discourse</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lower_params</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upper_params</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">iv_gauss</span> <span class="o">=</span> <span class="n">gaussianIVFS</span><span class="p">(</span><span class="n">lower_params</span><span class="p">,</span> <span class="n">upper_params</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">membership</span> <span class="o">=</span> <span class="n">iv_gauss</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">membership</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (3, 2) - lower and upper bounds</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The interval-valued membership function provides both lower and upper
+bounds for each input, enabling Type-2 fuzzy reasoning.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianIVFS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.membership" title="Link to this definition">#</a></dt>
+<dd><p>Computes the Gaussian interval-valued membership values for input points.</p>
+<p>Returns both lower and upper membership bounds for each input value,
+enabling Type-2 fuzzy set operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input</strong> (<em>np.array</em>) – Input values in the fuzzy set domain</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of shape (n, 2) with [lower, upper] bounds for each input</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iv_gauss</span> <span class="o">=</span> <span class="n">gaussianIVFS</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s2">&quot;Zero&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">iv_gauss</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (2, 2) - 2 inputs, 2 bounds each</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianIVFS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.type" title="Link to this definition">#</a></dt>
+<dd><p>Returns the type of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Always returns FUZZY_SETS.t2 for Type-2 fuzzy sets</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../api/generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianIVFS.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianIVFS.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns the shape of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Always returns ‘gaussian’</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">gaussianFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-class docutils literal notranslate"><span class="pre">FS</span></code></a></p>
+<p>Gaussian Type-1 Fuzzy Set Implementation.</p>
+<p>This class implements a Gaussian fuzzy set with bell-shaped membership function.
+Gaussian fuzzy sets are characterized by their mean and standard deviation,
+providing smooth membership transitions ideal for continuous variables.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.membership_parameters">
+<span class="sig-name descname"><span class="pre">membership_parameters</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.membership_parameters" title="Link to this definition">#</a></dt>
+<dd><p>[mean, standard_deviation] defining the Gaussian curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.name" title="Link to this definition">#</a></dt>
+<dd><p>Human-readable name for the fuzzy set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.universe_size">
+<span class="sig-name descname"><span class="pre">universe_size</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.universe_size" title="Link to this definition">#</a></dt>
+<dd><p>Size of the universe of discourse</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>  <span class="c1"># mean=5, std=1.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gauss_fs</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">membership</span> <span class="o">=</span> <span class="n">gauss_fs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">membership</span><span class="p">)</span>  <span class="c1"># [0.606, 1.0, 0.606]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The membership function follows the formula:
+μ(x) = exp(-0.5 * ((x - mean) / std)^2)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.membership">
+<span class="sig-name descname"><span class="pre">membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS.membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.membership" title="Link to this definition">#</a></dt>
+<dd><p>Computes the Gaussian membership values for input points.</p>
+<p>The membership function implements the Gaussian curve formula using
+the mean and standard deviation parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input</strong> (<em>np.array</em>) – Input values in the fuzzy set domain</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Membership values in range [0, 1]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gauss_fs</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Zero&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">gauss_fs</span><span class="o">.</span><span class="n">membership</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>  <span class="c1"># [0.606, 1.0, 0.606]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.type" title="Link to this definition">#</a></dt>
+<dd><p>Returns the type of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Always returns FUZZY_SETS.t1 for Type-1 fuzzy sets</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../api/generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.gaussianFS.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#gaussianFS.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.gaussianFS.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns the shape of the fuzzy set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Always returns ‘gaussian’</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.fuzzy_sets.</span></span><span class="sig-name descname"><span class="pre">fuzzyVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_sets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Fuzzy Variable Container and Management Class.</p>
+<p>This class represents a fuzzy variable composed of multiple fuzzy sets
+(linguistic variables). It provides methods to compute memberships across
+all fuzzy sets and manage the linguistic terms of the variable.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variables">
+<span class="sig-name descname"><span class="pre">linguistic_variables</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variables" title="Link to this definition">#</a></dt>
+<dd><p>List of fuzzy sets that define the variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.name" title="Link to this definition">#</a></dt>
+<dd><p>Name of the fuzzy variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.units">
+<span class="sig-name descname"><span class="pre">units</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.units" title="Link to this definition">#</a></dt>
+<dd><p>Units of measurement (optional, for display purposes)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.fs_type">
+<span class="sig-name descname"><span class="pre">fs_type</span></span><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.fs_type" title="Link to this definition">#</a></dt>
+<dd><p>Type of fuzzy sets (t1 or t2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../api/generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS">FUZZY_SETS</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create fuzzy sets for temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">low_temp</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">([</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">medium_temp</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">high_temp</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">([</span><span class="mi">35</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create fuzzy variable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp_var</span> <span class="o">=</span> <span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;Temperature&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">low_temp</span><span class="p">,</span> <span class="n">medium_temp</span><span class="p">,</span> <span class="n">high_temp</span><span class="p">],</span> <span class="s2">&quot;°C&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memberships</span> <span class="o">=</span> <span class="n">temp_var</span><span class="o">.</span><span class="n">membership</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">memberships</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (3, 3) - 3 inputs, 3 fuzzy sets</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All fuzzy sets in the variable must be of the same type (t1 or t2).</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_sets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Creates a fuzzy variable with the specified fuzzy sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of the fuzzy variable</p></li>
+<li><p><strong>fuzzy_sets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a><em>]</em>) – List of fuzzy sets that comprise the linguistic variables</p></li>
+<li><p><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Units of the fuzzy variable for display purposes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If fuzzy_sets is empty or contains mixed types</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs1</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs2</span> <span class="o">=</span> <span class="n">gaussianFS</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span> <span class="o">=</span> <span class="n">fuzzyVariable</span><span class="p">(</span><span class="s2">&quot;Speed&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">fs1</span><span class="p">,</span> <span class="n">fs2</span><span class="p">],</span> <span class="s2">&quot;m/s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.append" title="Link to this definition">#</a></dt>
+<dd><p>Appends a fuzzy set to the fuzzy variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fs</strong> (<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – FS. Fuzzy set to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variable_names">
+<span class="sig-name descname"><span class="pre">linguistic_variable_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.linguistic_variable_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the linguistic variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of strings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables">
+<span class="sig-name descname"><span class="pre">get_linguistic_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.get_linguistic_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the linguistic variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of strings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.compute_memberships">
+<span class="sig-name descname"><span class="pre">compute_memberships</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.compute_memberships"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.compute_memberships" title="Link to this definition">#</a></dt>
+<dd><p>Computes the membership to each of the FS in the fuzzy variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – numeric value or array. Computes the membership to each of the FS in the fuzzy variables.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of floats. Membership to each of the FS in the fuzzy variables.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.domain" title="Link to this definition">#</a></dt>
+<dd><p>Returns the domain of the fuzzy variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of floats.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.fuzzy_type">
+<span class="sig-name descname"><span class="pre">fuzzy_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.fuzzy_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.fuzzy_type" title="Link to this definition">#</a></dt>
+<dd><p>Returns the fuzzy type of the domain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the type of the fuzzy set present in the fuzzy variable.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../api/generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><em>FUZZY_SETS</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.validate" title="Link to this definition">#</a></dt>
+<dd><p>Validates the fuzzy variable. Checks that all the fuzzy sets have the same type and domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> – np.array. Input data to validate the fuzzy variable.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool. True if the fuzzy variable is valid, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__str__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the name of the fuzzy variable, its type and its parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__getitem__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the corresponding fs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> – int. Index of the FS.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FS. The corresponding FS.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__setitem__" title="Link to this definition">#</a></dt>
+<dd><p>Sets the corresponding fs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – int. Index of the FS.</p></li>
+<li><p><strong>elem</strong> (<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – FS. The FS to set.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__iter__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the corresponding fs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> – int. Index of the FS.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FS. The corresponding FS.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.14)"><em>Generator</em></a>[<a class="reference internal" href="#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>, None, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__len__" title="Link to this definition">#</a></dt>
+<dd><p>Returns the number of linguistic variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int. Number of linguistic variables.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.fuzzy_sets.fuzzyVariable.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/fuzzy_sets.html#fuzzyVariable.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__call__" title="Link to this definition">#</a></dt>
+<dd><p>Computes the membership to each of the FS in the fuzzy variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – numeric value or array.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of floats. Membership to each of the FS in the fuzzy variables.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.trapezoidal_membership"><code class="docutils literal notranslate"><span class="pre">trapezoidal_membership()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS"><code class="docutils literal notranslate"><span class="pre">FS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.name"><code class="docutils literal notranslate"><span class="pre">FS.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.membership_parameters"><code class="docutils literal notranslate"><span class="pre">FS.membership_parameters</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.domain"><code class="docutils literal notranslate"><span class="pre">FS.domain</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.__init__"><code class="docutils literal notranslate"><span class="pre">FS.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.membership"><code class="docutils literal notranslate"><span class="pre">FS.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.type"><code class="docutils literal notranslate"><span class="pre">FS.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.__call__"><code class="docutils literal notranslate"><span class="pre">FS.__call__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.__str__"><code class="docutils literal notranslate"><span class="pre">FS.__str__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.FS.shape"><code class="docutils literal notranslate"><span class="pre">FS.shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.triangularFS"><code class="docutils literal notranslate"><span class="pre">triangularFS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.triangularFS.__init__"><code class="docutils literal notranslate"><span class="pre">triangularFS.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.triangularFS.shape"><code class="docutils literal notranslate"><span class="pre">triangularFS.shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalFS"><code class="docutils literal notranslate"><span class="pre">categoricalFS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalFS.__init__"><code class="docutils literal notranslate"><span class="pre">categoricalFS.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalFS.membership"><code class="docutils literal notranslate"><span class="pre">categoricalFS.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalFS.type"><code class="docutils literal notranslate"><span class="pre">categoricalFS.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalFS.__str__"><code class="docutils literal notranslate"><span class="pre">categoricalFS.__str__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalFS.shape"><code class="docutils literal notranslate"><span class="pre">categoricalFS.shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS"><code class="docutils literal notranslate"><span class="pre">IVFS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.name"><code class="docutils literal notranslate"><span class="pre">IVFS.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.domain"><code class="docutils literal notranslate"><span class="pre">IVFS.domain</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.secondMF_lower"><code class="docutils literal notranslate"><span class="pre">IVFS.secondMF_lower</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.secondMF_upper"><code class="docutils literal notranslate"><span class="pre">IVFS.secondMF_upper</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.lower_height"><code class="docutils literal notranslate"><span class="pre">IVFS.lower_height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.__init__"><code class="docutils literal notranslate"><span class="pre">IVFS.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.membership"><code class="docutils literal notranslate"><span class="pre">IVFS.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.type"><code class="docutils literal notranslate"><span class="pre">IVFS.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.IVFS.__str__"><code class="docutils literal notranslate"><span class="pre">IVFS.__str__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.__init__"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.membership"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.type"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.__str__"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.__str__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.categoricalIVFS.shape"><code class="docutils literal notranslate"><span class="pre">categoricalIVFS.shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.GT2"><code class="docutils literal notranslate"><span class="pre">GT2</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.GT2.MAX_RES_SUPPORT"><code class="docutils literal notranslate"><span class="pre">GT2.MAX_RES_SUPPORT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.GT2.__init__"><code class="docutils literal notranslate"><span class="pre">GT2.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.GT2.membership"><code class="docutils literal notranslate"><span class="pre">GT2.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.GT2.type"><code class="docutils literal notranslate"><span class="pre">GT2.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.GT2.alpha_reduction"><code class="docutils literal notranslate"><span class="pre">GT2.alpha_reduction()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.secondMF_lower"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.secondMF_lower</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.secondMF_upper"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.secondMF_upper</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.name"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.universe_size"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.universe_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.membership"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.type"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianIVFS.shape"><code class="docutils literal notranslate"><span class="pre">gaussianIVFS.shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS"><code class="docutils literal notranslate"><span class="pre">gaussianFS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS.membership_parameters"><code class="docutils literal notranslate"><span class="pre">gaussianFS.membership_parameters</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS.name"><code class="docutils literal notranslate"><span class="pre">gaussianFS.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS.universe_size"><code class="docutils literal notranslate"><span class="pre">gaussianFS.universe_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS.membership"><code class="docutils literal notranslate"><span class="pre">gaussianFS.membership()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS.type"><code class="docutils literal notranslate"><span class="pre">gaussianFS.type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.gaussianFS.shape"><code class="docutils literal notranslate"><span class="pre">gaussianFS.shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variables"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.linguistic_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.name"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.units"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.units</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.fs_type"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.fs_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__init__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.append"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.append()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.linguistic_variable_names"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.linguistic_variable_names()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.get_linguistic_variables"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.get_linguistic_variables()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.compute_memberships"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.compute_memberships()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.domain"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.domain()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.fuzzy_type"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.fuzzy_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.validate"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.validate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__str__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__str__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__getitem__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__setitem__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__setitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__iter__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__iter__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__len__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__len__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.fuzzy_sets.fuzzyVariable.__call__"><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.__call__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/function_resume/fuzzy_sets.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

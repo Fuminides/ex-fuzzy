@@ -1,0 +1,1284 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fuzzy Regression &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user-guide/regression';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Validation and Visualization" href="validation-visualization.html" />
+    <link rel="prev" title="Core Concepts" href="core-concepts.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="#">
+    Fuzzy Regression
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/regression.html">
+    Fuzzy Regression (API)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="#">
+    Fuzzy Regression
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/regression.html">
+    Fuzzy Regression (API)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Concepts</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="core-concepts.html">Core Concepts</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Fuzzy Regression</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Topics</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="validation-visualization.html">Validation and Visualization</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fuzzy Regression</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="fuzzy-regression">
+<h1>Fuzzy Regression<a class="headerlink" href="#fuzzy-regression" title="Link to this heading">#</a></h1>
+<p>This guide covers fuzzy regression with Ex-Fuzzy, including crisp and fuzzy consequents, rule modes, and practical examples.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id1">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#basic-workflow" id="id2">Basic Workflow</a></p></li>
+<li><p><a class="reference internal" href="#quick-start-example" id="id3">Quick Start Example</a></p></li>
+<li><p><a class="reference internal" href="#consequent-types" id="id4">Consequent Types</a></p>
+<ul>
+<li><p><a class="reference internal" href="#crisp-consequents" id="id5">Crisp Consequents</a></p></li>
+<li><p><a class="reference internal" href="#fuzzy-consequents-mamdani-inference" id="id6">Fuzzy Consequents (Mamdani Inference)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#rule-modes" id="id7">Rule Modes</a></p>
+<ul>
+<li><p><a class="reference internal" href="#additive-mode-default" id="id8">Additive Mode (Default)</a></p></li>
+<li><p><a class="reference internal" href="#sufficient-mode" id="id9">Sufficient Mode</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#complete-example-california-housing" id="id10">Complete Example: California Housing</a></p></li>
+<li><p><a class="reference internal" href="#more-features" id="id11">More Features</a></p>
+<ul>
+<li><p><a class="reference internal" href="#precomputed-linguistic-variables" id="id12">Precomputed Linguistic Variables</a></p></li>
+<li><p><a class="reference internal" href="#gpu-acceleration-evox-backend" id="id13">GPU Acceleration (EvoX Backend)</a></p></li>
+<li><p><a class="reference internal" href="#model-persistence" id="id14">Model Persistence</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#see-also" id="id15">See Also</a></p></li>
+<li><p><a class="reference internal" href="#next-steps" id="id16">Next Steps</a></p></li>
+</ul>
+</nav>
+<section id="introduction">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Introduction</a><a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<p>Fuzzy regression models use fuzzy rules to predict continuous values. Unlike traditional regression that outputs a single crisp value, fuzzy regression can leverage linguistic interpretability while maintaining prediction accuracy.</p>
+<p>Ex-Fuzzy supports two types of regression consequents:</p>
+<ol class="arabic simple">
+<li><p><strong>Crisp Consequents</strong>: Rules output numeric values (like traditional regression)</p></li>
+<li><p><strong>Fuzzy Consequents</strong>: Rules output fuzzy sets that are defuzzified to produce predictions</p></li>
+</ol>
+</section>
+<section id="basic-workflow">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Basic Workflow</a><a class="headerlink" href="#basic-workflow" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Prepare your data (features X and target y)</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesRegressor</span></code> instance</p></li>
+<li><p>Train the model using <code class="docutils literal notranslate"><span class="pre">.fit()</span></code></p></li>
+<li><p>Make predictions with <code class="docutils literal notranslate"><span class="pre">.predict()</span></code></p></li>
+<li><p>Evaluate and visualize results</p></li>
+</ol>
+</section>
+<section id="quick-start-example">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Quick Start Example</a><a class="headerlink" href="#quick-start-example" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit_regression</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFuzzyRulesRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_california_housing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">r2_score</span><span class="p">,</span> <span class="n">mean_squared_error</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Load dataset</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">fetch_california_housing</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span>
+
+<span class="c1"># Split data</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="c1"># Create and train regressor</span>
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;crisp&#39;</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span><span class="p">,</span>
+    <span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># Predict and evaluate</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;R² Score: </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMSE: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Display rules</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">regressor</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="consequent-types">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Consequent Types</a><a class="headerlink" href="#consequent-types" title="Link to this heading">#</a></h2>
+<section id="crisp-consequents">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Crisp Consequents</a><a class="headerlink" href="#crisp-consequents" title="Link to this heading">#</a></h3>
+<p>Crisp consequents output numeric values that are combined using weighted averaging based on rule firing strengths.</p>
+<p><strong>Advantages:</strong>
+- Simple and efficient
+- Easy to interpret
+- Similar to traditional regression</p>
+<p><strong>Formula:</strong></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y = \\frac{\\sum_{i=1}^{R} \\mu_i(x) \\cdot c_i}{\\sum_{i=1}^{R} \\mu_i(x)}\end{split}\]</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;crisp&#39;</span><span class="p">,</span>  <span class="c1"># Numeric outputs</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span>
+<span class="p">)</span>
+
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Rules show numeric consequents</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">print_rules_regression</span><span class="p">()</span>
+<span class="c1"># Output: &quot;IF x1 is LOW AND x2 is HIGH THEN output = 25.73&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="fuzzy-consequents-mamdani-inference">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Fuzzy Consequents (Mamdani Inference)</a><a class="headerlink" href="#fuzzy-consequents-mamdani-inference" title="Link to this heading">#</a></h3>
+<p>Fuzzy consequents output fuzzy sets that are aggregated and defuzzified using the centroid method.</p>
+<p><strong>Advantages:</strong>
+- More linguistically interpretable
+- Captures uncertainty in outputs
+- Follows classical Mamdani inference</p>
+<p><strong>Process:</strong>
+1. Each rule outputs a fuzzy set
+2. Rule firing strength clips the output fuzzy set
+3. All clipped sets are aggregated using MAX operation
+4. Centroid defuzzification produces the final crisp value</p>
+<p><strong>Example with precomputed fuzzy sets:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+
+<span class="c1"># Define output fuzzy sets</span>
+<span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span>
+<span class="n">output_fs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Very_Low&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Low&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Medium&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span> <span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;High&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Very_High&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">],</span> <span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">])</span>
+<span class="p">]</span>
+
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;fuzzy&#39;</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span><span class="p">,</span>
+    <span class="n">output_fuzzy_sets</span><span class="o">=</span><span class="n">output_fs</span><span class="p">,</span>
+    <span class="n">universe_points</span><span class="o">=</span><span class="mi">100</span>  <span class="c1"># Discretization for defuzzification</span>
+<span class="p">)</span>
+
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Rules show fuzzy set names</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">print_rules_regression</span><span class="p">()</span>
+<span class="c1"># Output: &quot;IF x1 is LOW AND x2 is HIGH THEN output is Very_High&quot;</span>
+</pre></div>
+</div>
+<p><strong>Example with evolved fuzzy sets:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let the algorithm learn output fuzzy sets</span>
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;fuzzy&#39;</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span><span class="p">,</span>
+    <span class="n">output_fuzzy_sets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Will be evolved</span>
+    <span class="n">n_output_linguistic_variables</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># Number of output FSs</span>
+    <span class="n">universe_points</span><span class="o">=</span><span class="mi">100</span>
+<span class="p">)</span>
+
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="rule-modes">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Rule Modes</a><a class="headerlink" href="#rule-modes" title="Link to this heading">#</a></h2>
+<section id="additive-mode-default">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Additive Mode (Default)</a><a class="headerlink" href="#additive-mode-default" title="Link to this heading">#</a></h3>
+<p>All rules contribute to every prediction. The final output is a weighted combination of all rule outputs.</p>
+<p><strong>When to use:</strong>
+- Default choice for regression
+- When multiple rules should influence the prediction
+- Similar to ensemble methods</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span>  <span class="c1"># All rules contribute</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="sufficient-mode">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Sufficient Mode</a><a class="headerlink" href="#sufficient-mode" title="Link to this heading">#</a></h3>
+<p>Only the rule with the highest activation fires. This is a winner-takes-all approach.</p>
+<p><strong>When to use:</strong>
+- When you want crisp decision boundaries
+- Similar to classification behavior
+- When rules represent mutually exclusive regions</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;sufficient&#39;</span>  <span class="c1"># Only strongest rule fires</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Comparison:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">r2_score</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+<span class="c1"># Additive mode</span>
+<span class="n">reg_add</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span><span class="p">)</span>
+<span class="n">reg_add</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">y_pred_add</span> <span class="o">=</span> <span class="n">reg_add</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="c1"># Sufficient mode</span>
+<span class="n">reg_suff</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;sufficient&#39;</span><span class="p">)</span>
+<span class="n">reg_suff</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">y_pred_suff</span> <span class="o">=</span> <span class="n">reg_suff</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Additive R²: </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_add</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sufficient R²: </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_suff</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="complete-example-california-housing">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Complete Example: California Housing</a><a class="headerlink" href="#complete-example-california-housing" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit_regression</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFuzzyRulesRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_california_housing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">r2_score</span><span class="p">,</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="n">mean_absolute_error</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Load and prepare data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">fetch_california_housing</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span>
+
+<span class="c1"># Split data</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="c1"># Standardize features</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">X_train_scaled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">index</span>
+<span class="p">)</span>
+<span class="n">X_test_scaled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">),</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span>
+<span class="p">)</span>
+
+<span class="c1"># Create and train regressor</span>
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;crisp&#39;</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span><span class="p">,</span>
+    <span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training fuzzy regressor...&quot;</span><span class="p">)</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train_scaled</span><span class="p">,</span>
+    <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">n_gen</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="c1"># Evaluate on test set</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_scaled</span><span class="p">)</span>
+
+<span class="n">r2</span> <span class="o">=</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="n">mae</span> <span class="o">=</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nTest Set Performance:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  R² Score: </span><span class="si">{</span><span class="n">r2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  RMSE: </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  MAE: </span><span class="si">{</span><span class="n">mae</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Display learned rules</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nLearned Rules:&quot;</span><span class="p">)</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">print_rules_regression</span><span class="p">()</span>
+
+<span class="c1"># Visualize predictions</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">y_test</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y_test</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span>
+         <span class="p">[</span><span class="n">y_test</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y_test</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span>
+         <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;True Values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Predictions&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Fuzzy Regression: Predicted vs True Values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="more-features">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">More Features</a><a class="headerlink" href="#more-features" title="Link to this heading">#</a></h2>
+<section id="precomputed-linguistic-variables">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Precomputed Linguistic Variables</a><a class="headerlink" href="#precomputed-linguistic-variables" title="Link to this heading">#</a></h3>
+<p>You can provide custom fuzzy partitions for input features:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+
+<span class="c1"># Create custom linguistic variables</span>
+<span class="n">x1_lvs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Very_Low&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Low&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Medium&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;High&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Very_High&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="p">]</span>
+<span class="n">x1_var</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="n">x1_lvs</span><span class="p">)</span>
+
+<span class="n">x2_lvs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Low&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;Medium&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">FS</span><span class="p">(</span><span class="s1">&#39;High&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="p">]</span>
+<span class="n">x2_var</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="n">x2_lvs</span><span class="p">)</span>
+
+<span class="c1"># Use precomputed partitions</span>
+<span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">linguistic_variables</span><span class="o">=</span><span class="p">[</span><span class="n">x1_var</span><span class="p">,</span> <span class="n">x2_var</span><span class="p">],</span>  <span class="c1"># Custom partitions</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;crisp&#39;</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="gpu-acceleration-evox-backend">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">GPU Acceleration (EvoX Backend)</a><a class="headerlink" href="#gpu-acceleration-evox-backend" title="Link to this heading">#</a></h3>
+<p>For large datasets, use GPU acceleration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">regressor</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesRegressor</span><span class="p">(</span>
+    <span class="n">nRules</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">consequent_type</span><span class="o">=</span><span class="s1">&#39;crisp&#39;</span><span class="p">,</span>
+    <span class="n">rule_mode</span><span class="o">=</span><span class="s1">&#39;additive&#39;</span><span class="p">,</span>
+    <span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+
+<span class="c1"># Use EvoX backend for GPU acceleration</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train</span><span class="p">,</span>
+    <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">n_gen</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">pop_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;evox&#39;</span><span class="p">,</span>  <span class="c1"># GPU-accelerated</span>
+    <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../evox_backend.html"><span class="doc">EvoX Backend Guide</span></a> for more details on GPU acceleration.</p>
+</section>
+<section id="model-persistence">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Model Persistence</a><a class="headerlink" href="#model-persistence" title="Link to this heading">#</a></h3>
+<p>Save and load trained models:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">persistence</span>
+
+<span class="c1"># Train and save</span>
+<span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">persistence</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">regressor</span><span class="p">,</span> <span class="s1">&#39;my_regressor.pkl&#39;</span><span class="p">)</span>
+
+<span class="c1"># Load later</span>
+<span class="n">loaded_regressor</span> <span class="o">=</span> <span class="n">persistence</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s1">&#39;my_regressor.pkl&#39;</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">loaded_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/regression.html"><span class="doc">Fuzzy Regression (API)</span></a> - API reference</p></li>
+<li><p><a class="reference internal" href="../examples/regression.html"><span class="doc">Regression Examples</span></a> - More examples</p></li>
+<li><p><a class="reference internal" href="../evox_backend.html"><span class="doc">EvoX Backend Guide</span></a> - GPU acceleration guide</p></li>
+<li><p><span class="xref std std-doc">visualization</span> - Plotting fuzzy rules and partitions</p></li>
+</ul>
+</section>
+<section id="next-steps">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Next Steps</a><a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Try the <a class="reference internal" href="../examples/regression.html"><span class="doc">Regression Examples</span></a> notebook</p></li>
+<li><p>Explore <span class="xref std std-doc">visualization</span> for rule visualization</p></li>
+<li><p>Learn about <span class="xref std std-doc">pattern-analysis</span> for model insights</p></li>
+<li><p>Check out <a class="reference internal" href="../evox_backend.html"><span class="doc">EvoX Backend Guide</span></a> for GPU acceleration</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-workflow">Basic Workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start-example">Quick Start Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consequent-types">Consequent Types</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#crisp-consequents">Crisp Consequents</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuzzy-consequents-mamdani-inference">Fuzzy Consequents (Mamdani Inference)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-modes">Rule Modes</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#additive-mode-default">Additive Mode (Default)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sufficient-mode">Sufficient Mode</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-example-california-housing">Complete Example: California Housing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#more-features">More Features</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#precomputed-linguistic-variables">Precomputed Linguistic Variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-acceleration-evox-backend">GPU Acceleration (EvoX Backend)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-persistence">Model Persistence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user-guide/regression.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
