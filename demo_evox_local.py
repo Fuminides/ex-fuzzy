@@ -10,16 +10,12 @@ Usage:
 Requirements:
     - ex-fuzzy
     - evox (for GPU acceleration)
-    - torch (EvoX now uses PyTorch instead of JAX)
+    - torch (EvoX uses PyTorch)
     - scikit-learn
     - numpy
     - pandas
     - matplotlib
 """
-
-# Force CPU for debugging (disable CUDA before importing torch)
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # ======================================================================
 # CONFIGURATION - Modify these parameters to customize the experiments
@@ -41,7 +37,7 @@ CONFIG = {
     'n_linguistic_variables': 3,     # Number of linguistic variables per feature
     
     # Training Parameters
-    'n_gen': 300,                     # Number of generations
+    'n_gen': 30,                     # Number of generations
     'pop_size': 60,                  # Population size
     'random_state': 42,              # Random seed for reproducibility
     
@@ -52,7 +48,7 @@ CONFIG = {
     
     # Dataset Parameters
     'test_size': 0.3,                # Proportion of test set
-    'large_dataset_samples': 1000,   # Samples for large dataset test
+    'large_dataset_samples': 100000,   # Samples for large dataset test
     'large_dataset_features': 8,     # Features for large dataset test
 }
 
@@ -440,6 +436,7 @@ def main():
     X_train, X_test, y_train, y_test, feature_names, class_names = load_and_prepare_data()
     
     # Test PyMoo backend
+    
     pymoo_results = test_pymoo_backend(X_train, y_train, X_test, y_test, class_names)
     
     # Test EvoX backend if available
@@ -454,7 +451,7 @@ def main():
     compare_results(pymoo_results, evox_results)
     
     # Test with larger dataset
-    test_large_dataset(available_backends)
+    test_large_dataset(['evox'])
 
     # Print summary
     print_summary()

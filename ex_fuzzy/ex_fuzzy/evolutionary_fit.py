@@ -1181,7 +1181,10 @@ class FitRuleBase(Problem):
 
     def _evaluate_numpy_fast(self, x: np.array, y: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> rules.MasterRuleBase:
         '''
-        Given a subject, it evaluates its performance without explictly creating any object.
+        Memory-efficient vectorized numpy evaluation with automatic sample batching.
+        
+        Automatically batches samples when dataset is too large to fit in memory.
+        Uses indicator matrices for efficient computation within each batch.
 
         :param x: gen of a rulebase. type: dict.
         :param fuzzy_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
@@ -1193,32 +1196,59 @@ class FitRuleBase(Problem):
                             then this parameter is used to specify which time moment is being used.
         '''
 
-        rule_list = [[] for _ in range(self.n_classes)]
-
         mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
-        rule_memberships = np.zeros((self.X.shape[0], self.nRules))
-        rule_class_consequents = np.zeros((self.nRules,)).astype(int)
+        n_samples = self.X.shape[0]
+        
+        # Estimate memory usage and determine if we need sample batching
+        max_lvars = max(self.n_lv_possible)
+        n_features = self.X.shape[1]
+        
+        # Estimate bytes for key arrays
+        membership_array_bytes = n_samples * n_features * max_lvars * 8  # float64
+        indicators_bytes = n_features * max_lvars * self.nRules * self.nAnts * 8
+        einsum_result_bytes = n_samples * self.nRules * self.nAnts * 8
+        
+        total_estimated_bytes = membership_array_bytes + indicators_bytes + einsum_result_bytes
+        
+        # Get available memory
+        try:
+            import psutil
+            available_memory = psutil.virtual_memory().available
+            # Use at most 30% of available memory for safety
+            memory_budget = available_memory * 0.3
+        except ImportError:
+            # Conservative default: 2GB
+            memory_budget = 2 * 1024**3
+        
+        # If estimated usage exceeds budget, use sample batching
+        if total_estimated_bytes > memory_budget:
+            return self._evaluate_numpy_fast_batched(x, y, fuzzy_type, memory_budget, **kwargs)
+        else:
+            return self._evaluate_numpy_fast_full(x, y, fuzzy_type, **kwargs)
+        
+    
+    
+    def _evaluate_numpy_fast_full(self, x: np.array, y: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> float:
         '''
-        GEN STRUCTURE
-
-        First: features chosen by each rule. Size: nAnts * nRules
-        Second: linguistic labels used. Size: nAnts * nRules
-        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)
-        Four: Consequent classes. Size: nRules
-        Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
-        Sixth: Modifiers for the membership functions. Size: len(self.lvs) * nAnts * nRules
+        Full vectorized evaluation - processes all samples at once.
+        Only called when dataset fits comfortably in memory.
+        
+        :param x: gene array
+        :param y: labels  
+        :param fuzzy_type: fuzzy set type
+        :return: MCC score
         '''
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
+        
+        # Calculate pointers
         if self.lvs is None:
-            # If memberships are optimized.
             if fuzzy_type == fs.FUZZY_SETS.t1:
                 fourth_pointer = 2 * self.nAnts * self.nRules + \
-                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4 # 4 is the size of the membership function, 3 is the size of the first (and last) membership function
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4
             elif fuzzy_type == fs.FUZZY_SETS.t2:
                 fourth_pointer = 2 * self.nAnts * self.nRules + \
                     len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
-                
         else:
-            # If no memberships are optimized.
             fourth_pointer = 2 * self.nAnts * self.nRules
 
         if self.ds_mode == 2:
@@ -1226,68 +1256,189 @@ class FitRuleBase(Problem):
         else:
             fifth_pointer = fourth_pointer
 
-        if self.ds_mode == 2:
-            sixth_pointer = fifth_pointer + self.nRules
-        else:
-            sixth_pointer = fifth_pointer
-        
-        aux_pointer = 0
-
-        # If we optimize the membership functions - decode them directly
+        # Get precomputed memberships
         if self.lvs is None:
             antecedents = self._decode_membership_functions(x, fuzzy_type)
-            # We have to regenerate the memberships
             precomputed_antecedent_memberships = rules.compute_antecedents_memberships(antecedents, self.X)
         else:
             precomputed_antecedent_memberships = self._precomputed_truth
-        # Integer sampling doesnt work fine in pymoo, so we do this (which is btw what pymoo is really doing if you just set integer optimization)
+            
+        # Convert x to int array
         try:
-            # subject might come as a dict.
             x = np.array(list(x.values())).astype(int)
         except AttributeError:
             x = x.astype(int)
 
-        for i0 in range(self.nRules):  # Reconstruct the rules
-            first_pointer = i0 * self.nAnts
-            chosen_ants = x[first_pointer:first_pointer + self.nAnts]
-
-            second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
-            # Shape: self.nAnts + self.n_lv_possible  + 1
-            antecedent_parameters = x[second_pointer:second_pointer+self.nAnts]
-
-            init_rule_antecedents = np.zeros(
-                (self.X.shape[1],)) - 1  # -1 is dont care
-            for jx, ant in enumerate(chosen_ants):
-                if self.lvs is not None:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
-                else:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible[ant] - 1)
-
-                init_rule_antecedents[ant] = antecedent_parameters[jx]
-                if jx == 0:
-                    rule_memberships[:, i0] = precomputed_antecedent_memberships[ant][antecedent_parameters[jx], :]
-                else:
-                    rule_memberships[:, i0] = rule_memberships[:, i0] * precomputed_antecedent_memberships[ant][antecedent_parameters[jx], :]
-
-            consequent_idx = x[fourth_pointer + aux_pointer]
-
-            assert consequent_idx < self.n_classes, "Consequent class is not valid. Something in the gene is wrong."
-            rule_class_consequents[i0] = consequent_idx
-            aux_pointer += 1
- 
-            if self.ds_mode == 2:
-                rule_weight = x[fifth_pointer + i0] / 100
-                rule_memberships[:, i0] = rule_memberships[:, i0] * rule_weight
+        # VECTORIZED APPROACH - extract all gene segments at once
+        n_samples = self.X.shape[0]
+        n_features = self.X.shape[1]
+        
+        # Extract features and parameters for all rules: (nRules, nAnts)
+        chosen_ants = x[:self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        ant_params = x[self.nAnts * self.nRules:2 * self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        
+        # Clamp parameters to valid ranges (vectorized)
+        for feat_idx in range(n_features):
+            mask = chosen_ants == feat_idx
+            if self.lvs is not None:
+                max_param = len(self.lvs[feat_idx]) - 1
             else:
-                rule_weight = 1.0
-
-            
-        # Now, we have the rule memberships and the rule consequents, we can evaluate the performance manually
-        # Create one-hot encoding of rule consequents and use matrix multiplication
+                max_param = self.n_lv_possible[feat_idx] - 1
+            ant_params = np.where(mask, np.minimum(ant_params, max_param), ant_params)
+        
+        # Build unified membership tensor: (n_samples, n_features, max_lvars)
+        if not hasattr(self, '_precomputed_membership_array'):
+            max_lvars = max(self.n_lv_possible)
+            membership_array = np.zeros((n_samples, n_features, max_lvars))
+            for feat_idx in range(n_features):
+                feat_memberships = precomputed_antecedent_memberships[feat_idx]  # (n_lvars, n_samples)
+                n_lvars = feat_memberships.shape[0]
+                membership_array[:, feat_idx, :n_lvars] = feat_memberships.T
+            self._precomputed_membership_array = membership_array
+            self._max_lvars_numpy = max_lvars
+        
+        membership_array = self._precomputed_membership_array
+        
+        # Create indicator matrix: (n_features, max_lvars, nRules, nAnts)
+        indicators = np.zeros((n_features, self._max_lvars_numpy, self.nRules, self.nAnts))
+        
+        # Build indicators using advanced indexing
+        rule_indices = np.arange(self.nRules)[:, None]  # (nRules, 1)
+        ant_indices = np.arange(self.nAnts)[None, :]     # (1, nAnts)
+        
+        indicators[chosen_ants, ant_params, rule_indices, ant_indices] = 1.0
+        
+        # Compute memberships for all antecedents: (n_samples, nRules, nAnts)
+        # membership_array: (n_samples, n_features, max_lvars)
+        # indicators: (n_features, max_lvars, nRules, nAnts)
+        ant_memberships = np.einsum('sfl,flra->sra', membership_array, indicators)
+        
+        # Product over antecedents to get rule memberships: (n_samples, nRules)
+        rule_memberships = np.prod(ant_memberships, axis=2)
+        
+        # Get consequents
+        rule_class_consequents = x[fourth_pointer:fourth_pointer + self.nRules].astype(int)
+        
+        # Apply weights if needed (vectorized)
+        if self.ds_mode == 2:
+            rule_weights = x[fifth_pointer:fifth_pointer + self.nRules] / 100.0
+            rule_memberships = rule_memberships * rule_weights[np.newaxis, :]
+        
+        # One-hot encoding and matrix multiplication
         rule_onehot = np.eye(self.n_classes)[rule_class_consequents]  # (nRules, n_classes)
         memberships_pred = rule_memberships @ rule_onehot  # (n_samples, nRules) @ (nRules, n_classes)
         predicted_classes = np.argmax(memberships_pred, axis=1)
 
+        return matthews_corrcoef(y, predicted_classes)
+    
+    
+    def _evaluate_numpy_fast_batched(self, x: np.array, y: np.array, fuzzy_type: fs.FUZZY_SETS, memory_budget: float, **kwargs) -> float:
+        '''
+        Memory-efficient evaluation that processes samples in batches.
+        
+        :param x: gene array
+        :param y: labels
+        :param fuzzy_type: fuzzy set type
+        :param memory_budget: available memory in bytes
+        :return: MCC score
+        '''
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
+        
+        # Calculate pointers (same as full version)
+        if self.lvs is None:
+            if fuzzy_type == fs.FUZZY_SETS.t1:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
+        else:
+            fourth_pointer = 2 * self.nAnts * self.nRules
+
+        if self.ds_mode == 2:
+            fifth_pointer = fourth_pointer + self.nRules
+        else:
+            fifth_pointer = fourth_pointer
+        
+        # Get precomputed memberships
+        if self.lvs is None:
+            antecedents = self._decode_membership_functions(x, fuzzy_type)
+            precomputed_antecedent_memberships = rules.compute_antecedents_memberships(antecedents, self.X)
+        else:
+            precomputed_antecedent_memberships = self._precomputed_truth
+        
+        # Convert x to int array
+        try:
+            x = np.array(list(x.values())).astype(int)
+        except AttributeError:
+            x = x.astype(int)
+        
+        n_samples = self.X.shape[0]
+        n_features = self.X.shape[1]
+        max_lvars = max(self.n_lv_possible)
+        
+        # Calculate optimal batch size based on memory budget
+        indicators_bytes = n_features * max_lvars * self.nRules * self.nAnts * 8
+        per_sample_bytes = n_features * max_lvars * 8 + self.nRules * self.nAnts * 8
+        available_for_samples = memory_budget - indicators_bytes
+        sample_batch_size = max(100, int(available_for_samples / per_sample_bytes))
+        sample_batch_size = min(sample_batch_size, n_samples)
+        
+        # Extract and clamp gene segments (same as full version)
+        chosen_ants = x[:self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        ant_params = x[self.nAnts * self.nRules:2 * self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        
+        for feat_idx in range(n_features):
+            mask = chosen_ants == feat_idx
+            if self.lvs is not None:
+                max_param = len(self.lvs[feat_idx]) - 1
+            else:
+                max_param = self.n_lv_possible[feat_idx] - 1
+            ant_params = np.where(mask, np.minimum(ant_params, max_param), ant_params)
+        
+        # Create indicator matrix once (shared across batches)
+        indicators = np.zeros((n_features, max_lvars, self.nRules, self.nAnts))
+        rule_indices = np.arange(self.nRules)[:, None]
+        ant_indices = np.arange(self.nAnts)[None, :]
+        indicators[chosen_ants, ant_params, rule_indices, ant_indices] = 1.0
+        
+        # Get consequents and weights
+        rule_class_consequents = x[fourth_pointer:fourth_pointer + self.nRules].astype(int)
+        if self.ds_mode == 2:
+            rule_weights = x[fifth_pointer:fifth_pointer + self.nRules] / 100.0
+        
+        # Process samples in batches
+        all_predictions = []
+        
+        for batch_start in range(0, n_samples, sample_batch_size):
+            batch_end = min(batch_start + sample_batch_size, n_samples)
+            
+            # Build membership array for this batch
+            batch_size = batch_end - batch_start
+            membership_array_batch = np.zeros((batch_size, n_features, max_lvars))
+            for feat_idx in range(n_features):
+                feat_memberships = precomputed_antecedent_memberships[feat_idx][:, batch_start:batch_end]
+                n_lvars = feat_memberships.shape[0]
+                membership_array_batch[:, feat_idx, :n_lvars] = feat_memberships.T
+            
+            # Compute for this batch
+            ant_memberships = np.einsum('sfl,flra->sra', membership_array_batch, indicators)
+            rule_memberships_batch = np.prod(ant_memberships, axis=2)
+            
+            # Apply weights if needed
+            if self.ds_mode == 2:
+                rule_memberships_batch = rule_memberships_batch * rule_weights[np.newaxis, :]
+            
+            # Predict for this batch
+            rule_onehot = np.eye(self.n_classes)[rule_class_consequents]
+            memberships_pred = rule_memberships_batch @ rule_onehot
+            predicted_classes_batch = np.argmax(memberships_pred, axis=1)
+            
+            all_predictions.append(predicted_classes_batch)
+        
+        # Concatenate all predictions
+        predicted_classes = np.concatenate(all_predictions)
+        
         return matthews_corrcoef(y, predicted_classes)
 
 
@@ -1369,41 +1520,35 @@ class FitRuleBase(Problem):
         # Ensure x is integer type
         x = x.long()
         
-        # OPTIMIZED: Extract all indices at once to avoid multiple .item() calls
-        x_cpu = x.cpu().numpy()  # Single transfer to CPU
+        # VECTORIZED RULE RECONSTRUCTION - extract all at once using slicing
+        chosen_ants_all = x[:self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        ant_params_all = x[self.nAnts * self.nRules:2 * self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
         
-        # Reconstruct rules
-        for i0 in range(self.nRules):
-            first_pointer = i0 * self.nAnts
-            chosen_ants = x_cpu[first_pointer:first_pointer + self.nAnts]
-            
-            second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
-            antecedent_parameters = x_cpu[second_pointer:second_pointer+self.nAnts]
-            
-            # Process antecedents - using CPU array now (no .item() calls)
-            for jx in range(self.nAnts):
-                ant = chosen_ants[jx]
-                ant_param = antecedent_parameters[jx]
-                
-                if self.lvs is not None:
-                    ant_param = min(ant_param, len(self.lvs[ant]) - 1)
-                else:
-                    ant_param = min(ant_param, self.n_lv_possible[ant] - 1)
-                
-                if jx == 0:
-                    rule_memberships[:, i0] = precomputed_antecedent_memberships[ant][ant_param, :]
-                else:
-                    rule_memberships[:, i0] = rule_memberships[:, i0] * precomputed_antecedent_memberships[ant][ant_param, :]
-            
-            # Get consequent
-            consequent_idx = x_cpu[fourth_pointer + aux_pointer]
-            rule_class_consequents[i0] = consequent_idx
-            aux_pointer += 1
-            
-            # Apply weights if needed
-            if self.ds_mode == 2:
-                rule_weight = x_cpu[fifth_pointer + i0] / 100.0
-                rule_memberships[:, i0] = rule_memberships[:, i0] * rule_weight
+        # Clamp parameters to valid range (vectorized)
+        if self.lvs is not None:
+            for ant_idx in range(self.X.shape[1]):
+                mask = chosen_ants_all == ant_idx
+                ant_params_all = torch.where(mask, torch.clamp(ant_params_all, max=len(self.lvs[ant_idx]) - 1), ant_params_all)
+        else:
+            for ant_idx in range(self.X.shape[1]):
+                mask = chosen_ants_all == ant_idx
+                ant_params_all = torch.where(mask, torch.clamp(ant_params_all, max=self.n_lv_possible[ant_idx] - 1), ant_params_all)
+        
+        # Initialize with ones and multiply memberships
+        rule_memberships = torch.ones((self.X.shape[0], self.nRules), device=device)
+        for rule_idx in range(self.nRules):
+            for ant_idx in range(self.nAnts):
+                feature = chosen_ants_all[rule_idx, ant_idx].item()
+                param = ant_params_all[rule_idx, ant_idx].item()
+                rule_memberships[:, rule_idx] *= precomputed_antecedent_memberships[feature][param, :]
+        
+        # Get consequents (vectorized)
+        rule_class_consequents = x[fourth_pointer:fourth_pointer + self.nRules]
+        
+        # Apply weights if needed (vectorized)
+        if self.ds_mode == 2:
+            rule_weights = x[fifth_pointer:fifth_pointer + self.nRules].float() / 100.0
+            rule_memberships = rule_memberships * rule_weights.unsqueeze(0)
         
         # One-hot encoding and matrix multiplication
         rule_onehot = torch.nn.functional.one_hot(rule_class_consequents, num_classes=self.n_classes).float()
@@ -1420,21 +1565,28 @@ class FitRuleBase(Problem):
             return matthews_corrcoef(y_true_np, y_pred_np)
 
 
-    def _evaluate_torch_batch(self, population, y, fuzzy_type: fs.FUZZY_SETS, device='cuda', **kwargs):
+    def _evaluate_torch_batch(self, population, y, fuzzy_type: fs.FUZZY_SETS, device='cuda', batch_size=None, **kwargs):
         '''
-        FULLY BATCHED PyTorch evaluation - processes entire population at once.
-        This is the most efficient method for GPU acceleration.
+        Memory-efficient batch evaluation - processes population in smaller batches.
+        
+        Automatically determines optimal batch size based on available memory if not specified.
+        Uses a simpler loop-based approach to avoid creating massive 6D tensors.
         
         :param population: population tensor (pop_size, n_var)
         :param y: labels tensor (can be numpy array or torch tensor)
         :param fuzzy_type: enum type for fuzzy set type
         :param device: device to run computation on ('cuda' or 'cpu')
+        :param batch_size: number of individuals to process at once (if None, auto-computed)
         :return: MCC scores for entire population (pop_size,)
         '''
         try:
             import torch
         except ImportError:
             raise ImportError("PyTorch is required for batched evaluation. Install with: pip install torch")
+        
+        # Auto-compute batch size if not provided
+        if batch_size is None:
+            batch_size = self._compute_optimal_batch_size(population.shape[0], device)
         
         # Convert y to torch if needed
         if not isinstance(y, torch.Tensor):
@@ -1449,17 +1601,20 @@ class FitRuleBase(Problem):
             population = population.to(device)
         
         pop_size = population.shape[0]
+        n_samples = self.X.shape[0]
+        n_features = self.X.shape[1]
         
-        # Cache precomputed memberships on first call
-        if self.lvs is not None:
-            if not hasattr(self, '_precomputed_truth_torch') or self._precomputed_truth_torch is None:
+        # Cache precomputed memberships as list of tensors
+        if not hasattr(self, '_precomputed_truth_torch') or self._precomputed_truth_torch is None:
+            if self.lvs is not None:
                 self._precomputed_truth_torch = [
-                    torch.from_numpy(ant_mems).float().to(device) 
-                    for ant_mems in self._precomputed_truth
+                    torch.from_numpy(self._precomputed_truth[feat_idx]).float().to(device) 
+                    for feat_idx in range(n_features)
                 ]
-            precomputed_antecedent_memberships = self._precomputed_truth_torch
         
-        # Calculate pointers (same as individual evaluation)
+        precomputed_memberships = self._precomputed_truth_torch
+        
+        # Calculate pointers
         mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
         if self.lvs is None:
             if fuzzy_type == fs.FUZZY_SETS.t1:
@@ -1473,63 +1628,139 @@ class FitRuleBase(Problem):
         
         if self.ds_mode == 2:
             fifth_pointer = fourth_pointer + self.nRules
-        else:
-            fifth_pointer = fourth_pointer
         
-        # Batch process all individuals
-        mcc_scores = []
-        population_cpu = population#.cpu().numpy()  # Single transfer for entire population
+        # Process population in batches
+        all_mcc_scores = []
         
-        for pop_idx in range(pop_size):
-            x_cpu = population_cpu[pop_idx]
+        for batch_start in range(0, pop_size, batch_size):
+            batch_end = min(batch_start + batch_size, pop_size)
+            batch_pop = population[batch_start:batch_end]
+            batch_pop_size = batch_pop.shape[0]
             
-            # Initialize tensors for this individual
-            rule_memberships = torch.zeros((self.X.shape[0], self.nRules), device=device)
-            rule_class_consequents = torch.zeros((self.nRules,), dtype=torch.long, device=device)
+            # Extract gene segments for this batch
+            chosen_ants_batch = batch_pop[:, :self.nAnts * self.nRules].reshape(batch_pop_size, self.nRules, self.nAnts).long()
+            ant_params_batch = batch_pop[:, self.nAnts * self.nRules:2 * self.nAnts * self.nRules].reshape(batch_pop_size, self.nRules, self.nAnts).long()
             
-            aux_pointer = 0
+            # Clamp parameters to valid ranges
+            for feat_idx in range(n_features):
+                mask = chosen_ants_batch == feat_idx
+                max_param = self.n_lv_possible[feat_idx] - 1
+                ant_params_batch = torch.where(mask, torch.clamp(ant_params_batch, max=max_param), ant_params_batch)
             
-            # Reconstruct rules for this individual
-            for i0 in range(self.nRules):
-                first_pointer = i0 * self.nAnts
-                chosen_ants = x_cpu[first_pointer:first_pointer + self.nAnts]
-                
-                second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
-                antecedent_parameters = x_cpu[second_pointer:second_pointer+self.nAnts]
-                
-                for jx in range(self.nAnts):
-                    ant = chosen_ants[jx]
-                    ant_param = antecedent_parameters[jx]
-                    
-                    if self.lvs is not None:
-                        ant_param = min(ant_param, len(self.lvs[ant]) - 1)
-                    else:
-                        ant_param = min(ant_param, self.n_lv_possible[ant] - 1)
-                    
-                    if jx == 0:
-                        rule_memberships[:, i0] = precomputed_antecedent_memberships[ant][ant_param, :]
-                    else:
-                        rule_memberships[:, i0] = rule_memberships[:, i0] * precomputed_antecedent_memberships[ant][ant_param, :]
-                
-                consequent_idx = x_cpu[fourth_pointer + aux_pointer]
-                rule_class_consequents[i0] = consequent_idx
-                aux_pointer += 1
-                
-                if self.ds_mode == 2:
-                    rule_weight = x_cpu[fifth_pointer + i0] / 100.0
-                    rule_memberships[:, i0] = rule_memberships[:, i0] * rule_weight
+            # Compute rule memberships for this batch
+            # Shape: (batch_pop_size, n_samples, nRules)
+            rule_memberships_batch = torch.ones((batch_pop_size, n_samples, self.nRules), device=device)
             
-            # Compute predictions
-            rule_onehot = torch.nn.functional.one_hot(rule_class_consequents, num_classes=self.n_classes).float()
-            memberships_pred = rule_memberships @ rule_onehot
-            predicted_classes = torch.argmax(memberships_pred, dim=1)
+            # For each individual in batch, each rule, and each antecedent
+            for ind_idx in range(batch_pop_size):
+                for rule_idx in range(self.nRules):
+                    for ant_idx in range(self.nAnts):
+                        feature = chosen_ants_batch[ind_idx, rule_idx, ant_idx].item()
+                        param = ant_params_batch[ind_idx, rule_idx, ant_idx].item()
+                        # Multiply membership values: (n_samples,)
+                        rule_memberships_batch[ind_idx, :, rule_idx] *= precomputed_memberships[feature][param, :]
             
-            # Compute MCC on GPU
-            mcc = self._compute_mcc_torch_fast(predicted_classes, y_torch)
-            mcc_scores.append(mcc)
+            # Get consequents for this batch: (batch_pop_size, nRules)
+            rule_consequents_batch = batch_pop[:, fourth_pointer:fourth_pointer + self.nRules].long()
+            
+            # Apply weights if needed
+            if self.ds_mode == 2:
+                rule_weights_batch = batch_pop[:, fifth_pointer:fifth_pointer + self.nRules].float() / 100.0
+                rule_memberships_batch = rule_memberships_batch * rule_weights_batch[:, None, :]
+            
+            # Handle unknown classes (-1 -> n_classes)
+            rule_consequents_batch = torch.where(rule_consequents_batch == -1, self.n_classes, rule_consequents_batch)
+            
+            # Compute predictions for this batch
+            # One-hot encode consequents: (batch_pop_size, nRules, n_classes+1)
+            rule_onehot_batch = torch.nn.functional.one_hot(rule_consequents_batch, num_classes=self.n_classes + 1).float()
+            
+            # Aggregate memberships by class: (batch_pop_size, n_samples, n_classes+1)
+            memberships_pred_batch = torch.einsum('bsr,brc->bsc', rule_memberships_batch, rule_onehot_batch)
+            
+            # Get predicted classes: (batch_pop_size, n_samples)
+            predicted_classes_batch = torch.argmax(memberships_pred_batch, dim=2)
+            
+            # Compute MCC for each individual in batch
+            for ind_idx in range(batch_pop_size):
+                mcc = self._compute_mcc_torch_fast(predicted_classes_batch[ind_idx], y_torch)
+                all_mcc_scores.append(mcc)
         
-        return torch.tensor(mcc_scores, dtype=torch.float32, device=device)
+        return torch.tensor(all_mcc_scores, dtype=torch.float32, device=device)
     
+    
+    def _compute_optimal_batch_size(self, pop_size, device='cuda'):
+        '''
+        Automatically compute optimal batch size based on available memory and problem size.
+        
+        :param pop_size: population size
+        :param device: device ('cuda' or 'cpu')
+        :return: optimal batch size
+        '''
+        try:
+            import torch
+        except ImportError:
+            return 10  # Default fallback
+        
+        n_samples = self.X.shape[0]
+        
+        # Estimate memory per individual in batch
+        # Main tensors: rule_memberships_batch (batch_size, n_samples, nRules)
+        # Additional overhead for intermediate computations
+        bytes_per_individual = n_samples * self.nRules * 4  # 4 bytes per float32
+        bytes_per_individual *= 3  # Account for intermediate tensors and overhead
+        
+        if device == 'cuda' and torch.cuda.is_available():
+            try:
+                # Get available GPU memory (leave 20% buffer for safety)
+                gpu_props = torch.cuda.get_device_properties(0)
+                total_memory = gpu_props.total_memory
+                allocated_memory = torch.cuda.memory_allocated(0)
+                reserved_memory = torch.cuda.memory_reserved(0)
+                available_memory = total_memory - max(allocated_memory, reserved_memory)
+                
+                # Use 60% of available memory for batching (conservative)
+                usable_memory = available_memory * 0.6
+                
+                # Calculate batch size
+                estimated_batch_size = int(usable_memory / bytes_per_individual)
+                
+                # Clamp to reasonable range [1, pop_size]
+                batch_size = max(1, min(estimated_batch_size, pop_size))
+                
+                # Round down to nice numbers for better memory alignment
+                if batch_size > 20:
+                    batch_size = (batch_size // 10) * 10
+                elif batch_size > 5:
+                    batch_size = (batch_size // 5) * 5
+                    
+            except Exception as e:
+                # If memory query fails, use conservative default
+                batch_size = min(10, pop_size)
+        else:
+            # For CPU, use more aggressive batching since RAM is usually more plentiful
+            # But also consider that CPU is slower, so moderate batch sizes work well
+            try:
+                import psutil
+                available_ram = psutil.virtual_memory().available
+                usable_ram = available_ram * 0.4  # Use 40% of available RAM
+                
+                estimated_batch_size = int(usable_ram / bytes_per_individual)
+                batch_size = max(5, min(estimated_batch_size, pop_size))
+                
+                # Round to nice numbers
+                if batch_size > 20:
+                    batch_size = (batch_size // 10) * 10
+                elif batch_size > 10:
+                    batch_size = (batch_size // 5) * 5
+                    
+            except ImportError:
+                # psutil not available, use conservative default
+                batch_size = min(15, pop_size)
+        
+        return batch_size
+    
+
     def _compute_mcc_torch_fast(self, y_pred, y_true):
         '''Fast GPU-based MCC computation using confusion matrix.'''
         import torch
