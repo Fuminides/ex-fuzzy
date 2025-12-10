@@ -342,7 +342,7 @@ def test_large_dataset(available_backends):
     print("Testing PyMoo on large dataset...")
     clf_pymoo_large = GA_RB.BaseFuzzyRulesClassifier(
         nRules=CONFIG['nRules'], nAnts=CONFIG['nAnts'], n_linguistic_variables=CONFIG['n_linguistic_variables'], 
-        verbose=False, backend='pymoo', linguistic_variables=fv_partitions
+        verbose=True, backend='pymoo', linguistic_variables=fv_partitions
     )
     start = time.time()
     clf_pymoo_large.fit(X_train_large, y_train_large, n_gen=CONFIG['n_gen'], pop_size=CONFIG['pop_size'])
@@ -359,7 +359,7 @@ def test_large_dataset(available_backends):
         print("Testing EvoX on large dataset...")
         clf_evox_large = GA_RB.BaseFuzzyRulesClassifier(
             nRules=CONFIG['nRules'], nAnts=CONFIG['nAnts'], n_linguistic_variables=CONFIG['n_linguistic_variables'], 
-            verbose=False, backend='evox', linguistic_variables=fv_partitions
+            verbose=True, backend='evox', linguistic_variables=fv_partitions
         )
         start = time.time()
         clf_evox_large.fit(X_train_large, y_train_large, n_gen=CONFIG['n_gen'], pop_size=CONFIG['pop_size'], 
