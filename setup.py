@@ -19,7 +19,7 @@ MAINTAINER_EMAIL = "javierfumanalidocin@gmail.com"
 URL = "https://github.com/Fuminides/ex-fuzzy"
 LICENSE = "GPL-3.0"
 DOWNLOAD_URL = "https://pypi.org/project/ex-fuzzy/"
-VERSION = "2.1.5"
+VERSION = "2.2.0"
 INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo", "pandas", "scikit-learn"]
 OPTIONAL_REQUIRES = {
     "Rule visualization": ["networkx"], 

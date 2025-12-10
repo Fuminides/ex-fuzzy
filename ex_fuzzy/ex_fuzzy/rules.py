@@ -616,6 +616,28 @@ class RuleBase():
         else:
             return all_rules
 
+    def print_rules_regression(self, return_rules:bool=False, output_name:str='output', 
+                              show_memberships:bool=False) -> None:
+        '''
+        Print the rules from the rule base for regression problems.
+        Formats rules with numeric consequents in a human-readable way.
+
+        :param return_rules: if True, the rules are returned as a string.
+        :param output_name: name of the output variable (default: 'output').
+        :param show_memberships: if True, shows membership function parameters.
+        '''
+        all_rules = ''
+        for ix, rule in enumerate(self.rules):
+            str_rule = generate_rule_string_regression(
+                rule, self.antecedents, ix + 1, output_name, show_memberships
+            )
+            all_rules += str_rule + '\n'
+
+        if not return_rules:
+            print(all_rules)
+        else:
+            return all_rules
+
     
 
 
@@ -1389,6 +1411,33 @@ class MasterRuleBase():
             print('Rules for consequent: ' + str(self.consequent_names[ix]))
             ruleBase.print_rule_bootstrap_results()
 
+    def print_rules_regression(self, return_rules=False, output_name=None, show_memberships=False) -> None:
+        '''
+        Print all the rules for regression problems with numeric consequents.
+
+        :param return_rules: if True, the rules are returned as a string.
+        :param output_name: name of the output variable. If None, uses consequent_names.
+        :param show_memberships: if True, shows membership function parameters.
+        '''
+        res = ''
+        
+        for ix, ruleBase in enumerate(self.rule_bases):
+            if output_name is None:
+                out_name = str(self.consequent_names[ix])
+            else:
+                out_name = output_name
+                
+            res += ruleBase.print_rules_regression(
+                return_rules=True, 
+                output_name=out_name, 
+                show_memberships=show_memberships
+            )
+        
+        if return_rules:
+            return res
+        else:
+            print(res)
+
 
     def get_rules(self) -> list[RuleSimple]:
         '''
@@ -1579,6 +1628,60 @@ def list_rules_to_matrix(rule_list: list[RuleSimple]) -> np.array:
         res[ix, :] = rule.antecedents
 
     return res
+
+
+def generate_rule_string_regression(rule: RuleSimple, antecedents: list, rule_num: int, 
+                                    output_name: str = 'output', show_memberships: bool = False) -> str:
+    '''
+    Generates a string representation for a regression rule with numeric consequent.
+
+    :param rule: rule to generate the string.
+    :param antecedents: list of fuzzy variables.
+    :param rule_num: rule number for display.
+    :param output_name: name of the output variable.
+    :param show_memberships: if True, shows membership function parameters.
+    :return: formatted string representation of the rule.
+    '''
+    str_rule = f'Rule {rule_num}: '
+    
+    # Build antecedent part
+    antecedent_parts = []
+    for jx, antecedent in enumerate(antecedents):
+        if rule[jx] != -1:
+            keys = antecedent.linguistic_variable_names()
+            lv_name = keys[rule[jx]]
+            
+            if show_memberships:
+                # Show membership function parameters
+                lv = antecedent.linguistic_variables[rule[jx]]
+                params = lv.membership_parameters
+                lv_name += f' {params}'
+            
+            antecedent_parts.append(f'{antecedent.name} is {lv_name}')
+            
+            # Check for modifiers
+            try:
+                relevant_modifier = rule.modifiers[jx]
+                if relevant_modifier != 1:
+                    if relevant_modifier in modifiers_names.keys():
+                        str_mod = modifiers_names[relevant_modifier]
+                    else:
+                        str_mod = str(relevant_modifier)
+                    antecedent_parts[-1] += f' ({str_mod})'
+            except (AttributeError, TypeError):
+                pass
+    
+    if antecedent_parts:
+        str_rule += 'IF ' + ' AND '.join(antecedent_parts) + ' '
+    
+    # Build consequent part (numeric value)
+    consequent_value = rule.consequent
+    if isinstance(consequent_value, (int, float, np.number)):
+        str_rule += f'THEN {output_name} = {consequent_value:.4f}'
+    else:
+        str_rule += f'THEN {output_name} = {consequent_value}'
+    
+    return str_rule
 
 
 def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results: bool=True) -> str:
