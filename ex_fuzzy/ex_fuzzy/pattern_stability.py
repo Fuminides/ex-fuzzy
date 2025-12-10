@@ -27,7 +27,7 @@ of random initialization or data sampling.
 """
 import numpy as np
 from multiprocessing.pool import ThreadPool
-from pymoo.core.problem import StarmapParallelization
+from pymoo.parallelization.starmap import StarmapParallelization
 from sklearn.model_selection import train_test_split
 import numbers
 import matplotlib.pyplot as plt

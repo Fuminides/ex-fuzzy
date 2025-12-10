@@ -9,7 +9,7 @@ def test_cache_reset_between_fits():
     import os
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     
-    from ex_fuzzy.ex_fuzzy.tree_learning import FuzzyCART
+    from ex_fuzzy.ex_fuzzy.tree_learning_new import FuzzyCART
     from ex_fuzzy.ex_fuzzy import fuzzy_sets as fs
     import numpy as np
     
@@ -72,7 +72,7 @@ def test_multiple_model_instances():
     """Test that multiple model instances don't interfere with each other."""
     print("\n🧪 Testing multiple model instances...")
     
-    from ex_fuzzy.ex_fuzzy.tree_learning import FuzzyCART
+    from ex_fuzzy.ex_fuzzy.tree_learning_new import FuzzyCART
     from ex_fuzzy.ex_fuzzy import fuzzy_sets as fs
     import numpy as np
     
