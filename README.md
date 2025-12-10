@@ -65,7 +65,9 @@
 - **Robustness Metrics**: Compute validation of rules, ensure linguistic meaning of fuzzy partitions, robustness metrics for rules and space partitions, reproducible experiments, etc.
 
 ###  **Advanced Learning Routines**
-- **Genetic Algorithms**: Rule base optimization using PyMOO supports fine-tuning of different hyperparameters, like tournament size, crossover rate, etc.
+- **Multiple Backend Support**: Choose between PyMoo (CPU) and EvoX (GPU-accelerated) backends for evolutionary optimization.
+- **GPU Acceleration**: EvoX backend with PyTorch provides significant speedups for large datasets and complex rule bases.
+- **Genetic Algorithms**: Rule base optimization supports fine-tuning of different hyperparameters, like tournament size, crossover rate, etc.
 - **Pre-mining and Rule Search**: start with good initial or prior populations, and then refine those results to obtain a good classifier using genetic optimization.
 - **Extensible Architecture**: Easy to extend with custom components.
 
@@ -82,7 +84,11 @@
 Install Ex-Fuzzy using pip:
 
 ```bash
+# Basic installation (CPU only, PyMoo backend)
 pip install ex-fuzzy
+
+# With GPU support (EvoX backend with PyTorch)
+pip install ex-fuzzy evox torch
 ```
 
 ### Basic Usage
@@ -101,7 +107,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 classifier = BaseFuzzyRulesClassifier(
     n_rules=15,
     n_antecedents=4,
-    fuzzy_type="t1"  # Type-1 fuzzy sets
+    fuzzy_type="t1",  # Type-1 fuzzy sets
+    backend="pymoo"  # or "evox" for GPU acceleration
 )
 
 # Train the model
@@ -147,6 +154,41 @@ Obtain statistical confidence intervals for your metrics:
   <img src="https://github.com/user-attachments/assets/4d5d9d77-4ac4-474e-8ac2-6a146085ae53" alt="Bootstrap Analysis" style="border: 2px solid #ddd; border-radius: 8px; padding: 10px;" />
 </p>
 
+## ⚡ Performance
+
+### Backend Comparison
+
+Ex-Fuzzy supports two evolutionary optimization backends:
+
+| Backend | Hardware | Best For | Speedup |
+|---------|----------|----------|----------|
+| **PyMoo** | CPU | Small datasets (<10K samples), checkpoint support | Baseline |
+| **EvoX** | GPU/CPU | Large datasets, complex rule bases, high generation counts | 2-10x faster* |
+
+*Speedup varies based on dataset size, rule complexity, and hardware. GPU acceleration provides best results with CUDA-capable devices.
+
+### When to Use Each Backend
+
+**Use PyMoo** when:
+- Working with small to medium datasets
+- Running on CPU-only environments
+- Need checkpoint/resume functionality
+- Memory is limited
+
+**Use EvoX** when:
+- Have GPU available (CUDA recommended)
+- Working with large datasets (>10,000 samples)
+- Training complex models (many rules/generations)
+- Speed is priority over checkpointing
+
+### Performance Tips
+
+- **Memory Management**: Both backends automatically batch operations to fit available memory
+- **Auto-batching**: Large datasets are processed in chunks to prevent out-of-memory errors
+- **GPU Utilization**: EvoX automatically uses GPU when available, falls back to CPU otherwise
+
+Try the [EvoX backend demo](Demos/evox_backend_demo.ipynb) to see performance comparisons on your hardware!
+
 ## 🛠️ Examples
 
 ### 🔬 Interactive Jupyter Notebooks
@@ -161,6 +203,7 @@ Try our hands-on examples in Google Colab:
 | **Advanced Rules** | Using pre-computed rule populations | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing) |
 | **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
 | **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
+| **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
 
 ### 💻 Code Examples
 
@@ -196,6 +239,33 @@ visualize_rulebase(classifier.rule_base,
 
 # Plot fuzzy variable partitions
 classifier.plot_fuzzy_variables()
+```
+</details>
+
+<details>
+<summary><b>🚀 GPU-Accelerated Training (EvoX Backend)</b></summary>
+
+```python
+from ex_fuzzy import BaseFuzzyRulesClassifier
+
+# Create classifier with EvoX backend for GPU acceleration
+classifier = BaseFuzzyRulesClassifier(
+    n_rules=30,
+    n_antecedents=4,
+    backend='evox',  # Use GPU-accelerated EvoX backend
+    verbose=True
+)
+
+# Train with GPU acceleration
+classifier.fit(X_train, y_train, 
+              n_gen=50,
+              pop_size=100)
+
+# EvoX provides significant speedups for:
+# - Large datasets (>10,000 samples)
+# - Complex rule bases (many rules/antecedents)
+# - High generation counts
+print("Training completed with GPU acceleration!")
 ```
 </details>
 
@@ -238,7 +308,8 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 
 ### Optional Dependencies
 - **NetworkX** >= 2.6 (for rule visualization)
-- **PyTorch** >= 1.9.0 (for GPU acceleration)
+- **EvoX** >= 0.8.0 (for GPU-accelerated evolutionary optimization)
+- **PyTorch** >= 1.9.0 (required by EvoX for GPU acceleration)
 - **Scikit-learn** >= 0.24.0 (for compatibility examples)
 
 ## 🤝 Contributing
