@@ -252,10 +252,6 @@ class EvoXBackend(EvolutionaryBackend):
         import torch
         
         if torch.cuda.is_available():
-            # Test CUDA initialization
-            test_tensor = torch.zeros(1, device='cuda')
-            del test_tensor
-            torch.cuda.synchronize()
             self._device = torch.device('cuda')
             print(f"EvoX backend using GPU: {torch.cuda.get_device_name(0)}")
         else:
