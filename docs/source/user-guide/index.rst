@@ -10,17 +10,19 @@ The Ex-Fuzzy User Guide provides comprehensive documentation for all aspects of 
 
    core-concepts
    rule-mining
-
    fuzzy-sets
    classifiers
+   regression
    optimization
    
 .. toctree::
    :maxdepth: 2
    :caption: Advanced Topics
 
+   validation-visualization
    pattern-analysis
    visualization
+   persistence
    performance
    
 .. toctree::
@@ -37,7 +39,7 @@ Overview
 This user guide is organized into several sections:
 
 **Core Concepts**
-  Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets, classifiers, and optimization algorithms.
+  Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets, classifiers, regression, and optimization algorithms.
 
 **Advanced Topics**
   Explore advanced features like pattern stability analysis, visualization techniques, and performance optimization.

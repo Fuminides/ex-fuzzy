@@ -4,7 +4,7 @@ Examples
 
 Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples demonstrating how to use Ex-Fuzzy for various machine learning tasks.
 
-.. grid:: 1
+.. grid:: 2
     :gutter: 3
 
     .. grid-item-card:: 🌸 Classification Examples
@@ -13,11 +13,18 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 
         Learn fuzzy classification with practical examples using the Iris dataset and other scenarios.
 
+    .. grid-item-card:: 📈 Regression Examples
+        :link: regression
+        :link-type: doc
+
+        Explore fuzzy regression with crisp and fuzzy consequents, including real-world datasets.
+
 .. toctree::
    :maxdepth: 2
    :hidden:
 
    classification
+   regression
 
 Working Examples
 ===============

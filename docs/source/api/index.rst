@@ -15,6 +15,7 @@ Core Modules
 
    fuzzy_sets
    evolutionary_fit
+   evolutionary_fit_regression
    rules
    classifiers
    eval_tools
@@ -53,6 +54,7 @@ Most Common Classes
    :toctree: generated/
 
    evolutionary_fit.BaseFuzzyRulesClassifier
+   evolutionary_fit_regression.BaseFuzzyRulesRegressor
    fuzzy_sets.fuzzyVariable
    fuzzy_sets.FS
    rules.RuleSimple
@@ -96,6 +98,15 @@ Classification
    evolutionary_fit.BaseFuzzyRulesClassifier
    classifiers.RuleMineClassifier
    classifiers.DoubleGo
+
+Regression
+----------
+
+.. autosummary::
+   :toctree: generated/
+
+   evolutionary_fit_regression.BaseFuzzyRulesRegressor
+   evolutionary_fit_regression.FitRuleBaseRegression
 
 Rule Management
 ---------------

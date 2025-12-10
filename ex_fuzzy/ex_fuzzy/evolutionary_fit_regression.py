@@ -58,7 +58,9 @@ class FitRuleBaseRegression(FitRuleBase):
                  thread_runner: StarmapParallelization = None, linguistic_variables: list[fs.fuzzyVariable] = None,
                  n_linguistic_variables: int = 3, fuzzy_type=fs.FUZZY_SETS.t1, domain: list = None,
                  categorical_mask: np.array = None, tolerance: float = 0.01, alpha: float = 0.0, beta: float = 0.0,
-                 rule_mode: str = 'additive', backend_name: str = 'pymoo') -> None:
+                 rule_mode: str = 'additive', backend_name: str = 'pymoo',
+                 consequent_type: str = 'crisp', output_fuzzy_sets: list[fs.FS] = None,
+                 n_output_linguistic_variables: int = 3, universe_points: int = 100) -> None:
         '''
         Constructor method for regression problem.
 
@@ -76,6 +78,10 @@ class FitRuleBaseRegression(FitRuleBase):
         :param beta: float. Weight for the average rule size term in the fitness function.
         :param rule_mode: str. 'additive' (all rules contribute) or 'sufficient' (only rules above tolerance).
         :param backend_name: str. Backend to use for evolutionary optimization ('pymoo' or 'evox')
+        :param consequent_type: str. 'crisp' (numeric outputs) or 'fuzzy' (fuzzy set outputs with defuzzification).
+        :param output_fuzzy_sets: list of fuzzy sets for output (Mamdani). If None, will be evolved.
+        :param n_output_linguistic_variables: int. Number of output linguistic variables if not precomputed.
+        :param universe_points: int. Number of discretization points for fuzzy inference.
         '''
         
         # Store target values
@@ -104,6 +110,16 @@ class FitRuleBaseRegression(FitRuleBase):
         self.alpha_ = alpha
         self.beta_ = beta
         self.backend_name = backend_name
+        
+        # Mamdani inference parameters
+        self.consequent_type = consequent_type  # 'crisp' or 'fuzzy'
+        self.output_fuzzy_sets = output_fuzzy_sets
+        self.n_output_lvs = n_output_linguistic_variables
+        self.universe_points = universe_points
+        
+        # Create discretized universe for Mamdani inference
+        if consequent_type == 'fuzzy':
+            self.universe = np.linspace(self.y_min, self.y_max, universe_points)
         
         # Initialize fuzzy variables (reuse parent class logic)
         if categorical_mask is None:
@@ -166,24 +182,75 @@ class FitRuleBaseRegression(FitRuleBase):
                 aux_counter + ix: Integer(bounds=membership_bounds[ix]) for ix in range(len(membership_bounds))}
             aux_counter += len(vars_memberships)
 
-        # REGRESSION: Consequents are real numbers, not class indices
-        # We normalize consequents to [0, 99] range for the optimizer
-        final_consequent_bounds = np.array(
-            [[0, 99]] * self.nRules)
-        vars_consequent = {aux_counter + ix: Integer(
-            bounds=final_consequent_bounds[ix]) for ix in range(len(final_consequent_bounds))}
-
-        # Build final variables dict
-        if self.lvs is None:
-            vars = {key: val for d in [
-                vars_antecedent, vars_memberships, vars_consequent] for key, val in d.items()}
-            varbound = np.concatenate(
-                (antecedent_bounds, membership_bounds, final_consequent_bounds), axis=0)
+        # CONSEQUENTS: Different encoding for crisp vs fuzzy
+        if self.consequent_type == 'crisp':
+            # Crisp: Consequents are real numbers normalized to [0, 99]
+            final_consequent_bounds = np.array([[0, 99]] * self.nRules)
+            vars_consequent = {aux_counter + ix: Integer(
+                bounds=final_consequent_bounds[ix]) for ix in range(len(final_consequent_bounds))}
+            aux_counter += len(vars_consequent)
+            
+            # Build final variables dict (no output MFs)
+            if self.lvs is None:
+                vars = {key: val for d in [
+                    vars_antecedent, vars_memberships, vars_consequent] for key, val in d.items()}
+                varbound = np.concatenate(
+                    (antecedent_bounds, membership_bounds, final_consequent_bounds), axis=0)
+            else:
+                vars = {key: val for d in [vars_antecedent,
+                                           vars_consequent] for key, val in d.items()}
+                varbound = np.concatenate(
+                    (antecedent_bounds, final_consequent_bounds), axis=0)
         else:
-            vars = {key: val for d in [vars_antecedent,
-                                       vars_consequent] for key, val in d.items()}
-            varbound = np.concatenate(
-                (antecedent_bounds, final_consequent_bounds), axis=0)
+            # Mamdani: Consequents are indices to output fuzzy sets
+            if self.output_fuzzy_sets is not None:
+                # Precomputed output fuzzy sets
+                n_output_fs = len(self.output_fuzzy_sets)
+            else:
+                # Will evolve output fuzzy sets
+                n_output_fs = self.n_output_lvs
+            
+            # Consequent indices
+            consequent_index_bounds = np.array([[0, n_output_fs - 1]] * self.nRules)
+            vars_consequent = {aux_counter + ix: Integer(
+                bounds=consequent_index_bounds[ix]) for ix in range(len(consequent_index_bounds))}
+            aux_counter += len(vars_consequent)
+            
+            # Output membership functions (if not precomputed)
+            if self.output_fuzzy_sets is None:
+                # Encode output fuzzy sets similar to input fuzzy sets
+                if fuzzy_type == fs.FUZZY_SETS.t1:
+                    output_mf_size = (n_output_fs - 1) * 4 + 3
+                elif fuzzy_type == fs.FUZZY_SETS.t2:
+                    output_mf_size = (n_output_fs - 1) * 6 + 2
+                
+                output_mf_bounds = np.array([[0, 99]] * output_mf_size)
+                vars_output_mf = {aux_counter + ix: Integer(
+                    bounds=output_mf_bounds[ix]) for ix in range(len(output_mf_bounds))}
+                
+                # Build final variables dict with output MFs
+                if self.lvs is None:
+                    vars = {key: val for d in [
+                        vars_antecedent, vars_memberships, vars_consequent, vars_output_mf] for key, val in d.items()}
+                    varbound = np.concatenate(
+                        (antecedent_bounds, membership_bounds, consequent_index_bounds, output_mf_bounds), axis=0)
+                else:
+                    vars = {key: val for d in [vars_antecedent,
+                                               vars_consequent, vars_output_mf] for key, val in d.items()}
+                    varbound = np.concatenate(
+                        (antecedent_bounds, consequent_index_bounds, output_mf_bounds), axis=0)
+            else:
+                # Precomputed output fuzzy sets
+                if self.lvs is None:
+                    vars = {key: val for d in [
+                        vars_antecedent, vars_memberships, vars_consequent] for key, val in d.items()}
+                    varbound = np.concatenate(
+                        (antecedent_bounds, membership_bounds, consequent_index_bounds), axis=0)
+                else:
+                    vars = {key: val for d in [vars_antecedent,
+                                               vars_consequent] for key, val in d.items()}
+                    varbound = np.concatenate(
+                        (antecedent_bounds, consequent_index_bounds), axis=0)
 
         # No weights needed for additive regression
         nVar = len(varbound)
@@ -282,12 +349,18 @@ class FitRuleBaseRegression(FitRuleBase):
 
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
-            # REGRESSION: Consequent is a real number (denormalize from [0, 99] to [y_min, y_max])
-            consequent_normalized = x[fourth_pointer + aux_pointer]
-            consequent_value = self.y_min + (consequent_normalized / 99.0) * self.y_range
-            aux_pointer += 1
+            # CONSEQUENT: Depends on consequent_type
+            if self.consequent_type == 'crisp':
+                # Crisp: Consequent is a real number (denormalize from [0, 99] to [y_min, y_max])
+                consequent_normalized = x[fourth_pointer + aux_pointer]
+                consequent_value = self.y_min + (consequent_normalized / 99.0) * self.y_range
+                aux_pointer += 1
+            else:
+                # Mamdani: Consequent is an index to output fuzzy set
+                consequent_value = int(x[fourth_pointer + aux_pointer])
+                aux_pointer += 1
 
-            # Create rule if it has at least one antecedent (no weights for additive regression)
+            # Create rule if it has at least one antecedent
             if np.any(init_rule_antecedents != -1):
                 rs_instance = rules.RuleSimple(init_rule_antecedents, consequent_value, None)
                 rule_list.append(rs_instance)
@@ -326,6 +399,46 @@ class FitRuleBaseRegression(FitRuleBase):
             except:
                 antecedents = self.lvs
 
+        # Decode output fuzzy sets for Mamdani inference (if needed)
+        if self.consequent_type == 'fuzzy' and self.output_fuzzy_sets is None:
+            # Output fuzzy sets are encoded in the gene
+            output_fs_pointer = fourth_pointer + self.nRules
+            output_fs_genes = x[output_fs_pointer:]
+            
+            # Decode similar to input fuzzy sets
+            if fuzzy_type == fs.FUZZY_SETS.t1:
+                output_fs_size = (self.n_output_lvs - 1) * 4 + 3
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
+                output_fs_size = (self.n_output_lvs - 1) * 6 + 2
+            
+            # Decode output membership functions
+            decoded_output_fs = self._decode_output_membership_functions(output_fs_genes, fuzzy_type)
+            
+            # Normalize to output domain [y_min, y_max]
+            # Flatten all parameters to find global min/max
+            all_params = []
+            for lv in decoded_output_fs:
+                params = np.array(lv.membership_parameters).flatten()
+                all_params.extend(params)
+            min_lv = np.min(all_params)
+            max_lv = np.max(all_params)
+            
+            output_fuzzy_sets = []
+            for lx, output_fs in enumerate(decoded_output_fs):
+                relevant_lv = np.array(output_fs.membership_parameters)
+                relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * self.y_range + self.y_min
+                if fuzzy_type == fs.FUZZY_SETS.t1:
+                    proper_FS = fs.FS(f'Output_{lx}', relevant_lv, (self.y_min, self.y_max))
+                elif fuzzy_type == fs.FUZZY_SETS.t2:
+                    proper_FS = fs.IVFS(f'Output_{lx}', relevant_lv[0], relevant_lv[1], 
+                                       (self.y_min, self.y_max))
+                output_fuzzy_sets.append(proper_FS)
+        elif self.consequent_type == 'fuzzy':
+            # Use precomputed output fuzzy sets
+            output_fuzzy_sets = self.output_fuzzy_sets
+        else:
+            output_fuzzy_sets = None
+
         # Create rule base
         if fuzzy_type == fs.FUZZY_SETS.t1:
             rule_base = rules.RuleBaseT1(antecedents, rule_list)
@@ -334,10 +447,63 @@ class FitRuleBaseRegression(FitRuleBase):
         elif fuzzy_type == fs.FUZZY_SETS.gt2:
             rule_base = rules.RuleBaseGT2(antecedents, rule_list)
 
-        # For regression, we use a single "class" (output is numeric, no ds_mode for additive regression)
+        # Store output fuzzy sets in rule base for Mamdani inference
+        if output_fuzzy_sets is not None:
+            rule_base.output_fuzzy_sets = output_fuzzy_sets
+
+        # For regression, we use a single "class" (output is numeric)
         res = rules.MasterRuleBase([rule_base], ['output'], allow_unknown=False)
 
         return res
+
+    def _decode_output_membership_functions(self, output_genes: np.array, fuzzy_type: fs.FUZZY_SETS) -> list[fs.FS]:
+        '''
+        Decode output fuzzy sets from gene array.
+        
+        :param output_genes: gene segment containing output FS parameters
+        :param fuzzy_type: type of fuzzy set
+        :return: list of output fuzzy sets
+        '''
+        output_fuzzy_sets = []
+        
+        if fuzzy_type == fs.FUZZY_SETS.t1:
+            # Decode T1 fuzzy sets
+            pointer = 0
+            for lv_idx in range(self.n_output_lvs):
+                if lv_idx == 0:
+                    # First FS: triangular (3 parameters)
+                    params_tri = output_genes[pointer:pointer + 3]
+                    pointer += 3
+                    # Convert triangular to trapezoidal: [a, b, c] → [a, b, b, c]
+                    params = [params_tri[0], params_tri[1], params_tri[1], params_tri[2]]
+                else:
+                    # Subsequent FSs: trapezoidal (4 parameters)
+                    params = output_genes[pointer:pointer + 4]
+                    pointer += 4
+                
+                # Parameters are in [0, 99] range, will be normalized later
+                fs_instance = fs.FS(f'Output_{lv_idx}', params)
+                output_fuzzy_sets.append(fs_instance)
+                
+        elif fuzzy_type == fs.FUZZY_SETS.t2:
+            # Decode T2 fuzzy sets (interval type-2)
+            pointer = 0
+            for lv_idx in range(self.n_output_lvs):
+                if lv_idx == 0:
+                    # First FS: 2 parameters
+                    params_lower = output_genes[pointer:pointer + 1]
+                    params_upper = output_genes[pointer + 1:pointer + 2]
+                    pointer += 2
+                else:
+                    # Subsequent FSs: 6 parameters
+                    params_lower = output_genes[pointer:pointer + 3]
+                    params_upper = output_genes[pointer + 3:pointer + 6]
+                    pointer += 6
+                
+                fs_instance = fs.IVFS(f'Output_{lv_idx}', params_lower, params_upper)
+                output_fuzzy_sets.append(fs_instance)
+        
+        return output_fuzzy_sets
 
     def _evaluate_numpy_fast_regression(self, x: np.array, y: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> float:
         '''
@@ -411,15 +577,50 @@ class FitRuleBaseRegression(FitRuleBase):
         ant_memberships = np.einsum('sfl,flra->sra', membership_array, indicators)
         rule_memberships = np.prod(ant_memberships, axis=2)
 
-        # Get consequents (denormalize from [0, 99] to [y_min, y_max])
-        rule_consequents_normalized = x[fourth_pointer:fourth_pointer + self.nRules]
-        rule_consequents = self.y_min + (rule_consequents_normalized / 99.0) * self.y_range
+        # Get consequents - different handling for crisp vs fuzzy
+        if self.consequent_type == 'crisp':
+            # Crisp: Denormalize from [0, 99] to [y_min, y_max]
+            rule_consequents_normalized = x[fourth_pointer:fourth_pointer + self.nRules]
+            rule_consequents = self.y_min + (rule_consequents_normalized / 99.0) * self.y_range
 
-        # ADDITIVE REGRESSION: All rules contribute weighted by their membership
-        # predicted_value = sum(membership * consequent) / sum(membership)
-        numerator = np.sum(rule_memberships * rule_consequents[np.newaxis, :], axis=1)
-        denominator = np.sum(rule_memberships, axis=1) + 1e-10  # avoid division by zero
-        predicted_values = numerator / denominator
+            # Weighted average
+            numerator = np.sum(rule_memberships * rule_consequents[np.newaxis, :], axis=1)
+            denominator = np.sum(rule_memberships, axis=1) + 1e-10
+            predicted_values = numerator / denominator
+        else:
+            # Mamdani: Fuzzy inference with defuzzification
+            # Get consequent indices
+            rule_consequent_indices = x[fourth_pointer:fourth_pointer + self.nRules].astype(int)
+            
+            # Decode output fuzzy sets if needed
+            if self.output_fuzzy_sets is None:
+                output_fs_pointer = fourth_pointer + self.nRules
+                output_fs_genes = x[output_fs_pointer:]
+                output_fuzzy_sets = self._decode_output_membership_functions(output_fs_genes, fuzzy_type)
+                
+                # Normalize to output domain
+                # Flatten all parameters to find global min/max
+                all_params = []
+                for lv in output_fuzzy_sets:
+                    params = np.array(lv.membership_parameters).flatten()
+                    all_params.extend(params)
+                min_lv = np.min(all_params)
+                max_lv = np.max(all_params)
+                
+                normalized_output_fs = []
+                for lx, output_fs in enumerate(output_fuzzy_sets):
+                    relevant_lv = np.array(output_fs.membership_parameters)
+                    relevant_lv = (relevant_lv - min_lv) / (max_lv - min_lv) * self.y_range + self.y_min
+                    if fuzzy_type == fs.FUZZY_SETS.t1:
+                        proper_FS = fs.FS(f'Output_{lx}', relevant_lv, (self.y_min, self.y_max))
+                    normalized_output_fs.append(proper_FS)
+                output_fuzzy_sets = normalized_output_fs
+            else:
+                output_fuzzy_sets = self.output_fuzzy_sets
+            
+            # Perform Mamdani inference for each sample
+            predicted_values = self._mamdani_inference_vectorized(
+                rule_memberships, rule_consequent_indices, output_fuzzy_sets)
 
         # Compute RMSE
         mse = mean_squared_error(y, predicted_values)
@@ -430,6 +631,187 @@ class FitRuleBaseRegression(FitRuleBase):
         normalized_rmse = rmse / (self.y_range + 1e-10)
 
         return -normalized_rmse  # Negative because pymoo minimizes
+
+    def _mamdani_inference_vectorized(self, rule_memberships: np.array, rule_consequent_indices: np.array,
+                                     output_fuzzy_sets: list[fs.FS]) -> np.array:
+        '''
+        Vectorized Mamdani fuzzy inference with centroid defuzzification.
+        
+        :param rule_memberships: array of shape (n_samples, n_rules) with rule firing strengths
+        :param rule_consequent_indices: array of shape (n_rules,) with output FS indices for each rule
+        :param output_fuzzy_sets: list of output fuzzy sets
+        :return: defuzzified predictions array of shape (n_samples,)
+        '''
+        n_samples = rule_memberships.shape[0]
+        n_rules = rule_memberships.shape[1]
+        
+        # Discretized universe
+        universe = self.universe
+        n_points = len(universe)
+        
+        # Compute membership values for all output fuzzy sets at all universe points
+        output_memberships = np.zeros((len(output_fuzzy_sets), n_points))
+        for fs_idx, output_fs in enumerate(output_fuzzy_sets):
+            output_memberships[fs_idx, :] = output_fs.membership(universe)
+        
+        # For each sample, aggregate clipped fuzzy sets and defuzzify
+        predictions = np.zeros(n_samples)
+        for sample_idx in range(n_samples):
+            # Initialize aggregated output membership (start with zeros)
+            aggregated = np.zeros(n_points)
+            
+            # For each rule, clip the consequent fuzzy set by the rule's firing strength
+            for rule_idx in range(n_rules):
+                firing_strength = rule_memberships[sample_idx, rule_idx]
+                consequent_idx = rule_consequent_indices[rule_idx]
+                
+                # Clip: multiply output FS memberships by firing strength
+                clipped = np.minimum(output_memberships[consequent_idx, :], firing_strength)
+                
+                # Aggregate: MAX operation (union)
+                aggregated = np.maximum(aggregated, clipped)
+            
+            # Defuzzify using centroid method
+            if np.sum(aggregated) > 1e-10:
+                predictions[sample_idx] = np.sum(universe * aggregated) / np.sum(aggregated)
+            else:
+                # No rules fired, use midpoint
+                predictions[sample_idx] = (self.y_min + self.y_max) / 2
+        
+        return predictions
+
+    def _evaluate_torch_fast_regression(self, x, y, fuzzy_type: fs.FUZZY_SETS, device='cuda', return_predictions=False):
+        '''
+        PyTorch GPU-accelerated evaluation for regression.
+        
+        :param x: gene tensor (can be numpy array or torch tensor)
+        :param y: target values tensor (can be numpy array or torch tensor)
+        :param fuzzy_type: enum type for fuzzy set type
+        :param device: device to run computation on ('cuda' or 'cpu')
+        :param return_predictions: if True, return predictions; if False, return R² score
+        :return: R² score (as Python float) or prediction tensor
+        '''
+        try:
+            import torch
+        except ImportError:
+            raise ImportError("PyTorch is required for GPU acceleration. Install with: pip install torch")
+        
+        # Convert inputs to torch tensors if needed
+        if not isinstance(x, torch.Tensor):
+            x = torch.from_numpy(x).to(device)
+        else:
+            x = x.to(device)
+            
+        if not isinstance(y, torch.Tensor):
+            y_torch = torch.from_numpy(y).float().to(device)
+        else:
+            y_torch = y.float().to(device)
+        
+        # Convert training data to torch if not already done
+        if not hasattr(self, 'X_torch_reg') or self.X_torch_reg is None:
+            self.X_torch_reg = torch.from_numpy(self.X).float().to(device)
+        
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
+        
+        # Calculate pointers
+        if self.lvs is None:
+            if fuzzy_type == fs.FUZZY_SETS.t1:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible) - 1) * 4
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
+                fourth_pointer = 2 * self.nAnts * self.nRules + \
+                    len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible) - 1) * mf_size
+        else:
+            fourth_pointer = 2 * self.nAnts * self.nRules
+        
+        # Get precomputed memberships and convert to torch
+        if self.lvs is None:
+            # Convert to numpy for decoding (membership decoding is complex, keep in numpy)
+            x_np = x.cpu().numpy() if isinstance(x, torch.Tensor) else x
+            antecedents = self._decode_membership_functions(x_np, fuzzy_type)
+            precomputed_antecedent_memberships_np = rules.compute_antecedents_memberships(antecedents, self.X)
+            precomputed_antecedent_memberships = [
+                torch.from_numpy(ant_mems).float().to(device) 
+                for ant_mems in precomputed_antecedent_memberships_np
+            ]
+        else:
+            if not hasattr(self, '_precomputed_truth_torch_reg') or self._precomputed_truth_torch_reg is None:
+                self._precomputed_truth_torch_reg = [
+                    torch.from_numpy(ant_mems).float().to(device) 
+                    for ant_mems in self._precomputed_truth
+                ]
+            precomputed_antecedent_memberships = self._precomputed_truth_torch_reg
+        
+        # Ensure x is integer type
+        x = x.long()
+        
+        n_samples = self.X.shape[0]
+        n_features = self.X.shape[1]
+        
+        # Extract gene segments
+        chosen_ants = x[:self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        ant_params = x[self.nAnts * self.nRules:2 * self.nAnts * self.nRules].reshape(self.nRules, self.nAnts)
+        
+        # Clamp parameters to valid range
+        for ant_idx in range(n_features):
+            mask = chosen_ants == ant_idx
+            if self.lvs is not None:
+                max_param = len(self.lvs[ant_idx]) - 1
+            else:
+                max_param = self.n_lv_possible[ant_idx] - 1
+            ant_params = torch.where(mask, torch.clamp(ant_params, max=max_param), ant_params)
+        
+        # Compute rule memberships (vectorized)
+        rule_memberships = torch.ones((n_samples, self.nRules), device=device)
+        for rule_idx in range(self.nRules):
+            for ant_idx in range(self.nAnts):
+                feature = chosen_ants[rule_idx, ant_idx].item()
+                param = ant_params[rule_idx, ant_idx].item()
+                rule_memberships[:, rule_idx] *= precomputed_antecedent_memberships[feature][param, :]
+        
+        # Get consequents and handle crisp vs fuzzy
+        if self.consequent_type == 'crisp':
+            # Crisp consequents: denormalize from [0, 99] to [y_min, y_max]
+            rule_consequents_normalized = x[fourth_pointer:fourth_pointer + self.nRules].float()
+            rule_consequents = self.y_min + (rule_consequents_normalized / 99.0) * (self.y_max - self.y_min)
+            
+            if self.rule_mode == 'additive':
+                # Weighted average
+                numerator = torch.sum(rule_memberships * rule_consequents.unsqueeze(0), dim=1)
+                denominator = torch.sum(rule_memberships, dim=1) + 1e-10
+                predictions = numerator / denominator
+            else:  # sufficient mode
+                # Winner-takes-all
+                max_memberships, max_indices = torch.max(rule_memberships, dim=1)
+                predictions = rule_consequents[max_indices]
+                # Set to mean for samples with no active rules
+                predictions = torch.where(max_memberships > self.tolerance, predictions, torch.mean(y_torch))
+        else:
+            # Fuzzy consequents: Mamdani inference (currently not GPU-optimized, fall back to numpy)
+            x_np = x.cpu().numpy()
+            predictions_np = self._mamdani_inference_vectorized(x_np, fourth_pointer, fuzzy_type)
+            predictions = torch.from_numpy(predictions_np).float().to(device)
+        
+        if return_predictions:
+            return predictions
+        else:
+            # Compute R² score
+            ss_res = torch.sum((y_torch - predictions) ** 2)
+            ss_tot = torch.sum((y_torch - torch.mean(y_torch)) ** 2)
+            r2 = 1 - ss_res / (ss_tot + 1e-10)
+            return r2.item()
+
+    def has_torch_eval(self) -> bool:
+        '''
+        Check if PyTorch evaluation is available.
+        
+        :return: True if torch is available, False otherwise
+        '''
+        try:
+            import torch
+            return True
+        except ImportError:
+            return False
 
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):
         '''
@@ -455,39 +837,66 @@ class FitRuleBaseRegression(FitRuleBase):
         if precomputed_truth is None:
             precomputed_truth = rules.compute_antecedents_memberships(ruleBase.antecedents, X)
 
-        # Predict using the rule base (mode depends on rule_mode parameter)
-        predictions = []
-        for i in range(X.shape[0]):
-            sample_memberships = []
-            sample_consequents = []
+        # Predict using the rule base - different for crisp vs fuzzy consequents
+        if self.consequent_type == 'crisp':
+            # Crisp inference
+            predictions = []
+            for i in range(X.shape[0]):
+                sample_memberships = []
+                sample_consequents = []
 
-            for rule in ruleBase.get_rules():
-                # Compute rule membership for this sample
-                membership = 1.0
-                for ant_idx, ant_val in enumerate(rule.antecedents):
-                    if ant_val >= 0:  # not don't care
-                        ant_val = int(ant_val)
-                        membership *= precomputed_truth[ant_idx][ant_val][i]
+                for rule in ruleBase.get_rules():
+                    # Compute rule membership for this sample
+                    membership = 1.0
+                    for ant_idx, ant_val in enumerate(rule.antecedents):
+                        if ant_val >= 0:  # not don't care
+                            ant_val = int(ant_val)
+                            membership *= precomputed_truth[ant_idx][ant_val][i]
 
-                # Filter by tolerance if using sufficient rules
-                if self.rule_mode == 'sufficient':
-                    if membership > tolerance:
+                    # Filter by tolerance if using sufficient rules
+                    if self.rule_mode == 'sufficient':
+                        if membership > tolerance:
+                            sample_memberships.append(membership)
+                            sample_consequents.append(rule.consequent)
+                    else:  # additive mode (default)
                         sample_memberships.append(membership)
                         sample_consequents.append(rule.consequent)
-                else:  # additive mode (default)
-                    sample_memberships.append(membership)
-                    sample_consequents.append(rule.consequent)
 
-            if len(sample_memberships) > 0:
-                # Weighted average
-                pred = np.sum(np.array(sample_memberships) * np.array(sample_consequents)) / (np.sum(sample_memberships) + 1e-10)
-            else:
-                # No rules (can happen with sufficient mode), use mean
-                pred = np.mean(y)
+                if len(sample_memberships) > 0:
+                    # Weighted average
+                    pred = np.sum(np.array(sample_memberships) * np.array(sample_consequents)) / (np.sum(sample_memberships) + 1e-10)
+                else:
+                    # No rules (can happen with sufficient mode), use mean
+                    pred = np.mean(y)
 
-            predictions.append(pred)
+                predictions.append(pred)
 
-        predictions = np.array(predictions)
+            predictions = np.array(predictions)
+        else:
+            # Mamdani inference
+            # Compute rule memberships for all samples
+            n_samples = X.shape[0]
+            n_rules = len(ruleBase.get_rules())
+            rule_memberships = np.zeros((n_samples, n_rules))
+            rule_consequent_indices = np.zeros(n_rules, dtype=int)
+            
+            for rule_idx, rule in enumerate(ruleBase.get_rules()):
+                rule_consequent_indices[rule_idx] = int(rule.consequent)
+                
+                for sample_idx in range(n_samples):
+                    membership = 1.0
+                    for ant_idx, ant_val in enumerate(rule.antecedents):
+                        if ant_val >= 0:
+                            ant_val = int(ant_val)
+                            membership *= precomputed_truth[ant_idx][ant_val][sample_idx]
+                    rule_memberships[sample_idx, rule_idx] = membership
+            
+            # Get output fuzzy sets from rule base
+            output_fuzzy_sets = ruleBase.output_fuzzy_sets if hasattr(ruleBase, 'output_fuzzy_sets') else self.output_fuzzy_sets
+            
+            # Perform Mamdani inference
+            predictions = self._mamdani_inference_vectorized(
+                rule_memberships, rule_consequent_indices, output_fuzzy_sets)
 
         # Compute RMSE
         mse = mean_squared_error(y, predictions)
@@ -524,7 +933,9 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
                  verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
                  categorical_mask: list[int] = None, domain: list[float] = None,
                  precomputed_rules: rules.MasterRuleBase = None, runner: int = 1,
-                 rule_mode: str = 'additive', backend: str = 'pymoo') -> None:
+                 rule_mode: str = 'additive', backend: str = 'pymoo',
+                 consequent_type: str = 'crisp', output_fuzzy_sets: list[fs.FS] = None,
+                 n_output_linguistic_variables: int = 3, universe_points: int = 100) -> None:
         '''
         Initialize fuzzy rules regressor.
 
@@ -542,6 +953,10 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
         :param runner: number of threads for parallel evaluation
         :param rule_mode: 'additive' (all rules contribute) or 'sufficient' (only rules above tolerance)
         :param backend: evolutionary backend ('pymoo' or 'evox')
+        :param consequent_type: 'crisp' (numeric outputs) or 'fuzzy' (fuzzy set outputs with defuzzification)
+        :param output_fuzzy_sets: precomputed output fuzzy sets for Mamdani inference. If None, will be evolved
+        :param n_output_linguistic_variables: number of output linguistic variables (if not precomputed)
+        :param universe_points: number of discretization points for fuzzy inference
         '''
         self.nRules = nRules
         self.nAnts = nAnts
@@ -558,6 +973,12 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
         self.custom_loss = None
         self.alpha_ = 0.0
         self.beta_ = 0.0
+        
+        # Mamdani fuzzy inference parameters
+        self.consequent_type = consequent_type  # 'crisp' or 'fuzzy'
+        self.output_fuzzy_sets = output_fuzzy_sets  # Precomputed output FSs
+        self.n_output_linguistic_variables = n_output_linguistic_variables
+        self.universe_points = universe_points  # Discretization for Mamdani
 
         # Initialize evolutionary backend
         try:
@@ -612,6 +1033,10 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
             X=X, y=y, nRules=self.nRules, nAnts=self.nAnts,
             y_range=(y_min, y_max), thread_runner=self.thread_runner,
             linguistic_variables=self.lvs,
+            consequent_type=self.consequent_type,
+            output_fuzzy_sets=self.output_fuzzy_sets,
+            n_output_linguistic_variables=self.n_output_linguistic_variables,
+            universe_points=self.universe_points,
             n_linguistic_variables=self.n_linguist_variables,
             fuzzy_type=self.fuzzy_type, domain=self.domain,
             categorical_mask=self.categorical_mask,
@@ -665,40 +1090,118 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
         if isinstance(X, pd.DataFrame):
             X = X.values
 
-        predictions = []
         precomputed_truth = rules.compute_antecedents_memberships(self.rule_base.antecedents, X)
 
-        for i in range(X.shape[0]):
-            sample_memberships = []
-            sample_consequents = []
+        if self.consequent_type == 'crisp':
+            # Crisp inference
+            predictions = []
+            for i in range(X.shape[0]):
+                sample_memberships = []
+                sample_consequents = []
 
-            for rule in self.rule_base.get_rules():
-                # Compute rule membership
-                membership = 1.0
-                for ant_idx, ant_val in enumerate(rule.antecedents):
-                    if ant_val >= 0:  # not don't care
-                        ant_val = int(ant_val)
-                        membership *= precomputed_truth[ant_idx][ant_val][i]
+                for rule in self.rule_base.get_rules():
+                    # Compute rule membership
+                    membership = 1.0
+                    for ant_idx, ant_val in enumerate(rule.antecedents):
+                        if ant_val >= 0:  # not don't care
+                            ant_val = int(ant_val)
+                            membership *= precomputed_truth[ant_idx][ant_val][i]
 
-                # Filter by rule_mode: 'sufficient' uses tolerance, 'additive' includes all
-                if self.rule_mode == 'sufficient':
-                    if membership > self.tolerance:
+                    # Filter by rule_mode: 'sufficient' uses tolerance, 'additive' includes all
+                    if self.rule_mode == 'sufficient':
+                        if membership > self.tolerance:
+                            sample_memberships.append(membership)
+                            sample_consequents.append(rule.consequent)
+                    else:  # additive mode (default)
                         sample_memberships.append(membership)
                         sample_consequents.append(rule.consequent)
-                else:  # additive mode (default)
-                    sample_memberships.append(membership)
-                    sample_consequents.append(rule.consequent)
 
-            if len(sample_memberships) > 0:
-                # Weighted average
-                pred = np.sum(np.array(sample_memberships) * np.array(sample_consequents)) / (np.sum(sample_memberships) + 1e-10)
+                if len(sample_memberships) > 0:
+                    # Weighted average
+                    pred = np.sum(np.array(sample_memberships) * np.array(sample_consequents)) / (np.sum(sample_memberships) + 1e-10)
+                else:
+                    # No rules fired (can happen with sufficient mode), use midpoint
+                    pred = (self.y_min + self.y_max) / 2
+
+                predictions.append(pred)
+
+            return np.array(predictions)
+        else:
+            # Mamdani inference
+            n_samples = X.shape[0]
+            n_rules = len(self.rule_base.get_rules())
+            rule_memberships = np.zeros((n_samples, n_rules))
+            rule_consequent_indices = np.zeros(n_rules, dtype=int)
+            
+            for rule_idx, rule in enumerate(self.rule_base.get_rules()):
+                rule_consequent_indices[rule_idx] = int(rule.consequent)
+                
+                for sample_idx in range(n_samples):
+                    membership = 1.0
+                    for ant_idx, ant_val in enumerate(rule.antecedents):
+                        if ant_val >= 0:
+                            ant_val = int(ant_val)
+                            membership *= precomputed_truth[ant_idx][ant_val][sample_idx]
+                    rule_memberships[sample_idx, rule_idx] = membership
+            
+            # Get output fuzzy sets
+            rule_base_obj = self.rule_base.rule_bases[0]
+            output_fuzzy_sets = rule_base_obj.output_fuzzy_sets if hasattr(rule_base_obj, 'output_fuzzy_sets') else self.output_fuzzy_sets
+            
+            # Create discretized universe
+            universe = np.linspace(self.y_min, self.y_max, self.universe_points)
+            
+            # Perform Mamdani inference
+            predictions = self._mamdani_inference_predict(
+                rule_memberships, rule_consequent_indices, output_fuzzy_sets, universe)
+            
+            return predictions
+
+    def _mamdani_inference_predict(self, rule_memberships: np.array, rule_consequent_indices: np.array,
+                                   output_fuzzy_sets: list[fs.FS], universe: np.array) -> np.array:
+        '''
+        Mamdani fuzzy inference with centroid defuzzification for prediction.
+        
+        :param rule_memberships: array of shape (n_samples, n_rules) with rule firing strengths
+        :param rule_consequent_indices: array of shape (n_rules,) with output FS indices for each rule
+        :param output_fuzzy_sets: list of output fuzzy sets
+        :param universe: discretized universe of discourse
+        :return: defuzzified predictions array of shape (n_samples,)
+        '''
+        n_samples = rule_memberships.shape[0]
+        n_rules = rule_memberships.shape[1]
+        n_points = len(universe)
+        
+        # Compute membership values for all output fuzzy sets at all universe points
+        output_memberships = np.zeros((len(output_fuzzy_sets), n_points))
+        for fs_idx, output_fs in enumerate(output_fuzzy_sets):
+            output_memberships[fs_idx, :] = output_fs.membership(universe)
+        
+        # For each sample, aggregate clipped fuzzy sets and defuzzify
+        predictions = np.zeros(n_samples)
+        for sample_idx in range(n_samples):
+            # Initialize aggregated output membership (start with zeros)
+            aggregated = np.zeros(n_points)
+            
+            # For each rule, clip the consequent fuzzy set by the rule's firing strength
+            for rule_idx in range(n_rules):
+                firing_strength = rule_memberships[sample_idx, rule_idx]
+                consequent_idx = rule_consequent_indices[rule_idx]
+                
+                # Clip: multiply output FS memberships by firing strength
+                clipped = np.minimum(output_memberships[consequent_idx, :], firing_strength)
+                
+                # Aggregate: MAX operation (union)
+                aggregated = np.maximum(aggregated, clipped)
+            
+            # Defuzzify using centroid method
+            if np.sum(aggregated) > 1e-10:
+                predictions[sample_idx] = np.sum(universe * aggregated) / np.sum(aggregated)
             else:
-                # No rules fired (can happen with sufficient mode), use midpoint
-                pred = (self.y_min + self.y_max) / 2
-
-            predictions.append(pred)
-
-        return np.array(predictions)
+                # No rules fired, use midpoint
+                predictions[sample_idx] = (self.y_min + self.y_max) / 2
+        
+        return predictions
 
     def score(self, X: np.array, y: np.array) -> float:
         '''
@@ -718,7 +1221,8 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
         if not hasattr(self, 'rule_base') or self.rule_base is None:
             return "BaseFuzzyRulesRegressor (not fitted)"
         
-        output = f"BaseFuzzyRulesRegressor with {len(self.rule_base.get_rules())} rules (mode: {self.rule_mode})\n"
+        output = f"BaseFuzzyRulesRegressor with {len(self.rule_base.get_rules())} rules "
+        output += f"(mode: {self.rule_mode}, consequent: {self.consequent_type})\n"
         output += "=" * 80 + "\n"
         output += self.rule_base.print_rules_regression(return_rules=True, output_name='output')
         return output
@@ -728,6 +1232,6 @@ class BaseFuzzyRulesRegressor(RegressorMixin):
         Developer-friendly representation.
         '''
         if not hasattr(self, 'rule_base') or self.rule_base is None:
-            return f"BaseFuzzyRulesRegressor(nRules={self.nRules}, nAnts={self.nAnts}, rule_mode='{self.rule_mode}', not fitted)"
+            return f"BaseFuzzyRulesRegressor(nRules={self.nRules}, nAnts={self.nAnts}, rule_mode='{self.rule_mode}', consequent_type='{self.consequent_type}', not fitted)"
         
-        return f"BaseFuzzyRulesRegressor(nRules={len(self.rule_base.get_rules())}, nAnts={self.nAnts}, rule_mode='{self.rule_mode}', fuzzy_type={self.fuzzy_type})"
+        return f"BaseFuzzyRulesRegressor(nRules={len(self.rule_base.get_rules())}, nAnts={self.nAnts}, rule_mode='{self.rule_mode}', consequent_type='{self.consequent_type}', fuzzy_type={self.fuzzy_type})"

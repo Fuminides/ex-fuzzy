@@ -341,6 +341,29 @@ class EvoXBackend(EvolutionaryBackend):
             
             return torch.tensor(fitness_list, dtype=torch.float32, device=device)
     
+    def _batch_evaluate_torch_regression(self, population: 'torch.Tensor', problem: Any, device: str) -> 'torch.Tensor':
+        """
+        Batch evaluate population for regression using PyTorch on GPU.
+        
+        :param population: population tensor (pop_size, n_var)
+        :param problem: regression problem instance
+        :param device: torch device
+        :return: fitness tensor (pop_size,) - negative R² for minimization
+        """
+        import torch
+        
+        # Evaluate each individual (R² computation per individual)
+        fitness_list = []
+        for ind in population:
+            # Get R² score for this individual
+            r2_score = problem._evaluate_torch_fast_regression(
+                ind, problem.y, problem.fuzzy_type, device=device, return_predictions=False
+            )
+            # Convert R² to minimization objective (minimize negative R²)
+            fitness_list.append(-r2_score)
+        
+        return torch.tensor(fitness_list, dtype=torch.float32, device=device)
+    
     def optimize(self, problem: Any, n_gen: int, pop_size: int,
                  random_state: int, verbose: bool,
                  var_prob: float = 0.3, sbx_eta: float = 20.0,
@@ -420,13 +443,17 @@ class EvoXBackend(EvolutionaryBackend):
         
         population = init_pop  # Keep as integers
         
-        # Check if problem has torch evaluation method
-        has_torch_eval = hasattr(problem, '_evaluate_torch_fast')
+        # Check if problem has torch evaluation method (classification or regression)
+        has_torch_eval = hasattr(problem, '_evaluate_torch_fast') or hasattr(problem, '_evaluate_torch_fast_regression')
+        is_regression = hasattr(problem, '_evaluate_torch_fast_regression')
         
         # Initial evaluation
         if has_torch_eval:
-            # Use PyTorch evaluation for GPU acceleration with batched MCC computation
-            fitness = self._batch_evaluate_torch(population, problem, device)
+            # Use PyTorch evaluation for GPU acceleration
+            if is_regression:
+                fitness = self._batch_evaluate_torch_regression(population, problem, device)
+            else:
+                fitness = self._batch_evaluate_torch(population, problem, device)
         else:
             # Fallback to numpy evaluation
             fitness_list = []
@@ -456,8 +483,11 @@ class EvoXBackend(EvolutionaryBackend):
             
             # Evaluate offspring
             if has_torch_eval:
-                # Use PyTorch evaluation for GPU acceleration with batched MCC computation
-                offspring_fitness = self._batch_evaluate_torch(offspring, problem, device)
+                # Use PyTorch evaluation for GPU acceleration
+                if is_regression:
+                    offspring_fitness = self._batch_evaluate_torch_regression(offspring, problem, device)
+                else:
+                    offspring_fitness = self._batch_evaluate_torch(offspring, problem, device)
             else:
                 # Fallback to numpy evaluation
                 offspring_fitness_list = []

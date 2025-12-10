@@ -30,6 +30,7 @@
       ~RuleBase.n_linguistic_variables
       ~RuleBase.print_rule_bootstrap_results
       ~RuleBase.print_rules
+      ~RuleBase.print_rules_regression
       ~RuleBase.prune_bad_rules
       ~RuleBase.remove_rule
       ~RuleBase.remove_rules

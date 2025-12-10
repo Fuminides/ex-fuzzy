@@ -134,10 +134,9 @@ When to Use Each Backend
 - Speed is critical
 - GPU memory is sufficient (>4GB recommended)
 
-Performance Tips
+Memory Management
 ================
 
-Memory Management
 -----------------
 
 Both backends implement automatic memory management:
@@ -152,35 +151,6 @@ Both backends implement automatic memory management:
   - Dynamic batch size based on available GPU/CPU memory
   - Uses 60% of GPU memory or 40% of CPU RAM
   - Rounds batch sizes for optimal performance
-
-Optimization Tips
------------------
-
-1. **Start with EvoX**: Try EvoX first if you have a GPU - the performance gains are often significant
-
-2. **Monitor Memory**: Watch GPU memory usage with ``nvidia-smi`` for GPU or system monitor for CPU
-
-3. **Adjust Population Size**: Larger populations benefit more from GPU acceleration
-
-.. code-block:: python
-
-   # Smaller population for quick testing
-   classifier.fit(X_train, y_train, pop_size=30, n_gen=20)
-   
-   # Larger population for better results (benefits from GPU)
-   classifier.fit(X_train, y_train, pop_size=100, n_gen=50)
-
-4. **Batch Size**: Both backends compute optimal batch sizes automatically, but you can monitor:
-
-.. code-block:: python
-
-   # EvoX will log batch size information in verbose mode
-   classifier = BaseFuzzyRulesClassifier(
-       nRules=30,
-       nAnts=4,
-       backend='evox',
-       verbose=True  # Shows batch size decisions
-   )
 
 Examples
 ========
@@ -228,42 +198,6 @@ Basic Comparison
    print(f"EvoX time: {evox_time:.2f}s")
    print(f"Speedup: {pymoo_time/evox_time:.2f}x")
 
-Advanced Configuration
-----------------------
-
-.. code-block:: python
-
-   from ex_fuzzy import BaseFuzzyRulesClassifier
-   import ex_fuzzy
-   
-   # Construct custom fuzzy partitions
-   partitions = ex_fuzzy.utils.construct_partitions(
-       X_train, n_partitions=3
-   )
-   
-   # Create classifier with custom settings
-   classifier = BaseFuzzyRulesClassifier(
-       nRules=40,
-       nAnts=3,
-       n_linguistic_variables=3,
-       backend='evox',
-       linguistic_variables=partitions,
-       verbose=True
-   )
-   
-   # Train with custom genetic algorithm parameters
-   classifier.fit(
-       X_train, y_train,
-       n_gen=50,
-       pop_size=100,
-       sbx_eta=20.0,        # Crossover distribution index
-       mutation_eta=20.0,   # Mutation distribution index
-       random_state=42
-   )
-   
-   # Evaluate
-   accuracy = classifier.score(X_test, y_test)
-   print(f"Test accuracy: {accuracy:.4f}")
 
 Complete Demo
 -------------
@@ -287,21 +221,14 @@ Troubleshooting
 EvoX Not Available
 ------------------
 
-If EvoX backend is not available:
+Check if EvoX backend is not available for exFuzzy:
 
 .. code-block:: python
 
    from ex_fuzzy import evolutionary_backends
    
    available = evolutionary_backends.list_available_backends()
-   if 'evox' not in available:
-       print("EvoX not installed. Install with: pip install evox torch")
-
-**Solution**: Install EvoX and PyTorch:
-
-.. code-block:: bash
-
-   pip install evox torch
+   
 
 GPU Not Detected
 ----------------
@@ -395,7 +322,6 @@ See Also
 ========
 
 - :ref:`ga` - Genetic Algorithm Details
-- :ref:`optimize` - Optimization Guide  
 - :ref:`extending` - Extending Ex-Fuzzy
 - `EvoX Documentation <https://evox.readthedocs.io/>`_
 - `PyTorch Documentation <https://pytorch.org/docs/>`_

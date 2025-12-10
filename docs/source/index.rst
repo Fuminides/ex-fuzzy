@@ -30,14 +30,14 @@ a special focus on interpretability and explainability.
         :link-type: doc
 
         Get up and running with Ex-Fuzzy in minutes. Learn the basics of fuzzy classification
-        and see practical examples.
+        and regression with practical examples.
 
     .. grid-item-card:: 📖 User Guide
         :link: user-guide/index
         :link-type: doc
 
-        Comprehensive tutorials and examples for building fuzzy classifiers, analyzing patterns,
-        and visualizing results.
+        Comprehensive tutorials for building fuzzy classifiers and regressors, training models,
+        and understanding core concepts.
 
     .. grid-item-card:: 🔍 API Reference
         :link: api/index
@@ -52,6 +52,20 @@ a special focus on interpretability and explainability.
 
         Real-world examples and case studies demonstrating Ex-Fuzzy's capabilities across
         different domains.
+
+    .. grid-item-card:: 📊 Validation & Visualization
+        :link: user-guide/validation-visualization
+        :link-type: doc
+
+        Tools for validating model robustness, visualizing fuzzy rules, bootstrapping,
+        and pattern stability analysis.
+
+    .. grid-item-card:: 💾 Model Persistence
+        :link: user-guide/persistence
+        :link-type: doc
+
+        Save and load trained models, export rules to different formats, and share
+        your fuzzy systems.
 
 Key Features
 ============
@@ -147,17 +161,6 @@ Or install from source:
     cd ex-fuzzy
     pip install -e .
 
-What's New
-==========
-
-.. admonition:: Version 1.0.0
-    :class: note
-
-    - 🎉 **New comprehensive test suite** with >90% code coverage
-    - 📚 **Modernized documentation** with interactive examples
-    - 🔧 **Improved API consistency** across all modules
-    - ⚡ **Performance optimizations** for large datasets
-    - 🐛 **Bug fixes** and stability improvements
 
 Documentation Contents
 ======================
@@ -177,6 +180,7 @@ Documentation Contents
     user-guide/index
     user-guide/fuzzy-sets
     user-guide/classifiers
+    user-guide/regression
     user-guide/optimization
     evox_backend
     user-guide/visualization
@@ -200,6 +204,7 @@ Documentation Contents
     api/fuzzy_sets
     api/classifiers
     api/evolutionary_fit
+    api/regression
     api/eval_tools
     api/pattern_stability
     api/visualization
