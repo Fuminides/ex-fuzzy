@@ -68,8 +68,9 @@ Key Features
     .. grid-item-card:: ⚡ High Performance
         :class-header: border-0
 
-        Optimized implementations with support for both Type-1 and Type-2 fuzzy systems,
-        multiprocessing, and evolutionary algorithms.
+        GPU-accelerated evolutionary optimization with EvoX backend. Optimized implementations 
+        with support for both Type-1 and Type-2 fuzzy systems, automatic memory management,
+        and 2-10x speedups on large datasets.
 
     .. grid-item-card:: 📊 Rich Visualizations
         :class-header: border-0
@@ -177,6 +178,7 @@ Documentation Contents
     user-guide/fuzzy-sets
     user-guide/classifiers
     user-guide/optimization
+    evox_backend
     user-guide/visualization
     user-guide/pattern-analysis
 
