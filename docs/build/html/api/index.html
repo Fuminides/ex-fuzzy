@@ -1,0 +1,1239 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Reference &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/index';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ex_fuzzy.fuzzy_sets" href="generated/ex_fuzzy.fuzzy_sets.html" />
+    <link rel="prev" title="Regression Examples" href="../examples/regression.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/regression.html">
+    Fuzzy Regression
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="regression.html">
+    Fuzzy Regression (API)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/regression.html">
+    Fuzzy Regression
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="fuzzy_sets.html">
+    Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="classifiers.html">
+    Classifiers Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evolutionary_fit.html">
+    Evolutionary Fit Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="regression.html">
+    Fuzzy Regression (API)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="eval_tools.html">
+    Evaluation Tools Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.html">ex_fuzzy.fuzzy_sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit.html">ex_fuzzy.evolutionary_fit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit_regression.html">ex_fuzzy.evolutionary_fit_regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.html">ex_fuzzy.rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.classifiers.html">ex_fuzzy.classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.html">ex_fuzzy.eval_tools</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.pattern_stability.html">ex_fuzzy.pattern_stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.vis_rules.html">ex_fuzzy.vis_rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.temporal.html">ex_fuzzy.temporal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.utils.html">ex_fuzzy.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.persistence.html">ex_fuzzy.persistence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.bootstrapping_test.html">ex_fuzzy.bootstrapping_test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.eval_rules.html">ex_fuzzy.eval_rules</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.html">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor.html">ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.fuzzyVariable.html">ex_fuzzy.fuzzy_sets.fuzzyVariable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FS.html">ex_fuzzy.fuzzy_sets.FS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleSimple.html">ex_fuzzy.rules.RuleSimple</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleBase.html">ex_fuzzy.rules.RuleBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html">ex_fuzzy.eval_tools.FuzzyEvaluator</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.vis_rules.plot_fuzzy_variable.html">ex_fuzzy.vis_rules.plot_fuzzy_variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.pattern_stability.pattern_stabilizer.html">ex_fuzzy.pattern_stability.pattern_stabilizer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FS.html">ex_fuzzy.fuzzy_sets.FS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.gaussianFS.html">ex_fuzzy.fuzzy_sets.gaussianFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.gaussianIVFS.html">ex_fuzzy.fuzzy_sets.gaussianIVFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.categoricalFS.html">ex_fuzzy.fuzzy_sets.categoricalFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.fuzzyVariable.html">ex_fuzzy.fuzzy_sets.fuzzyVariable</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier.html">ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.classifiers.RuleMineClassifier.html">ex_fuzzy.classifiers.RuleMineClassifier</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor.html">ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit_regression.FitRuleBaseRegression.html">ex_fuzzy.evolutionary_fit_regression.FitRuleBaseRegression</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleSimple.html">ex_fuzzy.rules.RuleSimple</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleBase.html">ex_fuzzy.rules.RuleBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.MasterRuleBase.html">ex_fuzzy.rules.MasterRuleBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.rules.generate_rule_string.html">ex_fuzzy.rules.generate_rule_string</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html">ex_fuzzy.eval_tools.FuzzyEvaluator</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.vis_rules.plot_fuzzy_variable.html">ex_fuzzy.vis_rules.plot_fuzzy_variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_basic.html">ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_basic</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.persistence.save_fuzzy_variables.html">ex_fuzzy.persistence.save_fuzzy_variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.persistence.load_fuzzy_variables.html">ex_fuzzy.persistence.load_fuzzy_variables</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html">ex_fuzzy.fuzzy_sets.FUZZY_SETS</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="fuzzy_sets.html">Fuzzy Sets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FS.html">ex_fuzzy.fuzzy_sets.FS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.gaussianFS.html">ex_fuzzy.fuzzy_sets.gaussianFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.gaussianIVFS.html">ex_fuzzy.fuzzy_sets.gaussianIVFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.categoricalFS.html">ex_fuzzy.fuzzy_sets.categoricalFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.fuzzyVariable.html">ex_fuzzy.fuzzy_sets.fuzzyVariable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html">ex_fuzzy.fuzzy_sets.FUZZY_SETS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FS.membership.html">ex_fuzzy.fuzzy_sets.FS.membership</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="classifiers.html">Classifiers Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.classifiers.RuleMineClassifier.html">ex_fuzzy.classifiers.RuleMineClassifier</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="rules.html">Rules Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleSimple.html">ex_fuzzy.rules.RuleSimple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleBaseT1.html">ex_fuzzy.rules.RuleBaseT1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleBaseT2.html">ex_fuzzy.rules.RuleBaseT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rules.RuleBaseGT2.html">ex_fuzzy.rules.RuleBaseGT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rules.MasterRuleBase.html">ex_fuzzy.rules.MasterRuleBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rules.compute_antecedents_memberships.html">ex_fuzzy.rules.compute_antecedents_memberships</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="evolutionary_fit.html">Evolutionary Fit Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.evolutionary_fit.FitRuleBase.html">ex_fuzzy.evolutionary_fit.FitRuleBase</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="rule_mining.html">Rule Mining Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.rule_search.html">ex_fuzzy.rule_mining.rule_search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.generate_rules_from_itemsets.html">ex_fuzzy.rule_mining.generate_rules_from_itemsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.mine_rulebase_support.html">ex_fuzzy.rule_mining.mine_rulebase_support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.prune_rules_confidence_lift.html">ex_fuzzy.rule_mining.prune_rules_confidence_lift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.simple_mine_rulebase.html">ex_fuzzy.rule_mining.simple_mine_rulebase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.multiclass_mine_rulebase.html">ex_fuzzy.rule_mining.multiclass_mine_rulebase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase.html">ex_fuzzy.rule_mining.simple_multiclass_mine_rulebase</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="eval_tools.html">Evaluation Tools Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.FuzzyEvaluator.html">ex_fuzzy.eval_tools.FuzzyEvaluator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/ex_fuzzy.eval_tools.eval_fuzzy_model.html">ex_fuzzy.eval_tools.eval_fuzzy_model</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">API Reference</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
+<p>This section provides detailed documentation for all Ex-Fuzzy classes, functions, and modules.</p>
+<section id="core-modules">
+<h2>Core Modules<a class="headerlink" href="#core-modules" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#module-ex_fuzzy.fuzzy_sets" title="ex_fuzzy.fuzzy_sets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets</span></code></a></p></td>
+<td><p>Fuzzy Sets Module for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#module-ex_fuzzy.evolutionary_fit" title="ex_fuzzy.evolutionary_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit</span></code></a></p></td>
+<td><p>Evolutionary Optimization for Fuzzy Rule Base Learning</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit_regression</span></code></p></td>
+<td><p>Evolutionary Optimization for Fuzzy Regression Rule Base Learning</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rules.html#module-ex_fuzzy.rules" title="ex_fuzzy.rules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules</span></code></a></p></td>
+<td><p>Fuzzy Rules and Inference Engine for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/classifiers.html#module-ex_fuzzy.classifiers" title="ex_fuzzy.classifiers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classifiers</span></code></a></p></td>
+<td><p>Fuzzy Classification Algorithms for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/eval_tools.html#module-ex_fuzzy.eval_tools" title="ex_fuzzy.eval_tools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_tools</span></code></a></p></td>
+<td><p>Evaluation Tools for Fuzzy Rule-Based Models</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="analysis-and-visualization">
+<h2>Analysis and Visualization<a class="headerlink" href="#analysis-and-visualization" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/pattern_stability.html#module-ex_fuzzy.pattern_stability" title="ex_fuzzy.pattern_stability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pattern_stability</span></code></a></p></td>
+<td><p>Pattern Stability Analysis Module for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/vis_rules.html#module-ex_fuzzy.vis_rules" title="ex_fuzzy.vis_rules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vis_rules</span></code></a></p></td>
+<td><p>Rule Visualization Module for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/temporal.html#module-ex_fuzzy.temporal" title="ex_fuzzy.temporal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temporal</span></code></a></p></td>
+<td><p>Temporal Fuzzy Sets Module for Ex-Fuzzy Library</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="utilities-and-support">
+<h2>Utilities and Support<a class="headerlink" href="#utilities-and-support" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/utils.html#module-ex_fuzzy.utils" title="ex_fuzzy.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></p></td>
+<td><p>Utility Functions for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/persistence.html#module-ex_fuzzy.persistence" title="ex_fuzzy.persistence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">persistence</span></code></a></p></td>
+<td><p>Persistence Module for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bootstrapping_test</span></code></p></td>
+<td><p>Bootstrap Statistical Testing Module for Ex-Fuzzy Library</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/eval_rules.html#module-ex_fuzzy.eval_rules" title="ex_fuzzy.eval_rules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_rules</span></code></a></p></td>
+<td><p>This file contains the classes to perform rule classification evaluation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="quick-reference">
+<h2>Quick Reference<a class="headerlink" href="#quick-reference" title="Link to this heading">#</a></h2>
+<section id="most-common-classes">
+<h3>Most Common Classes<a class="headerlink" href="#most-common-classes" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier" title="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit.BaseFuzzyRulesClassifier</span></code></a>([...])</p></td>
+<td><p>Class that is used as a classifier for a fuzzy rule based system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="regression.html#ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor" title="ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit_regression.BaseFuzzyRulesRegressor</span></code></a>([...])</p></td>
+<td><p>Fuzzy rule-based regressor with evolutionary optimization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.fuzzyVariable</span></code></a>(name, fuzzy_sets[, ...])</p></td>
+<td><p>Fuzzy Variable Container and Management Class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.FS</span></code></a>(name, membership_parameters[, ...])</p></td>
+<td><p>Base class for Type-1 fuzzy sets (Zadeh fuzzy sets).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules.RuleSimple</span></code></a>(antecedents[, consequent, ...])</p></td>
+<td><p>Simplified Rule Representation for Optimized Computation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules.RuleBase</span></code></a>(antecedents, rules[, ...])</p></td>
+<td><p>Class optimized to work with multiple rules at the same time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator" title="ex_fuzzy.eval_tools.FuzzyEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_tools.FuzzyEvaluator</span></code></a>(fl_classifier)</p></td>
+<td><p>Comprehensive evaluation and analysis tool for fuzzy rule-based classifiers.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="most-common-functions">
+<h3>Most Common Functions<a class="headerlink" href="#most-common-functions" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/vis_rules.html#ex_fuzzy.vis_rules.plot_fuzzy_variable" title="ex_fuzzy.vis_rules.plot_fuzzy_variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vis_rules.plot_fuzzy_variable</span></code></a>(fuzzy_variable)</p></td>
+<td><p>Plots a fuzzy variable using trapezoidal membership functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/pattern_stability.html#ex_fuzzy.pattern_stability.pattern_stabilizer" title="ex_fuzzy.pattern_stability.pattern_stabilizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pattern_stability.pattern_stabilizer</span></code></a>(X, y[, ...])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="by-category">
+<h2>By Category<a class="headerlink" href="#by-category" title="Link to this heading">#</a></h2>
+<section id="fuzzy-set-operations">
+<h3>Fuzzy Set Operations<a class="headerlink" href="#fuzzy-set-operations" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.FS</span></code></a>(name, membership_parameters[, ...])</p></td>
+<td><p>Base class for Type-1 fuzzy sets (Zadeh fuzzy sets).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianFS" title="ex_fuzzy.fuzzy_sets.gaussianFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.gaussianFS</span></code></a>(name, ...[, domain])</p></td>
+<td><p>Gaussian Type-1 Fuzzy Set Implementation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.gaussianIVFS" title="ex_fuzzy.fuzzy_sets.gaussianIVFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.gaussianIVFS</span></code></a>(name, ...[, ...])</p></td>
+<td><p>Gaussian Interval-Valued (Type-2) Fuzzy Set Implementation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.categoricalFS" title="ex_fuzzy.fuzzy_sets.categoricalFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.categoricalFS</span></code></a>(name, category)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.fuzzyVariable</span></code></a>(name, fuzzy_sets[, ...])</p></td>
+<td><p>Fuzzy Variable Container and Management Class.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="classification">
+<h3>Classification<a class="headerlink" href="#classification" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/evolutionary_fit.html#ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier" title="ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit.BaseFuzzyRulesClassifier</span></code></a>([...])</p></td>
+<td><p>Class that is used as a classifier for a fuzzy rule based system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/classifiers.html#ex_fuzzy.classifiers.RuleMineClassifier" title="ex_fuzzy.classifiers.RuleMineClassifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classifiers.RuleMineClassifier</span></code></a>([nRules, ...])</p></td>
+<td><p>A classifier that works by mining a set of candidate rules with a minimum support, confidence and lift, and then using a genetic algorithm that chooses the optimal combination of those rules.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="regression">
+<h3>Regression<a class="headerlink" href="#regression" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="regression.html#ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor" title="ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit_regression.BaseFuzzyRulesRegressor</span></code></a>([...])</p></td>
+<td><p>Fuzzy rule-based regressor with evolutionary optimization.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="regression.html#ex_fuzzy.evolutionary_fit_regression.FitRuleBaseRegression" title="ex_fuzzy.evolutionary_fit_regression.FitRuleBaseRegression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolutionary_fit_regression.FitRuleBaseRegression</span></code></a>(X, ...)</p></td>
+<td><p>Class to model regression problems for fuzzy rule bases using evolutionary strategies.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="rule-management">
+<h3>Rule Management<a class="headerlink" href="#rule-management" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules.RuleSimple</span></code></a>(antecedents[, consequent, ...])</p></td>
+<td><p>Simplified Rule Representation for Optimized Computation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules.RuleBase</span></code></a>(antecedents, rules[, ...])</p></td>
+<td><p>Class optimized to work with multiple rules at the same time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules.MasterRuleBase</span></code></a>(rule_base[, ...])</p></td>
+<td><p>This Class encompasses a list of rule bases where each one corresponds to a different class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/rules.html#ex_fuzzy.rules.generate_rule_string" title="ex_fuzzy.rules.generate_rule_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules.generate_rule_string</span></code></a>(rule, antecedents)</p></td>
+<td><p>Generates a string with the rule.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="evaluation-and-metrics">
+<h3>Evaluation and Metrics<a class="headerlink" href="#evaluation-and-metrics" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/eval_tools.html#ex_fuzzy.eval_tools.FuzzyEvaluator" title="ex_fuzzy.eval_tools.FuzzyEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_tools.FuzzyEvaluator</span></code></a>(fl_classifier)</p></td>
+<td><p>Comprehensive evaluation and analysis tool for fuzzy rule-based classifiers.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="visualization">
+<h3>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/vis_rules.html#ex_fuzzy.vis_rules.plot_fuzzy_variable" title="ex_fuzzy.vis_rules.plot_fuzzy_variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vis_rules.plot_fuzzy_variable</span></code></a>(fuzzy_variable)</p></td>
+<td><p>Plots a fuzzy variable using trapezoidal membership functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/pattern_stability.html#ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_basic" title="ex_fuzzy.pattern_stability.pattern_stabilizer.pie_chart_basic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pattern_stability.pattern_stabilizer.pie_chart_basic</span></code></a>(...)</p></td>
+<td><p>Generates a pie chart for the variable usage in the rule bases.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="model-persistence">
+<h3>Model Persistence<a class="headerlink" href="#model-persistence" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../function_resume/persistence.html#ex_fuzzy.persistence.save_fuzzy_variables" title="ex_fuzzy.persistence.save_fuzzy_variables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">persistence.save_fuzzy_variables</span></code></a>(fuzzy_variables)</p></td>
+<td><p>Save multiple fuzzy variables to a text string representation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../function_resume/persistence.html#ex_fuzzy.persistence.load_fuzzy_variables" title="ex_fuzzy.persistence.load_fuzzy_variables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">persistence.load_fuzzy_variables</span></code></a>(...)</p></td>
+<td><p>Load fuzzy variables from a text string representation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="constants-and-enums">
+<h2>Constants and Enums<a class="headerlink" href="#constants-and-enums" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/ex_fuzzy.fuzzy_sets.FUZZY_SETS.html#ex_fuzzy.fuzzy_sets.FUZZY_SETS" title="ex_fuzzy.fuzzy_sets.FUZZY_SETS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuzzy_sets.FUZZY_SETS</span></code></a>(*values)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="type-hints">
+<h2>Type Hints<a class="headerlink" href="#type-hints" title="Link to this heading">#</a></h2>
+<p>Ex-Fuzzy uses type hints throughout the codebase. Here are the most common types:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Common type aliases used in Ex-Fuzzy</span>
+<span class="n">ArrayLike</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]</span>
+<span class="n">DataFrame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="n">FuzzySet</span> <span class="o">=</span> <span class="s1">&#39;ex_fuzzy.fuzzy_sets.FS&#39;</span>
+<span class="n">FuzzyVariable</span> <span class="o">=</span> <span class="s1">&#39;ex_fuzzy.fuzzy_sets.fuzzyVariable&#39;</span>
+<span class="n">Rule</span> <span class="o">=</span> <span class="s1">&#39;ex_fuzzy.rules.RuleSimple&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="inheritance-diagrams">
+<h2>Inheritance Diagrams<a class="headerlink" href="#inheritance-diagrams" title="Link to this heading">#</a></h2>
+</section>
+<section id="module-documentation">
+<h2>Module Documentation<a class="headerlink" href="#module-documentation" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fuzzy_sets.html">Fuzzy Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classifiers.html">Classifiers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rules.html">Rules Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evolutionary_fit.html">Evolutionary Fit Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rule_mining.html">Rule Mining Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eval_tools.html">Evaluation Tools Module</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-modules">Core Modules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-and-visualization">Analysis and Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities-and-support">Utilities and Support</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-reference">Quick Reference</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#most-common-classes">Most Common Classes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#most-common-functions">Most Common Functions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#by-category">By Category</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fuzzy-set-operations">Fuzzy Set Operations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classification">Classification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regression">Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-management">Rule Management</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-and-metrics">Evaluation and Metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-persistence">Model Persistence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constants-and-enums">Constants and Enums</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-hints">Type Hints</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inheritance-diagrams">Inheritance Diagrams</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-documentation">Module Documentation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
