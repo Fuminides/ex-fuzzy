@@ -37,11 +37,10 @@
 
 ### Why Ex-Fuzzy?
 
-- 🔍 **Explainable AI**: Create interpretable models that humans can understand
-- 📊 **Rich Visualizations**: Beautiful plots and graphs for fuzzy sets and rules
-- 🛠️ **Scikit-learn Compatible**: Familiar API for machine learning practitioners
-- 🚀 **High Performance**: Optimized algorithms with optional GPU support
-- 📚 **Comprehensive**: Support for classification, regression, and rule mining
+- 🔍 **Explainable AI**: Create interpretable models that humans can understand. Support for classification and regression problems.
+- 📊 **Rich Visualizations**: Beautiful plots and graphs for fuzzy sets and rules.
+- 🛠️ **Scikit-learn Compatible**: Familiar API for machine learning practitioners.
+- 🚀 **High Performance**: Optimized algorithms with optional GPU support using Evox (https://github.com/EMI-Group/evox).
 
 ## ✨ Features
 
@@ -50,25 +49,21 @@
 - **Fuzzy Association Rules**: For both classification and regression problems with genetic fine-tuning.
 - **Out-of-the-box Results**: Complete compatibility with scikit-learn, minimal to none fuzzy knowledge required to obtain good results.
 - **Complete Complexity Control**: Number of rules, rule length, linguistic variables, etc. can be specified by the user with strong and soft constrains.
-- **Statistical Analysis of Results**: Confidence intervals for all rule quality metrics, .
+- **Statistical Analysis of Results**: Confidence intervals for all rule quality metrics, repeated experiments for rule robustness.
 
 ###  **Complete Rule Base Visualization and Validation**
 - **Comprehensive Plots**: Visualize fuzzy sets and rules.
-- **Network Graphs**: Rule visualizations using NetworkX.
 - **Robustness Metrics**: Compute validation of rules, ensure linguistic meaning of fuzzy partitions, robustness metrics for rules and space partitions, reproducible experiments, etc.
 
 ###  **Advanced Learning Routines**
 - **Multiple Backend Support**: Choose between PyMoo (CPU) and EvoX (GPU-accelerated) backends for evolutionary optimization.
-- **GPU Acceleration**: EvoX backend with PyTorch provides significant speedups for large datasets and complex rule bases.
 - **Genetic Algorithms**: Rule base optimization supports fine-tuning of different hyperparameters, like tournament size, crossover rate, etc.
-- **Pre-mining and Rule Search**: start with good initial or prior populations, and then refine those results to obtain a good classifier using genetic optimization.
+- **GPU Genetic Acceleration**: EvoX backend with PyTorch provides significant speedups for large datasets and complex rule bases.
 - **Extensible Architecture**: Easy to extend with custom components.
 
 ### **Complete Fuzzy Logic Systems Support**
 - **Multiple Fuzzy Set Types**: Classic, Interval-Valued Type-2, and General Type-2 fuzzy sets
 - **Linguistic Variables**: Automatic generation with quantile-based optimization.
-- **Linguistic Hedges**: Natural language modifiers for enhanced expressiveness.
-- **Temporal Fuzzy Sets**: Time-aware fuzzy reasoning
 
 ## 🚀 Quick Start
 
@@ -121,7 +116,6 @@ eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test,
 Ex-Fuzzy provides beautiful visualizations to understand your fuzzy models:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/12574757/210235257-17b22ede-762b-406c-880a-497e06964f17.png" height="280" title="Fuzzy Rule Graph">
   <img src="https://github.com/user-attachments/assets/858ae72b-6504-4173-b81b-b11a3caf802f" height="280" title="Type-1 Fuzzy Sets">
 </p>
 
@@ -153,12 +147,10 @@ Obtain statistical confidence intervals for your metrics:
 
 Ex-Fuzzy supports two evolutionary optimization backends:
 
-| Backend | Hardware | Best For | Speedup |
-|---------|----------|----------|----------|
-| **PyMoo** | CPU | Small datasets (<10K samples), checkpoint support | Baseline |
-| **EvoX** | GPU/CPU | Large datasets, complex rule bases, high generation counts | 2-10x faster* |
-
-*Speedup varies based on dataset size, rule complexity, and hardware. GPU acceleration provides best results with CUDA-capable devices.
+| Backend | Hardware | Best For |
+|---------|----------|----------|
+| **PyMoo** | CPU | Small datasets (<10K samples), checkpoint support |
+| **EvoX** | GPU | Large datasets with high generation counts |
 
 ### When to Use Each Backend
 
@@ -171,16 +163,10 @@ Ex-Fuzzy supports two evolutionary optimization backends:
 **Use EvoX** when:
 - Have GPU available (CUDA recommended)
 - Working with large datasets (>10,000 samples)
-- Training complex models (many rules/generations)
-- Speed is priority over checkpointing
+- No checkpointing (Evox does not support checkpointing yet)
 
-### Performance Tips
+Both backends automatically batch operations to fit available memory and large datasets are processed in chunks to prevent out-of-memory errors.
 
-- **Memory Management**: Both backends automatically batch operations to fit available memory
-- **Auto-batching**: Large datasets are processed in chunks to prevent out-of-memory errors
-- **GPU Utilization**: EvoX automatically uses GPU when available, falls back to CPU otherwise
-
-Try the [EvoX backend demo](Demos/evox_backend_demo.ipynb) to see performance comparisons on your hardware!
 
 ## 🛠️ Examples
 
@@ -309,14 +295,14 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 
 We welcome contributions from the community! Here's how you can help:
 
-### 🐛 Bug Reports
+### Bug Reports
 Found a bug? Please [open an issue](https://github.com/Fuminides/ex-fuzzy/issues) with:
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
 - System information
 
-### 🚀 Feature Requests
+### Feature Requests
 Have an idea? [Submit a feature request](https://github.com/Fuminides/ex-fuzzy/issues) with:
 - Clear use case description
 - Proposed API design
@@ -359,7 +345,7 @@ If you use Ex-Fuzzy in your research, please cite our paper:
 ## 👥 Main Authors
 
 - **[Javier Fumanal-Idocin](https://github.com/Fuminides)** - *Lead Developer*
-- **[Javier Andreu-Perez](https://github.com/jandreu)** - *Co-lead and licensing officer*
+- **[Javier Andreu-Perez](https://github.com/jandreu)** - *Licensing officer*
 
 ## 🌟 Acknowledgments
 
