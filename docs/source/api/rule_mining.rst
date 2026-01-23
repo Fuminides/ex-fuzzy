@@ -10,20 +10,6 @@ Overview
 
 This module implements algorithms for discovering frequent fuzzy patterns and generating fuzzy rules using support-based itemset mining.
 
-Functions
----------
-
-.. autosummary::
-   :toctree: generated/
-
-   rule_search
-   generate_rules_from_itemsets
-   mine_rulebase_support
-   prune_rules_confidence_lift
-   simple_mine_rulebase
-   multiclass_mine_rulebase
-   simple_multiclass_mine_rulebase
-
 Core Functions
 --------------
 
@@ -69,8 +55,8 @@ Basic Rule Mining
    data = pd.DataFrame(X)
 
    # Create fuzzy variables
-   fuzzy_vars = [fs.fuzzyVariable(f"var_{i}", X[:, i], 3, fs.FUZZY_SETS.t1) 
-                 for i in range(X.shape[1])]
+   import ex_fuzzy.utils as utils
+   fuzzy_vars = utils.construct_partitions(X, fs.FUZZY_SETS.t1, n_partitions=3)
 
    # Mine rules
    itemsets = rm.rule_search(data, fuzzy_vars, support_threshold=0.1)

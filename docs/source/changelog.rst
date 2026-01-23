@@ -178,7 +178,7 @@ Version 0.9.0
 - **Updated** optimization algorithm interface
 
 Notable Improvements
-===================
+====================
 
 Performance Improvements
 ------------------------

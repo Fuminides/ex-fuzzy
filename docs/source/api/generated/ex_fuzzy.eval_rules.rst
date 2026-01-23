@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.eval\_rules
-=====================
+ex_fuzzy.eval_rules
+===================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: eval_rules
+.. automodule:: ex_fuzzy.eval_rules

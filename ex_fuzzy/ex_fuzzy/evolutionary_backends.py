@@ -64,9 +64,11 @@ class PyMooBackend(EvolutionaryBackend):
     """Backend using pymoo for CPU-based evolutionary optimization."""
     
     def __init__(self):
+        """Initialize the backend and cache dependency availability."""
         self._available = self._check_availability()
     
     def _check_availability(self) -> bool:
+        """Return True if pymoo can be imported."""
         try:
             import pymoo
             return True
@@ -74,9 +76,11 @@ class PyMooBackend(EvolutionaryBackend):
             return False
     
     def is_available(self) -> bool:
+        """Return True when pymoo is available in the environment."""
         return self._available
     
     def name(self) -> str:
+        """Return the backend identifier used in configuration."""
         return "pymoo"
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int, 
@@ -235,11 +239,13 @@ class EvoXBackend(EvolutionaryBackend):
     """Backend using EvoX for GPU-accelerated evolutionary optimization with PyTorch."""
     
     def __init__(self):
+        """Initialize the backend and configure GPU/CPU execution."""
         self._available = self._check_availability()
         if self._available:
             self._setup_pytorch()
     
     def _check_availability(self) -> bool:
+        """Return True if EvoX and PyTorch can be imported."""
         try:
             import evox
             import torch
@@ -260,9 +266,11 @@ class EvoXBackend(EvolutionaryBackend):
                 
         
     def is_available(self) -> bool:
+        """Return True when EvoX and PyTorch are available."""
         return self._available
     
     def name(self) -> str:
+        """Return the backend identifier used in configuration."""
         return "evox"
     
     def _compute_mcc_torch(self, y_pred: 'torch.Tensor', y_true: 'torch.Tensor') -> float:
@@ -540,6 +548,13 @@ class EvoXProblemWrapper:
     """Wrapper to adapt ex-fuzzy Problem to EvoX interface."""
     
     def __init__(self, problem, use_gpu_eval: bool = True):
+        """
+        Wrap an ex-fuzzy optimization problem for EvoX evaluation.
+
+        Args:
+            problem: ex-fuzzy problem instance implementing _evaluate.
+            use_gpu_eval (bool): Whether to attempt vectorized GPU evaluation.
+        """
         self.problem = problem
         self.n_eval = 0
         self.use_gpu_eval = use_gpu_eval
@@ -660,6 +675,7 @@ class EvoXProblemWrapper:
                     labels = rule_labels[rule_idx]
                     
                     def get_antecedent_membership(ant_idx):
+                        """Return membership values for a single antecedent index."""
                         feat_idx = features[ant_idx]
                         label_idx = labels[ant_idx]
                         return torch.where(

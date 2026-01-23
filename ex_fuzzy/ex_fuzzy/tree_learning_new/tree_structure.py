@@ -38,6 +38,7 @@ class TreeStructure(TreeComponent):
         leaves = []
         
         def collect_leaves(node, path_features=None, path_fuzzy_sets=None, path_name=""):
+            """Recursively gather leaf nodes and their feature paths."""
             if path_features is None:
                 path_features = []
                 path_fuzzy_sets = []
@@ -88,6 +89,7 @@ class TreeStructure(TreeComponent):
         all_nodes = []
         
         def collect_nodes(node, path_features=None, path_fuzzy_sets=None):
+            """Recursively gather all nodes and their feature paths."""
             if path_features is None:
                 path_features = []
                 path_fuzzy_sets = []
@@ -174,6 +176,7 @@ class TreeStructure(TreeComponent):
         path = []
         
         def find_path(node, target_name, current_path):
+            """Depth-first search for a node while tracking the current path."""
             current_path.append(node['name'])
             
             if node['name'] == target_name:
@@ -205,6 +208,7 @@ class TreeStructure(TreeComponent):
         leaf_nodes = {}
         
         def traverse(node):
+            """Traverse the tree to collect leaf nodes."""
             if NodeValidator.is_leaf_node(node):
                 leaf_nodes[node['name']] = node
             elif 'children' in node:
@@ -234,6 +238,7 @@ class TreeStructure(TreeComponent):
         path = []
         
         def trace_path(node, target_name, current_path):
+            """Trace the path from the root to a target node name."""
             if node['name'] == target_name:
                 path.extend(current_path)
                 return True
@@ -333,6 +338,7 @@ class TreeStructure(TreeComponent):
             Maximum depth of the tree (root is depth 0).
         """
         def calculate_depth(node, current_depth=0):
+            """Recursively compute maximum depth for the subtree."""
             max_depth = current_depth
             if 'children' in node:
                 for child in node['children'].values():
@@ -363,6 +369,7 @@ class TreeStructure(TreeComponent):
             Number of leaf nodes.
         """
         def count_recursive(node):
+            """Recursively count leaf nodes in a subtree."""
             if NodeValidator.is_leaf_node(node):
                 return 1
             else:

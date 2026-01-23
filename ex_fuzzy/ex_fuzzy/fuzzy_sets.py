@@ -75,6 +75,7 @@ class FUZZY_SETS(enum.Enum):
 
 
     def __eq__(self, __value: object) -> bool:
+        """Compare enum values based on their stored string value."""
         return self.value == __value.value
 
 
@@ -263,14 +264,19 @@ class FS():
 
 
 class triangularFS(FS):
+    """Type-1 fuzzy set with a triangular membership function."""
+
     def __init__(self, name: str, membership_parameters: list[float], domain: list[float]) -> None:
+        """Initialize a triangular fuzzy set."""
         super().__init__(name, membership_parameters, domain)
 
     def shape(self) -> str:
+        """Return the shape identifier used in plotting/inspection."""
         return 'triangular'
 
 
 class categoricalFS(FS):
+    """Type-1 fuzzy set for crisp categorical variables."""
 
     def __init__(self, name: str, category) -> None:
         '''
@@ -591,6 +597,7 @@ class GT2(FS):
 
 
     def type(self) -> FUZZY_SETS:
+        """Return the fuzzy set type identifier for GT2 sets."""
         return FUZZY_SETS.gt2
     
 
@@ -1014,6 +1021,5 @@ class fuzzyVariable():
         :return: list of floats. Membership to each of the FS in the fuzzy variables.
         '''
         return self.compute_memberships(x)
-
 
 

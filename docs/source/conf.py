@@ -38,7 +38,13 @@ extensions = [
 
 # Templates and patterns
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [
+    '_build',
+    'Thumbs.db',
+    '.DS_Store',
+    'function_resume/*',
+    'api/generated/*',
+]
 
 # -- Extension configuration -------------------------------------------------
 
@@ -55,8 +61,10 @@ autodoc_typehints = 'description'
 autodoc_typehints_description_target = 'documented'
 
 # Autosummary
-autosummary_generate = True
-autosummary_generate_overwrite = True
+autosummary_generate = False
+
+# Silence orphaned autosummary pages.
+suppress_warnings = ['toc.not_included']
 
 # Napoleon settings
 napoleon_google_docstring = True
@@ -75,14 +83,7 @@ napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
 # Intersphinx mapping
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
-    'matplotlib': ('https://matplotlib.org/stable/', None),
-    'sklearn': ('https://scikit-learn.org/stable/', None),
-    'pandas': ('https://pandas.pydata.org/docs/', None),
-}
+intersphinx_mapping = {}
 
 # External links
 extlinks = {
@@ -104,8 +105,6 @@ html_title = f"Ex-Fuzzy {version}"
 html_theme_options = {
     "logo": {
         "text": "Ex-Fuzzy",
-        "image_light": "_static/logo-light.png",
-        "image_dark": "_static/logo-dark.png",
     },
     "icon_links": [
         {
@@ -147,7 +146,7 @@ html_css_files = [
 ]
 
 # Favicon
-html_favicon = '_static/favicon.ico'
+# html_favicon = '_static/favicon.ico'
 
 # Show source links
 html_show_sourcelink = True
@@ -182,5 +181,3 @@ texinfo_documents = [
 # -- Options for epub output -------------------------------------------------
 epub_title = project
 epub_exclude_files = ['search.html']
-
-

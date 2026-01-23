@@ -459,6 +459,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
     
 
     def _contruct_tempRuleBase(self, problems, best_individuals):
+        """Build a list of rule bases, one per temporal slice."""
         ruleBase_temp = []
 
         for problem, subject in zip(problems, best_individuals):
@@ -694,4 +695,3 @@ def eval_temporal_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_tra
         return res
     else:
         print(res)
-

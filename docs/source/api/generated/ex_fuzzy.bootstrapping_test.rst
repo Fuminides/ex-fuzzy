@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.bootstrapping\_test
-=============================
+ex_fuzzy.bootstrapping_test
+===========================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: bootstrapping_test
+.. automodule:: ex_fuzzy.bootstrapping_test

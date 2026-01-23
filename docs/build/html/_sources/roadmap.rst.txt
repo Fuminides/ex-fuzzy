@@ -217,7 +217,7 @@ Infrastructure & Quality
    - Global community support
 
 Research Directions
-==================
+===================
 
 Active Research Areas
 ---------------------
@@ -286,7 +286,7 @@ The roadmap is shaped by community feedback:
    Participate in periodic surveys about priorities
 
 Development Participation
-------------------------
+-------------------------
 
 Help shape the future by:
 
@@ -314,7 +314,7 @@ Keep track of roadmap progress:
 - **Social Media**: Quick updates and news
 
 Questions & Feedback
-===================
+====================
 
 Have questions about the roadmap?
 

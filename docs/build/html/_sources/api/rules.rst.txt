@@ -26,29 +26,14 @@ The module follows a hierarchical structure:
 3. **Multi-class Systems**: :class:`MasterRuleBase` for complete fuzzy systems
 4. **Inference Support**: Functions for membership computation and aggregation
 
-Classes
--------
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-   RuleSimple
-   RuleBaseT1
-   RuleBaseT2
-   RuleBaseGT2
-   MasterRuleBase
-
 Functions
 ---------
 
-.. autosummary::
-   :toctree: generated/
-
-   compute_antecedents_memberships
-   eval_fuzzy_model
-   aggregation_operators
-   t_norm_operators
+- :func:`ex_fuzzy.rules.compute_antecedents_memberships`
+- :func:`ex_fuzzy.rules.construct_rule_base`
+- :func:`ex_fuzzy.rules.list_rules_to_matrix`
+- :func:`ex_fuzzy.rules.generate_rule_string`
+- :func:`ex_fuzzy.rules.generate_rule_string_regression`
 
 Rule Classes
 ------------
@@ -60,15 +45,6 @@ RuleSimple
    :members:
    :inherited-members:
    :show-inheritance:
-
-   **Core Methods**
-
-   .. autosummary::
-      :nosignatures:
-
-      ~RuleSimple.compute_antecedent_membership
-      ~RuleSimple.eval_rule
-      ~RuleSimple.dominance_score
 
 RuleBase Classes
 ~~~~~~~~~~~~~~~~
@@ -103,11 +79,6 @@ Membership Computation
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: compute_antecedents_memberships
-
-Model Evaluation
-~~~~~~~~~~~~~~~~
-
-.. autofunction:: eval_fuzzy_model
 
 Constants and Modifiers
 -----------------------
@@ -208,59 +179,14 @@ Computing Memberships
    first_var_memberships = memberships[0]
    print(f"Memberships for variable 1: {first_var_memberships}")
 
-Rule Quality Assessment
+Rule String Formatting
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   # Evaluate rule quality with dominance score
-   X_train = np.random.rand(100, 2) * 50  # Training data
-   y_train = np.random.randint(0, 3, 100)  # Class labels
-   
-   # Calculate dominance score for a rule
-   dominance = rule.dominance_score(
-       antecedents=[temp_var, humidity_var],
-       X=X_train,
-       y=y_train,
-       target_class=1
-   )
-   print(f"Rule dominance: {dominance}")
-
-Advanced Inference
-~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   # Custom t-norm and aggregation
-   from ex_fuzzy.rules import t_norm_operators, aggregation_operators
-   
-   # Use different t-norms for rule evaluation
-   rule_base.set_tnorm(t_norm_operators.product_tnorm)
-   
-   # Evaluate with custom aggregation
-   output = rule_base.eval_rulebase(
-       input_values,
-       aggregation_method=aggregation_operators.maximum
-   )
-
-Performance Optimization
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   # Efficient batch evaluation
-   batch_inputs = np.random.rand(1000, 2) * 50
-   
-   # Pre-compute memberships for efficiency
-   batch_memberships = rules.compute_antecedents_memberships(
-       antecedents, batch_inputs
-   )
-   
-   # Evaluate multiple rules efficiently
-   results = []
-   for rule in rule_base.rules:
-       batch_results = rule.eval_rule_batch(antecedents, batch_inputs)
-       results.append(batch_results)
+   # Render a human-readable rule string
+   rule_text = rules.generate_rule_string(rule_base[0], rule_base.antecedents)
+   print(rule_text)
 
 See Also
 --------
@@ -269,14 +195,3 @@ See Also
 * :mod:`ex_fuzzy.centroid` : Defuzzification algorithms
 * :mod:`ex_fuzzy.classifiers` : High-level classification interfaces
 * :mod:`ex_fuzzy.eval_tools` : Rule evaluation and performance metrics
-
-References
-----------
-
-.. [1] Zadeh, L.A. "Fuzzy sets." Information and Control 8.3 (1965): 338-353.
-
-.. [2] Mamdani, E.H., and S. Assilian. "An experiment in linguistic synthesis with a fuzzy logic controller." 
-       International Journal of Man-Machine Studies 7.1 (1975): 1-13.
-
-.. [3] Mendel, J.M. "Uncertain Rule-Based Fuzzy Logic Systems: Introduction and New Directions." 
-       Prentice-Hall, 2001.

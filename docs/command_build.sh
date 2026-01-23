@@ -1,10 +1,6 @@
 #!/bin/bash
 # Build documentation using datasci environment
 
-# Activate conda environment
-eval "$(conda shell.bash hook)"
-conda activate datasci
-
 # Check if required packages are installed
 echo "Checking dependencies..."
 python -c "import pydata_sphinx_theme; print('✓ pydata-sphinx-theme installed')" || {

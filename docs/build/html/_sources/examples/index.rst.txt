@@ -27,7 +27,7 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
    regression
 
 Working Examples
-===============
+================
 
 The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run these examples directly in Google Colab:
 
@@ -40,25 +40,25 @@ The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run 
      - Colab Link
    * - **Basic Classification**
      - Introduction to fuzzy classification with the Iris dataset
-     - `Open in Colab <https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing>`_
+     - `Open in Colab <https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing>`__
    * - **Custom Loss Functions**
      - Advanced optimization techniques
-     - `Open in Colab <https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing>`_
+     - `Open in Colab <https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing>`__
    * - **Rule File Loading**
      - Working with text-based rule files
-     - `Open in Colab <https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing>`_
+     - `Open in Colab <https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing>`__
    * - **Advanced Rules**
      - Using pre-computed rule populations
-     - `Open in Colab <https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing>`_
+     - `Open in Colab <https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing>`__
    * - **Temporal Fuzzy Sets**
      - Time-aware fuzzy reasoning
-     - `Open in Colab <https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing>`_
+     - `Open in Colab <https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing>`__
    * - **Rule Mining**
      - Automatic rule discovery
-     - `Open in Colab <https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing>`_
+     - `Open in Colab <https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing>`__
 
 Local Examples
-=============
+==============
 
 The repository also contains local Jupyter notebooks in the `Demos/` directory:
 
@@ -71,20 +71,6 @@ The repository also contains local Jupyter notebooks in the `Demos/` directory:
 - **pattern_analysis_demo.ipynb**: Pattern stability analysis
 
 These notebooks provide complete, working examples that demonstrate real-world applications of the ex-fuzzy library.
-   financial-risk-assessment
-   image-classification
-   time-series-prediction
-
-Domain-Specific Examples
-========================
-
-.. toctree::
-   :maxdepth: 1
-
-   bioinformatics
-   environmental-monitoring
-   quality-control
-   recommendation-systems
 
 Interactive Notebooks
 =====================

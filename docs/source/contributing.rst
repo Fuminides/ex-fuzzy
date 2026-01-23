@@ -13,25 +13,25 @@ There are many ways to contribute to Ex-Fuzzy:
     :gutter: 3
 
     .. grid-item-card:: 🐛 Report Bugs
-        :link: #reporting-bugs
+        :link: reporting-bugs
         :link-type: ref
 
         Found a bug? Help us fix it by reporting detailed information.
 
     .. grid-item-card:: 💡 Suggest Features
-        :link: #suggesting-features  
+        :link: suggesting-features
         :link-type: ref
 
         Have an idea for a new feature? We'd love to hear about it!
 
     .. grid-item-card:: 📝 Improve Documentation
-        :link: #documentation
+        :link: documentation
         :link-type: ref
 
         Help make our documentation clearer and more comprehensive.
 
     .. grid-item-card:: 💻 Contribute Code
-        :link: #code-contributions
+        :link: code-contributions
         :link-type: ref
 
         Fix bugs, implement features, or optimize performance.

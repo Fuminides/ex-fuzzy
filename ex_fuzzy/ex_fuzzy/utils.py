@@ -732,7 +732,7 @@ def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studie
     Creates a fuzzy variable for a categorical feature. 
 
     :param x: array with values of the categorical variable.
-    :param name of the fuzzy variable.
+    :param name: name of the fuzzy variable.
     :param fz_type_studied: fuzzy set type studied.
     :return: a fuzzy variable that works as a categorical crips variable (each fuzzy set is 1 exactly on each class value, and 0 on the rest).
     '''
@@ -799,6 +799,7 @@ def classify_temp(dates: pd.DataFrame, cutpoints: tuple[str, str], time: str) ->
     '''
 
     def extract_hour(row):
+        """Extract the relevant time attribute from a datetime-like row."""
         return row.__getattribute__(time)
     
     hours = pd.to_datetime(dates['date']).apply(extract_hour)

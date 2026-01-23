@@ -96,7 +96,7 @@ Let's start with a simple example using the famous Iris dataset:
     print(f"Accuracy: {accuracy:.3f}")
 
 Understanding the Output
-=======================
+========================
 
 After training, you can examine the fuzzy rules that were learned:
 
@@ -132,7 +132,7 @@ Key Concepts
 ============
 
 Fuzzy Variables
---------------
+---------------
 
 Fuzzy variables define how crisp values are mapped to linguistic terms like "Low", "Medium", "High":
 
@@ -204,12 +204,17 @@ Define your own membership functions:
 
 .. code-block:: python
 
-    # Create custom Gaussian fuzzy sets
-    custom_var = fs.fuzzyVariable(
-        domain=[0, 10],
-        name="custom_feature",
-        linguistic_variable_names=["Very Low", "Low", "Medium", "High", "Very High"]
-    )
+   # Create custom Gaussian fuzzy sets
+   custom_var = fs.fuzzyVariable(
+       name="custom_feature",
+       fuzzy_sets=[
+           fs.gaussianFS("Very Low", [1.0, 0.8], [0, 10]),
+           fs.gaussianFS("Low", [3.0, 0.8], [0, 10]),
+           fs.gaussianFS("Medium", [5.0, 0.8], [0, 10]),
+           fs.gaussianFS("High", [7.0, 0.8], [0, 10]),
+           fs.gaussianFS("Very High", [9.0, 0.8], [0, 10]),
+       ],
+   )
 
 
 Next Steps
@@ -217,10 +222,15 @@ Next Steps
 
 Now that you've got the basics, explore more advanced features:
 
-- :doc:`user-guide/fuzzy-sets`: Learn about different types of fuzzy sets
-- :doc:`user-guide/optimization`: Understand the evolutionary optimization process
-- :doc:`user-guide/visualization`: Create beautiful visualizations of your models
+- :doc:`user-guide/core-concepts`: Learn about different types of fuzzy sets
+- :doc:`api/evolutionary_fit`: Understand the evolutionary optimization process
+- :doc:`user-guide/validation-visualization`: Create visualizations of your models
+- :doc:`user-guide/results-io`: Save rules, variables, and plots to files
+- :doc:`user-guide/recipes`: Quick workflows you can reuse
+- :doc:`user-guide/project-layout`: Suggested folder structure for outputs
+- :doc:`user-guide/troubleshooting`: Common issues and fixes
+- :doc:`user-guide/glossary`: Definitions for Ex-Fuzzy terms
 - :doc:`examples/index`: See real-world applications and case studies
 
 .. tip::
-    Check out the :doc:`examples/basic-classification` for more detailed examples with different datasets!
+    Check out the :doc:`examples/classification` for more detailed examples with different datasets!

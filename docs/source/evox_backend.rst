@@ -135,9 +135,7 @@ When to Use Each Backend
 - GPU memory is sufficient (>4GB recommended)
 
 Memory Management
-================
-
------------------
+=================
 
 Both backends implement automatic memory management:
 

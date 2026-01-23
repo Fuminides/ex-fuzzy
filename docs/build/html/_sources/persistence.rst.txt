@@ -36,6 +36,9 @@ We can extract the rules from a model using the ``ex_fuzzy.eval_tools.eval_fuzzy
     # Split the data into a training set and a test set
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=0)
 
+    # Build fuzzy partitions from training data
+    precomputed_partitions = utils.construct_partitions(X_train, fz_type_studied)
+
     # We create a FRBC with the precomputed partitions and the specified fuzzy set type, 
     fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=nRules, linguistic_variables=precomputed_partitions, nAnts=nAnts, 
                                                 n_linguist_variables=vl, fuzzy_type=fz_type_studied)
@@ -50,14 +53,14 @@ We can extract the rules from a model using the ``ex_fuzzy.eval_tools.eval_fuzzy
 
 
 
-The rules can be loaded from a file using the ``load_rules`` method of the ``FuzzyModel`` class::
+The rules can be loaded from a file using ``persistence.load_fuzzy_rules`` and assigned to a classifier::
 
     # Load the rules from a file
     mrule_base = persistence.load_fuzzy_rules(str_rules, precomputed_partitions)
 
-    fl_classifier = GA.FuzzyRulesClassifier(precomputed_rules=mrule_base)
+    fl_classifier = GA.BaseFuzzyRulesClassifier(precomputed_rules=mrule_base)
 
-If we already created the ``FuzzyRulesClassifier`` object, we can load the rules using the ``load_master_rule_base`` method::
+If we already created the ``BaseFuzzyRulesClassifier`` object, we can load the rules using ``load_master_rule_base``::
 
     fl_classifier.load_master_rule_base(mrule_base)
 

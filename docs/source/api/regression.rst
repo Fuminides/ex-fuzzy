@@ -75,7 +75,7 @@ BaseFuzzyRulesRegressor
 
        # Print rules
        print(regressor)
-       regressor.print_rules_regression()
+       regressor.rule_base.print_rules_regression(return_rules=False, output_name="output")
 
 FitRuleBaseRegression
 ---------------------
@@ -87,56 +87,17 @@ FitRuleBaseRegression
 
    Internal optimization problem class for evolutionary fitting of regression rule bases.
 
-Key Methods
-===========
-
-Fitting
--------
-
-.. automethod:: BaseFuzzyRulesRegressor.fit
-
-   Train the fuzzy regression model using evolutionary algorithms.
-
-   **Parameters:**
-
-   - ``X``: Training features (numpy array or pandas DataFrame)
-   - ``y``: Target values (continuous)
-   - ``n_gen``: Number of generations for optimization
-   - ``pop_size``: Population size for evolutionary algorithm
-   - ``random_state``: Random seed for reproducibility
-
-Prediction
-----------
-
-.. automethod:: BaseFuzzyRulesRegressor.predict
-
-   Make predictions on new data.
-
-   Automatically handles both crisp and fuzzy consequent types:
-
-   - **Crisp**: Weighted average of rule consequents
-   - **Fuzzy**: Mamdani inference with centroid defuzzification
-
 Rule Display
 ------------
 
-.. automethod:: BaseFuzzyRulesRegressor.print_rules_regression
+Rule text is available from the underlying rule base:
 
-   Print regression rules in a readable format.
+.. code-block:: python
 
-   Shows antecedents and consequents (numeric values or fuzzy set names).
-
-.. automethod:: BaseFuzzyRulesRegressor.__str__
-
-   String representation using print().
-
-   .. code-block:: python
-
-       regressor = BaseFuzzyRulesRegressor(...)
-       regressor.fit(X_train, y_train)
-       
-       # Simply print
-       print(regressor)
+   rule_text = regressor.rule_base.print_rules_regression(
+       return_rules=True,
+       output_name="output",
+   )
 
 Examples
 ========
@@ -171,7 +132,7 @@ Crisp Consequents (Additive Mode)
     print(f"RMSE = {np.sqrt(mean_squared_error(y, predictions)):.4f}")
 
     # Show rules
-    regressor.print_rules_regression()
+    regressor.rule_base.print_rules_regression(return_rules=False, output_name="output")
 
 Fuzzy Consequents (Mamdani Inference)
 --------------------------------------
@@ -206,7 +167,7 @@ With precomputed output fuzzy sets:
     predictions = regressor.predict(X)
 
     # Rules show fuzzy set names
-    regressor.print_rules_regression()
+    regressor.rule_base.print_rules_regression(return_rules=False, output_name="output")
     # Output: "IF x1 is LOW THEN output is Low"
 
 With evolved output fuzzy sets:
@@ -317,9 +278,3 @@ See Also
 - :doc:`../examples/regression` - Regression examples
 - :doc:`evolutionary_fit` - Classification module
 - :doc:`fuzzy_sets` - Fuzzy set definitions
-
-References
-==========
-
-.. [1] Takagi, T., & Sugeno, M. (1985). Fuzzy identification of systems and its applications to modeling and control.
-.. [2] Mamdani, E. H., & Assilian, S. (1975). An experiment in linguistic synthesis with a fuzzy logic controller.

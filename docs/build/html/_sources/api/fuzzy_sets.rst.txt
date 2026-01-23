@@ -12,27 +12,6 @@ Overview
 Fuzzy sets extend classical set theory by allowing partial membership. Instead of binary membership (in/out), 
 fuzzy sets assign membership degrees between 0 and 1, enabling more nuanced representation of concepts.
 
-Key Classes
-===========
-
-.. autosummary::
-   :toctree: generated/
-
-   FS
-   gaussianFS
-   gaussianIVFS
-   categoricalFS
-   fuzzyVariable
-
-Enumerations
-============
-
-.. autosummary::
-   :toctree: generated/
-
-   FUZZY_SETS
-   LINGUISTIC_TYPES
-
 Core Classes
 ============
 
@@ -48,12 +27,7 @@ Base Fuzzy Set
 
    **Key Methods:**
 
-   .. autosummary::
-      :toctree: generated/
-      
-      FS.membership
-      FS.centroid
-      FS.defuzzify
+   - :meth:`ex_fuzzy.fuzzy_sets.FS.membership`
 
 Gaussian Fuzzy Set
 ------------------
@@ -73,10 +47,9 @@ Gaussian Fuzzy Set
       
       # Create a Gaussian fuzzy set
       gaussian_set = fs.gaussianFS(
-          mean=5.0,
-          std=1.5,
+          name="Medium",
+          membership_parameters=[5.0, 1.5],
           domain=[0, 10],
-          name="Medium"
       )
       
       # Calculate membership
@@ -121,14 +94,16 @@ Fuzzy Variable
       
       # Create a fuzzy variable for temperature
       temperature = fs.fuzzyVariable(
-          domain=[0, 40],  # Celsius
           name="temperature",
-          n_linguistic_vars=3  # Cold, Warm, Hot
+          fuzzy_sets=[
+              fs.gaussianFS("Cold", [5.0, 3.0], [0, 40]),
+              fs.gaussianFS("Warm", [20.0, 4.0], [0, 40]),
+              fs.gaussianFS("Hot", [32.0, 3.0], [0, 40]),
+          ],
+          units="C",
       )
       
-      # The variable automatically creates linguistic terms
       print(temperature.linguistic_variable_names())
-      # Output: ['Cold', 'Warm', 'Hot']
       
       # Evaluate membership for a specific value
       memberships = temperature.membership(25.0)
@@ -146,51 +121,18 @@ Fuzzy Set Types
    Enumeration of available fuzzy set types:
 
    - ``t1``: Type-1 fuzzy sets (crisp membership values)
-   - ``t2``: Type-2 fuzzy sets (fuzzy membership values)  
+   - ``t2``: Type-2 interval-valued fuzzy sets
    - ``gt2``: General Type-2 fuzzy sets
-   - ``it2``: Interval Type-2 fuzzy sets
 
-Linguistic Types
-----------------
+Linguistic Naming
+-----------------
 
-.. autoclass:: LINGUISTIC_TYPES
-   :members:
-
-   Enumeration of linguistic variable naming conventions:
+Fuzzy set naming is user-defined. Provide human-readable names when you
+instantiate :class:`FS` subclasses and when you build :class:`fuzzyVariable`.
 
    - ``standard``: Low, Medium, High
    - ``numeric``: Var1, Var2, Var3
    - ``custom``: User-defined names
-
-Functions
-=========
-
-Utility Functions
------------------
-
-.. autosummary::
-   :toctree: generated/
-
-   create_fuzzy_variable
-   load_fuzzy_variables
-   validate_domain
-   normalize_membership
-
-.. autofunction:: create_fuzzy_variable
-
-   Convenience function for creating fuzzy variables with common configurations.
-
-.. autofunction:: load_fuzzy_variables
-
-   Load pre-configured fuzzy variables from file.
-
-.. autofunction:: validate_domain
-
-   Validate that a domain specification is correct.
-
-.. autofunction:: normalize_membership
-
-   Normalize membership values to ensure they sum to 1.
 
 Examples
 ========
@@ -206,9 +148,12 @@ Basic Usage
    
    # Create a fuzzy variable for age
    age = fs.fuzzyVariable(
-       domain=[0, 100],
        name="age",
-       linguistic_variable_names=["Young", "Middle-aged", "Old"]
+       fuzzy_sets=[
+           fs.gaussianFS("Young", [20, 10], [0, 100]),
+           fs.gaussianFS("Middle-aged", [50, 10], [0, 100]),
+           fs.gaussianFS("Old", [80, 10], [0, 100]),
+       ],
    )
    
    # Plot the membership functions
@@ -254,26 +199,27 @@ Type-2 Fuzzy Sets
 
 .. code-block:: python
 
-   # Create Type-2 fuzzy variable for handling uncertainty
-   uncertain_temp = fs.fuzzyVariable(
-       domain=[0, 40],
-       name="uncertain_temperature",
-       fuzzy_type=fs.FUZZY_SETS.t2,
-       n_linguistic_vars=3
-   )
-   
+   import ex_fuzzy.utils as utils
+   import ex_fuzzy.fuzzy_sets as fs
+   import numpy as np
+
+   # Create Type-2 fuzzy variables for handling uncertainty
+   data = np.array([[10, 20], [15, 25], [20, 30]])
+   uncertain_vars = utils.construct_partitions(data, fs.FUZZY_SETS.t2, n_partitions=3)
+   uncertain_temp = uncertain_vars[0]
+
    # Type-2 membership returns intervals
    temp_value = 25.0
-   memberships = uncertain_temp.membership(temp_value)
+   memberships = uncertain_temp.membership(np.array([temp_value]))
    print(f"Type-2 memberships for {temp_value}°C:")
    for i, name in enumerate(uncertain_temp.linguistic_variable_names()):
-       lower, upper = memberships[i]
+       lower, upper = memberships[i][0]
        print(f"  {name}: [{lower:.3f}, {upper:.3f}]")
 
 See Also
 ========
 
-- :doc:`../user-guide/fuzzy-sets`: Detailed guide on using fuzzy sets
-- :doc:`../examples/custom-fuzzy-sets`: Examples of creating custom fuzzy sets
+- :doc:`../user-guide/core-concepts`: Detailed guide on fuzzy sets and variables
+- :doc:`../examples/classification`: Example workflows using fuzzy sets
 - :doc:`evolutionary_fit`: Using fuzzy variables in classification
 - :doc:`rules`: Creating rules with fuzzy variables

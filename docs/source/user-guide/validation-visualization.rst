@@ -4,6 +4,13 @@ Validation and Visualization
 
 This guide covers tools for validating your fuzzy models, visualizing results, and analyzing model robustness.
 
+Related Guides
+==============
+
+- :doc:`../user-guide/results-io`
+- :doc:`../user-guide/recipes`
+- :doc:`../user-guide/troubleshooting`
+
 .. contents:: Table of Contents
    :local:
    :depth: 2
@@ -277,9 +284,10 @@ Classification Metrics
 
     # Using FuzzyEvaluator
     evaluator = eval_tools.FuzzyEvaluator(classifier)
-    metrics = evaluator.compute_metrics(X_test, y_test)
-    print(f"Accuracy: {metrics['accuracy']:.4f}")
-    print(f"F1-score: {metrics['f1_weighted']:.4f}")
+    accuracy = evaluator.get_metric("accuracy_score", X_test, y_test)
+    f1_weighted = evaluator.get_metric("f1_score", X_test, y_test, average="weighted")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"F1-score: {f1_weighted:.4f}")
 
 Regression Metrics
 ------------------
@@ -406,14 +414,14 @@ Best Practices
 See Also
 ========
 
-- :doc:`visualization` - Detailed visualization guide
-- :doc:`pattern-analysis` - Pattern stability in depth
-- :doc:`../api/pattern_stability` - API reference
-- :doc:`../examples/pattern-stability` - Pattern stability examples
+- :doc:`../user-guide/results-io` - Save rules, plots, and metrics
+- :doc:`../user-guide/recipes` - Quick evaluation workflows
+- :doc:`../api/index` - API reference
+- :doc:`../examples/index` - Worked examples
 
 Next Steps
 ==========
 
-- Explore :doc:`persistence` for saving validated models
-- Check :doc:`../examples/advanced-features` for real-world validation workflows
-- Learn about :doc:`optimization` for improving model performance
+- Explore :doc:`../persistence` for saving validated models
+- Check :doc:`../examples/index` for real-world validation workflows
+- Review :doc:`../user-guide/troubleshooting` if you hit errors

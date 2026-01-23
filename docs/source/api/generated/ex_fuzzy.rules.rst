@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.rules
-===============
+ex_fuzzy.rules
+==============
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: rules
+.. automodule:: ex_fuzzy.rules

@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.pattern\_stability
-============================
+ex_fuzzy.pattern_stability
+==========================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: pattern_stability
+.. automodule:: ex_fuzzy.pattern_stability

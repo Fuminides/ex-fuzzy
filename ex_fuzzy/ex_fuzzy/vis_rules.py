@@ -100,7 +100,9 @@ def create_graph_connection(rules, possible_vl):
     :param possible_vl: number of linguistic variables.
     :return: square matrix where each number indicates if two nodes are connected.
     '''
-    def generate_index(ant, vl0): return int(possible_vl * ant + vl0)
+    def generate_index(ant, vl0):
+        """Compute the flattened index for an antecedent/linguistic pair."""
+        return int(possible_vl * ant + vl0)
     res = np.zeros(
         (possible_vl * rules.shape[1], possible_vl * rules.shape[1]))
 
@@ -204,8 +206,10 @@ def visualize_rulebase(mrule_base: rules.MasterRuleBase, export_path: str=None) 
         else:
             return node_colors[2]
 
-    def vl_prune(a): return a.replace('High', 'H').replace(
-        'Medium', 'M').replace('Low', 'L').strip()
+    def vl_prune(a):
+        """Abbreviate common linguistic labels for graph readability."""
+        return a.replace('High', 'H').replace(
+            'Medium', 'M').replace('Low', 'L').strip()
 
     if isinstance(mrule_base, evf.BaseFuzzyRulesClassifier):
         mrule_base = mrule_base.rule_base
@@ -422,7 +426,7 @@ def filter_useless_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
-    '''
+    r'''
     Prints the rule base in a latex format.
 
     :note: if the rule base has three different linguistic labels, it will use custom commands for the partitions. You can define these commands (\low, \mid, \hig, \dc) to show colors, figures, etc. Be sure to recheck the DS, ACC values in this case, because 1.0 values of them are also converted to these commands.
@@ -431,8 +435,10 @@ def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
     :returns: the String as a latex tabular.
     '''
     class proxy_dict():
+        """Map rule matrix values to LaTeX cell formatting."""
 
         def __init__(self) -> None:
+            """Initialize LaTeX commands for common cell values."""
             self.cell_colors = {
                 -1: '\\dc',
                 0: '\\low',
@@ -441,6 +447,7 @@ def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
             }
         
         def __getitem__(self, value) -> str:
+            """Return LaTeX cell content for the provided value."""
             if value in self.cell_colors.keys():
                 return self.cell_colors[value]
             else:
@@ -483,7 +490,7 @@ def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
             latex_table += f"\t\\multirow{{{len(group)}}}{{*}}{{{cluster}}}"
             for _, row in group.iterrows():
                 if i % 2 == 0: # Add a shade of grey
-                    latex_table += " & \cellcolor{gray!25}" + " & \cellcolor{gray!25}".join([cell_colors[val] for val in row[column_order[1:]]]) + " \\\\\n"
+                    latex_table += " & \\\\cellcolor{gray!25}" + " & \\\\cellcolor{gray!25}".join([cell_colors[val] for val in row[column_order[1:]]]) + " \\\\\n"
                 else:
                     latex_table += " & " + " & ".join([cell_colors[val] for val in row[column_order[1:]]]) + " \\\\\n"
                 i += 1

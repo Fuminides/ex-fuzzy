@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +153,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="user-guide/regression.html">
-    Fuzzy Regression
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="evox_backend.html">
-    EvoX Backend Guide
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -182,57 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="examples/index.html">
-    Examples
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
-    API Reference
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/regression.html">
-    Fuzzy Regression (API)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="contributing.html">
-    Contributing
+  <a class="nav-link dropdown-item nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -245,8 +188,22 @@
 
 
 <li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="roadmap.html">
     Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    Legacy API Summary
   </a>
 </li>
 
@@ -317,13 +274,6 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="extending.html">
     Extending Ex-Fuzzy
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="persistence.html">
-    Persistence
   </a>
 </li>
 
@@ -463,20 +413,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="user-guide/regression.html">
-    Fuzzy Regression
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="evox_backend.html">
-    EvoX Backend Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="examples/index.html">
     Examples
   </a>
@@ -491,43 +427,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/regression.html">
-    Fuzzy Regression (API)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="contributing.html">
-    Contributing
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -540,8 +441,22 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="roadmap.html">
     Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    Legacy API Summary
   </a>
 </li>
 
@@ -612,13 +527,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="extending.html">
     Extending Ex-Fuzzy
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="persistence.html">
-    Persistence
   </a>
 </li>
 
@@ -930,9 +838,14 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <p>Define your own membership functions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create custom Gaussian fuzzy sets</span>
 <span class="n">custom_var</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
-    <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;custom_feature&quot;</span><span class="p">,</span>
-    <span class="n">linguistic_variable_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Very Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Very High&quot;</span><span class="p">]</span>
+    <span class="n">fuzzy_sets</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">gaussianFS</span><span class="p">(</span><span class="s2">&quot;Very Low&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">gaussianFS</span><span class="p">(</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">gaussianFS</span><span class="p">(</span><span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">gaussianFS</span><span class="p">(</span><span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">gaussianFS</span><span class="p">(</span><span class="s2">&quot;Very High&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+    <span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -942,14 +855,19 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
 <p>Now that you’ve got the basics, explore more advanced features:</p>
 <ul class="simple">
-<li><p><span class="xref std std-doc">user-guide/fuzzy-sets</span>: Learn about different types of fuzzy sets</p></li>
-<li><p><span class="xref std std-doc">user-guide/optimization</span>: Understand the evolutionary optimization process</p></li>
-<li><p><span class="xref std std-doc">user-guide/visualization</span>: Create beautiful visualizations of your models</p></li>
+<li><p><a class="reference internal" href="user-guide/core-concepts.html"><span class="doc">Core Concepts</span></a>: Learn about different types of fuzzy sets</p></li>
+<li><p><a class="reference internal" href="api/evolutionary_fit.html"><span class="doc">Evolutionary Fit Module</span></a>: Understand the evolutionary optimization process</p></li>
+<li><p><a class="reference internal" href="user-guide/validation-visualization.html"><span class="doc">Validation and Visualization</span></a>: Create visualizations of your models</p></li>
+<li><p><a class="reference internal" href="user-guide/results-io.html"><span class="doc">Results, Exports, and Storage</span></a>: Save rules, variables, and plots to files</p></li>
+<li><p><a class="reference internal" href="user-guide/recipes.html"><span class="doc">Recipes</span></a>: Quick workflows you can reuse</p></li>
+<li><p><a class="reference internal" href="user-guide/project-layout.html"><span class="doc">Project Layout</span></a>: Suggested folder structure for outputs</p></li>
+<li><p><a class="reference internal" href="user-guide/troubleshooting.html"><span class="doc">Troubleshooting</span></a>: Common issues and fixes</p></li>
+<li><p><a class="reference internal" href="user-guide/glossary.html"><span class="doc">Glossary</span></a>: Definitions for Ex-Fuzzy terms</p></li>
 <li><p><a class="reference internal" href="examples/index.html"><span class="doc">Examples</span></a>: See real-world applications and case studies</p></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Check out the <span class="xref std std-doc">examples/basic-classification</span> for more detailed examples with different datasets!</p>
+<p>Check out the <a class="reference internal" href="examples/classification.html"><span class="doc">Classification Examples</span></a> for more detailed examples with different datasets!</p>
 </div>
 </section>
 </section>
@@ -1037,7 +955,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>

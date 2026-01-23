@@ -377,19 +377,19 @@ Use EvoX backend for faster training on large datasets:
 Model Persistence
 -----------------
 
-Save and load trained models:
+Persist fuzzy variables and human-readable rules:
 
 .. code-block:: python
 
     from ex_fuzzy import persistence
 
-    # Train and save
+    # Train and capture artifacts
     regressor.fit(X_train, y_train, n_gen=30, pop_size=50)
-    persistence.save_model(regressor, 'housing_regressor.pkl')
-
-    # Load and use later
-    loaded_regressor = persistence.load_model('housing_regressor.pkl')
-    predictions = loaded_regressor.predict(X_test)
+    rules_text = regressor.rule_base.print_rules_regression(
+        return_rules=True,
+        output_name="output",
+    )
+    variables_text = persistence.save_fuzzy_variables(regressor.lvs)
 
 Cross-Validation
 ----------------
@@ -429,7 +429,7 @@ See Also
 - :doc:`../user-guide/regression` - Complete regression guide
 - :doc:`../api/regression` - API reference
 - :doc:`classification` - Classification examples
-- :doc:`../user-guide/visualization` - Visualizing results
+- :doc:`../user-guide/validation-visualization` - Visualizing results
 
 Next Steps
 ==========

@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.persistence
-=====================
+ex_fuzzy.persistence
+====================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: persistence
+.. automodule:: ex_fuzzy.persistence

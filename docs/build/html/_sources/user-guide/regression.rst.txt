@@ -386,19 +386,21 @@ See :doc:`../evox_backend` for more details on GPU acceleration.
 Model Persistence
 -----------------
 
-Save and load trained models:
+Persist fuzzy variables and rule text for reporting or reuse:
 
 .. code-block:: python
 
     from ex_fuzzy import persistence
 
-    # Train and save
+    # Train and capture artifacts
     regressor.fit(X_train, y_train, n_gen=30, pop_size=50)
-    persistence.save_model(regressor, 'my_regressor.pkl')
+    rules_text = regressor.rule_base.print_rules_regression(
+        return_rules=True,
+        output_name="output",
+    )
+    variables_text = persistence.save_fuzzy_variables(regressor.lvs)
 
-    # Load later
-    loaded_regressor = persistence.load_model('my_regressor.pkl')
-    predictions = loaded_regressor.predict(X_test)
+    # Store rules_text and variables_text as needed (files, database, etc.)
 
 
 
@@ -408,12 +410,11 @@ See Also
 - :doc:`../api/regression` - API reference
 - :doc:`../examples/regression` - More examples
 - :doc:`../evox_backend` - GPU acceleration guide
-- :doc:`visualization` - Plotting fuzzy rules and partitions
+- :doc:`validation-visualization` - Plotting fuzzy rules and partitions
 
 Next Steps
 ==========
 
 - Try the :doc:`../examples/regression` notebook
-- Explore :doc:`visualization` for rule visualization
-- Learn about :doc:`pattern-analysis` for model insights
+- Explore :doc:`validation-visualization` for rule visualization
 - Check out :doc:`../evox_backend` for GPU acceleration

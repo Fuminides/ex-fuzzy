@@ -75,6 +75,7 @@
             "module": "cProfile",
             "console": "integratedTerminal",
             "args": ["-o", "tmp.prof", "${file}"],
+            "justMyCode": false
         }
     ]
 }

@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.evolutionary\_fit\_regression
-=======================================
+ex_fuzzy.evolutionary_fit_regression
+====================================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: evolutionary_fit_regression
+.. automodule:: ex_fuzzy.evolutionary_fit_regression

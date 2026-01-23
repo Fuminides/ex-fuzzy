@@ -1,5 +1,5 @@
 Classification Examples
-=====================
+=======================
 
 This section provides comprehensive examples of using ex-fuzzy for classification tasks, from basic usage to advanced techniques.
 
@@ -8,10 +8,10 @@ This section provides comprehensive examples of using ex-fuzzy for classificatio
    :depth: 2
 
 Basic Classification
--------------------
+--------------------
 
 Iris Classification
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 A complete walkthrough using the classic Iris dataset:
 
@@ -98,7 +98,7 @@ Expected output:
 
 Custom Fuzzy Variables
 Advanced Usage
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Using the comprehensive evaluation function:
 
@@ -131,7 +131,7 @@ Using the comprehensive evaluation function:
    print(f"Recall: {recall:.3f}")
 
 Alternative Classifiers
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Ex-fuzzy provides multiple classifier options:
 
@@ -187,7 +187,7 @@ Ex-fuzzy provides multiple classifier options:
    print(f"SMOTE balanced accuracy: {smote_balanced:.3f}")
 
 Multi-Class Classification
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Working with datasets having many classes:
 
@@ -199,7 +199,7 @@ Working with datasets having many classes:
    digits = load_digits()
 
 Example Output
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Expected performance on the Iris dataset:
 
@@ -222,7 +222,7 @@ Expected performance on the Iris dataset:
    ...
 
 Working with Different Fuzzy Set Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Ex-fuzzy supports different types of fuzzy sets:
 
@@ -253,7 +253,7 @@ Ex-fuzzy supports different types of fuzzy sets:
    )
 
 Direct Use of BaseFuzzyRulesClassifier
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For more direct control, you can use the underlying classifier:
 
@@ -291,7 +291,7 @@ For more direct control, you can use the underlying classifier:
    base_classifier.plot_fuzzy_variables()
 
 Available Evaluation Tools
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Ex-fuzzy provides comprehensive evaluation capabilities:
 
@@ -320,7 +320,7 @@ Ex-fuzzy provides comprehensive evaluation capabilities:
    print("IF age is young AND cholesterol is normal THEN low_risk")
 
 Customer Segmentation
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 Business application for customer classification:
 
@@ -413,10 +413,10 @@ Business application for customer classification:
    print("- Senior age + High income → Premium segment")
 
 Model Interpretation and Analysis
---------------------------------
+---------------------------------
 
 Rule Analysis
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 Understanding what the model learned:
 
@@ -438,7 +438,7 @@ Understanding what the model learned:
    print(comprehensive_report)
 
 Feature Importance
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Analyzing which features are most important:
 
@@ -470,7 +470,7 @@ Analyzing which features are most important:
        print(f"  {feature}: {score:.3f}")
 
 Prediction Explanation
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 Explaining individual predictions:
 
@@ -499,10 +499,10 @@ Explaining individual predictions:
        explain_prediction(classifier, X_test[i], feature_names, class_names)
 
 Cross-Validation and Robustness
-------------------------------
+-------------------------------
 
 Robust Evaluation
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -537,7 +537,7 @@ Robust Evaluation
        print(f"  Train: {train_scores.mean():.3f} (+/- {train_scores.std() * 2:.3f})")
 
 Model Comparison
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Comparing fuzzy classifier with other methods:
 
@@ -575,10 +575,10 @@ Comparing fuzzy classifier with other methods:
            print(f"Fuzzy vs {name}: p-value = {p_value:.4f} {significance}")
 
 Performance Optimization
------------------------
+------------------------
 
 Efficient Training
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Tips for faster training on large datasets:
 
@@ -612,7 +612,7 @@ Tips for faster training on large datasets:
        efficient_classifier.fit(X, y)
 
 Memory-Efficient Processing
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -635,7 +635,7 @@ Memory-Efficient Processing
        y_pred_batch = classifier.predict(X_test)
 
 Best Practices Summary
----------------------
+----------------------
 
 1. **Data Preparation**
    - Normalize features if they have different scales
@@ -675,6 +675,6 @@ After mastering basic classification:
 Related Examples:
 
 - :doc:`regression` - Fuzzy regression techniques
-- :doc:`time-series` - Temporal fuzzy classification
-- :doc:`clustering` - Fuzzy clustering methods
-- :doc:`optimization` - Advanced optimization techniques
+- :doc:`../user-guide/validation-visualization` - Validation and visualization workflows
+- :doc:`../api/rule_mining` - Rule mining utilities
+- :doc:`../evox_backend` - GPU-accelerated optimization

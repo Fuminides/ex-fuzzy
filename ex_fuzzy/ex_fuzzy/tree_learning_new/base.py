@@ -80,6 +80,7 @@ class CacheManager:
     """
     
     def __init__(self):
+        """Initialize cache containers used across tree operations."""
         self._membership_cache = {}
         self._last_X_shape = None
         self._cached_leaves = None
@@ -262,6 +263,7 @@ class TreeMetrics:
             Total number of nodes.
         """
         def count_recursive(node):
+            """Recursively count nodes in a subtree."""
             count = 1  # Count this node
             if 'children' in node:
                 for child in node['children'].values():
@@ -286,6 +288,7 @@ class TreeMetrics:
             Maximum depth of the tree.
         """
         def depth_recursive(node, current_depth=0):
+            """Recursively compute maximum depth from the current node."""
             max_depth = current_depth
             if 'children' in node:
                 for child in node['children'].values():

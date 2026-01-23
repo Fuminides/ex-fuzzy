@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.fuzzy\_sets
-=====================
+ex_fuzzy.fuzzy_sets
+===================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: fuzzy_sets
+.. automodule:: ex_fuzzy.fuzzy_sets

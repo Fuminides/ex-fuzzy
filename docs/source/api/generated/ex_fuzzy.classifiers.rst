@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.classifiers
-=====================
+ex_fuzzy.classifiers
+====================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: classifiers
+.. automodule:: ex_fuzzy.classifiers

@@ -251,6 +251,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
             if self.backend.name() == 'pymoo':
                 # Define checkpoint handler
                 def handle_checkpoint(gen: int, best_individual: np.array):
+                    """Persist a checkpoint rule base built from the current best individual."""
                     rule_base = problem._construct_ruleBase(best_individual, self.fuzzy_type)
                     eval_performance = evr.evalRuleBase(rule_base, np.array(X), y)
                     eval_performance.add_full_evaluation()
@@ -1857,4 +1858,3 @@ class FitRuleBase(Problem):
             
         return score
     
-

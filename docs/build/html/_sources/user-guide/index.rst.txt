@@ -4,48 +4,35 @@ User Guide
 
 The Ex-Fuzzy User Guide provides comprehensive documentation for all aspects of building, training, and analyzing fuzzy rule-based classifiers.
 
+Quick Links
+===========
+
+- :doc:`../user-guide/recipes`
+- :doc:`../user-guide/results-io`
+- :doc:`../user-guide/troubleshooting`
+- :doc:`../user-guide/glossary`
+
 .. toctree::
    :maxdepth: 2
-   :caption: Core Concepts
+   :caption: User Guide
 
    core-concepts
-   rule-mining
-   fuzzy-sets
-   classifiers
+   recipes
+   project-layout
    regression
-   optimization
-   
-.. toctree::
-   :maxdepth: 2
-   :caption: Advanced Topics
-
-   validation-visualization
-   pattern-analysis
-   visualization
-   persistence
-   performance
-   
-.. toctree::
-   :maxdepth: 2
-   :caption: Practical Guides
-
-   best-practices
+   results-io
+   ../persistence
    troubleshooting
-   extending
+   validation-visualization
+   glossary
 
 Overview
 ========
 
 This user guide is organized into several sections:
 
-**Core Concepts**
-  Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets, classifiers, regression, and optimization algorithms.
-
-**Advanced Topics**
-  Explore advanced features like pattern stability analysis, visualization techniques, and performance optimization.
-
-**Practical Guides**
-  Get practical advice on best practices, troubleshooting common issues, and extending Ex-Fuzzy for your needs.
+**Core Topics**
+  Learn about the fundamental building blocks of Ex-Fuzzy, fuzzy regression, and evaluation workflows.
 
 Getting Help
 ============

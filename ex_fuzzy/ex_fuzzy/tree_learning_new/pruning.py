@@ -131,6 +131,7 @@ class PruningEngine(TreeComponent):
         weakest_node = None
         
         def traverse(node):
+            """Recursively search for the weakest pruning candidate."""
             nonlocal min_ratio, weakest_node
             
             # Only consider internal nodes for pruning
@@ -198,6 +199,7 @@ class PruningEngine(TreeComponent):
         total_weight = 0.0
         
         def collect_leaf_impurity(current_node):
+            """Accumulate weighted leaf impurities for a subtree."""
             nonlocal total_impurity, total_weight
             
             if NodeValidator.is_leaf_node(current_node):

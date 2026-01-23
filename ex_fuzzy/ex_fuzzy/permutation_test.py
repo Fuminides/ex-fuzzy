@@ -19,6 +19,7 @@ except:
     import rules
 
 class classifierWrapper(ClassifierMixin):
+    """Wrap a MasterRuleBase to expose a single rule as a binary classifier."""
 
     def __init__(self, classifier: rules.MasterRuleBase, nrule:int):
         '''

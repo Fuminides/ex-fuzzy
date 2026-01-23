@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.vis\_rules
-====================
+ex_fuzzy.vis_rules
+==================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: vis_rules
+.. automodule:: ex_fuzzy.vis_rules

@@ -463,7 +463,8 @@ class RuleBase():
 
 
     def delete_rule_duplicates(self, list_rules:list[RuleSimple]):
-        # Delete the rules that are duplicated in the rule list
+        """Return a list with duplicate rules removed, preserving first occurrences."""
+        # Delete the rules that are duplicated in the rule list.
         unique = {}
         for ix, rule in enumerate(list_rules):
             try:
@@ -1234,6 +1235,7 @@ class MasterRuleBase():
 
 
     def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unkown=True) -> np.array:
+        """Compute the winning rule index and firing strength for each sample."""
         association_degrees = self.compute_association_degrees(X, precomputed_truth)
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
 
@@ -1693,6 +1695,7 @@ def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results:
     :param modifiers: array with the modifiers for the antecedents.
     '''
     def format_p_value(p_value):
+        """Convert a numeric p-value into significance stars."""
         if p_value < 0.001:
             return '***'
         elif p_value < 0.01:

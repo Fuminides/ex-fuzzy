@@ -1678,6 +1678,7 @@ class FuzzyCART(ClassifierMixin):
         leaves = []
         
         def collect_leaves(node, path_features=None, path_fuzzy_sets=None, path_name=""):
+            """Recursively collect leaf nodes and their feature paths."""
             if path_features is None:
                 path_features = []
                 path_fuzzy_sets = []
@@ -1789,6 +1790,7 @@ class FuzzyCART(ClassifierMixin):
         all_nodes = []
         
         def collect_nodes(node, path_features=None, path_fuzzy_sets=None):
+            """Recursively collect all nodes with their feature paths."""
             if path_features is None:
                 path_features = []
                 path_fuzzy_sets = []
@@ -2123,6 +2125,7 @@ class FuzzyCART(ClassifierMixin):
         leaf_nodes = {}
         
         def traverse(node):
+            """Depth-first traversal collecting leaf nodes."""
             if 'children' not in node or not node['children']:
                 # This is a leaf node
                 leaf_nodes[node['name']] = node
@@ -2287,6 +2290,7 @@ class FuzzyCART(ClassifierMixin):
             - 'depth': Maximum depth of the tree
         """
         def traverse_tree(node):
+            """Recursively aggregate node statistics from the subtree."""
             stats = {'total_nodes': 1, 'leaves': 0, 'internal': 0, 'depth': node['depth']}
             
             if 'children' not in node or not node['children']:
@@ -2365,6 +2369,7 @@ class FuzzyCART(ClassifierMixin):
         weakest_node = None
         
         def traverse(node):
+            """Walk the tree to find the lowest complexity node for pruning."""
             nonlocal min_alpha, weakest_node
             
             if 'children' in node and node['children']:

@@ -50,7 +50,8 @@ except:
 
 
 def add_dicts(dict1: dict, dict2: dict):
-    # We will add the values of dict2 to dict1
+    """Add values from dict2 into dict1, creating keys as needed."""
+    # We will add the values of dict2 to dict1.
     for key in dict2:
         try:
             dict1[key] += dict2[key]
@@ -60,7 +61,8 @@ def add_dicts(dict1: dict, dict2: dict):
     return dict1
 
 def concatenate_dicts(dict1: dict, dict2: dict):
-    # We will concatenate the values of dict2 to dict1
+    """Merge dict2 keys into dict1, keeping existing values unchanged."""
+    # We will concatenate the values of dict2 to dict1.
     for key in dict2:
         try:
             dict1[key]
@@ -71,7 +73,8 @@ def concatenate_dicts(dict1: dict, dict2: dict):
 
 
 def str_rule_as_list(rule:str):
-    # We will transform the string form of a rule into a list of integers
+    """Convert a stringified rule representation into a list of integers."""
+    # We will transform the string form of a rule into a list of integers.
     rule = rule.replace('[', '')
     rule = rule.replace(']', '')
     rule = rule.replace('(', '')
@@ -84,6 +87,7 @@ def str_rule_as_list(rule:str):
 
 
 class pattern_stabilizer():
+    """Run multiple training sessions and analyze rule stability statistics."""
 
     def __init__(self,  X, y, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None,
@@ -149,7 +153,8 @@ class pattern_stabilizer():
 
 
     def generate_solutions(self, n=30, n_gen=10, pop_size=10,stratify_by:str=None,test_size=0.33):
-        # We will generate n solutions and return the rule bases and the accuracies
+        """Train multiple models and return their rule bases and accuracies."""
+        # Generate n solutions and return the rule bases and the accuracies.
         # Pre-defined stratification by additional column (e.g. participant vs. trial) if desired
         rule_bases = []
         accs = []
@@ -332,7 +337,7 @@ class pattern_stabilizer():
         '''
         consequents_names = self.classes_names
         print(f'Pattern stability report for {self.n} generated solutions')
-        print('Average accuracy: %.2f\pm%.2f' % (np.mean(accuracies), np.std(accuracies)))
+        print('Average accuracy: %.2f\\pm%.2f' % (np.mean(accuracies), np.std(accuracies)))
         print('-------------')
 
         for ix in range(len(class_patterns)):

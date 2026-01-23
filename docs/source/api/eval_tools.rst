@@ -10,23 +10,6 @@ Overview
 
 This module includes performance metrics, statistical analysis, and model evaluation tools specifically designed for fuzzy rule-based systems.
 
-Classes
--------
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-   FuzzyEvaluator
-
-Functions
----------
-
-.. autosummary::
-   :toctree: generated/
-
-   eval_fuzzy_model
-
 Main Function
 -------------
 
@@ -45,13 +28,6 @@ FuzzyEvaluator
    :members:
    :inherited-members:
    :show-inheritance:
-
-   **Core Methods**
-
-   .. automethod:: __init__
-   .. automethod:: predict
-   .. automethod:: get_metric
-   .. automethod:: eval_fuzzy_model
 
 Examples
 --------
@@ -88,7 +64,7 @@ Basic Model Evaluation
    print(report)
 
 Using FuzzyEvaluator Class
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 

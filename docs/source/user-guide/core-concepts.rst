@@ -5,17 +5,24 @@ Core Concepts
 
 This guide introduces the fundamental concepts underlying the ex-fuzzy library, providing a solid foundation for understanding fuzzy logic, fuzzy sets, and fuzzy rule-based systems.
 
+Related Guides
+========================================
+
+- :doc:`../getting-started`
+- :doc:`../user-guide/recipes`
+- :doc:`../user-guide/glossary`
+
 .. contents:: Table of Contents
    :local:
    :depth: 2
 
 What is Fuzzy Logic?
--------------------
+----------------------------------------
 
 Fuzzy logic is an extension of classical binary logic that allows for degrees of truth between completely true and completely false. Unlike traditional logic where statements are either true (1) or false (0), fuzzy logic permits partial truth values between 0 and 1.
 
 Why Fuzzy Logic?
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Real-world problems often involve:
 
@@ -25,7 +32,7 @@ Real-world problems often involve:
 * **Human reasoning**: People naturally think in terms of degrees rather than absolutes
 
 Example: Temperature Classification
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Consider classifying temperature:
 
@@ -39,12 +46,12 @@ Consider classifying temperature:
   - 35°C: 1.0 hot (completely hot)
 
 Fuzzy Sets
-----------
+----------------------------------------
 
 A fuzzy set is a collection of objects where each object has a degree of membership between 0 and 1.
 
 Mathematical Definition
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A fuzzy set A in universe X is defined by a membership function:
 
@@ -55,12 +62,12 @@ A fuzzy set A in universe X is defined by a membership function:
 where :math:`\\mu_A(x)` represents the degree to which element x belongs to set A.
 
 Types of Fuzzy Sets
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Ex-fuzzy supports three types of fuzzy sets:
 
 Type-1 Fuzzy Sets
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Standard fuzzy sets where membership is a crisp value between 0 and 1.
 
@@ -83,7 +90,7 @@ Standard fuzzy sets where membership is a crisp value between 0 and 1.
    print(f"Number of fuzzy sets: {len(temperature_var.linguistic_variables)}")
 
 Type-2 Fuzzy Sets
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Fuzzy sets where the membership function itself is fuzzy, represented by upper and lower bounds.
 
@@ -97,7 +104,7 @@ Fuzzy sets where the membership function itself is fuzzy, represented by upper a
    temperature_t2 = fuzzy_variables_t2[0]
 
 General Type-2 Fuzzy Sets
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Most general form where membership is a fuzzy set in three dimensions.
 
@@ -107,7 +114,7 @@ Most general form where membership is a fuzzy set in three dimensions.
    fuzzy_variables_gt2 = utils.construct_partitions(data, fs.FUZZY_SETS.gt2, n_partitions=3)
 
 Membership Functions
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Common membership function shapes supported:
 
@@ -121,12 +128,12 @@ Common membership function shapes supported:
   Bell-shaped curve with center and width parameters
 
 Linguistic Variables
--------------------
+----------------------------------------
 
 Linguistic variables represent concepts that can be described using natural language terms.
 
 Components
-~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A linguistic variable consists of:
 
@@ -136,7 +143,7 @@ A linguistic variable consists of:
 4. **Membership functions**: Mathematical functions defining each term
 
 Creating Linguistic Variables
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -158,12 +165,12 @@ Creating Linguistic Variables
    # like "low", "medium", "high" for each feature
 
 Fuzzy Rules
------------
+----------------------------------------
 
 Fuzzy rules encode human knowledge in IF-THEN format using linguistic variables.
 
 Rule Structure
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Basic Form:**
   IF antecedent(s) THEN consequent
@@ -173,24 +180,24 @@ Rule Structure
   - **Consequent**: Conclusion or action
   - **Confidence**: Rule strength or support
 
-Ex-fuzzy uses rule classes like `RuleSimple` and rule base classes like `RuleBaseT1`, `RuleBaseT2`, and `RuleBaseGT2` to manage collections of rules for different fuzzy set types.
+Ex-fuzzy uses rule classes like ``RuleSimple`` and rule base classes like ``RuleBaseT1``, ``RuleBaseT2``, and ``RuleBaseGT2`` to manage collections of rules for different fuzzy set types.
+
+.. code-block:: python
 
    # Simple rule: IF temperature is high THEN comfort is low
    rule1 = rules.RuleSimple(
-       antecedents=[temperature[2]],  # high temperature
+       antecedents=[2],  # high temperature label index
        consequent=0,  # low comfort class
-       weight=1.0
    )
 
    # Complex rule: IF temperature is high AND humidity is high THEN comfort is very_low
    rule2 = rules.RuleSimple(
-       antecedents=[temperature[2], humidity[2]],  # high temp AND high humidity
+       antecedents=[2, 2],  # high temp AND high humidity
        consequent=0,  # very low comfort
-       weight=0.9
    )
 
 Types of Fuzzy Rules
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Mamdani Rules**
   Output is a fuzzy set
@@ -209,7 +216,7 @@ Types of Fuzzy Rules
    # Consequent is a mathematical function
 
 Rule Evaluation
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Rules are evaluated in several steps:
 
@@ -220,27 +227,36 @@ Rules are evaluated in several steps:
 
 .. code-block:: python
 
+   import numpy as np
+   import ex_fuzzy.fuzzy_sets as fs
+   import ex_fuzzy.rules as rules
+   import ex_fuzzy.utils as utils
+
    # Evaluate rule for specific input
-   input_values = np.array([35, 80])  # 35°C, 80% humidity
-   
-   # Create linguistic variables
-   temp_var = fs.fuzzyVariable("temp", [0, 50], 3, fs.FUZZY_SETS.t1)
-   humid_var = fs.fuzzyVariable("humidity", [0, 100], 3, fs.FUZZY_SETS.t1)
-   
+   input_values = np.array([[35, 80]])  # 35°C, 80% humidity
+
+   # Create linguistic variables from data
+   data = np.array([[20, 40], [25, 60], [35, 80]])
+   fuzzy_variables = utils.construct_partitions(data, fs.FUZZY_SETS.t1, n_partitions=3)
+   temp_var, humid_var = fuzzy_variables[0], fuzzy_variables[1]
+
    # Rule: IF temp is high AND humidity is high THEN comfort is low
-   rule = rules.RuleSimple([temp_var[2], humid_var[2]], 0, 1.0)
-   
-   # Evaluate rule strength
-   strength = rule.eval_rule([temp_var, humid_var], input_values)
-   print(f"Rule fires with strength: {strength:.3f}")
+   rule = rules.RuleSimple([2, 2], 0)
+
+   # Evaluate rule strength via a temporary rule base
+   rule_base = rules.RuleBaseT1()
+   rule_base.antecedents = [temp_var, humid_var]
+   rule_base.add_rules([rule])
+   strengths = rule_base.compute_rule_antecedent_memberships(input_values)
+   print(f"Rule fires with strength: {strengths[0, 0]:.3f}")
 
 Fuzzy Inference Systems
-----------------------
+----------------------------------------
 
 A fuzzy inference system (FIS) combines multiple fuzzy rules to make decisions or predictions.
 
 System Architecture
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -250,7 +266,7 @@ System Architecture
    Values     Degrees                       Output        Result
 
 Components
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Fuzzifier**: Converts crisp inputs to fuzzy degrees
 2. **Rule Base**: Collection of fuzzy rules
@@ -258,13 +274,22 @@ Components
 4. **Defuzzifier**: Converts fuzzy output to crisp result
 
 Building a Complete System
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   # 1. Define linguistic variables
-   temperature = fs.fuzzyVariable("temperature", [0, 50], 3, fs.FUZZY_SETS.t1)
-   humidity = fs.fuzzyVariable("humidity", [0, 100], 3, fs.FUZZY_SETS.t1)
+   import numpy as np
+   import ex_fuzzy.fuzzy_sets as fs
+   import ex_fuzzy.rules as rules
+   import ex_fuzzy.utils as utils
+
+   # 1. Define linguistic variables from data
+   data = np.array([[20, 40], [25, 60], [35, 80]])
+   temperature, humidity = utils.construct_partitions(
+       data,
+       fs.FUZZY_SETS.t1,
+       n_partitions=3,
+   )
    
    # 2. Create rules
    rule_list = [
@@ -284,7 +309,7 @@ Building a Complete System
    predictions = rule_base.predict(test_inputs)
 
 Classification vs. Regression
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Fuzzy Classification**
   Predicts discrete class labels
@@ -306,44 +331,49 @@ Classification vs. Regression
    # (Advanced topic covered in separate guides)
 
 Rule Learning and Optimization
------------------------------
+----------------------------------------
 
 Ex-fuzzy provides automated methods to learn fuzzy rules from data.
 
 Two-Stage Approach
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Rule Mining**: Discover candidate rules from data
 2. **Evolutionary Optimization**: Select optimal rule combinations
 
 .. code-block:: python
 
-   # Stage 1: Mine candidate rules
+   import ex_fuzzy.fuzzy_sets as fs
    import ex_fuzzy.rule_mining as rm
-   
-   candidate_rules = rm.mine_fuzzy_rules(
-       antecedents=linguistic_vars,
-       X=X_train,
-       y=y_train,
-       min_support=0.1,
-       min_confidence=0.6
+   import ex_fuzzy.utils as utils
+   import numpy as np
+
+   data = np.array([[20, 40], [25, 60], [35, 80]])
+   X_train = data
+   y_train = np.array([0, 1, 1])
+   linguistic_vars = utils.construct_partitions(data, fs.FUZZY_SETS.t1, n_partitions=3)
+
+   # Stage 1: Mine candidate rules
+   candidate_rules = rm.multiclass_mine_rulebase(
+       X_train,
+       y_train,
+       linguistic_vars,
+       support_threshold=0.05,
+       max_depth=3,
    )
-   
+
    # Stage 2: Optimize rule selection
    import ex_fuzzy.evolutionary_fit as evf
-   
-   problem = evf.FitRuleBase(
-       antecedents=linguistic_vars,
-       X=X_train,
-       y=y_train,
-       candidate_rules=candidate_rules,
-       n_rules=20
+
+   classifier = evf.BaseFuzzyRulesClassifier(
+       nRules=20,
+       nAnts=3,
+       linguistic_variables=linguistic_vars,
    )
-   
-   result = evf.evolutionary_fit(problem, n_gen=50, pop_size=100)
+   classifier.fit(X_train, y_train, candidate_rules=candidate_rules, n_gen=50, pop_size=100)
 
 Quality Measures
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Rules are evaluated using multiple criteria:
 
@@ -363,23 +393,18 @@ Rules are evaluated using multiple criteria:
   Number of conditions in the rule
 
 Multi-Objective Optimization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Balance multiple criteria simultaneously:
-
-.. code-block:: python
-
-   # Optimize for both accuracy and interpretability
-   fitness_functions = ['accuracy', 'complexity']
-   weights = [0.8, 0.2]  # 80% accuracy, 20% simplicity
+Balance multiple criteria simultaneously when choosing the final rule base,
+such as accuracy, coverage, and interpretability.
 
 Interpretability and Explainability
-----------------------------------
+----------------------------------------
 
 One of the key advantages of fuzzy systems is their interpretability.
 
 Rule Readability
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Fuzzy rules can be expressed in natural language:
 
@@ -390,7 +415,7 @@ Fuzzy rules can be expressed in natural language:
    Rule 3: IF temperature is medium THEN comfort is medium (weight: 0.72)
 
 System Transparency
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Users can understand:
 
@@ -401,17 +426,18 @@ Users can understand:
 .. code-block:: python
 
    # Analyze rule contributions
-   evaluator = eval_tools.FuzzyEvaluator(classifier)
-   rule_analysis = evaluator.rule_analysis(X_test, y_test)
-   
-   for rule_id, analysis in rule_analysis.items():
+   from ex_fuzzy import eval_rules
+
+   rule_eval = eval_rules.evalRuleBase(classifier.rule_base, X_test, y_test)
+   rule_eval.add_full_evaluation()
+
+   for rule_id, rule in enumerate(classifier.rule_base.get_rules()):
        print(f"Rule {rule_id}:")
-       print(f"  Fires on {analysis['coverage']:.1%} of cases")
-       print(f"  Accuracy: {analysis['accuracy']:.3f}")
-       print(f"  Average strength: {analysis['avg_strength']:.3f}")
+       print(f"  Dominance score: {rule.score}")
+       print(f"  Accuracy: {rule.accuracy:.3f}")
 
 Visualization
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Visual representation aids understanding:
 
@@ -420,14 +446,14 @@ Visual representation aids understanding:
    # Plot fuzzy partitions
    import ex_fuzzy.vis_rules as vis
    
-   vis.plot_fuzzy_variable(temperature, "Temperature")
-   vis.plot_rules(rule_base, "Comfort Classification Rules")
+   vis.plot_fuzzy_variable(temperature)
+   vis.visualize_rulebase(rule_base)
 
 Common Patterns and Best Practices
-----------------------------------
+----------------------------------------
 
 Variable Design
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Number of Terms**
   - 3-5 terms usually sufficient
@@ -444,7 +470,7 @@ Variable Design
   - No gaps between adjacent terms
 
 Rule Design
-~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Rule Complexity**
   - Keep rules simple (2-4 antecedents maximum)
@@ -459,7 +485,7 @@ Rule Design
   - Sparse rule bases may have poor generalization
 
 Performance Considerations
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Efficiency**
   - Fewer rules = faster inference
@@ -472,7 +498,7 @@ Performance Considerations
   - Use multi-objective optimization
 
 Common Pitfalls
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Over-partitioning**
   Too many fuzzy sets reduces interpretability
@@ -487,7 +513,7 @@ Common Pitfalls
   Purely data-driven approaches may miss important constraints
 
 Next Steps
-----------
+----------------------------------------
 
 Now that you understand the core concepts, explore:
 
@@ -499,6 +525,6 @@ Now that you understand the core concepts, explore:
 For specific applications:
 
 - **Classification**: See :doc:`../examples/classification`
-- **Rule Mining**: See :doc:`../user-guide/rule-mining`
-- **Optimization**: See :doc:`../user-guide/evolutionary-optimization`
-- **Visualization**: See :doc:`../user-guide/visualization`
+- **Rule Mining**: See :doc:`../api/rule_mining`
+- **Optimization**: See :doc:`../api/evolutionary_fit`
+- **Visualization**: See :doc:`../user-guide/validation-visualization`

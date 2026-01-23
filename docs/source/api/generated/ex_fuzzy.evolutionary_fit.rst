@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.evolutionary\_fit
-===========================
+ex_fuzzy.evolutionary_fit
+=========================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: evolutionary_fit
+.. automodule:: ex_fuzzy.evolutionary_fit

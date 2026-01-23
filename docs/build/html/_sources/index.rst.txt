@@ -25,26 +25,25 @@ a special focus on interpretability and explainability.
 .. grid:: 2
     :gutter: 3
 
-    .. grid-item-card:: 🚀 Quick Start
+    .. grid-item-card:: 🚀 Getting Started
         :link: getting-started
         :link-type: doc
 
         Get up and running with Ex-Fuzzy in minutes. Learn the basics of fuzzy classification
         and regression with practical examples.
 
+    .. grid-item-card:: 📦 Installation
+        :link: installation
+        :link-type: doc
+
+        Install Ex-Fuzzy and set up optional dependencies for GPU acceleration and plotting.
+
     .. grid-item-card:: 📖 User Guide
         :link: user-guide/index
         :link-type: doc
 
-        Comprehensive tutorials for building fuzzy classifiers and regressors, training models,
-        and understanding core concepts.
-
-    .. grid-item-card:: 🔍 API Reference
-        :link: api/index
-        :link-type: doc
-
-        Complete reference for all classes, functions, and modules with detailed descriptions
-        and examples.
+        Tutorials for building fuzzy classifiers and regressors, training models, and
+        understanding core concepts.
 
     .. grid-item-card:: 🧪 Examples
         :link: examples/index
@@ -52,20 +51,6 @@ a special focus on interpretability and explainability.
 
         Real-world examples and case studies demonstrating Ex-Fuzzy's capabilities across
         different domains.
-
-    .. grid-item-card:: 📊 Validation & Visualization
-        :link: user-guide/validation-visualization
-        :link-type: doc
-
-        Tools for validating model robustness, visualizing fuzzy rules, bootstrapping,
-        and pattern stability analysis.
-
-    .. grid-item-card:: 💾 Model Persistence
-        :link: user-guide/persistence
-        :link-type: doc
-
-        Save and load trained models, export rules to different formats, and share
-        your fuzzy systems.
 
 Key Features
 ============
@@ -162,65 +147,51 @@ Or install from source:
     pip install -e .
 
 
-Documentation Contents
-======================
-
 .. toctree::
     :maxdepth: 2
     :caption: Getting Started
+    :hidden:
 
     getting-started
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Installation
+    :hidden:
+
     installation
-    tutorials/index
 
 .. toctree::
     :maxdepth: 2
     :caption: User Guide
+    :hidden:
 
     user-guide/index
-    user-guide/fuzzy-sets
-    user-guide/classifiers
-    user-guide/regression
-    user-guide/optimization
-    evox_backend
-    user-guide/visualization
-    user-guide/pattern-analysis
 
 .. toctree::
     :maxdepth: 2
     :caption: Examples
+    :hidden:
 
     examples/index
-    examples/basic-classification
-    examples/advanced-features
-    examples/pattern-stability
-    examples/custom-fuzzy-sets
 
 .. toctree::
     :maxdepth: 2
-    :caption: API Reference
+    :caption: Reference
+    :hidden:
 
     api/index
-    api/fuzzy_sets
-    api/classifiers
-    api/evolutionary_fit
-    api/regression
-    api/eval_tools
-    api/pattern_stability
-    api/visualization
-
-.. toctree::
-    :maxdepth: 2
-    :caption: Development
-
-    contributing
+    evox_backend
     changelog
+    contributing
     roadmap
 
 .. toctree::
     :maxdepth: 1
     :caption: Legacy Documentation
+    :hidden:
 
+    api
     usage
     step1
     step2
@@ -231,7 +202,6 @@ Documentation Contents
     gt2
     tmpfs
     extending
-    persistence
     classifiers
     pattern_stats
 

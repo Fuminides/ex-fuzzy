@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.utils
-===============
+ex_fuzzy.utils
+==============
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: utils
+.. automodule:: ex_fuzzy.utils

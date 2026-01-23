@@ -1,0 +1,14 @@
+numpy
+matplotlib
+pymoo
+pandas
+scikit-learn
+
+[GPU inference]
+torch
+
+[Rule visualization]
+networkx
+
+[evox]
+evox[jax]

@@ -97,7 +97,7 @@ class RuleMineClassifier(ClassifierMixin):
     
 
     def internal_classifier(self) -> evf.BaseFuzzyRulesClassifier:
-        # Returns the classifier that performs the final predictions
+        """Return the underlying classifier that performs predictions."""
         return self.fl_classifier
     
 
@@ -161,7 +161,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
     
 
     def internal_classifier(self) -> evf.BaseFuzzyRulesClassifier:
-        # Returns the classifier that performs the final predictions
+        """Return the underlying classifier that performs predictions."""
         return self.fl_classifier2
     
 
@@ -223,5 +223,5 @@ class RuleFineTuneClassifier(ClassifierMixin):
     
 
     def internal_classifier(self) -> evf.BaseFuzzyRulesClassifier:
-        # Returns the classifier that performs the final predictions
+        """Return the underlying classifier that performs predictions."""
         return self.fl_classifier2

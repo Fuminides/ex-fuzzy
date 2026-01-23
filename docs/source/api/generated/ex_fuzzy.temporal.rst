@@ -1,6 +1,6 @@
-﻿ex\_fuzzy.temporal
-==================
+ex_fuzzy.temporal
+=================
 
 .. currentmodule:: ex_fuzzy
 
-.. automodule:: temporal
+.. automodule:: ex_fuzzy.temporal

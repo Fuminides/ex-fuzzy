@@ -12,7 +12,8 @@ from enum import Enum
 usage_categories = Enum('uses', ['FuzzySets', 'Funcs', 'Persistence', 'Visualization', 'FuzzyCognitiveMaps', 'RuleMining', 'Classification'])
 
 def instance_dict_usage():
-    # Inits the categories to track
+    """Create a zeroed usage dictionary keyed by usage_categories."""
+    # Initialize the categories to track.
     return {usage_categories.FuzzySets: {'t1':0 , 't2': 0, 'gt2': 0, 'temporal': 0, 'temporal_t2': 0, 'categorical': 0},
                 usage_categories.Funcs: {'fit': 0, 'precompute_labels': 0, 'opt_labels':0},
                 usage_categories.Persistence : {'persistence_write': 0,
@@ -25,6 +26,7 @@ def instance_dict_usage():
 
 
 def rename_dict_usage_categories():
+    """Replace enum keys with human-readable category strings."""
     global usage_data
     str_names = ['Fuzzy sets', 'Utils and training', 'Persistence', 'Fuzzy Cognitive Maps', 'Visualization', 'Rule Mining', 'Classification']
     new_usage = {}
@@ -36,6 +38,7 @@ def rename_dict_usage_categories():
 
 
 def send_data():
+    """Send usage data to the maintainers over SFTP (disabled by default)."""
     global path_usage_data_folder
     # Send the data to the developers using a sfpt server (TODO)
     import paramiko
@@ -77,6 +80,7 @@ def send_data():
 
 
 def main():
+    """Prompt for permission and register atexit usage data collection."""
     global path_usage_data_folder
     # Open the usage file from user
     file_name = 'usage_data_permission.txt'
@@ -129,6 +133,7 @@ def main():
         # Create usage reports
         @atexit.register
         def save_usage():
+            """Persist usage data to disk at process shutdown."""
             # Saves the usage in the corresponding file
             path_usage_data = _os.path.join(path_usage_data_folder, 'usage_data_' + str(number_files) + '.txt')
             rename_dict_usage_categories()

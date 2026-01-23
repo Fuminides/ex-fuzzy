@@ -502,6 +502,12 @@ class evalRuleBase():
     
 
     def p_bootstrapping_rules_validation(self, n=100) -> float:
+        """
+        Attach bootstrap p-values and confidence/support intervals to each rule.
+
+        Args:
+            n (int): Number of bootstrap samples to use.
+        """
         rules_p_values =  bt.compute_rule_p_value(self.mrule_base, self.X, self.y, n).flatten()
 
         for jx, rule in enumerate(self.mrule_base.get_rules()):
