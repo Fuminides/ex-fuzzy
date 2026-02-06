@@ -27,7 +27,7 @@ Key Features:
     - Configurable complexity penalties to avoid overfitting
 """
 import os 
-from typing import Callable
+from typing import Callable, Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -38,8 +38,18 @@ from sklearn.base import ClassifierMixin
 from multiprocessing.pool import ThreadPool
 from pymoo.core.problem import Problem
 from pymoo.core.variable import Integer
-from pymoo.parallelization.starmap import StarmapParallelization
-from sklearn.metrics import matthews_corrcoef
+
+# Handle pymoo version compatibility for parallelization
+try:
+    # pymoo < 0.6.0
+    from pymoo.parallelization.starmap import StarmapParallelization
+except ImportError:
+    try:
+        # pymoo >= 0.6.0
+        from pymoo.core.problem import StarmapParallelization
+    except ImportError:
+        # Fallback: create a simple wrapper if neither import works
+        StarmapParallelization = None
 
 # Import backend abstraction
 try:
@@ -122,10 +132,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
                 print(f"Warning: {e}. Falling back to pymoo backend.")
             self.backend = ev_backends.get_backend('pymoo')
 
-        if runner > 1:
+        if runner > 1 and StarmapParallelization is not None:
             pool = ThreadPool(runner)
             self.thread_runner = StarmapParallelization(pool.starmap)
         else:
+            if runner > 1 and StarmapParallelization is None and verbose:
+                print("Warning: Parallelization not available with this pymoo version. Running single-threaded.")
             self.thread_runner = None
         
         if linguistic_variables is not None:
@@ -555,7 +567,154 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
         :return: np array samples (x 1) with the predicted class.
         '''
         return self.predict(X)
+
+
+class ExploreRuleBases(Problem):
+    '''
+    Class to model as pymoo problem the fitting of a rulebase to a set of data given a series of candidate rules for a classification problem using Evolutionary strategies
+    Supports type 1 and t2.
+    '''
+
+    def __init__(self, X: np.array, y: np.array, nRules: int, n_classes: int, candidate_rules: rules.MasterRuleBase, thread_runner: Optional[Any]=None, tolerance:float = 0.01) -> None:
+        '''
+        Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
+
+        :param X: np array or pandas dataframe samples x features.
+        :param y: np vector containing the target classes. vector sample
+        :param n_class: number of classes in the problem. If None (as default) it will be computed from the data.
+        :param cancidate_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
+        '''
+        try:
+            self.var_names = list(X.columns)
+            self.X = X.values
+        except AttributeError:
+            self.X = X
+            self.var_names = [str(ix) for ix in range(X.shape[1])]
+
+        self.tolerance = tolerance
+        self.fuzzy_type = candidate_rules.fuzzy_type()
+        self.y = y
+        self.nCons = 1  # This is fixed to MISO rules.
+        self.n_classes = n_classes
+        self.candidate_rules = candidate_rules
+        self.nRules = nRules
+        self._precomputed_truth = rules.compute_antecedents_memberships(candidate_rules.get_antecedents(), X)
+
+        self.fuzzy_type = self.candidate_rules[0].antecedents[0].fuzzy_type()
+
+        self.min_bounds = np.min(self.X, axis=0)
+        self.max_bounds = np.max(self.X, axis=0)
+
+        nTotalRules = len(self.candidate_rules.get_rules())
+        # Each var is using or not a rule. 
+        vars = {ix: Integer(bounds=[0, nTotalRules - 1]) for ix in range(self.nRules)}
+        varbound = np.array([[0, nTotalRules- 1]] * self.nRules)
+
+        nVar = len(vars.keys())
+        if thread_runner is not None:
+            super().__init__(
+                vars=vars,
+                n_var=nVar,
+                n_obj=1,
+                elementwise=True,
+                vtype=int,
+                xl=varbound[:, 0],
+                xu=varbound[:, 1],
+                elementwise_runner=thread_runner)
+        else:
+            super().__init__(
+                vars=vars,
+                n_var=nVar,
+                n_obj=1,
+                elementwise=True,
+                vtype=int,
+                xl=varbound[:, 0],
+                xu=varbound[:, 1])
+
+
+    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, ds_mode:int=0, allow_unknown:bool=False) -> rules.MasterRuleBase:
+        '''
+        Creates a valid rulebase from the given subject and the candidate rules.
+
+        :param x: gen of a rulebase. type: dict.
+        :param fuzzy_type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.
+        :param ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
+        :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
+        
+        :return: a Master rulebase object.
+        '''
+        x = x.astype(int)
+        # Get all rules and their consequents
+        diff_consequents = np.arange(len(self.candidate_rules))
+        
+        # Choose the selected ones in the gen
+        total_rules = self.candidate_rules.get_rules()
+        chosen_rules = [total_rules[ix] for ix, val in enumerate(x)]
+        rule_consequents = sum([[ix] * len(rule) for ix, rule in enumerate(self.candidate_rules)], [])
+        chosen_rules_consequents = [rule_consequents[val] for ix, val in enumerate(x)]
+        # Create a rule base for each consequent with the selected rules
+        rule_list = [[] for _ in range(self.n_classes)]
+        rule_bases = []
+        for ix, consequent in enumerate(diff_consequents):
+            for rx, rule in enumerate(chosen_rules):
+                if chosen_rules_consequents[rx] == consequent:
+                    rule_list[ix].append(rule)
+
+            if len(rule_list[ix]) > 0:
+                if fuzzy_type == fs.FUZZY_SETS.t1:
+                    rule_base_cons = rules.RuleBaseT1(
+                        self.candidate_rules[0].antecedents, rule_list[ix])
+                elif fuzzy_type == fs.FUZZY_SETS.t2:
+                    rule_base_cons = rules.RuleBaseT2(
+                        self.candidate_rules[0].antecedents, rule_list[ix])
+                elif fuzzy_type == fs.FUZZY_SETS.gt2:
+                    rule_base_cons = rules.RuleBaseGT2(
+                        self.candidate_rules[0].antecedents, rule_list[ix])
+                    
+                rule_bases.append(rule_base_cons)
+            
+        # Create the Master Rule Base object with the individual rule bases
+        newMasterRuleBase = rules.MasterRuleBase(rule_bases, diff_consequents, ds_mode=ds_mode, allow_unknown=allow_unknown)    
+
+        return newMasterRuleBase
+
+
+    def _evaluate(self, x: np.array, out: dict, *args, **kwargs):
+        '''
+        :param x: array of train samples. x shape = features
+            those features are the parameters to optimize.
+
+        :param out: dict where the F field is the fitness. It is used from the outside.
+        '''
+        try:
+            ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
+
+            score = self.fitness_func(ruleBase, self.X, self.y, self.tolerance, precomputed_truth=self._precomputed_truth)
+            
+
+            out["F"] = 1 - score
+        except rules.RuleError:
+            out["F"] = 1
     
+    def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, tolerance:float, alpha:float=0.0, beta:float=0.0, precomputed_truth=None) -> float:
+        '''
+        Fitness function for the optimization problem.
+        :param ruleBase: RuleBase object
+        :param X: array of train samples. X shape = (n_samples, n_features)
+        :param y: array of train labels. y shape = (n_samples,)
+        :param tolerance: float. Tolerance for the size evaluation.
+        :return: float. Fitness value.
+        '''
+        ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=precomputed_truth)
+        ev_object.add_rule_weights()
+
+        score_acc = ev_object.classification_eval()
+        score_rules_size = ev_object.size_antecedents_eval(tolerance)
+        score_nrules = ev_object.effective_rulesize_eval(tolerance)
+
+        score = score_acc + score_rules_size * alpha + score_nrules * beta
+
+        return score
 
 
 class FitRuleBase(Problem):
@@ -622,7 +781,7 @@ class FitRuleBase(Problem):
         ['Very Low', 'Low', 'Medium', 'High', 'Very High']
     ]
 
-    def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: StarmapParallelization=None, 
+    def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: Optional[Any]=None, 
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
                  tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo') -> None:
         '''
@@ -719,6 +878,12 @@ class FitRuleBase(Problem):
                 correct_size = [(self.n_lv_possible[ixx]-1) * 4 + 3 for ixx in range(len(self.n_lv_possible))]
             elif self.fuzzy_type == fs.FUZZY_SETS.t2:
                 correct_size = [(self.n_lv_possible[ixx]-1) * 6 + 2 for ixx in range(len(self.n_lv_possible))]
+            elif self.fuzzy_type == fs.FUZZY_SETS.gt2:
+                # GT2 uses same structure as T2 for membership optimization
+                correct_size = [(self.n_lv_possible[ixx]-1) * 6 + 2 for ixx in range(len(self.n_lv_possible))]
+            else:
+                raise ValueError(f"Fuzzy type {self.fuzzy_type} not supported for dynamic membership optimization. "
+                               "Please provide precomputed linguistic_variables.")
             membership_bounds = np.concatenate(
                 [[self.feature_domain_bounds[ixx]] * correct_size[ixx] for ixx in range(len(self.n_lv_possible))])
             

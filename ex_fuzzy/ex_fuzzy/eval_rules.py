@@ -113,6 +113,7 @@ class evalRuleBase():
             res = np.zeros((len(patterns), 2))
 
         consequents = self.mrule_base.get_consequents()
+        fuzzy_type = self.mrule_base.fuzzy_type()
         for ix, pattern in enumerate(patterns):
             consequent_match = np.equal(data_y, consequents[ix])
             try:
@@ -120,8 +121,15 @@ class evalRuleBase():
             except:
                 pass
             pattern_firing_strength = antecedent_memberships[:, ix]
-            
-            res[ix] = np.mean(pattern_firing_strength.reshape(-1, ) * consequent_match.reshape(-1, ))
+
+            # Handle T2/GT2 fuzzy sets which have interval-valued memberships
+            if fuzzy_type == fs.FUZZY_SETS.t2 or fuzzy_type == fs.FUZZY_SETS.gt2:
+                # pattern_firing_strength is (n_samples, 2) for T2
+                # Compute support for lower and upper bounds separately
+                res[ix, 0] = np.mean(pattern_firing_strength[:, 0] * consequent_match)
+                res[ix, 1] = np.mean(pattern_firing_strength[:, 1] * consequent_match)
+            else:
+                res[ix] = np.mean(pattern_firing_strength.reshape(-1, ) * consequent_match.reshape(-1, ))
             
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
             res = np.mean(res, axis=1)

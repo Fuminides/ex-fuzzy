@@ -27,8 +27,19 @@ of random initialization or data sampling.
 """
 import numpy as np
 from multiprocessing.pool import ThreadPool
-from pymoo.parallelization.starmap import StarmapParallelization
 from sklearn.model_selection import train_test_split
+
+# Handle pymoo version compatibility for parallelization
+try:
+    # pymoo < 0.6.0
+    from pymoo.parallelization.starmap import StarmapParallelization
+except ImportError:
+    try:
+        # pymoo >= 0.6.0
+        from pymoo.core.problem import StarmapParallelization
+    except ImportError:
+        # Fallback if parallelization not available
+        StarmapParallelization = None
 import numbers
 import matplotlib.pyplot as plt
 from matplotlib import colormaps

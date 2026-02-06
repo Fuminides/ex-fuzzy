@@ -14,3 +14,4 @@ from . import pattern_stability
 from . import permutation_test
 from . import bootstrapping_test
 from . import tree_learning
+from . import conformal

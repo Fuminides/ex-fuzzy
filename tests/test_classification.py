@@ -16,7 +16,7 @@ def test_random_classification(fs_type=ex_fuzzy.fuzzy_sets.FUZZY_SETS.t1):
     sample = np.random.random_sample((sample_size, 5))
     targets = np.random.randint(0, 2, sample_size)
 
-    model = ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier(10, 3, fs_type, verbose=False, tolerance=0.0, n_linguist_variables=3)
+    model = ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier(10, 3, fs_type, verbose=False, tolerance=0.0, n_linguistic_variables=3)
     model.fit(sample, targets)
     predictions = model.predict(sample)
     assert math.isclose(np.mean(np.equal(predictions, targets)), 0.5, abs_tol=0.1)

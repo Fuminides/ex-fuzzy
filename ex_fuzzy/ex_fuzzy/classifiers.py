@@ -46,7 +46,7 @@ class RuleMineClassifier(ClassifierMixin):
     """A classifier that works by mining a set of candidate rules with a minimum support, confidence and lift, and then using a genetic algorithm that chooses
     the optimal combination of those rules."""
 
-    def __init__(self, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = None, tolerance: float = 0.0,
+    def __init__(self, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0,
                 verbose=False, n_class: int=None, runner: int=1, linguistic_variables: list[fs.fuzzyVariable]=None) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
@@ -106,7 +106,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
     """A classifier that works by performing a double optimization process. First, it creates a candidate rule base using genetic optimization
     and then uses it as a basis to obtain a better one that satisfies the constrain of antecedents and number of rules."""
 
-    def __init__(self, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = None, tolerance: float = 0.0, 
+    def __init__(self, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0,
                  verbose=False, n_class: int=None, runner: int=1, expansion_factor:int=1, linguistic_variables: list[fs.fuzzyVariable]=None) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
@@ -169,7 +169,7 @@ class RuleFineTuneClassifier(ClassifierMixin):
     """A classifier that works by mining a set of candidate rules with a minimum support and then uses a two step genetic optimization that chooses
     the optimal combination of those rules and fine tunes them."""
 
-    def __init__(self, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = None, tolerance: float = 0.0, 
+    def __init__(self, nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0,
                  verbose=False, n_class: int=None, runner: int=1, expansion_factor:int=1, linguistic_variables: list[fs.fuzzyVariable]=None) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
