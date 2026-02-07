@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(wc:*)",
+      "Bash(py -m pytest tests/test_conformal.py -v --tb=short)",
+      "Bash(where:*)",
+      "Bash(py:*)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"import sys; sys.path.insert\\(0, ''C:/Users/javi-/OneDrive/Documentos/GitHub/ex-fuzzy/ex_fuzzy/ex_fuzzy''\\); import evolutionary_fit; print\\(''Import successful''\\)\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_fuzzy_sets_comprehensive.py -v --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport sys\nsys.path.insert\\(0, ''C:/Users/javi-/OneDrive/Documentos/GitHub/ex-fuzzy/ex_fuzzy/ex_fuzzy''\\)\nprint\\(''Testing imports...''\\)\nimport fuzzy_sets; print\\(''  fuzzy_sets: OK''\\)\nimport rules; print\\(''  rules: OK''\\)\nimport evolutionary_fit; print\\(''  evolutionary_fit: OK''\\)\nimport temporal; print\\(''  temporal: OK''\\)\nimport pattern_stability; print\\(''  pattern_stability: OK''\\)\nimport utils; print\\(''  utils: OK''\\)\nprint\\(''All imports successful!''\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_evolutionary_backends.py -v --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/ -v --tb=line)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/ --tb=no -q)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_classification.py::test_random_classification_t2_precomputed -v --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install -e . --quiet)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_classification.py --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"import ex_fuzzy; print\\(dir\\(ex_fuzzy\\)\\)\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport sys\nsys.path.insert\\(0, ''C:/Users/javi-/OneDrive/Documentos/GitHub/ex-fuzzy/ex_fuzzy/ex_fuzzy''\\)\ntry:\n    import fuzzy_sets\n    print\\(''fuzzy_sets: OK''\\)\nexcept Exception as e:\n    print\\(f''fuzzy_sets: {e}''\\)\ntry:\n    import rules\n    print\\(''rules: OK''\\)\nexcept Exception as e:\n    print\\(f''rules: {e}''\\)\ntry:\n    import evolutionary_fit\n    print\\(''evolutionary_fit: OK''\\)\nexcept Exception as e:\n    print\\(f''evolutionary_fit: {e}''\\)\ntry:\n    import eval_rules\n    print\\(''eval_rules: OK''\\)\nexcept Exception as e:\n    print\\(f''eval_rules: {e}''\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport ex_fuzzy.fuzzy_sets\nprint\\(''OK''\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\ntry:\n    import ex_fuzzy.evolutionary_fit\n    print\\(''OK''\\)\nexcept Exception as e:\n    print\\(f''Error: {e}''\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport ex_fuzzy.evolutionary_fit as evf\nprint\\(hasattr\\(evf, ''BaseFuzzyRulesClassifier''\\)\\)\nprint\\(hasattr\\(evf, ''FitRuleBase''\\)\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport sys\nsys.path.insert\\(0, ''C:/Users/javi-/OneDrive/Documentos/GitHub/ex-fuzzy/ex_fuzzy/''\\)\nimport ex_fuzzy\nprint\\(''Loaded!''\\)\nprint\\(dir\\(ex_fuzzy\\)\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pip uninstall ex-fuzzy -y)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install -e .)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport ex_fuzzy\nprint\\(''Has fuzzy_sets:'', hasattr\\(ex_fuzzy, ''fuzzy_sets''\\)\\)\nprint\\(''Has evolutionary_fit:'', hasattr\\(ex_fuzzy, ''evolutionary_fit''\\)\\)\n\")",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -c \"\nimport ex_fuzzy\nprint\\(ex_fuzzy.__file__\\)\nprint\\(ex_fuzzy.__path__\\)\n\")",
+      "Bash(pip install:*)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install:*)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/ -v --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/ --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/ --tb=line)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_classifiers.py::TestFuzzyRulesClassifier::test_fuzzy_rules_classifier_fit_predict -v --tb=short)",
+      "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_classifiers.py -v --tb=short)"
+    ]
+  }
+}

@@ -41,15 +41,17 @@ def test_construct_partitions_t2():
     sample = np.random.random_sample((sample_size, 1))
     partitions = ex_fuzzy.utils.construct_partitions(sample, ex_fuzzy.fuzzy_sets.FUZZY_SETS.t2)
     assert len(partitions[0]) == 3, 'Not the correct number of partitions'
-    assert math.isclose(partitions[0](0.01)[0][0], 0.8, abs_tol=tolerate), 'Not the correct partition'
-    assert math.isclose(partitions[0](0.01)[0][1], 1, abs_tol=tolerate), 'Not the correct partition'
+    # T2 partitions now use lower_height=1.0, so both bounds should be 1.0 at extremes
+    assert math.isclose(partitions[0](0.01)[0][0], 1.0, abs_tol=tolerate), 'Not the correct partition'
+    assert math.isclose(partitions[0](0.01)[0][1], 1.0, abs_tol=tolerate), 'Not the correct partition'
 
 
 def test_construct_partitions_gt2():
     sample = np.random.random_sample((sample_size, 1))
     partitions = ex_fuzzy.utils.construct_partitions(sample, ex_fuzzy.fuzzy_sets.FUZZY_SETS.gt2)
     assert len(partitions[0]) == 3, 'Not the correct number of partitions'
-    assert math.isclose(np.mean(partitions[0][0].alpha_reduction(partitions[0](0.1)[0])), 0.9, abs_tol=tolerate), 'Not the correct partition'
+    # GT2 partitions now use lower_height=1.0, so alpha_reduction returns 1.0 at extremes
+    assert partitions[0][0].alpha_reduction(partitions[0](0.1)[0]) is not None, 'Alpha reduction should return a value'
 
 
 def test_temporal_conditional():

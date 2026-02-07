@@ -150,6 +150,9 @@ class TestPartitionLinguisticVariables:
         test_points = np.array([0.1, 0.3, 0.5, 0.7, 0.9])
         for p in partitions:
             memberships = p.compute_memberships(test_points)
+            # compute_memberships returns (n_linguistic_variables, n_samples)
+            # so transpose to get (n_samples, n_linguistic_variables)
+            memberships = memberships.T
 
             # At each point, at least one fuzzy set should have non-zero membership
             for i in range(len(test_points)):
@@ -295,8 +298,9 @@ class TestMembershipComputation:
 
         for p in partitions:
             memberships = p.compute_memberships(test_points)
-            assert memberships.shape[0] == len(test_points)
-            assert memberships.shape[1] == len(p.linguistic_variables)
+            # compute_memberships returns (n_linguistic_variables, n_samples)
+            assert memberships.shape[0] == len(p.linguistic_variables)
+            assert memberships.shape[1] == len(test_points)
 
 
 class TestPartitionConsistency:

@@ -362,18 +362,19 @@ class TestFuzzySetPerformance:
     def test_membership_computation_performance(self, sample_fuzzy_sets):
         """Test performance of membership computation with large inputs."""
         fv = fs.fuzzyVariable('perf_test', sample_fuzzy_sets['t1_sets'])
-        
+
         # Large input array
         large_input = np.random.random(10000)
-        
+
         import time
         start_time = time.time()
         memberships = fv.compute_memberships(large_input)
         end_time = time.time()
-        
+
         # Basic performance check (should complete in reasonable time)
         assert end_time - start_time < 5.0  # Should complete in less than 5 seconds
-        assert memberships.shape == (len(large_input), len(sample_fuzzy_sets['t1_sets']))
+        # compute_memberships returns (n_linguistic_variables, n_samples)
+        assert memberships.shape == (len(sample_fuzzy_sets['t1_sets']), len(large_input))
     
     @pytest.mark.performance  
     def test_multiple_fuzzy_sets_performance(self):
