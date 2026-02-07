@@ -1283,10 +1283,13 @@ class MasterRuleBase():
         :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
         :return: array with the winning rule for each sample.
         '''
-        # Raise an error if there no rules
+        # Handle empty rule base - return unknown predictions
         if len(self.get_rules()) == 0:
-            raise RuleError('No rules to predict!')
-        
+            if out_class_names:
+                return ['Unknown'] * X.shape[0]
+            else:
+                return np.full(X.shape[0], -1)
+
         if out_class_names:
             consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
@@ -1324,10 +1327,15 @@ class MasterRuleBase():
         :param out_class_names: if True, the output will be the class names instead of the class index.
         :return: np array samples (x 1) with the predicted class.
         '''
-        # Raise an error if there no rules
+        # Handle empty rule base - return unknown predictions
         if len(self.get_rules()) == 0:
-            raise RuleError('No rules to predict!')
-        
+            n_samples = X.shape[0]
+            if out_class_names:
+                preds = np.array(['Unknown'] * n_samples)
+            else:
+                preds = np.full(n_samples, -1)
+            return preds, np.full(n_samples, -1), np.zeros((n_samples, 1)), np.zeros((n_samples, 1))
+
         if out_class_names:
             consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
