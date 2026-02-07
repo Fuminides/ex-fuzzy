@@ -27,7 +27,7 @@ Example:
 """
 
 import numpy as np
-from sklearn.base import ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin
 from typing import Union, Optional, List, Dict
 
 try:
@@ -40,7 +40,7 @@ except ImportError:
     import rules
 
 
-class ConformalFuzzyClassifier(ClassifierMixin):
+class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
     """
     Conformal prediction wrapper for fuzzy rule-based classifiers.
 

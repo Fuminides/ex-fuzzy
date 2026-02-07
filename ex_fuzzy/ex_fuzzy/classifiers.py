@@ -28,7 +28,7 @@ is as important as predictive performance.
 """
 
 import numpy as np
-from sklearn.base import ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 try:
     from . import fuzzy_sets as fs
@@ -42,7 +42,7 @@ except:
     import utils
 
 
-class RuleMineClassifier(ClassifierMixin):
+class RuleMineClassifier(ClassifierMixin, BaseEstimator):
     """A classifier that works by mining a set of candidate rules with a minimum support, confidence and lift, and then using a genetic algorithm that chooses
     the optimal combination of those rules."""
 
@@ -102,7 +102,7 @@ class RuleMineClassifier(ClassifierMixin):
     
 
 
-class FuzzyRulesClassifier(ClassifierMixin):
+class FuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     """A classifier that works by performing a double optimization process. First, it creates a candidate rule base using genetic optimization
     and then uses it as a basis to obtain a better one that satisfies the constrain of antecedents and number of rules."""
 
@@ -165,7 +165,7 @@ class FuzzyRulesClassifier(ClassifierMixin):
         return self.fl_classifier2
     
 
-class RuleFineTuneClassifier(ClassifierMixin):
+class RuleFineTuneClassifier(ClassifierMixin, BaseEstimator):
     """A classifier that works by mining a set of candidate rules with a minimum support and then uses a two step genetic optimization that chooses
     the optimal combination of those rules and fine tunes them."""
 

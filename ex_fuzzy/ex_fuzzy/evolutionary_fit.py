@@ -34,7 +34,7 @@ import pandas as pd
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import matthews_corrcoef
-from sklearn.base import ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin
 from multiprocessing.pool import ThreadPool
 from pymoo.core.problem import Problem
 from pymoo.core.variable import Integer
@@ -70,7 +70,7 @@ except ImportError:
 
 
 
-class BaseFuzzyRulesClassifier(ClassifierMixin):
+class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     '''
     Class that is used as a classifier for a fuzzy rule based system. Supports precomputed and optimization of the linguistic variables.
     '''

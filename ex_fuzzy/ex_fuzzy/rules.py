@@ -1173,9 +1173,11 @@ class MasterRuleBase():
             res.append(rb.scores())
 
         res = [x for x in res if len(x) > 0]
-        
+
+        if len(res) == 0:
+            return np.array([])
         return np.concatenate(res, axis=0)
-    
+
 
     def get_weights(self) -> np.array:
         '''
@@ -1207,6 +1209,13 @@ class MasterRuleBase():
         for ix in range(len(self.rule_bases)):
             aux.append(self[ix].compute_rule_antecedent_memberships(X, antecedents_memberships=precomputed_truth))
 
+        # Filter out empty arrays
+        aux = [x for x in aux if x.size > 0]
+
+        # Handle case where all rule bases are empty
+        if len(aux) == 0:
+            return np.zeros((X.shape[0], 0))
+
         # Firing strengths shape: samples x rules (x 2) (last is iv dimension) or (x alpha_cuts x 2) for gt2
         return np.concatenate(aux, axis=1)
 
@@ -1214,6 +1223,12 @@ class MasterRuleBase():
     def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unkown=True) -> np.array:
         association_degrees = self.compute_association_degrees(X, precomputed_truth)
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
+
+        # Handle empty rule base case
+        if association_degrees.shape[1] == 0:
+            winning_rules = np.full(X.shape[0], -1)
+            winning_association_degrees = np.zeros(X.shape[0])
+            return winning_rules, winning_association_degrees
 
         winning_rules = np.argmax(association_degrees, axis=1)
         winning_association_degrees = np.max(firing_strengths, axis=1)
@@ -1232,7 +1247,11 @@ class MasterRuleBase():
         :return: array with the winning rule for each sample.
         '''
         firing_strengths = self.compute_firing_strenghts(X, precomputed_truth=precomputed_truth)
-        
+
+        # Handle empty rule base case
+        if firing_strengths.shape[1] == 0:
+            return np.zeros((X.shape[0], 0))
+
         if self.ds_mode == 0:
             rulesw = self.get_scores()
             if self.fuzzy_type() == fs.FUZZY_SETS.t2 and len(rulesw.shape) == 1:
