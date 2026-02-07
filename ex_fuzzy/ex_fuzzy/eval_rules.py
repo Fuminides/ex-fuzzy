@@ -315,12 +315,15 @@ class evalRuleBase():
         '''
         Add dominance score field to each of the rules present in the master Rule Base.
         '''
+        rules = self.mrule_base.get_rules()
+        if len(rules) == 0:
+            return
+
         supports = self.compute_pattern_support()
         confidences = self.compute_pattern_confidence()
         scores = self.dominance_scores()
 
         aux_counter = 0
-        rules = self.mrule_base.get_rules()
         for jx in range(len(rules)):
                 rules[jx].score = scores[aux_counter]
                 rules[jx].support = supports[aux_counter]
@@ -357,6 +360,10 @@ class evalRuleBase():
         :param y: array of shape samples
 
         '''
+        # Early return if no rules exist
+        if len(self.mrule_base.get_rules()) == 0:
+            return
+
         if X is not None:
             actual_X = X
             actual_y = y
@@ -366,8 +373,8 @@ class evalRuleBase():
 
         if isinstance(actual_y, list):
             actual_y = np.array(actual_y)
-        
-        if len(self.mrule_base.get_rules()) > 0 and not hasattr(self.mrule_base.get_rules()[0], 'score'):
+
+        if not hasattr(self.mrule_base.get_rules()[0], 'score'):
             self.add_rule_weights()
 
 
@@ -408,6 +415,12 @@ class evalRuleBase():
 
         :return: mattews correlation coefficient. (float in [-1, 1])
         '''
+        # Handle empty rule base
+        if len(self.mrule_base.get_rules()) == 0:
+            self.mcc = 0.0
+            self.acc = 0.0
+            return self.mcc
+
         from sklearn.metrics import matthews_corrcoef
         self.add_rule_weights()
         preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
