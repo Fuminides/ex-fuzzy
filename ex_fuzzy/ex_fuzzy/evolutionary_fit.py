@@ -27,7 +27,7 @@ Key Features:
     - Configurable complexity penalties to avoid overfitting
 """
 import os 
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -76,7 +76,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin):
     '''
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
-                 n_linguistic_variables: list[int]|int = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
+                 n_linguistic_variables: Union[list, int] = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, allow_unknown:bool=False, backend: str='pymoo') -> None:
         '''
         Inits the optimizer with the corresponding parameters.
