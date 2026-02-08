@@ -34,7 +34,18 @@ from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PolynomialMutation
 from pymoo.core.variable import Integer
 from multiprocessing.pool import ThreadPool
-from pymoo.parallelization.starmap import StarmapParallelization
+
+# Handle pymoo version compatibility for parallelization
+try:
+    # pymoo < 0.6.0
+    from pymoo.parallelization.starmap import StarmapParallelization
+except ImportError:
+    try:
+        # pymoo >= 0.6.0
+        from pymoo.core.problem import StarmapParallelization
+    except ImportError:
+        # Fallback if parallelization not available
+        StarmapParallelization = None
 
 try:
     from . import fuzzy_sets as fs

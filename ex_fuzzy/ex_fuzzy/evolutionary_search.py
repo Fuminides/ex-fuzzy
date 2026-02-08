@@ -20,9 +20,21 @@ Use Cases:
 
 import numpy as np
 import pandas as pd
+from typing import Optional, Any
 from pymoo.core.problem import Problem
 from pymoo.core.variable import Integer
-from pymoo.parallelization.starmap import StarmapParallelization
+
+# Handle pymoo version compatibility for parallelization
+try:
+    # pymoo < 0.6.0
+    from pymoo.parallelization.starmap import StarmapParallelization
+except ImportError:
+    try:
+        # pymoo >= 0.6.0
+        from pymoo.core.problem import StarmapParallelization
+    except ImportError:
+        # Fallback if parallelization not available
+        StarmapParallelization = None
 
 # Import necessary modules
 try:
@@ -68,8 +80,8 @@ class ExploreRuleBases(Problem):
         >>> res = minimize(problem, algorithm, ('n_gen', 100))
     """
 
-    def __init__(self, X: np.array, y: np.array, nRules: int, n_classes: int, 
-                 candidate_rules: rules.MasterRuleBase, thread_runner: StarmapParallelization=None, 
+    def __init__(self, X: np.array, y: np.array, nRules: int, n_classes: int,
+                 candidate_rules: rules.MasterRuleBase, thread_runner: Optional[Any]=None,
                  tolerance:float = 0.01) -> None:
         """
         Initialize the rule selection optimization problem.

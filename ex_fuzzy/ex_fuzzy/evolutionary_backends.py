@@ -244,7 +244,9 @@ class EvoXBackend(EvolutionaryBackend):
             import evox
             import torch
             return True
-        except ImportError:
+        except Exception:
+            # Catch all exceptions: ImportError, RuntimeError (e.g., torch.compile
+            # not supported on Python 3.14+), or any other initialization errors
             return False
     
     def _setup_pytorch(self):

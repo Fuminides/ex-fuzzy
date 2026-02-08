@@ -470,13 +470,15 @@ class TestRulesIntegration:
         
         # Test that rules work with variables
         test_data = np.array([[0.2, 0.3], [0.8, 0.9]])
-        
-        # Compute memberships
+
+        # Compute memberships using linguistic_variables (the fuzzy sets in the variable)
         for sample in test_data:
             for var in variables:
-                memberships = var.membership(sample.reshape(1, -1))
-                assert memberships.shape[1] == 2  # Low and High
-                assert np.all(memberships >= 0) and np.all(memberships <= 1)
+                # fuzzyVariable contains linguistic_variables (list of fuzzy sets)
+                for fset in var.linguistic_variables:
+                    mem = fset.membership(np.array([sample[0]]))  # Single value
+                    assert len(mem) > 0
+                    assert np.all(mem >= 0) and np.all(mem <= 1)
     
     def test_rule_base_with_classifier_integration(self):
         """Test that rule bases integrate properly with classifiers."""

@@ -175,16 +175,20 @@ def prune_rules_confidence_lift(x: pd.DataFrame, y:np.array, rules: rl.MasterRul
             ant_counter = 0
             for zx, antecedent in enumerate(rule):
                 if antecedent != -1:
-                    global_membership_array[:, ant_counter] = fuzzy_variables[zx](x[fuzzy_variables[zx].name])[antecedent]
-                    class_samples_membership_array[:, ant_counter] = fuzzy_variables[zx](relevant_class_samples[fuzzy_variables[zx].name])[antecedent]
+                    global_mem = fuzzy_variables[zx](x[fuzzy_variables[zx].name])[antecedent]
+                    class_mem = fuzzy_variables[zx](relevant_class_samples[fuzzy_variables[zx].name])[antecedent]
+                    # For T2/GT2 fuzzy sets, membership has shape (n_samples, 2); take mean of bounds
+                    if global_mem.ndim > 1:
+                        global_mem = np.mean(global_mem, axis=1)
+                    if class_mem.ndim > 1:
+                        class_mem = np.mean(class_mem, axis=1)
+                    global_membership_array[:, ant_counter] = global_mem
+                    class_samples_membership_array[:, ant_counter] = class_mem
                     ant_counter += 1
 
             # Compute rule confidence
             global_support = np.mean(np.min(global_membership_array, axis=1), axis=0)
             class_support = np.mean(np.min(class_samples_membership_array, axis=1), axis=0)
-            if fuzzy_variables[0].fuzzy_type == fs.FUZZY_SETS.t2 or fuzzy_variables[0].fuzzy_type == fs.FUZZY_SETS.gt2:
-                    global_support = np.mean(global_support, axis=1)
-                    class_support = np.mean(class_support, axis=1)
 
             rule_confidence = class_support / global_support
             rule_lift = rule_confidence / np.mean(np.equal(relevant_class, y))

@@ -15,7 +15,12 @@
   <a href="https://pypi.org/project/ex-fuzzy/">
     <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/ex-fuzzy?style=flat-square">
   </a>
-
+  <a href="https://github.com/Fuminides/ex-fuzzy/actions/workflows/tests.yml">
+    <img alt="Tests" src="https://github.com/Fuminides/ex-fuzzy/actions/workflows/tests.yml/badge.svg">
+  </a>
+  <a href="https://codecov.io/gh/Fuminides/ex-fuzzy">
+    <img alt="codecov" src="https://codecov.io/gh/Fuminides/ex-fuzzy/branch/main/graph/badge.svg">
+  </a>
   <a href="https://github.com/Fuminides/ex-fuzzy/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/Fuminides/ex-fuzzy?style=flat-square">
   </a>
@@ -312,7 +317,23 @@ Have an idea? [Submit a feature request](https://github.com/Fuminides/ex-fuzzy/i
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
 3. Make your changes with tests
-4. Submit a pull request
+4. Run the test suite: `pytest tests/ -v`
+5. Submit a pull request
+
+### 🧪 Running Tests
+```bash
+# Install test dependencies
+pip install pytest pytest-cov
+
+# Run all tests
+pytest tests/ -v
+
+# Run tests with coverage report
+pytest tests/ --cov=ex_fuzzy --cov-report=html
+
+# Run specific test file
+pytest tests/test_fuzzy_sets_comprehensive.py -v
+```
 
 ### 📖 Documentation
 Help improve documentation by:

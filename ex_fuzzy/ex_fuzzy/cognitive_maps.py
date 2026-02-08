@@ -35,13 +35,14 @@ Applications:
     - Policy analysis and impact assessment
 """
 from __future__ import annotations
+from typing import Union
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-def _threshold_modules(connections: np.array | pd.DataFrame, threshold) -> np.array | pd.DataFrame:
+def _threshold_modules(connections: Union[np.array, pd.DataFrame], threshold) -> Union[np.array, pd.DataFrame]:
     '''Thresholds the connections matrix to the {-1, 0, 1} values.'''
     return np.abs(connections) > threshold * np.sign(connections)
 
@@ -151,12 +152,12 @@ def attractors_report(attractors: dict[np.array, np.array]) -> None:
 
 class FuzzyCognitiveMap:
 
-    def __init__(self, connections: np.array | pd.DataFrame, threshold:int=0.5) -> None:
+    def __init__(self, connections: Union[np.array, pd.DataFrame], threshold:int=0.5) -> None:
         '''
         Creates a fuzzy cognitive map.
         
         
-        :param connections: np.array | pd.DataFrame. A square matrix with the connections between the concepts.
+        :param connections: np.array or pd.DataFrame. A square matrix with the connections between the concepts.
         :param threshold: int, optional. When simulating steps the state
         will be trimmed using these threhold into the {0, 1, -1} values.
         The default is 0.5.
@@ -175,7 +176,7 @@ class FuzzyCognitiveMap:
             return None
     
 
-    def step(self) -> np.array | pd.DataFrame:
+    def step(self) -> Union[np.array, pd.DataFrame]:
         '''Performs a step in the FCM given the actual state.'''
         self.state = _threshold_modules(self.state @ self.connections, self.threshold)
     
@@ -185,7 +186,7 @@ class FuzzyCognitiveMap:
             return self.state
 
 
-    def simulate(self, steps: int) -> np.array | pd.DataFrame:
+    def simulate(self, steps: int) -> Union[np.array, pd.DataFrame]:
         '''
         Simulates the FCM for a number of steps.
         
@@ -202,7 +203,7 @@ class FuzzyCognitiveMap:
         self.connections = self.connections + other.connections
 
 
-    def set_state(self, state: np.array | pd.DataFrame) -> None:
+    def set_state(self, state: Union[np.array, pd.DataFrame]) -> None:
         '''Sets the state of the FCM.'''
         try:
             self.state = state.values
@@ -210,13 +211,13 @@ class FuzzyCognitiveMap:
             self.state = state
 
 
-    def set_and_step(self, state: np.array | pd.DataFrame) -> np.array | pd.DataFrame:
+    def set_and_step(self, state: Union[np.array, pd.DataFrame]) -> Union[np.array, pd.DataFrame]:
         '''Sets the state of the FCM and performs a step.'''
         self.set_state(state)
         return self.step()
     
 
-    def set_and_simulate(self, state: np.array | pd.DataFrame, steps: int) -> np.array | pd.DataFrame:
+    def set_and_simulate(self, state: Union[np.array, pd.DataFrame], steps: int) -> Union[np.array, pd.DataFrame]:
         '''Sets the state of the FCM and performs a simulation.'''
         self.set_state(state)
         return self.simulate(steps)
