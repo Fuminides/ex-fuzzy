@@ -1,0 +1,1339 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ex_fuzzy.conformal &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/ex_fuzzy/conformal';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">ex_fuzzy.conformal</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for ex_fuzzy.conformal</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Conformal Prediction for Fuzzy Rule-Based Classifiers</span>
+
+<span class="sd">Provides prediction sets with coverage guarantees using split conformal prediction.</span>
+<span class="sd">Supports both class-level and rule-level conformal prediction for explainable uncertainty.</span>
+
+<span class="sd">Main Components:</span>
+<span class="sd">    - ConformalFuzzyClassifier: Main classifier with conformal prediction</span>
+<span class="sd">    - evaluate_conformal_coverage: Evaluation utility for coverage metrics</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">    - Wrap existing trained classifiers or create from scratch</span>
+<span class="sd">    - Class-level conformal prediction (standard)</span>
+<span class="sd">    - Rule-wise conformal prediction (explainable uncertainty)</span>
+<span class="sd">    - Multiple nonconformity score strategies</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; from ex_fuzzy.conformal import ConformalFuzzyClassifier</span>
+<span class="sd">    &gt;&gt;&gt; # Wrap existing classifier</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf = ConformalFuzzyClassifier(trained_clf)</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf.calibrate(X_cal, y_cal)</span>
+<span class="sd">    &gt;&gt;&gt; pred_sets = conf_clf.predict_set(X_test, alpha=0.1)</span>
+
+<span class="sd">    &gt;&gt;&gt; # Or create from scratch</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf = ConformalFuzzyClassifier(nRules=20, nAnts=4)</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf.fit(X_train, y_train, X_cal, y_cal, n_gen=50)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">fuzzy_sets</span> <span class="k">as</span> <span class="n">fs</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">evolutionary_fit</span> <span class="k">as</span> <span class="n">evf</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">rules</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">rules</span>
+
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConformalFuzzyClassifier</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Conformal prediction wrapper for fuzzy rule-based classifiers.</span>
+
+<span class="sd">    Can wrap an existing BaseFuzzyRulesClassifier or create one internally</span>
+<span class="sd">    using the same parameter signature. Provides prediction sets with</span>
+<span class="sd">    statistical coverage guarantees.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    clf_or_nRules : BaseFuzzyRulesClassifier or int, optional</span>
+<span class="sd">        Either a trained classifier to wrap, or nRules parameter to create new one.</span>
+<span class="sd">        If None, uses default nRules=30.</span>
+<span class="sd">    score_type : str, default=&#39;membership&#39;</span>
+<span class="sd">        Nonconformity score type:</span>
+<span class="sd">        - &#39;membership&#39;: 1 - membership degree of true class (default)</span>
+<span class="sd">        - &#39;association&#39;: 1 - max association degree for rules of true class</span>
+<span class="sd">        - &#39;entropy&#39;: Entropy of class probability distribution</span>
+<span class="sd">    **kwargs : dict</span>
+<span class="sd">        Additional parameters passed to BaseFuzzyRulesClassifier if creating new.</span>
+<span class="sd">        Common parameters include: nAnts, fuzzy_type, n_linguistic_variables,</span>
+<span class="sd">        tolerance, verbose, backend, etc.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    clf : BaseFuzzyRulesClassifier</span>
+<span class="sd">        The underlying fuzzy classifier</span>
+<span class="sd">    score_type : str</span>
+<span class="sd">        The type of nonconformity score being used</span>
+<span class="sd">    rule_base : MasterRuleBase</span>
+<span class="sd">        The rule base from the underlying classifier (property)</span>
+<span class="sd">    nclasses_ : int</span>
+<span class="sd">        Number of classes (property)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Wrap an existing trained classifier:</span>
+
+<span class="sd">    &gt;&gt;&gt; from ex_fuzzy.evolutionary_fit import BaseFuzzyRulesClassifier</span>
+<span class="sd">    &gt;&gt;&gt; from ex_fuzzy.conformal import ConformalFuzzyClassifier</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; clf = BaseFuzzyRulesClassifier(nRules=20)</span>
+<span class="sd">    &gt;&gt;&gt; clf.fit(X_train, y_train, n_gen=50)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf = ConformalFuzzyClassifier(clf)</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf.calibrate(X_cal, y_cal)</span>
+<span class="sd">    &gt;&gt;&gt; pred_sets = conf_clf.predict_set(X_test, alpha=0.1)</span>
+
+<span class="sd">    Create classifier from scratch:</span>
+
+<span class="sd">    &gt;&gt;&gt; conf_clf = ConformalFuzzyClassifier(nRules=20, nAnts=4)</span>
+<span class="sd">    &gt;&gt;&gt; conf_clf.fit(X_train, y_train, X_cal, y_cal, n_gen=50)</span>
+<span class="sd">    &gt;&gt;&gt; pred_sets = conf_clf.predict_set(X_test, alpha=0.1)</span>
+
+<span class="sd">    Get rule-wise explanations:</span>
+
+<span class="sd">    &gt;&gt;&gt; results = conf_clf.predict_set_with_rules(X_test, alpha=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; for r in results:</span>
+<span class="sd">    ...     print(f&quot;Prediction set: {r[&#39;prediction_set&#39;]}&quot;)</span>
+<span class="sd">    ...     print(f&quot;Rule contributions: {r[&#39;rule_contributions&#39;]}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.__init__">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clf_or_nRules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">score_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;membership&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">clf_or_nRules</span><span class="p">,</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">):</span>
+            <span class="c1"># Wrapper mode - use existing classifier</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">clf_or_nRules</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_owns_clf</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Creation mode - create new classifier</span>
+            <span class="n">nRules</span> <span class="o">=</span> <span class="n">clf_or_nRules</span> <span class="k">if</span> <span class="n">clf_or_nRules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;nRules&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="n">nRules</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_owns_clf</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">score_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;membership&#39;</span><span class="p">,</span> <span class="s1">&#39;association&#39;</span><span class="p">,</span> <span class="s1">&#39;entropy&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown score_type: </span><span class="si">{</span><span class="n">score_type</span><span class="si">}</span><span class="s2">. &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;Expected one of: &#39;membership&#39;, &#39;association&#39;, &#39;entropy&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_type</span> <span class="o">=</span> <span class="n">score_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thresholds</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Per-class thresholds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Per-rule thresholds (for rule-wise)</span></div>
+
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.fit">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">X_cal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y_cal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">cal_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">fit_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ConformalFuzzyClassifier&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit the classifier and calibrate for conformal prediction.</span>
+
+<span class="sd">        If X_cal/y_cal not provided, automatically splits X/y using cal_size.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape (n_samples, n_features)</span>
+<span class="sd">            Training data</span>
+<span class="sd">        y : array-like of shape (n_samples,)</span>
+<span class="sd">            Training labels</span>
+<span class="sd">        X_cal : array-like of shape (n_cal_samples, n_features), optional</span>
+<span class="sd">            Calibration data. If None, split from X using cal_size.</span>
+<span class="sd">        y_cal : array-like of shape (n_cal_samples,), optional</span>
+<span class="sd">            Calibration labels. If None, split from y using cal_size.</span>
+<span class="sd">        cal_size : float, default=0.2</span>
+<span class="sd">            Fraction of data to use for calibration if X_cal not provided</span>
+<span class="sd">        **fit_kwargs : dict</span>
+<span class="sd">            Parameters passed to clf.fit() (n_gen, pop_size, etc.)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : ConformalFuzzyClassifier</span>
+<span class="sd">            The fitted conformal classifier</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; conf_clf = ConformalFuzzyClassifier(nRules=20)</span>
+<span class="sd">        &gt;&gt;&gt; # Auto-split for calibration</span>
+<span class="sd">        &gt;&gt;&gt; conf_clf.fit(X, y, cal_size=0.2, n_gen=50)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Or provide explicit calibration set</span>
+<span class="sd">        &gt;&gt;&gt; conf_clf.fit(X_train, y_train, X_cal, y_cal, n_gen=50)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">X_cal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Split data for calibration</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">X_cal</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_cal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_calibration</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cal_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X_cal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_cal</span><span class="p">)</span>
+            <span class="n">y_cal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_cal</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owns_clf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span><span class="n">X_cal</span><span class="p">,</span> <span class="n">y_cal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.calibrate">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.calibrate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_cal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y_cal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ConformalFuzzyClassifier&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calibrate conformal prediction thresholds using calibration set.</span>
+
+<span class="sd">        Computes nonconformity scores on the calibration set and stores</span>
+<span class="sd">        them for computing p-values during prediction.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_cal : array-like of shape (n_cal_samples, n_features)</span>
+<span class="sd">            Calibration samples</span>
+<span class="sd">        y_cal : array-like of shape (n_cal_samples,)</span>
+<span class="sd">            Calibration labels</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : ConformalFuzzyClassifier</span>
+<span class="sd">            The calibrated conformal classifier</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the underlying classifier has not been fitted yet</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; # After fitting the base classifier separately</span>
+<span class="sd">        &gt;&gt;&gt; conf_clf = ConformalFuzzyClassifier(trained_clf)</span>
+<span class="sd">        &gt;&gt;&gt; conf_clf.calibrate(X_cal, y_cal)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X_cal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_cal</span><span class="p">)</span>
+        <span class="n">y_cal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_cal</span><span class="p">)</span>
+
+        <span class="c1"># Check that the classifier is fitted</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">,</span> <span class="s1">&#39;rule_base&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">rule_base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Classifier not fitted. Either wrap a trained classifier &quot;</span>
+                           <span class="s2">&quot;or use fit() instead of calibrate().&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compute nonconformity scores for calibration samples</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nonconformity_scores</span><span class="p">(</span><span class="n">X_cal</span><span class="p">,</span> <span class="n">y_cal</span><span class="p">)</span>
+
+        <span class="c1"># Store scores grouped by true class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">unique_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_cal</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">class_idx</span> <span class="ow">in</span> <span class="n">unique_classes</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">y_cal</span> <span class="o">==</span> <span class="n">class_idx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">class_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="c1"># Compute rule-wise calibration if applicable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibrate_rules</span><span class="p">(</span><span class="n">X_cal</span><span class="p">,</span> <span class="n">y_cal</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.predict">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.predict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Standard point prediction (delegates to wrapped classifier).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape (n_samples, n_features)</span>
+<span class="sd">            Test samples</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        predictions : ndarray of shape (n_samples,)</span>
+<span class="sd">            Predicted class labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.predict_set">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.predict_set">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">set</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Predict conformal sets with coverage guarantee 1-alpha.</span>
+
+<span class="sd">        Returns prediction sets that, under exchangeability assumptions,</span>
+<span class="sd">        contain the true label with probability at least 1-alpha.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape (n_samples, n_features)</span>
+<span class="sd">            Test samples</span>
+<span class="sd">        alpha : float, default=0.1</span>
+<span class="sd">            Significance level. The coverage guarantee is 1-alpha.</span>
+<span class="sd">            For example, alpha=0.1 gives 90% coverage.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        prediction_sets : list of sets</span>
+<span class="sd">            For each sample, a set of class indices in the prediction set.</span>
+<span class="sd">            Empty sets indicate high uncertainty for all classes.</span>
+<span class="sd">            Sets with multiple classes indicate ambiguous predictions.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the classifier is not calibrated</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; pred_sets = conf_clf.predict_set(X_test, alpha=0.1)</span>
+<span class="sd">        &gt;&gt;&gt; for i, pred_set in enumerate(pred_sets):</span>
+<span class="sd">        ...     if len(pred_set) == 1:</span>
+<span class="sd">        ...         print(f&quot;Sample {i}: confident prediction {pred_set}&quot;)</span>
+<span class="sd">        ...     elif len(pred_set) &gt; 1:</span>
+<span class="sd">        ...         print(f&quot;Sample {i}: ambiguous between {pred_set}&quot;)</span>
+<span class="sd">        ...     else:</span>
+<span class="sd">        ...         print(f&quot;Sample {i}: high uncertainty (empty set)&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Classifier not calibrated. Call calibrate() or fit() first.&quot;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">nclasses_</span>
+
+        <span class="c1"># Get soft scores for all classes</span>
+        <span class="n">class_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_membership_class</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># (n_samples, n_classes)</span>
+
+        <span class="n">prediction_sets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+            <span class="n">pred_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">):</span>
+                <span class="c1"># Compute p-value for class c</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">class_scores</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>  <span class="c1"># Nonconformity: 1 - membership</span>
+                <span class="n">p_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_p_value</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">p_value</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="n">pred_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">prediction_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_set</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">prediction_sets</span></div>
+
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.predict_set_with_rules">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.predict_set_with_rules">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_set_with_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Predict conformal sets with rule-level explanations.</span>
+
+<span class="sd">        Returns prediction sets along with which rules contribute</span>
+<span class="sd">        and their individual confidence levels. This provides</span>
+<span class="sd">        explainable uncertainty quantification.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape (n_samples, n_features)</span>
+<span class="sd">            Test samples</span>
+<span class="sd">        alpha : float, default=0.1</span>
+<span class="sd">            Significance level (0.1 = 90% coverage)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        results : list of dicts</span>
+<span class="sd">            Each result dict includes keys:</span>
+<span class="sd">            &#39;prediction_set&#39; (set of class indices),</span>
+<span class="sd">            &#39;rule_contributions&#39; (list of per-rule contribution dicts with</span>
+<span class="sd">            &#39;rule_index&#39;, &#39;class&#39;, &#39;firing_strength&#39;, and &#39;rule_confidence&#39;),</span>
+<span class="sd">            and &#39;class_p_values&#39; (dict mapping class index to p-value).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the classifier is not calibrated</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; results = conf_clf.predict_set_with_rules(X_test[:5], alpha=0.1)</span>
+<span class="sd">        &gt;&gt;&gt; for i, r in enumerate(results):</span>
+<span class="sd">        ...     print(f&quot;Sample {i}:&quot;)</span>
+<span class="sd">        ...     print(f&quot;  Prediction set: {r[&#39;prediction_set&#39;]}&quot;)</span>
+<span class="sd">        ...     print(f&quot;  P-values: {r[&#39;class_p_values&#39;]}&quot;)</span>
+<span class="sd">        ...     for contrib in r[&#39;rule_contributions&#39;][:3]:</span>
+<span class="sd">        ...         print(f&quot;  Rule {contrib[&#39;rule_index&#39;]}: &quot;</span>
+<span class="sd">        ...               f&quot;class={contrib[&#39;class&#39;]}, &quot;</span>
+<span class="sd">        ...               f&quot;strength={contrib[&#39;firing_strength&#39;]:.3f}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Classifier not calibrated. Call calibrate() or fit() first.&quot;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="c1"># Get per-rule association degrees</span>
+        <span class="n">rule_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_proba_rules</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">truth_degrees</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">rule_consequents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_consequents</span><span class="p">()</span>
+
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;prediction_set&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span>
+                <span class="s1">&#39;rule_contributions&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;class_p_values&#39;</span><span class="p">:</span> <span class="p">{}</span>
+            <span class="p">}</span>
+
+            <span class="c1"># Compute p-values per class</span>
+            <span class="n">class_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_membership_class</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">nclasses_</span><span class="p">):</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">class_scores</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+                <span class="n">p_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_p_value</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="n">result</span><span class="p">[</span><span class="s1">&#39;class_p_values&#39;</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_value</span>
+                <span class="k">if</span> <span class="n">p_value</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="s1">&#39;prediction_set&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+            <span class="c1"># Get rule contributions for classes in prediction set</span>
+            <span class="k">for</span> <span class="n">rule_idx</span><span class="p">,</span> <span class="n">consequent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule_consequents</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">consequent</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;prediction_set&#39;</span><span class="p">]:</span>
+                    <span class="n">rule_score</span> <span class="o">=</span> <span class="n">rule_scores</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">rule_idx</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">rule_score</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;rule_contributions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                            <span class="s1">&#39;rule_index&#39;</span><span class="p">:</span> <span class="n">rule_idx</span><span class="p">,</span>
+                            <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">consequent</span><span class="p">,</span>
+                            <span class="s1">&#39;firing_strength&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">rule_score</span><span class="p">),</span>
+                            <span class="s1">&#39;rule_confidence&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rule_confidence</span><span class="p">(</span><span class="n">rule_idx</span><span class="p">,</span> <span class="n">rule_score</span><span class="p">)</span>
+                        <span class="p">})</span>
+
+            <span class="c1"># Sort by firing strength (highest first)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;rule_contributions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;firing_strength&#39;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_nonconformity_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute nonconformity scores based on score_type.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_type</span> <span class="o">==</span> <span class="s1">&#39;membership&#39;</span><span class="p">:</span>
+            <span class="c1"># 1 - membership degree of true class</span>
+            <span class="n">class_memberships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_membership_class</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">class_memberships</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_type</span> <span class="o">==</span> <span class="s1">&#39;association&#39;</span><span class="p">:</span>
+            <span class="c1"># 1 - max association degree for rules of true class</span>
+            <span class="n">rule_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_proba_rules</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">truth_degrees</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">consequents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_consequents</span><span class="p">()</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">true_class</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+                <span class="n">class_rules</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">consequents</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">true_class</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">class_rules</span><span class="p">:</span>
+                    <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">rule_scores</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">class_rules</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_type</span> <span class="o">==</span> <span class="s1">&#39;entropy&#39;</span><span class="p">:</span>
+            <span class="c1"># Entropy of class probability distribution</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Avoid log(0)</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">probs</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">probs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Normalize by max entropy for comparability</span>
+            <span class="n">max_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">nclasses_</span><span class="p">)</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span> <span class="o">/</span> <span class="n">max_entropy</span> <span class="k">if</span> <span class="n">max_entropy</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">scores</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown score_type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">score_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">scores</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_p_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">class_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute conformal p-value for a given score and class.</span>
+
+<span class="sd">        Uses the formula: (#{s_i &gt;= s} + 1) / (n + 1)</span>
+<span class="sd">        where s_i are calibration scores and s is the test score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">class_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="n">cal_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span><span class="p">[</span><span class="n">class_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cal_scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="c1"># P-value = proportion of calibration scores &gt;= test score</span>
+        <span class="c1"># Adding +1 to numerator and denominator for finite sample correction</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cal_scores</span> <span class="o">&gt;=</span> <span class="n">score</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cal_scores</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calibrate_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_cal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y_cal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calibrate per-rule thresholds for rule-wise conformal prediction.&quot;&quot;&quot;</span>
+        <span class="n">rule_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">predict_proba_rules</span><span class="p">(</span><span class="n">X_cal</span><span class="p">,</span> <span class="n">truth_degrees</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">consequents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_consequents</span><span class="p">()</span>
+        <span class="n">n_rules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">consequents</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">rule_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rules</span><span class="p">):</span>
+            <span class="n">rule_class</span> <span class="o">=</span> <span class="n">consequents</span><span class="p">[</span><span class="n">rule_idx</span><span class="p">]</span>
+            <span class="c1"># Get scores for samples where this rule&#39;s class is correct</span>
+            <span class="n">correct_mask</span> <span class="o">=</span> <span class="n">y_cal</span> <span class="o">==</span> <span class="n">rule_class</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">correct_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span><span class="p">[</span><span class="n">rule_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule_scores</span><span class="p">[</span><span class="n">correct_mask</span><span class="p">,</span> <span class="n">rule_idx</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_rule_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get confidence for a rule firing at given strength.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rule_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="n">cal_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span><span class="p">[</span><span class="n">rule_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cal_scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="c1"># Confidence = proportion of calibration scores &lt;= current score</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cal_scores</span> <span class="o">&lt;=</span> <span class="n">score</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cal_scores</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_calibration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cal_size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split data into training and calibration sets (stratified).&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+        <span class="k">return</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">cal_size</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.get_calibration_info">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.get_calibration_info">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_calibration_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return calibration statistics for inspection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        info : dict</span>
+<span class="sd">            Dictionary containing:</span>
+<span class="sd">            - &#39;n_calibration_samples&#39;: total calibration samples</span>
+<span class="sd">            - &#39;samples_per_class&#39;: dict of samples per class</span>
+<span class="sd">            - &#39;score_type&#39;: the nonconformity score type used</span>
+<span class="sd">            - &#39;n_rules_calibrated&#39;: number of rules with calibration data</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; info = conf_clf.get_calibration_info()</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;Calibrated with {info[&#39;n_calibration_samples&#39;]} samples&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;Score type: {info[&#39;score_type&#39;]}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;n_calibration_samples&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+            <span class="s1">&#39;samples_per_class&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibration_scores</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="s1">&#39;score_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_type</span><span class="p">,</span>
+            <span class="s1">&#39;n_rules_calibrated&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule_calibration</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">}</span></div>
+
+
+    <span class="c1"># Delegate common properties to wrapped classifier</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rule_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The underlying rule base from the fuzzy classifier.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">rule_base</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nclasses_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of classes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">nclasses_</span>
+
+<div class="viewcode-block" id="ConformalFuzzyClassifier.print_rules">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.ConformalFuzzyClassifier.print_rules">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_rules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">bootstrap_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print or return the rules from the underlying classifier.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">print_rules</span><span class="p">(</span><span class="n">return_rules</span><span class="o">=</span><span class="n">return_rules</span><span class="p">,</span>
+                                    <span class="n">bootstrap_results</span><span class="o">=</span><span class="n">bootstrap_results</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="evaluate_conformal_coverage">
+<a class="viewcode-back" href="../../api/conformal.html#ex_fuzzy.conformal.evaluate_conformal_coverage">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_conformal_coverage</span><span class="p">(</span><span class="n">conf_clf</span><span class="p">:</span> <span class="n">ConformalFuzzyClassifier</span><span class="p">,</span>
+                                 <span class="n">X_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                 <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluate conformal prediction coverage and efficiency.</span>
+
+<span class="sd">    Computes metrics to assess the quality of conformal predictions,</span>
+<span class="sd">    including whether the coverage guarantee is satisfied and how</span>
+<span class="sd">    informative the prediction sets are.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf_clf : ConformalFuzzyClassifier</span>
+<span class="sd">        A calibrated conformal classifier</span>
+<span class="sd">    X_test : array-like of shape (n_samples, n_features)</span>
+<span class="sd">        Test samples</span>
+<span class="sd">    y_test : array-like of shape (n_samples,)</span>
+<span class="sd">        True labels for test samples</span>
+<span class="sd">    alpha : float, default=0.1</span>
+<span class="sd">        Significance level used for prediction sets</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    metrics : dict</span>
+<span class="sd">        Dictionary containing:</span>
+<span class="sd">        - &#39;coverage&#39;: Empirical coverage (should be &gt;= 1-alpha)</span>
+<span class="sd">        - &#39;expected_coverage&#39;: The target coverage (1-alpha)</span>
+<span class="sd">        - &#39;avg_set_size&#39;: Average prediction set size</span>
+<span class="sd">        - &#39;efficiency&#39;: 1 / avg_set_size (higher is better)</span>
+<span class="sd">        - &#39;empty_sets&#39;: Proportion of empty prediction sets</span>
+<span class="sd">        - &#39;singleton_sets&#39;: Proportion of single-class sets</span>
+<span class="sd">        - &#39;coverage_by_class&#39;: Per-class coverage rates</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; metrics = evaluate_conformal_coverage(conf_clf, X_test, y_test, alpha=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Coverage: {metrics[&#39;coverage&#39;]:.3f} (expected: {metrics[&#39;expected_coverage&#39;]:.3f})&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Average set size: {metrics[&#39;avg_set_size&#39;]:.2f}&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Singleton rate: {metrics[&#39;singleton_sets&#39;]:.2%}&quot;)</span>
+
+<span class="sd">    &gt;&gt;&gt; # Check coverage guarantee</span>
+<span class="sd">    &gt;&gt;&gt; if metrics[&#39;coverage&#39;] &gt;= metrics[&#39;expected_coverage&#39;] - 0.05:</span>
+<span class="sd">    ...     print(&quot;Coverage guarantee approximately satisfied&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span>
+
+    <span class="n">pred_sets</span> <span class="o">=</span> <span class="n">conf_clf</span><span class="o">.</span><span class="n">predict_set</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="c1"># Coverage: proportion where true class is in prediction set</span>
+    <span class="n">coverage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">y_test</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pred_sets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">))])</span>
+
+    <span class="c1"># Average set size</span>
+    <span class="n">set_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">pred_sets</span><span class="p">]</span>
+    <span class="n">avg_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">set_sizes</span><span class="p">)</span>
+
+    <span class="c1"># Efficiency metrics</span>
+    <span class="n">empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">pred_sets</span><span class="p">])</span>
+    <span class="n">singleton</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">pred_sets</span><span class="p">])</span>
+
+    <span class="c1"># Per-class coverage</span>
+    <span class="n">coverage_by_class</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_test</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">y_test</span> <span class="o">==</span> <span class="n">c</span>
+        <span class="n">class_coverage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">y_test</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pred_sets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">coverage_by_class</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">class_coverage</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;coverage&#39;</span><span class="p">:</span> <span class="n">coverage</span><span class="p">,</span>
+        <span class="s1">&#39;expected_coverage&#39;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">,</span>
+        <span class="s1">&#39;avg_set_size&#39;</span><span class="p">:</span> <span class="n">avg_size</span><span class="p">,</span>
+        <span class="s1">&#39;efficiency&#39;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">avg_size</span> <span class="k">if</span> <span class="n">avg_size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;empty_sets&#39;</span><span class="p">:</span> <span class="n">empty</span><span class="p">,</span>
+        <span class="s1">&#39;singleton_sets&#39;</span><span class="p">:</span> <span class="n">singleton</span><span class="p">,</span>
+        <span class="s1">&#39;coverage_by_class&#39;</span><span class="p">:</span> <span class="n">coverage_by_class</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
