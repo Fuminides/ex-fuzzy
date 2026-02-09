@@ -328,14 +328,11 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
         Returns
         -------
         results : list of dicts
-            Each dict contains:
-            - 'prediction_set': set of class indices in the prediction set
-            - 'rule_contributions': list of dicts with rule info, each containing:
-                - 'rule_index': index of the rule
-                - 'class': consequent class of the rule
-                - 'firing_strength': how strongly the rule fired
-                - 'rule_confidence': calibrated confidence for this rule
-            - 'class_p_values': dict mapping class index to p-value
+            Each result dict includes keys:
+            'prediction_set' (set of class indices),
+            'rule_contributions' (list of per-rule contribution dicts with
+            'rule_index', 'class', 'firing_strength', and 'rule_confidence'),
+            and 'class_p_values' (dict mapping class index to p-value).
 
         Raises
         ------

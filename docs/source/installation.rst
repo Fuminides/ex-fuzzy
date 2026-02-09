@@ -179,7 +179,7 @@ Windows
 2. During installation, check "Add Python to PATH"
 3. Open Command Prompt or PowerShell and run:
 
-.. code-block:: cmd
+.. code-block:: bat
 
     pip install ex-fuzzy
 
@@ -188,7 +188,7 @@ Windows
 1. Download Anaconda from `anaconda.com <https://www.anaconda.com/products/distribution>`_
 2. Open Anaconda Prompt and run:
 
-.. code-block:: cmd
+.. code-block:: bat
 
     pip install ex-fuzzy
 

@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
@@ -159,15 +159,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -179,6 +179,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
     Fuzzy Sets
@@ -435,6 +449,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user-guide/index.html">
     User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -726,13 +754,13 @@ of fuzzy systems including membership functions, linguistic variables, and rule 
 <dd><p>Remove all content within parentheses from text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Input text that may contain parentheses</p>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Input text that may contain parentheses</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Text with all parenthetical content removed</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -751,12 +779,12 @@ a MasterRuleBase object containing all the rules organized by consequent classes
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rules_printed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Text representation of fuzzy rules following the
+<li><p><strong>rules_printed</strong> (<em>str</em>) – Text representation of fuzzy rules following the
 ex-fuzzy format. Each rule should start with “IF” and contain
 antecedents connected by “AND”, followed by “WITH” and consequent
 information including dominance score (DS), accuracy (ACC), and
 optionally weight (WGHT).</p></li>
-<li><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of fuzzyVariable objects that define the
+<li><p><strong>fuzzy_variables</strong> (<em>list</em>) – List of fuzzyVariable objects that define the
 linguistic variables and their membership functions used in the rules.</p></li>
 </ul>
 </dd>
@@ -772,8 +800,8 @@ linguistic variables and their membership functions used in the rules.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the text format is invalid or contains unrecognized elements</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.13)"><strong>IndexError</strong></a> – If referenced linguistic variables or values are not found</p></li>
+<li><p><strong>ValueError</strong> – If the text format is invalid or contains unrecognized elements</p></li>
+<li><p><strong>IndexError</strong> – If referenced linguistic variables or values are not found</p></li>
 </ul>
 </dd>
 </dl>
@@ -803,7 +831,7 @@ linguistic variables and their membership functions used in the rules.</p></li>
 a list of fuzzyVariable objects with their associated fuzzy sets and membership functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fuzzy_variables_printed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Text representation of fuzzy variables following
+<dd class="field-odd"><p><strong>fuzzy_variables_printed</strong> (<em>str</em>) – Text representation of fuzzy variables following
 the ex-fuzzy format. Should contain variable definitions starting with
 ‘$$$’ (for fuzzy variables) or ‘$Categorical’ (for categorical variables),
 followed by fuzzy set definitions with membership function parameters.</p>
@@ -816,12 +844,12 @@ followed by fuzzy set definitions with membership function parameters.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+<dd class="field-odd"><p>list</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the text format is invalid or contains unrecognized elements</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If membership function parameters cannot be converted to proper types</p></li>
+<li><p><strong>ValueError</strong> – If the text format is invalid or contains unrecognized elements</p></li>
+<li><p><strong>TypeError</strong> – If membership function parameters cannot be converted to proper types</p></li>
 </ul>
 </dd>
 </dl>
@@ -862,7 +890,7 @@ with their membership function parameters.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -892,7 +920,7 @@ with their membership function parameters.</p>
 that can be saved to files and later loaded using load_fuzzy_variables().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fuzzy_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of fuzzyVariable objects to be serialized.
+<dd class="field-odd"><p><strong>fuzzy_variables</strong> (<em>list</em>) – List of fuzzyVariable objects to be serialized.
 Each variable should contain properly configured fuzzy sets with
 membership functions.</p>
 </dd>
@@ -905,7 +933,7 @@ text specification.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -990,7 +1018,7 @@ the results with newline separators for proper file formatting.</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1005,7 +1033,7 @@ the results with newline separators for proper file formatting.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

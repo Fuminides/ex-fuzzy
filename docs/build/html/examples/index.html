@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Classification Examples" href="classification.html" />
-    <link rel="prev" title="Rule Mining Guide" href="../user-guide/rule-mining.html" />
+    <link rel="prev" title="EvoX Backend Guide" href="../evox_backend.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -160,16 +152,16 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
-    Examples
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Examples
   </a>
 </li>
 
@@ -182,29 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -441,6 +412,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
     Examples
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -726,11 +676,12 @@
 </div>
 <div class="toctree-wrapper compound">
 </div>
+</section>
 <section id="working-examples">
-<h2>Working Examples<a class="headerlink" href="#working-examples" title="Link to this heading">#</a></h2>
+<h1>Working Examples<a class="headerlink" href="#working-examples" title="Link to this heading">#</a></h1>
 <p>The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run these examples directly in Google Colab:</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id7">
-<caption><span class="caption-text">Interactive Examples</span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Interactive Examples</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 30.0%" />
 <col style="width: 50.0%" />
@@ -745,34 +696,38 @@
 <tbody>
 <tr class="row-even"><td><p><strong>Basic Classification</strong></p></td>
 <td><p>Introduction to fuzzy classification with the Iris dataset</p></td>
-<td><p><a class="reference external" href="https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing">Open in Colab</a></p></td>
+<td><p><a class="reference external" href="https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing">Open Basic Classification in Colab</a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Custom Loss Functions</strong></p></td>
 <td><p>Advanced optimization techniques</p></td>
-<td><p><a class="reference external" href="https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing">Open in Colab</a></p></td>
+<td><p><a class="reference external" href="https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing">Open Custom Loss in Colab</a></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Rule File Loading</strong></p></td>
 <td><p>Working with text-based rule files</p></td>
-<td><p><a class="reference external" href="https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing">Open in Colab</a></p></td>
+<td><p><a class="reference external" href="https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing">Open Rule File Loading in Colab</a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Advanced Rules</strong></p></td>
 <td><p>Using pre-computed rule populations</p></td>
-<td><p><a class="reference external" href="https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing">Open in Colab</a></p></td>
+<td><p><a class="reference external" href="https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing">Open Advanced Rules in Colab</a></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Temporal Fuzzy Sets</strong></p></td>
 <td><p>Time-aware fuzzy reasoning</p></td>
-<td><p><a class="reference external" href="https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing">Open in Colab</a></p></td>
+<td><p><a class="reference external" href="https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing">Open Temporal Fuzzy Sets in Colab</a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Rule Mining</strong></p></td>
 <td><p>Automatic rule discovery</p></td>
-<td><p><a class="reference external" href="https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing">Open in Colab</a></p></td>
+<td><p><a class="reference external" href="https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing">Open Rule Mining in Colab</a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Conformal Learning</strong></p></td>
+<td><p>Prediction sets with coverage guarantees and rule-aware uncertainty</p></td>
+<td><p>Notebook <cite>Demos/conformal_learning_demo.ipynb</cite> and local script <cite>Demos/demos_module/conformal_learning_demo.py</cite></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
 <section id="local-examples">
-<h2>Local Examples<a class="headerlink" href="#local-examples" title="Link to this heading">#</a></h2>
+<h1>Local Examples<a class="headerlink" href="#local-examples" title="Link to this heading">#</a></h1>
 <p>The repository also contains local Jupyter notebooks in the <cite>Demos/</cite> directory:</p>
 <ul class="simple">
 <li><p><strong>iris_demo.ipynb</strong>: Basic classification with the Iris dataset</p></li>
@@ -782,30 +737,21 @@
 <li><p><strong>occupancy_demo_temporal.ipynb</strong>: Time-series occupancy detection</p></li>
 <li><p><strong>regression_demo.ipynb</strong>: Fuzzy regression examples</p></li>
 <li><p><strong>pattern_analysis_demo.ipynb</strong>: Pattern stability analysis</p></li>
+<li><p><strong>conformal_learning_demo.ipynb</strong>: Conformal prediction with calibration and set-valued outputs</p></li>
+<li><p><strong>demos_module/conformal_learning_demo.py</strong>: Conformal prediction with calibration, set-valued outputs, and coverage metrics</p></li>
 </ul>
-<dl class="simple">
-<dt>These notebooks provide complete, working examples that demonstrate real-world applications of the ex-fuzzy library.</dt><dd><p>financial-risk-assessment
-image-classification
-time-series-prediction</p>
-</dd>
-</dl>
-</section>
-<section id="domain-specific-examples">
-<h2>Domain-Specific Examples<a class="headerlink" href="#domain-specific-examples" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-</div>
+<p>These notebooks provide complete, working examples that demonstrate real-world applications of the ex-fuzzy library.</p>
 </section>
 <section id="interactive-notebooks">
-<h2>Interactive Notebooks<a class="headerlink" href="#interactive-notebooks" title="Link to this heading">#</a></h2>
+<h1>Interactive Notebooks<a class="headerlink" href="#interactive-notebooks" title="Link to this heading">#</a></h1>
 <p>All examples are available as interactive Jupyter notebooks:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/fuminides/ex-fuzzy/tree/main/notebooks">📓 Download Notebooks</a></p></li>
-<li><p><a class="reference external" href="https://colab.research.google.com/github/fuminides/ex-fuzzy">🚀 Open in Colab</a></p></li>
-<li><p><a class="reference external" href="https://mybinder.org/v2/gh/fuminides/ex-fuzzy/main">🏗️ Open in Binder</a></p></li>
+<li><p>📓 Download Notebooks or use Colab with previous links.</p></li>
+<li><p><a class="reference external" href="https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos">🏗️ Open in Binder</a></p></li>
 </ul>
 </section>
 <section id="example-categories">
-<h2>Example Categories<a class="headerlink" href="#example-categories" title="Link to this heading">#</a></h2>
+<h1>Example Categories<a class="headerlink" href="#example-categories" title="Link to this heading">#</a></h1>
 <dl class="simple">
 <dt><strong>Beginner Examples</strong></dt><dd><ul class="simple">
 <li><p>Basic iris classification</p></li>
@@ -828,7 +774,7 @@ time-series-prediction</p>
 </dl>
 </section>
 <section id="contributing-examples">
-<h2>Contributing Examples<a class="headerlink" href="#contributing-examples" title="Link to this heading">#</a></h2>
+<h1>Contributing Examples<a class="headerlink" href="#contributing-examples" title="Link to this heading">#</a></h1>
 <p>We welcome contributions of new examples! If you have an interesting use case or application of Ex-Fuzzy:</p>
 <ol class="arabic simple">
 <li><p>Create a clear, well-documented notebook</p></li>
@@ -837,7 +783,6 @@ time-series-prediction</p>
 <li><p>Submit a pull request</p></li>
 </ol>
 <p>See our <a class="reference internal" href="../contributing.html"><span class="doc">Contributing</span></a> guide for more details.</p>
-</section>
 </section>
 
 
@@ -863,13 +808,14 @@ time-series-prediction</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-examples">Working Examples</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-examples">Local Examples</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#domain-specific-examples">Domain-Specific Examples</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interactive-notebooks">Interactive Notebooks</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-categories">Example Categories</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing-examples">Contributing Examples</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Examples</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#working-examples">Working Examples</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#local-examples">Local Examples</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#interactive-notebooks">Interactive Notebooks</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#example-categories">Example Categories</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing-examples">Contributing Examples</a></li>
 </ul>
+
   </nav></div>
 
   <div class="sidebar-secondary-item">
@@ -906,7 +852,7 @@ time-series-prediction</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -921,7 +867,7 @@ time-series-prediction</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

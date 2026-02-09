@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +153,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -182,29 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -442,6 +413,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="examples/index.html">
     Examples
   </a>
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -734,7 +684,7 @@ in scikit-learn, so it requires no previous knowledge about fuzzy logic in order
 <p>Once the data has been loaded, we just need to create a classifier with the proper parameters, number of rules,
 maximum number of antecedents per rule, number of linguist variables per fuzzy variable and tolerance, which will explained
 in the evaluation part of this section:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.evolutionary_fit</span> <span class="k">as</span> <span class="nn">GA</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">GA</span>
 
 <span class="n">fl_classifier</span> <span class="o">=</span> <span class="n">GA</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
                                              <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
@@ -827,7 +777,7 @@ Ex-Fuzzy uses three different criteria.</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -842,7 +792,7 @@ Ex-Fuzzy uses three different criteria.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

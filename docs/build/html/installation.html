@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +153,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -182,29 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -442,6 +413,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="examples/index.html">
     Examples
   </a>
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -780,6 +730,14 @@
 </tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p>evox</p></td>
+<td><p>≥0.8.0</p></td>
+<td><p>GPU-accelerated evolutionary optimization</p></td>
+</tr>
+<tr class="row-odd"><td><p>torch</p></td>
+<td><p>≥1.9.0</p></td>
+<td><p>PyTorch for GPU acceleration (required by EvoX)</p></td>
+</tr>
 <tr class="row-even"><td><p>jupyter</p></td>
 <td><p>≥1.0.0</p></td>
 <td><p>For running notebook examples</p></td>
@@ -805,9 +763,24 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
 </pre></div>
 </div>
+<p>To install with GPU support (EvoX backend):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox<span class="w"> </span>torch
+</pre></div>
+</div>
+<p>For CUDA-specific PyTorch installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># CUDA 11.8</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu118
+
+<span class="c1"># CUDA 12.1</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu121
+</pre></div>
+</div>
 <p>To install with optional dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[viz]&quot;</span><span class="w">      </span><span class="c1"># Enhanced visualization</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[jupyter]&quot;</span><span class="w">  </span><span class="c1"># Jupyter notebook support</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[gpu]&quot;</span><span class="w">      </span><span class="c1"># GPU support (EvoX + PyTorch)</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[all]&quot;</span><span class="w">      </span><span class="c1"># All optional dependencies</span>
 </pre></div>
 </div>
@@ -865,7 +838,7 @@ pip<span class="w"> </span>install<span class="w"> </span>.
 <li><p>During installation, check “Add Python to PATH”</p></li>
 <li><p>Open Command Prompt or PowerShell and run:</p></li>
 </ol>
-<div class="highlight-cmd notranslate"><div class="highlight"><pre><span></span>pip install ex-fuzzy
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>pip install ex-fuzzy
 </pre></div>
 </div>
 <p><strong>Option 2: Using Anaconda</strong></p>
@@ -873,7 +846,7 @@ pip<span class="w"> </span>install<span class="w"> </span>.
 <li><p>Download Anaconda from <a class="reference external" href="https://www.anaconda.com/products/distribution">anaconda.com</a></p></li>
 <li><p>Open Anaconda Prompt and run:</p></li>
 </ol>
-<div class="highlight-cmd notranslate"><div class="highlight"><pre><span></span>pip install ex-fuzzy
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>pip install ex-fuzzy
 </pre></div>
 </div>
 </section>
@@ -971,14 +944,14 @@ pipenv<span class="w"> </span>shell
 <p>Test your installation by running this simple Python script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_installation.py</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">ex_fuzzy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Ex-Fuzzy successfully imported!&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📦 Version: </span><span class="si">{</span><span class="n">ex_fuzzy</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Test basic functionality</span>
-    <span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
-    <span class="kn">import</span> <span class="nn">ex_fuzzy.evolutionary_fit</span> <span class="k">as</span> <span class="nn">evf</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
     <span class="c1"># Create a simple dataset</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
@@ -1039,6 +1012,134 @@ conda<span class="w"> </span>activate<span class="w"> </span>exfuzzy
 conda<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>pandas<span class="w"> </span>scikit-learn<span class="w"> </span>matplotlib
 pip<span class="w"> </span>install<span class="w"> </span>pymoo<span class="w"> </span>ex-fuzzy
 </pre></div>
+</div>
+</section>
+</section>
+<section id="gpu-acceleration-setup">
+<h2>GPU Acceleration Setup<a class="headerlink" href="#gpu-acceleration-setup" title="Link to this heading">#</a></h2>
+<p>Ex-Fuzzy supports GPU-accelerated evolutionary optimization through the EvoX backend.</p>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h3>
+<p>To use GPU acceleration, you need:</p>
+<ol class="arabic simple">
+<li><p><strong>CUDA-compatible GPU</strong> (NVIDIA) with compute capability ≥3.5</p></li>
+<li><p><strong>CUDA Toolkit</strong> (11.8 or 12.1 recommended)</p></li>
+<li><p><strong>cuDNN</strong> (optional but recommended)</p></li>
+</ol>
+</section>
+<section id="installing-gpu-support">
+<h3>Installing GPU Support<a class="headerlink" href="#installing-gpu-support" title="Link to this heading">#</a></h3>
+<p><strong>Option 1: Automatic Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox<span class="w"> </span>torch
+</pre></div>
+</div>
+<p>This installs PyTorch with CPU support. For GPU support:</p>
+<p><strong>Option 2: CUDA-Specific Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># For CUDA 11.8</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu118
+
+<span class="c1"># For CUDA 12.1</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu121
+</pre></div>
+</div>
+</section>
+<section id="verifying-gpu-installation">
+<h3>Verifying GPU Installation<a class="headerlink" href="#verifying-gpu-installation" title="Link to this heading">#</a></h3>
+<p>Check if GPU is available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">evolutionary_backends</span>
+
+<span class="c1"># Check available backends</span>
+<span class="n">backends</span> <span class="o">=</span> <span class="n">evolutionary_backends</span><span class="o">.</span><span class="n">list_available_backends</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available backends: </span><span class="si">{</span><span class="n">backends</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check GPU availability</span>
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ GPU available: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  CUDA version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  GPU memory: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_properties</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">total_memory</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> GB&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠ No GPU detected. EvoX will use CPU.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Expected Output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Available backends: [&#39;pymoo&#39;, &#39;evox&#39;]
+✓ GPU available: NVIDIA GeForce RTX 3080
+  CUDA version: 11.8
+  GPU memory: 10.00 GB
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting-gpu-setup">
+<h3>Troubleshooting GPU Setup<a class="headerlink" href="#troubleshooting-gpu-setup" title="Link to this heading">#</a></h3>
+<p><strong>Issue</strong>: GPU not detected</p>
+<p><strong>Solution 1</strong>: Verify CUDA installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nvidia-smi<span class="w">  </span><span class="c1"># Should show GPU information</span>
+</pre></div>
+</div>
+<p><strong>Solution 2</strong>: Check PyTorch CUDA version matches your drivers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyTorch version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CUDA available: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CUDA version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Solution 3</strong>: Reinstall PyTorch with correct CUDA version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>uninstall<span class="w"> </span>torch
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu118
+</pre></div>
+</div>
+<p><strong>Issue</strong>: Out of memory errors with GPU</p>
+<p><strong>Solution</strong>: Ex-Fuzzy automatically batches operations, but you can:</p>
+<ol class="arabic simple">
+<li><p>Reduce population size: <code class="docutils literal notranslate"><span class="pre">pop_size=30</span></code> instead of <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p>Monitor GPU memory: <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> or <code class="docutils literal notranslate"><span class="pre">watch</span> <span class="pre">-n</span> <span class="pre">1</span> <span class="pre">nvidia-smi</span></code></p></li>
+<li><p>Use CPU mode temporarily: Set <code class="docutils literal notranslate"><span class="pre">backend='pymoo'</span></code></p></li>
+</ol>
+</section>
+<section id="performance-comparison">
+<h3>Performance Comparison<a class="headerlink" href="#performance-comparison" title="Link to this heading">#</a></h3>
+<p>Typical speedup with GPU (RTX 3080) vs CPU (Intel i7):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Dataset Size</p></th>
+<th class="head"><p>PyMoo (CPU)</p></th>
+<th class="head"><p>EvoX (GPU)</p></th>
+<th class="head"><p>Speedup</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1,000 samples</p></td>
+<td><p>12s</p></td>
+<td><p>15s</p></td>
+<td><p>0.8x (GPU overhead)</p></td>
+</tr>
+<tr class="row-odd"><td><p>10,000 samples</p></td>
+<td><p>98s</p></td>
+<td><p>35s</p></td>
+<td><p>2.8x</p></td>
+</tr>
+<tr class="row-even"><td><p>100,000 samples</p></td>
+<td><p>856s</p></td>
+<td><p>89s</p></td>
+<td><p>9.6x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GPU acceleration is most beneficial for large datasets (&gt;10,000 samples) and
+complex rule bases. For small datasets, CPU (PyMoo) may be faster due to
+GPU transfer overhead.</p>
 </div>
 </section>
 </section>
@@ -1157,6 +1258,14 @@ docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#common-issues">Common Issues</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-acceleration-setup">GPU Acceleration Setup</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-gpu-support">Installing GPU Support</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verifying-gpu-installation">Verifying GPU Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting-gpu-setup">Troubleshooting GPU Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-comparison">Performance Comparison</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-optimization">Performance Optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intel-optimized-packages">Intel-Optimized Packages</a></li>
 </ul>
@@ -1201,7 +1310,7 @@ docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </sp
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1216,7 +1325,7 @@ docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </sp
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

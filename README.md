@@ -172,6 +172,25 @@ Ex-Fuzzy supports two evolutionary optimization backends:
 
 Both backends automatically batch operations to fit available memory and large datasets are processed in chunks to prevent out-of-memory errors.
 
+## 🎯 Conformal Learning Support
+
+Ex-Fuzzy supports conformal learning for uncertainty-aware fuzzy classification through
+`ex_fuzzy.conformal`.
+
+What is supported:
+- Split conformal calibration on held-out calibration data
+- Set-valued predictions with target coverage `1 - alpha`
+- Rule-aware conformal outputs for explainable uncertainty analysis
+- Coverage and efficiency metrics via `evaluate_conformal_coverage`
+
+Main implementation and docs:
+- Core module: `ex_fuzzy/ex_fuzzy/conformal.py`
+- User docs: `docs/source/user-guide/conformal-learning.rst`
+- API docs: `docs/source/api/conformal.rst`
+- Demos:
+  - Notebook: `Demos/conformal_learning_demo.ipynb`
+  - Script: `Demos/demos_module/conformal_learning_demo.py`
+
 
 ## 🛠️ Examples
 
@@ -188,6 +207,7 @@ Try our hands-on examples in Google Colab:
 | **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
 | **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
 | **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
+| **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
 
 ### 💻 Code Examples
 

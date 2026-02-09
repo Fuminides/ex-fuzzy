@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
@@ -159,15 +159,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -179,6 +179,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
     Fuzzy Sets
@@ -435,6 +449,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user-guide/index.html">
     User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -734,7 +762,7 @@ used for efficient rule evaluation and inference.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><em>fs.fuzzyVariable</em><em>]</em>) – List of fuzzy variables representing
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><em>fs.fuzzyVariable</em><em>]</em>) – List of fuzzy variables representing
 the antecedents (input variables) of the fuzzy system</p></li>
 <li><p><strong>x</strong> (<em>np.array</em>) – Input vector with values for each antecedent variable.
 Shape should be (n_samples, n_variables) or (n_variables,) for single sample</p></li>
@@ -748,7 +776,7 @@ Shape should be (n_samples, n_variables) or (n_variables,) for single sample</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>]</p>
+<dd class="field-odd"><p>list[dict]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -769,8 +797,8 @@ useful for debugging membership degree calculations or analyzing input fuzzifica
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Exception raised when a fuzzy rule is incorrectly defined or invalid.</p>
 <p>This exception is used throughout the rules module to indicate various
 rule-related errors such as invalid antecedent specifications, inconsistent
@@ -783,7 +811,7 @@ membership functions, or malformed rule structures.</p>
 <dd><p>Human-readable description of the error</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -801,7 +829,7 @@ membership functions, or malformed rule structures.</p>
 <dd><p>Initialize the RuleError exception.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Descriptive error message explaining what went wrong</p>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Descriptive error message explaining what went wrong</p>
 </dd>
 </dl>
 </dd></dl>
@@ -810,8 +838,8 @@ membership functions, or malformed rule structures.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.Rule">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#Rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.Rule" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#Rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.Rule" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class of Rule designed to work with one single rule. It contains the whole inference functionally in itself.</p>
 <dl class="field-list simple">
 </dl>
@@ -822,7 +850,7 @@ membership functions, or malformed rule structures.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a><em>]</em>) – list of fuzzy sets.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a><em>]</em>) – list of fuzzy sets.</p></li>
 <li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.FS" title="ex_fuzzy.fuzzy_sets.FS"><em>FS</em></a>) – fuzzy set.</p></li>
 </ul>
 </dd>
@@ -855,8 +883,8 @@ membership functions, or malformed rule structures.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleSimple">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleSimple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifiers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleSimple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleSimple" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleSimple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifiers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleSimple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleSimple" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Simplified Rule Representation for Optimized Computation.</p>
 <p>This class represents fuzzy rules in a simplified format optimized for
 computational efficiency in rule base operations. It uses integer encoding
@@ -872,7 +900,7 @@ rule evaluation processes.</p>
 - 0-N: Index of the linguistic variable used for the ith input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>]</p>
+<dd class="field-odd"><p>list[int]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -883,7 +911,7 @@ rule evaluation processes.</p>
 <dd><p>Integer index of the consequent linguistic variable</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -919,9 +947,9 @@ rule evaluation in large rule bases where memory and speed are critical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – List of integers indicating the linguistic
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of integers indicating the linguistic
 variable used for each input (-1 for unused variables)</p></li>
-<li><p><strong>consequent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Integer indicating the linguistic variable
+<li><p><strong>consequent</strong> (<em>int</em><em>, </em><em>optional</em>) – Integer indicating the linguistic variable
 used for the consequent. Defaults to 0.</p></li>
 <li><p><strong>modifiers</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Array of modifier values for rule adaptation.
 Defaults to None.</p></li>
@@ -941,13 +969,13 @@ Defaults to None.</p></li>
 <dd><p>Returns the antecedent value for the given index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ix</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Index of the antecedent to return</p>
+<dd class="field-odd"><p><strong>ix</strong> (<em>int</em>) – Index of the antecedent to return</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The antecedent value at the specified index</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -964,8 +992,8 @@ Defaults to None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ix</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Index of the antecedent to set</p></li>
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Value to set at the specified index</p></li>
+<li><p><strong>ix</strong> (<em>int</em>) – Index of the antecedent to set</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – Value to set at the specified index</p></li>
 </ul>
 </dd>
 </dl>
@@ -985,7 +1013,7 @@ Defaults to None.</p></li>
 <dd class="field-odd"><p>Human-readable string representation of the rule</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1004,7 +1032,7 @@ Defaults to None.</p></li>
 <dd class="field-odd"><p>Number of antecedents in the rule</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-even"><p>int</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1026,7 +1054,7 @@ Defaults to None.</p></li>
 <dd class="field-even"><p>True if rules have identical antecedents and consequent</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1047,8 +1075,8 @@ Defaults to None.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class optimized to work with multiple rules at the same time. Right now supports only one consequent. (Solution: use one rulebase per consequent to study)</p>
 <dl class="field-list simple">
 </dl>
@@ -1059,8 +1087,8 @@ Defaults to None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy sets.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy sets.</p></li>
+<li><p><strong>rules</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
 <li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy set.</p></li>
 <li><p><strong>tnorm</strong> – t-norm to use in the inference process.</p></li>
 <li><p><strong>fuzzy_modifiers</strong> – array with the fuzzy modifiers for each rule. If None, no modifiers are used. (Fuzzy modifiers are modifiers to the antecedent memberships, also known as linguistic hedges). Only exponentiation is supported. (x**a, being a the modifier in the matrix). Defaults to None. They can also be specified in the RuleSimple list of rules.</p></li>
@@ -1092,7 +1120,7 @@ Defaults to None.</p></li>
 <dd><p>Adds a list of new rules to the rulebase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
+<dd class="field-odd"><p><strong>new_rules</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules to add.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1112,7 +1140,7 @@ Defaults to None.</p></li>
 <dd><p>Removes the rules in the given list of indexes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>delete_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – list of indexes of the rules to remove.</p>
+<dd class="field-odd"><p><strong>delete_list</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – list of indexes of the rules to remove.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1157,7 +1185,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-even"><p>a list with the antecedent truth values for each one. Each list is comprised of a list with n elements, where n is the number of linguistic variables in each variable.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>]</p>
+<dd class="field-odd"><p>list[dict]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1189,14 +1217,14 @@ x must be a vector (only one sample)</p>
 <dd><p>Print the rules from the rule base.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>return_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the rules are returned as a string.</p>
+<dd class="field-odd"><p><strong>return_rules</strong> (<em>bool</em>) – if True, the rules are returned as a string.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.inference">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.inference" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.inference" title="Link to this definition">#</a></dt>
 <dd><p>Computes the fuzzy output of the fl inference system.</p>
 <p>Return an array in shape samples x 2 (last is iv dimension)</p>
 <dl class="field-list simple">
@@ -1214,7 +1242,7 @@ x must be a vector (only one sample)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.forward">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.forward" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.forward" title="Link to this definition">#</a></dt>
 <dd><p>Computes the deffuzified output of the fl inference system.</p>
 <p>Return a vector of size (samples, )</p>
 <dl class="field-list simple">
@@ -1232,7 +1260,7 @@ x must be a vector (only one sample)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBase.fuzzy_type">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fuzzy_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.fuzzy_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.fuzzy_type" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fuzzy_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBase.fuzzy_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBase.fuzzy_type" title="Link to this definition">#</a></dt>
 <dd><p>Returns the corresponding type of the RuleBase using the enum type in the fuzzy_sets module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1281,7 +1309,7 @@ x must be a vector (only one sample)</p>
 <dd><p>Returns the corresponding rulebase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>item</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule.</p>
+<dd class="field-odd"><p><strong>item</strong> (<em>int</em>) – index of the rule.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the corresponding rule.</p>
@@ -1299,7 +1327,7 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule.</p></li>
+<li><p><strong>key</strong> (<em>int</em>) – index of the rule.</p></li>
 <li><p><strong>value</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – new rule.</p></li>
 </ul>
 </dd>
@@ -1370,7 +1398,7 @@ x must be a vector (only one sample)</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBaseT2">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBaseT2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseT2" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBaseT2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseT2" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBase</span></code></a></p>
 <p>Class optimized to work with multiple rules at the same time. Supports only one consequent.
 (Use one rulebase per consequent to study classification problems. Check MasterRuleBase class for more documentation)</p>
@@ -1384,8 +1412,8 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
+<li><p><strong>rules</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
 <li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules.</p></li>
 <li><p><strong>tnorm</strong> – t-norm used to compute the fuzzy output.</p></li>
 </ul>
@@ -1447,7 +1475,7 @@ x must be a vector (only one sample)</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBaseGT2">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBaseGT2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseGT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseGT2" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBaseGT2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseGT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseGT2" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBase</span></code></a></p>
 <p>Class optimized to work with multiple rules at the same time. Supports only one consequent.
 (Use one rulebase per consequent to study classification problems. Check MasterRuleBase class for more documentation)</p>
@@ -1461,8 +1489,8 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
+<li><p><strong>rules</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
 <li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules.</p></li>
 <li><p><strong>tnorm</strong> – t-norm used to compute the fuzzy output.</p></li>
 </ul>
@@ -1566,7 +1594,7 @@ x must be a vector (only one sample)</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.RuleBaseT1">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBaseT1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseT1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseT1" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">RuleBaseT1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">antecedents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnorm=&lt;function</span> <span class="pre">prod&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#RuleBaseT1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.RuleBaseT1" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleBase</span></code></a></p>
 <p>Class optimized to work with multiple rules at the same time. Supports only one consequent.
 (Use one rulebase per consequent to study classification problems. Check MasterRuleBase class for more documentation)</p>
@@ -1580,8 +1608,8 @@ x must be a vector (only one sample)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
-<li><p><strong>rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables that are the antecedents of the rules.</p></li>
+<li><p><strong>rules</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p></li>
 <li><p><strong>consequent</strong> (<a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a>) – fuzzy variable that is the consequent of the rules. ONLY on regression problems.</p></li>
 <li><p><strong>tnorm</strong> – t-norm used to compute the fuzzy output.</p></li>
 </ul>
@@ -1643,8 +1671,8 @@ x must be a vector (only one sample)</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">MasterRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.rules.</span></span><span class="sig-name descname"><span class="pre">MasterRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">consequent_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This Class encompasses a list of rule bases where each one corresponds to a different class.</p>
 <dl class="field-list simple">
 </dl>
@@ -1654,7 +1682,7 @@ x must be a vector (only one sample)</p>
 <dd><p>Constructor of the MasterRuleBase class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rule_base</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><em>RuleBase</em></a><em>]</em>) – list of rule bases.</p>
+<dd class="field-odd"><p><strong>rule_base</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><em>RuleBase</em></a><em>]</em>) – list of rule bases.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1675,7 +1703,21 @@ x must be a vector (only one sample)</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rule</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – rule to add.</p></li>
-<li><p><strong>consequent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the rule base to add the rule.</p></li>
+<li><p><strong>consequent</strong> (<em>int</em>) – index of the rule base to add the rule.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ex_fuzzy.rules.MasterRuleBase.remove_rule">
+<span class="sig-name descname"><span class="pre">remove_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">consequent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/rules.html#MasterRuleBase.remove_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.rules.MasterRuleBase.remove_rule" title="Link to this definition">#</a></dt>
+<dd><p>Remove a rule from the rule base of the given consequent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>consequent</strong> (<em>int</em>) – index of the rule base to remove the rule from.</p></li>
+<li><p><strong>idx</strong> – index of the rule to remove.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1690,7 +1732,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>list with the consequents of each rule base.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>]</p>
+<dd class="field-even"><p>list[int]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1704,7 +1746,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>list with the names of the consequents.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+<dd class="field-even"><p>list[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1718,7 +1760,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>list with the rulebases for each antecedent in matrix format.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<em>array</em>]</p>
+<dd class="field-even"><p>list[<em>array</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1860,7 +1902,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>list with all the rules.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
+<dd class="field-even"><p>list[<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1935,7 +1977,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-even"><p>True if the two rule bases are equal.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1983,7 +2025,7 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><p>list</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><em>RuleBase</em></a>]</p>
+<dd class="field-even"><p>list[<a class="reference internal" href="#ex_fuzzy.rules.RuleBase" title="ex_fuzzy.rules.RuleBase"><em>RuleBase</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2029,8 +2071,8 @@ x must be a vector (only one sample)</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rule_matrix</strong> (<em>array</em>) – matrix with the rules.</p></li>
 <li><p><strong>consequents</strong> (<em>array</em>) – array with the consequents per rule.</p></li>
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables.</p></li>
-<li><p><strong>class_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list with the names of the classes.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzy variables.</p></li>
+<li><p><strong>class_names</strong> (<em>list</em>) – list with the names of the classes.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2042,7 +2084,7 @@ x must be a vector (only one sample)</p>
 <dd><p>Returns a matrix out of the rule list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rule_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p>
+<dd class="field-odd"><p><strong>rule_list</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a><em>]</em>) – list of rules.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>matrix with the antecedents of the rules.</p>
@@ -2061,7 +2103,7 @@ x must be a vector (only one sample)</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rule</strong> (<a class="reference internal" href="#ex_fuzzy.rules.RuleSimple" title="ex_fuzzy.rules.RuleSimple"><em>RuleSimple</em></a>) – rule to generate the string.</p></li>
-<li><p><strong>antecedents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list of fuzzy variables.</p></li>
+<li><p><strong>antecedents</strong> (<em>list</em>) – list of fuzzy variables.</p></li>
 <li><p><strong>modifiers</strong> – array with the modifiers for the antecedents.</p></li>
 </ul>
 </dd>
@@ -2177,6 +2219,7 @@ x must be a vector (only one sample)</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.__init__"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.rename_cons"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.rename_cons()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.add_rule"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.add_rule()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.remove_rule"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.remove_rule()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.get_consequents"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_consequents()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.get_consequents_names"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_consequents_names()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ex_fuzzy.rules.MasterRuleBase.get_rulebase_matrix"><code class="docutils literal notranslate"><span class="pre">MasterRuleBase.get_rulebase_matrix()</span></code></a></li>
@@ -2244,7 +2287,7 @@ x must be a vector (only one sample)</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -2259,7 +2302,7 @@ x must be a vector (only one sample)</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

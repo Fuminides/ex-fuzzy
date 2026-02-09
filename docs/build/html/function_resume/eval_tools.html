@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
@@ -159,15 +159,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -179,6 +179,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
     Fuzzy Sets
@@ -435,6 +449,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user-guide/index.html">
     User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -745,11 +773,11 @@ It serves as a convenient wrapper around the FuzzyEvaluator class.</p>
 <li><p><strong>y_train</strong> (<em>np.array</em>) – Training target labels used for model fitting</p></li>
 <li><p><strong>X_test</strong> (<em>np.array</em>) – Test feature data for evaluation</p></li>
 <li><p><strong>y_test</strong> (<em>np.array</em>) – Test target labels for evaluation</p></li>
-<li><p><strong>plot_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to generate rule visualization plots. Defaults to False.</p></li>
-<li><p><strong>print_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print rule text representations. Defaults to True.</p></li>
-<li><p><strong>plot_partitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to plot fuzzy variable partitions. Defaults to False.</p></li>
-<li><p><strong>return_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to include rule text in return string. Defaults to True.</p></li>
-<li><p><strong>bootstrap_results_print</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to perform bootstrap statistical analysis. Defaults to True.</p></li>
+<li><p><strong>plot_rules</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to generate rule visualization plots. Defaults to False.</p></li>
+<li><p><strong>print_rules</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print rule text representations. Defaults to True.</p></li>
+<li><p><strong>plot_partitions</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to plot fuzzy variable partitions. Defaults to False.</p></li>
+<li><p><strong>return_rules</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include rule text in return string. Defaults to True.</p></li>
+<li><p><strong>bootstrap_results_print</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to perform bootstrap statistical analysis. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -760,7 +788,7 @@ It serves as a convenient wrapper around the FuzzyEvaluator class.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -780,8 +808,8 @@ consider using FuzzyEvaluator directly.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.eval_tools.FuzzyEvaluator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.eval_tools.</span></span><span class="sig-name descname"><span class="pre">FuzzyEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fl_classifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/eval_tools.html#FuzzyEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_tools.FuzzyEvaluator" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.eval_tools.</span></span><span class="sig-name descname"><span class="pre">FuzzyEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fl_classifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/eval_tools.html#FuzzyEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.eval_tools.FuzzyEvaluator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Comprehensive evaluation and analysis tool for fuzzy rule-based classifiers.</p>
 <p>This class provides a complete suite of evaluation methods for fuzzy classification
 models, including performance metrics, rule analysis, statistical testing, and
@@ -853,7 +881,7 @@ label conversion and error handling for unsupported metrics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of the sklearn.metrics function to compute (e.g., ‘accuracy_score’, ‘f1_score’)</p></li>
+<li><p><strong>metric</strong> (<em>str</em>) – Name of the sklearn.metrics function to compute (e.g., ‘accuracy_score’, ‘f1_score’)</p></li>
 <li><p><strong>X_true</strong> (<em>np.array</em>) – Feature data for prediction</p></li>
 <li><p><strong>y_true</strong> (<em>np.array</em>) – True class labels</p></li>
 <li><p><strong>**kwargs</strong> – Additional arguments for the specific metric function</p></li>
@@ -863,7 +891,7 @@ label conversion and error handling for unsupported metrics.</p>
 <dd class="field-even"><p>The computed metric value, or error string if metric is unavailable</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -893,21 +921,21 @@ multiple evaluation aspects into a single convenient interface.</p>
 <li><p><strong>y_train</strong> (<em>np.array</em>) – Training target labels</p></li>
 <li><p><strong>X_test</strong> (<em>np.array</em>) – Test feature data</p></li>
 <li><p><strong>y_test</strong> (<em>np.array</em>) – Test target labels</p></li>
-<li><p><strong>plot_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to generate rule visualization plots. Defaults to True.</p></li>
-<li><p><strong>print_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print rule text representations. Defaults to True.</p></li>
-<li><p><strong>plot_partitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to plot fuzzy variable partitions. Defaults to True.</p></li>
-<li><p><strong>return_rules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to return rule text in output. Defaults to False.</p></li>
-<li><p><strong>print_accuracy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print accuracy metrics. Defaults to True.</p></li>
-<li><p><strong>print_matthew</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print Matthews correlation coefficient. Defaults to True.</p></li>
-<li><p><strong>export_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Path to export rule visualization plots. Defaults to None.</p></li>
-<li><p><strong>bootstrap_results_print</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to perform bootstrap statistical analysis. Defaults to True.</p></li>
+<li><p><strong>plot_rules</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to generate rule visualization plots. Defaults to True.</p></li>
+<li><p><strong>print_rules</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print rule text representations. Defaults to True.</p></li>
+<li><p><strong>plot_partitions</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to plot fuzzy variable partitions. Defaults to True.</p></li>
+<li><p><strong>return_rules</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return rule text in output. Defaults to False.</p></li>
+<li><p><strong>print_accuracy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print accuracy metrics. Defaults to True.</p></li>
+<li><p><strong>print_matthew</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print Matthews correlation coefficient. Defaults to True.</p></li>
+<li><p><strong>export_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to export rule visualization plots. Defaults to None.</p></li>
+<li><p><strong>bootstrap_results_print</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to perform bootstrap statistical analysis. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Rule text representation if return_rules=True, otherwise None</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> or None</p>
+<dd class="field-odd"><p>str or None</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -996,7 +1024,7 @@ comprehensive output including performance metrics and rule analysis.</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1011,7 +1039,7 @@ comprehensive output including performance metrics and rule analysis.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

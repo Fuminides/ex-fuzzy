@@ -18,6 +18,8 @@
       ~BaseFuzzyRulesClassifier.explainable_predict
       ~BaseFuzzyRulesClassifier.fit
       ~BaseFuzzyRulesClassifier.forward
+      ~BaseFuzzyRulesClassifier.get_metadata_routing
+      ~BaseFuzzyRulesClassifier.get_params
       ~BaseFuzzyRulesClassifier.get_rulebase
       ~BaseFuzzyRulesClassifier.load_master_rule_base
       ~BaseFuzzyRulesClassifier.p_value_validation
@@ -31,6 +33,10 @@
       ~BaseFuzzyRulesClassifier.rename_fuzzy_variables
       ~BaseFuzzyRulesClassifier.reparametrice_loss
       ~BaseFuzzyRulesClassifier.score
+      ~BaseFuzzyRulesClassifier.set_fit_request
+      ~BaseFuzzyRulesClassifier.set_params
+      ~BaseFuzzyRulesClassifier.set_predict_request
+      ~BaseFuzzyRulesClassifier.set_score_request
    
    
 

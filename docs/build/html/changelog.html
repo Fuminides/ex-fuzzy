@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
@@ -51,7 +51,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'changelog';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Roadmap" href="roadmap.html" />
+    <link rel="next" title="Current Version: 1.0.0" href="roadmap.html" />
     <link rel="prev" title="Contributing" href="contributing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +153,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Working Examples
   </a>
 </li>
 
@@ -182,29 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -225,7 +196,7 @@
 
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="roadmap.html">
-    Roadmap
+    Current Version: 1.0.0
   </a>
 </li>
 
@@ -442,8 +413,15 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="examples/index.html">
-    Examples
+    Working Examples
   </a>
 </li>
 
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -499,7 +449,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="roadmap.html">
-    Roadmap
+    Current Version: 1.0.0
   </a>
 </li>
 
@@ -715,6 +665,10 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p><strong>EvoX Backend Support</strong>: GPU-accelerated evolutionary optimization using EvoX and PyTorch</p></li>
+<li><p><strong>Automatic Memory Management</strong>: Batch processing for large datasets to prevent out-of-memory errors</p></li>
+<li><p><strong>Performance Improvements</strong>: 2-10x speedup for large datasets with GPU acceleration</p></li>
+<li><p><strong>Backend Selection</strong>: Easy switching between PyMoo (CPU) and EvoX (GPU) backends</p></li>
 <li><p>New comprehensive test suite with &gt;90% code coverage</p></li>
 <li><p>Modern documentation website with PyData theme</p></li>
 <li><p>Interactive examples with Jupyter notebooks</p></li>
@@ -726,6 +680,9 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p><strong>Evolutionary Optimization</strong>: Vectorized fitness evaluation for significant speedups</p></li>
+<li><p><strong>Memory Efficiency</strong>: Automatic batching prevents memory overflow on large datasets</p></li>
+<li><p><strong>GPU Utilization</strong>: Seamless GPU/CPU switching based on hardware availability</p></li>
 <li><p>Improved API consistency across all modules</p></li>
 <li><p>Better error messages and exception handling</p></li>
 <li><p>Enhanced visualization capabilities</p></li>
@@ -847,11 +804,11 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <h3>Migrating from 0.9.x to 1.0.0<a class="headerlink" href="#migrating-from-0-9-x-to-1-0-0" title="Link to this heading">#</a></h3>
 <p><strong>API Changes:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old way (0.9.x)</span>
-<span class="kn">from</span> <span class="nn">ex_fuzzy</span> <span class="kn">import</span> <span class="n">FuzzyClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuzzyClassifier</span>
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">FuzzyClassifier</span><span class="p">(</span><span class="n">rules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">antecedents</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c1"># New way (1.0.x)</span>
-<span class="kn">from</span> <span class="nn">ex_fuzzy.evolutionary_fit</span> <span class="kn">import</span> <span class="n">BaseFuzzyRulesClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFuzzyRulesClassifier</span>
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -868,7 +825,7 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <span class="n">classifier</span><span class="o">.</span><span class="n">plot_rules</span><span class="p">()</span>
 
 <span class="c1"># New way (1.0.x)</span>
-<span class="kn">from</span> <span class="nn">ex_fuzzy.eval_tools</span> <span class="kn">import</span> <span class="n">FuzzyEvaluator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.eval_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuzzyEvaluator</span>
 <span class="n">evaluator</span> <span class="o">=</span> <span class="n">FuzzyEvaluator</span><span class="p">(</span><span class="n">classifier</span><span class="p">)</span>
 <span class="n">evaluator</span><span class="o">.</span><span class="n">eval_fuzzy_model</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">plot_rules</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -1039,7 +996,7 @@ and this project adheres to <a class="reference external" href="https://semver.o
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1054,7 +1011,7 @@ and this project adheres to <a class="reference external" href="https://semver.o
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

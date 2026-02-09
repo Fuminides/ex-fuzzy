@@ -96,7 +96,7 @@ Let's start with a simple example using the famous Iris dataset:
     print(f"Accuracy: {accuracy:.3f}")
 
 Understanding the Output
-=======================
+========================
 
 After training, you can examine the fuzzy rules that were learned:
 
@@ -132,7 +132,7 @@ Key Concepts
 ============
 
 Fuzzy Variables
---------------
+---------------
 
 Fuzzy variables define how crisp values are mapped to linguistic terms like "Low", "Medium", "High":
 
@@ -282,10 +282,9 @@ Next Steps
 
 Now that you've got the basics, explore more advanced features:
 
-- :doc:`user-guide/fuzzy-sets`: Learn about different types of fuzzy sets
-- :doc:`user-guide/optimization`: Understand the evolutionary optimization process
-- :doc:`user-guide/visualization`: Create beautiful visualizations of your models
+- :doc:`user-guide/core-concepts`: Learn about fuzzy sets, rules, and classifiers
+- :doc:`user-guide/rule-mining`: Understand automatic rule discovery and tuning workflows
 - :doc:`examples/index`: See real-world applications and case studies
 
 .. tip::
-    Check out the :doc:`examples/basic-classification` for more detailed examples with different datasets!
+    Check out the :doc:`examples/classification` page for detailed classification workflows.

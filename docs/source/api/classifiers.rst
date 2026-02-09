@@ -13,31 +13,14 @@ This module contains the high-level classifier that combines rule mining and gen
 Classes
 -------
 
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-   RuleMineClassifier
-
 RuleMineClassifier
 ------------------
 
 .. autoclass:: RuleMineClassifier
    :members:
-   :inherited-members:
    :show-inheritance:
 
    The main classifier that mines candidate rules and then optimizes them using genetic algorithms.
-
-   **Constructor Parameters**
-
-   .. automethod:: __init__
-
-   **Main Methods**
-
-   .. automethod:: fit
-   .. automethod:: predict
-   .. automethod:: internal_classifier
 
 Examples
 --------

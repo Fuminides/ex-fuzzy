@@ -168,41 +168,25 @@ Documentation Contents
 
     getting-started
     installation
-    tutorials/index
 
 .. toctree::
     :maxdepth: 2
     :caption: User Guide
 
     user-guide/index
-    user-guide/fuzzy-sets
-    user-guide/classifiers
-    user-guide/optimization
     evox_backend
-    user-guide/visualization
-    user-guide/pattern-analysis
 
 .. toctree::
     :maxdepth: 2
     :caption: Examples
 
     examples/index
-    examples/basic-classification
-    examples/advanced-features
-    examples/pattern-stability
-    examples/custom-fuzzy-sets
 
 .. toctree::
     :maxdepth: 2
     :caption: API Reference
 
     api/index
-    api/fuzzy_sets
-    api/classifiers
-    api/evolutionary_fit
-    api/eval_tools
-    api/pattern_stability
-    api/visualization
 
 .. toctree::
     :maxdepth: 2

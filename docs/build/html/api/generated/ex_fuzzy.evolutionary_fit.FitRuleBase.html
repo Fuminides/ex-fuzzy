@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=edfbbfd1" />
@@ -51,8 +51,6 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/ex_fuzzy.evolutionary_fit.FitRuleBase';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Rule Mining Module" href="../rule_mining.html" />
-    <link rel="prev" title="Evolutionary Fit Module" href="../evolutionary_fit.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
@@ -116,14 +114,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="../../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="../../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +151,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="../../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -182,29 +172,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" current active">
-  <a class="nav-link dropdown-item nav-internal" href="../evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
+    API Reference
   </a>
 </li>
 
@@ -404,8 +373,10 @@
       
       
       
+        
+      
       <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -442,6 +413,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../examples/index.html">
     Examples
   </a>
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -644,18 +594,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">ex_fuzzy.evolutionary_fit.FitRuleBase</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
       <div class="sidebar-primary-item">
@@ -691,12 +629,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
-    
-    
-    <li class="breadcrumb-item"><a href="../evolutionary_fit.html" class="nav-link">Evolutionary Fit Module</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">ex_fuzzy.evolutionary_fit.FitRuleBase</span></li>
   </ul>
 </nav>
@@ -718,7 +650,7 @@
 <h1>ex_fuzzy.evolutionary_fit.FitRuleBase<a class="headerlink" href="#ex-fuzzy-evolutionary-fit-fitrulebase" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">FitRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.evolutionary_fit.</span></span><span class="sig-name descname"><span class="pre">FitRuleBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pymoo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Problem</span></code></p>
 <p>Class to model as pymoo problem the fitting of a rulebase for a classification problem using Evolutionary strategies.
 Supports type 1 and iv fs (iv-type 2)</p>
@@ -731,26 +663,26 @@ Supports type 1 and iv fs (iv-type 2)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pymoo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array</em>) – np array or pandas dataframe samples x features.</p></li>
 <li><p><strong>y</strong> (<em>array</em>) – np vector containing the target classes. vector sample</p></li>
-<li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
-<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
+<li><p><strong>nRules</strong> (<em>int</em>) – number of rules to optimize.</p></li>
+<li><p><strong>nAnts</strong> (<em>int</em>) – max number of antecedents to use.</p></li>
 <li><p><strong>n_class</strong> – number of classes in the problem. If None (as default) it will be computed from the data.</p></li>
-<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="../../function_resume/fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of linguistic variables precomputed. If given, the rest of conflicting arguments are ignored.</p></li>
-<li><p><strong>n_linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of linguistic variables per antecedent.</p></li>
+<li><p><strong>linguistic_variables</strong> (<em>list</em><em>[</em><a class="reference internal" href="ex_fuzzy.fuzzy_sets.fuzzyVariable.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of linguistic variables precomputed. If given, the rest of conflicting arguments are ignored.</p></li>
+<li><p><strong>n_linguistic_variables</strong> (<em>int</em>) – number of linguistic variables per antecedent.</p></li>
 <li><p><strong>fuzzy_type</strong> – Define the fuzzy set or fuzzy set extension used as linguistic variable.</p></li>
-<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list with the upper and lower domains of each input variable. If None (as default) it will stablish the empirical min/max as the limits.</p></li>
-<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Tolerance for the size evaluation.</p></li>
-<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Weight for the rulebase size term in the fitness function. (Penalizes number of rules)</p></li>
-<li><p><strong>beta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – float. Weight for the average rule size term in the fitness function.</p></li>
-<li><p><strong>ds_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.</p></li>
-<li><p><strong>encode_mods</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – bool. If True, the optimization process will include the modifiers for the membership functions.</p></li>
-<li><p><strong>allow_unknown</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)</p></li>
+<li><p><strong>domain</strong> (<em>list</em>) – list with the upper and lower domains of each input variable. If None (as default) it will stablish the empirical min/max as the limits.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – float. Tolerance for the size evaluation.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – float. Weight for the rulebase size term in the fitness function. (Penalizes number of rules)</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – float. Weight for the average rule size term in the fitness function.</p></li>
+<li><p><strong>ds_mode</strong> (<em>int</em>) – int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.</p></li>
+<li><p><strong>allow_unknown</strong> (<em>bool</em>) – if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)</p></li>
+<li><p><strong>var_names</strong> (<em>list</em>) – list of variable names. If None, extracted from DataFrame columns or auto-generated.</p></li>
 </ul>
 </dd>
 </dl>
@@ -758,7 +690,7 @@ Supports type 1 and iv fs (iv-type 2)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase">
-<span class="sig-name descname"><span class="pre">encode_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_lv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_mods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.encode_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">encode_rulebase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_lv</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ex_fuzzy/evolutionary_fit.html#FitRuleBase.encode_rulebase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.evolutionary_fit.FitRuleBase.encode_rulebase" title="Link to this definition">#</a></dt>
 <dd><p>Given a rule base, constructs the corresponding gene associated with that rule base.</p>
 <p>GENE STRUCTURE</p>
 <p>First: antecedents chosen by each rule. Size: nAnts * nRules (index of the antecedent)
@@ -768,9 +700,8 @@ Four: Consequent classes. Size: nRules</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rule_base</strong> (<a class="reference internal" href="../../function_resume/rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – rule base object.</p></li>
-<li><p><strong>optimize_lv</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the gene is prepared to optimize the membership functions.</p></li>
-<li><p><strong>encode_mods</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – if True, the gene is prepared to encode the modifiers for the membership functions.</p></li>
+<li><p><strong>rule_base</strong> (<a class="reference internal" href="../rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – rule base object.</p></li>
+<li><p><strong>optimize_lv</strong> (<em>bool</em>) – if True, the gene is prepared to optimize the membership functions.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -869,7 +800,7 @@ Four: Consequent classes. Size: nRules</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -884,7 +815,7 @@ Four: Consequent classes. Size: nRules</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

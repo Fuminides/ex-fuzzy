@@ -123,7 +123,7 @@ Migration Guides
 ================
 
 Migrating from 0.9.x to 1.0.0
-------------------------------
+-----------------------------
 
 **API Changes:**
 
@@ -163,7 +163,7 @@ Breaking Changes
 ================
 
 Version 1.0.0
---------------
+-------------
 
 - **Removed** deprecated `mnt` module
 - **Changed** main classifier import path
@@ -171,14 +171,14 @@ Version 1.0.0
 - **Modified** visualization API for consistency
 
 Version 0.9.0
---------------
+-------------
 
 - **Changed** rule representation format
 - **Removed** experimental features
 - **Updated** optimization algorithm interface
 
 Notable Improvements
-===================
+====================
 
 Performance Improvements
 ------------------------

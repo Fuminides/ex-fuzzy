@@ -3,7 +3,33 @@
 Genetic algorithm details
 =======================================
 
-The genetic algorithm searchs for the optimal rule base for a problem. The criteria used to determine optimal is the one mentioned in :ref:`step3`:
+The genetic algorithm searches for the optimal rule base for a problem. Ex-Fuzzy supports two evolutionary optimization backends:
+
+**PyMoo Backend (CPU)**:
+  - Traditional CPU-based optimization
+  - Supports checkpointing and resume
+  - Best for small to medium datasets
+  - Memory-efficient with automatic sample batching
+
+**EvoX Backend (GPU-accelerated)**:
+  - GPU acceleration using PyTorch
+  - 2-10x faster on large datasets with CUDA GPU
+  - Automatic population batching for memory management
+  - Seamlessly falls back to CPU if GPU unavailable
+
+You can select the backend when creating a classifier:
+
+.. code-block:: python
+
+   from ex_fuzzy import BaseFuzzyRulesClassifier
+   
+   # PyMoo backend (default)
+   clf_pymoo = BaseFuzzyRulesClassifier(backend='pymoo')
+   
+   # EvoX backend (GPU-accelerated)
+   clf_evox = BaseFuzzyRulesClassifier(backend='evox')
+
+The criteria used to determine optimal is the one mentioned in :ref:`step3`:
 
 1. Matthew Correlation Coefficient: it is a metric that ranges from [-1, 1] that measures the quality of a classification performance. It less sensible to imbalance classification than the standard accuracy.
 2. Less antecedents: the less antecedents per rule, the better. We compute this using the average number of antecedents per rule. We to normalize this by dividing the number of antecedents per rule by the maximum allowed in the optimization) 

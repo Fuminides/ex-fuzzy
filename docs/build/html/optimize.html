@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +153,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -182,29 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -442,6 +413,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="examples/index.html">
     Examples
   </a>
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -707,7 +657,34 @@
                   
   <section id="genetic-algorithm-details">
 <span id="ga"></span><h1>Genetic algorithm details<a class="headerlink" href="#genetic-algorithm-details" title="Link to this heading">#</a></h1>
-<p>The genetic algorithm searchs for the optimal rule base for a problem. The criteria used to determine optimal is the one mentioned in <a class="reference internal" href="step3.html#step3"><span class="std std-ref">Optimizing a Fuzzy rule base for a classification problem</span></a>:</p>
+<p>The genetic algorithm searches for the optimal rule base for a problem. Ex-Fuzzy supports two evolutionary optimization backends:</p>
+<dl class="simple">
+<dt><strong>PyMoo Backend (CPU)</strong>:</dt><dd><ul class="simple">
+<li><p>Traditional CPU-based optimization</p></li>
+<li><p>Supports checkpointing and resume</p></li>
+<li><p>Best for small to medium datasets</p></li>
+<li><p>Memory-efficient with automatic sample batching</p></li>
+</ul>
+</dd>
+<dt><strong>EvoX Backend (GPU-accelerated)</strong>:</dt><dd><ul class="simple">
+<li><p>GPU acceleration using PyTorch</p></li>
+<li><p>2-10x faster on large datasets with CUDA GPU</p></li>
+<li><p>Automatic population batching for memory management</p></li>
+<li><p>Seamlessly falls back to CPU if GPU unavailable</p></li>
+</ul>
+</dd>
+</dl>
+<p>You can select the backend when creating a classifier:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFuzzyRulesClassifier</span>
+
+<span class="c1"># PyMoo backend (default)</span>
+<span class="n">clf_pymoo</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;pymoo&#39;</span><span class="p">)</span>
+
+<span class="c1"># EvoX backend (GPU-accelerated)</span>
+<span class="n">clf_evox</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;evox&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The criteria used to determine optimal is the one mentioned in <a class="reference internal" href="step3.html#step3"><span class="std std-ref">Optimizing a Fuzzy rule base for a classification problem</span></a>:</p>
 <ol class="arabic simple">
 <li><p>Matthew Correlation Coefficient: it is a metric that ranges from [-1, 1] that measures the quality of a classification performance. It less sensible to imbalance classification than the standard accuracy.</p></li>
 <li><p>Less antecedents: the less antecedents per rule, the better. We compute this using the average number of antecedents per rule. We to normalize this by dividing the number of antecedents per rule by the maximum allowed in the optimization)</p></li>
@@ -794,7 +771,7 @@ For more information about changing this fitness function check <a class="refere
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -809,7 +786,7 @@ For more information about changing this fitness function check <a class="refere
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

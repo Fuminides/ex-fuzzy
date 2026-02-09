@@ -10,26 +10,7 @@ The Ex-Fuzzy User Guide provides comprehensive documentation for all aspects of 
 
    core-concepts
    rule-mining
-
-   fuzzy-sets
-   classifiers
-   optimization
-   
-.. toctree::
-   :maxdepth: 2
-   :caption: Advanced Topics
-
-   pattern-analysis
-   visualization
-   performance
-   
-.. toctree::
-   :maxdepth: 2
-   :caption: Practical Guides
-
-   best-practices
-   troubleshooting
-   extending
+   conformal-learning
 
 Overview
 ========

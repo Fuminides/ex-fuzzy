@@ -13,17 +13,6 @@ This module implements algorithms for discovering frequent fuzzy patterns and ge
 Functions
 ---------
 
-.. autosummary::
-   :toctree: generated/
-
-   rule_search
-   generate_rules_from_itemsets
-   mine_rulebase_support
-   prune_rules_confidence_lift
-   simple_mine_rulebase
-   multiclass_mine_rulebase
-   simple_multiclass_mine_rulebase
-
 Core Functions
 --------------
 

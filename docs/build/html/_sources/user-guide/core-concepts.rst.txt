@@ -8,7 +8,7 @@ This guide introduces the fundamental concepts underlying the ex-fuzzy library, 
    :depth: 2
 
 What is Fuzzy Logic?
--------------------
+--------------------
 
 Fuzzy logic is an extension of classical binary logic that allows for degrees of truth between completely true and completely false. Unlike traditional logic where statements are either true (1) or false (0), fuzzy logic permits partial truth values between 0 and 1.
 
@@ -23,7 +23,7 @@ Real-world problems often involve:
 * **Human reasoning**: People naturally think in terms of degrees rather than absolutes
 
 Example: Temperature Classification
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Consider classifying temperature:
 
@@ -42,7 +42,7 @@ Fuzzy Sets
 A fuzzy set is a collection of objects where each object has a degree of membership between 0 and 1.
 
 Mathematical Definition
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 A fuzzy set A in universe X is defined by a membership function:
 
@@ -105,7 +105,7 @@ Most general form where membership is a fuzzy set in three dimensions.
    fuzzy_variables_gt2 = utils.construct_partitions(data, fs.FUZZY_SETS.gt2, n_partitions=3)
 
 Membership Functions
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 Common membership function shapes supported:
 
@@ -119,7 +119,7 @@ Common membership function shapes supported:
   Bell-shaped curve with center and width parameters
 
 Linguistic Variables
--------------------
+--------------------
 
 Linguistic variables represent concepts that can be described using natural language terms.
 
@@ -134,7 +134,7 @@ A linguistic variable consists of:
 4. **Membership functions**: Mathematical functions defining each term
 
 Creating Linguistic Variables
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -161,7 +161,7 @@ Fuzzy Rules
 Fuzzy rules encode human knowledge in IF-THEN format using linguistic variables.
 
 Rule Structure
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 **Basic Form:**
   IF antecedent(s) THEN consequent
@@ -172,6 +172,8 @@ Rule Structure
   - **Confidence**: Rule strength or support
 
 Ex-fuzzy uses rule classes like `RuleSimple` and rule base classes like `RuleBaseT1`, `RuleBaseT2`, and `RuleBaseGT2` to manage collections of rules for different fuzzy set types.
+
+.. code-block:: python
 
    # Simple rule: IF temperature is high THEN comfort is low
    rule1 = rules.RuleSimple(
@@ -188,7 +190,7 @@ Ex-fuzzy uses rule classes like `RuleSimple` and rule base classes like `RuleBas
    )
 
 Types of Fuzzy Rules
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 **Mamdani Rules**
   Output is a fuzzy set
@@ -207,7 +209,7 @@ Types of Fuzzy Rules
    # Consequent is a mathematical function
 
 Rule Evaluation
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 Rules are evaluated in several steps:
 
@@ -233,12 +235,12 @@ Rules are evaluated in several steps:
    print(f"Rule fires with strength: {strength:.3f}")
 
 Fuzzy Inference Systems
-----------------------
+-----------------------
 
 A fuzzy inference system (FIS) combines multiple fuzzy rules to make decisions or predictions.
 
 System Architecture
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -248,7 +250,7 @@ System Architecture
    Values     Degrees                       Output        Result
 
 Components
-~~~~~~~~~
+~~~~~~~~~~
 
 1. **Fuzzifier**: Converts crisp inputs to fuzzy degrees
 2. **Rule Base**: Collection of fuzzy rules
@@ -256,7 +258,7 @@ Components
 4. **Defuzzifier**: Converts fuzzy output to crisp result
 
 Building a Complete System
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -282,7 +284,7 @@ Building a Complete System
    predictions = rule_base.predict(test_inputs)
 
 Classification vs. Regression
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Fuzzy Classification**
   Predicts discrete class labels
@@ -304,12 +306,12 @@ Classification vs. Regression
    # (Advanced topic covered in separate guides)
 
 Rule Learning and Optimization
------------------------------
+------------------------------
 
 Ex-fuzzy provides automated methods to learn fuzzy rules from data.
 
 Two-Stage Approach
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 1. **Rule Mining**: Discover candidate rules from data
 2. **Evolutionary Optimization**: Select optimal rule combinations
@@ -341,7 +343,7 @@ Two-Stage Approach
    result = evf.evolutionary_fit(problem, n_gen=50, pop_size=100)
 
 Quality Measures
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Rules are evaluated using multiple criteria:
 
@@ -372,12 +374,12 @@ Balance multiple criteria simultaneously:
    weights = [0.8, 0.2]  # 80% accuracy, 20% simplicity
 
 Interpretability and Explainability
-----------------------------------
+-----------------------------------
 
 One of the key advantages of fuzzy systems is their interpretability.
 
 Rule Readability
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Fuzzy rules can be expressed in natural language:
 
@@ -388,7 +390,7 @@ Fuzzy rules can be expressed in natural language:
    Rule 3: IF temperature is medium THEN comfort is medium (weight: 0.72)
 
 System Transparency
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 Users can understand:
 
@@ -409,7 +411,7 @@ Users can understand:
        print(f"  Average strength: {analysis['avg_strength']:.3f}")
 
 Visualization
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 Visual representation aids understanding:
 
@@ -425,7 +427,7 @@ Common Patterns and Best Practices
 ----------------------------------
 
 Variable Design
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 **Number of Terms**
   - 3-5 terms usually sufficient
@@ -442,7 +444,7 @@ Variable Design
   - No gaps between adjacent terms
 
 Rule Design
-~~~~~~~~~~
+~~~~~~~~~~~
 
 **Rule Complexity**
   - Keep rules simple (2-4 antecedents maximum)
@@ -457,7 +459,7 @@ Rule Design
   - Sparse rule bases may have poor generalization
 
 Performance Considerations
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Efficiency**
   - Fewer rules = faster inference
@@ -470,7 +472,7 @@ Performance Considerations
   - Use multi-objective optimization
 
 Common Pitfalls
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 **Over-partitioning**
   Too many fuzzy sets reduces interpretability
@@ -498,5 +500,5 @@ For specific applications:
 
 - **Classification**: See :doc:`../examples/classification`
 - **Rule Mining**: See :doc:`../user-guide/rule-mining`
-- **Optimization**: See :doc:`../user-guide/evolutionary-optimization`
-- **Visualization**: See :doc:`../user-guide/visualization`
+- **Optimization**: See :doc:`../optimize`
+- **Visualization**: See :doc:`../examples/classification`

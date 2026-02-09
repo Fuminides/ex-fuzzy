@@ -1,5 +1,5 @@
 Rule Mining Guide
-================
+=================
 
 This guide provides comprehensive coverage of fuzzy rule mining in ex-fuzzy, from basic concepts to advanced techniques for discovering high-quality rules from data.
 
@@ -13,7 +13,7 @@ Overview
 Fuzzy rule mining is the process of automatically discovering fuzzy association rules from datasets. These rules capture relationships between input variables and output classes in a format that's both mathematically precise and human-interpretable.
 
 What is Rule Mining?
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 Rule mining discovers patterns of the form:
 
@@ -25,7 +25,7 @@ Example:
   IF temperature is HIGH AND humidity is HIGH THEN comfort is LOW (confidence: 0.85)
 
 Key Concepts
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 **Support**
   How frequently a rule pattern appears in the data
@@ -40,10 +40,10 @@ Key Concepts
   What percentage of the dataset the rule applies to
 
 Getting Started
---------------
+---------------
 
 Basic Rule Mining
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -78,7 +78,7 @@ Basic Rule Mining
    print(rule_base.print_rules())
 
 Understanding Rule Mining Functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Ex-fuzzy provides several rule mining functions:
 
@@ -108,7 +108,7 @@ Ex-fuzzy provides several rule mining functions:
    )
 
 Parameters Explained
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 **support_threshold (float)**
   Minimum support a rule must have to be considered (0.0-1.0)
@@ -133,10 +133,10 @@ Parameters Explained
        print(f"Lift: {lift:.3f}")
 
 Mining Parameters
-----------------
+-----------------
 
 Support Threshold
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 Controls the minimum frequency a pattern must have:
 
@@ -164,7 +164,7 @@ Controls the minimum frequency a pattern must have:
    print(f"Exploratory: {len(exploratory_rules)} rules")
 
 Confidence Threshold
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 Controls rule accuracy requirements:
 
@@ -186,7 +186,7 @@ Controls rule accuracy requirements:
        print(f"Confidence {conf}: {len(rules)} rules, avg accuracy {avg_accuracy:.3f}")
 
 Lift Threshold  
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Controls how much better than random the rules must be:
 
@@ -208,7 +208,7 @@ Controls how much better than random the rules must be:
    print(f"Strong rules: {len(strong_rules)}")
 
 Rule Complexity
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 Control antecedent complexity:
 
@@ -239,7 +239,7 @@ Advanced Mining Techniques
 --------------------------
 
 Class-Specific Mining
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 Mine rules for each class separately:
 
@@ -274,7 +274,7 @@ Mine rules for each class separately:
            print(f"  {rule}")
 
 Hierarchical Mining
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 Mine rules at different granularities:
 
@@ -307,7 +307,7 @@ Mine rules at different granularities:
    print(f"Fine level: {len(fine_rules)} rules")
 
 Temporal Rule Mining
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 For time-series or sequential data:
 
@@ -359,7 +359,7 @@ For time-series or sequential data:
    )
 
 Multi-Target Mining
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 For problems with multiple output variables:
 
@@ -399,7 +399,7 @@ For problems with multiple output variables:
    multi_rules = mine_multi_target(X, y, y_confidence)
 
 Rule Quality Assessment
-----------------------
+-----------------------
 
 Comprehensive Quality Metrics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -451,7 +451,7 @@ Comprehensive Quality Metrics
    print(quality_df.nlargest(5, 'support')[['rule_id', 'support', 'confidence', 'lift']])
 
 Rule Filtering and Selection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -508,7 +508,7 @@ Rule Filtering and Selection
    print(f"Filtered to {len(high_quality_rules)} high-quality rules")
 
 Rule Redundancy Removal
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -540,10 +540,10 @@ Rule Redundancy Removal
    print(f"Reduced from {len(rules)} to {len(unique_rules)} unique rules")
 
 Visualization and Analysis
--------------------------
+--------------------------
 
 Rule Distribution Analysis
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -601,7 +601,7 @@ Rule Distribution Analysis
    print(f"Class distribution: {distribution_stats['class_distribution']}")
 
 Variable Importance Analysis
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -654,7 +654,7 @@ Integration with Classifiers
 ----------------------------
 
 Using Mined Rules for Classification
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -746,10 +746,10 @@ Iterative Rule Refinement
    print(f"\\nFinal best rules: {len(refined_rules)} rules, score: {best_score:.3f}")
 
 Large Dataset Strategies
------------------------
+------------------------
 
 Sampling-Based Mining
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -791,7 +791,7 @@ Sampling-Based Mining
        sampled_rules = rules
 
 Incremental Mining
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -850,7 +850,7 @@ Best Practices
 --------------
 
 Parameter Selection Guidelines
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -900,7 +900,7 @@ Parameter Selection Guidelines
        print(f"  {param}: {value}")
 
 Common Pitfalls and Solutions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Problem: Too many rules**
 
@@ -956,7 +956,7 @@ After mastering rule mining:
 
 Related Guides:
 
-- :doc:`evolutionary-optimization` - Optimize mined rules
-- :doc:`evaluation-metrics` - Evaluate rule quality
-- :doc:`visualization` - Visualize rules and partitions
+- :doc:`../optimize` - Optimize mined rules
+- :doc:`../api/eval_tools` - Evaluate rule quality
+- :doc:`../examples/classification` - Visualize rules and partitions
 - :doc:`../examples/index` - Real-world applications

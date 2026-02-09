@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
@@ -159,15 +159,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -179,6 +179,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
     Fuzzy Sets
@@ -435,6 +449,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user-guide/index.html">
     User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide/conformal-learning.html">
+    Conformal Learning
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
@@ -755,8 +783,8 @@ of random initialization or data sampling.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ex_fuzzy.pattern_stability.pattern_stabilizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.pattern_stability.</span></span><span class="sig-name descname"><span class="pre">pattern_stabilizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unkown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_modifiers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/pattern_stability.html#pattern_stabilizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.pattern_stability.pattern_stabilizer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ex_fuzzy.pattern_stability.</span></span><span class="sig-name descname"><span class="pre">pattern_stabilizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nRules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nAnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FUZZY_SETS.t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linguistic_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unkown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuzzy_modifiers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ex_fuzzy/pattern_stability.html#pattern_stabilizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ex_fuzzy.pattern_stability.pattern_stabilizer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 </dl>
 <dl class="py method">
@@ -766,18 +794,18 @@ of random initialization or data sampling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nRules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rules to optimize.</p></li>
-<li><p><strong>nAnts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – max number of antecedents to use.</p></li>
+<li><p><strong>nRules</strong> (<em>int</em>) – number of rules to optimize.</p></li>
+<li><p><strong>nAnts</strong> (<em>int</em>) – max number of antecedents to use.</p></li>
 <li><p><strong>type</strong> (<em>fuzzy</em>) – FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.</p></li>
-<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – tolerance for the dominance score of the rules.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – tolerance for the dominance score of the rules.</p></li>
 <li><p><strong>n_linguist_variables</strong> – number of linguistic variables per antecedent.</p></li>
 <li><p><strong>verbose</strong> – if True, prints the progress of the optimization.</p></li>
-<li><p><strong>linguistic_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.</p></li>
-<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em>) – list of the limits for each variable. If None (default) the classifier will compute them empirically.</p></li>
-<li><p><strong>n_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – names of the classes in the problem. If None (default) the classifier will compute it empirically.</p></li>
+<li><p><strong>linguistic_variables</strong> (<em>list</em><em>[</em><a class="reference internal" href="fuzzy_sets.html#ex_fuzzy.fuzzy_sets.fuzzyVariable" title="ex_fuzzy.fuzzy_sets.fuzzyVariable"><em>fuzzyVariable</em></a><em>]</em>) – list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.</p></li>
+<li><p><strong>domain</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – list of the limits for each variable. If None (default) the classifier will compute them empirically.</p></li>
+<li><p><strong>n_class</strong> (<em>int</em>) – names of the classes in the problem. If None (default) the classifier will compute it empirically.</p></li>
 <li><p><strong>precomputed_rules</strong> – MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.</p></li>
-<li><p><strong>runner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of threads to use. If None (default) the classifier will use 1 thread.</p></li>
-<li><p><strong>stratify_by</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – string naming additional column to stratify test/train split if desired (e.g. split by participant rather than trial).</p></li>
+<li><p><strong>runner</strong> (<em>int</em>) – number of threads to use. If None (default) the classifier will use 1 thread.</p></li>
+<li><p><strong>stratify_by</strong> (<em>str</em>) – string naming additional column to stratify test/train split if desired (e.g. split by participant rather than trial).</p></li>
 </ul>
 </dd>
 </dl>
@@ -818,9 +846,9 @@ of random initialization or data sampling.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mrule_base</strong> (<a class="reference internal" href="rules.html#ex_fuzzy.rules.MasterRuleBase" title="ex_fuzzy.rules.MasterRuleBase"><em>MasterRuleBase</em></a>) – MasterRuleBase object. The rule base to analyze.</p></li>
-<li><p><strong>class_patterns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>]</em>) – dict[list]. The dictionary with the unique patterns for each class. If None, it will be initialized.</p></li>
-<li><p><strong>patterns_dss</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>]</em>) – dict[list]. The dictionary with the dominance score of each pattern for each class. If None, it will be initialized.</p></li>
-<li><p><strong>class_vars</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>]</em>) – dict[list]. The dictionary with the number of times each variable is used in the rule base for each class. If None, it will be initialized.</p></li>
+<li><p><strong>class_patterns</strong> (<em>dict</em><em>[</em><em>list</em><em>]</em>) – dict[list]. The dictionary with the unique patterns for each class. If None, it will be initialized.</p></li>
+<li><p><strong>patterns_dss</strong> (<em>dict</em><em>[</em><em>list</em><em>]</em>) – dict[list]. The dictionary with the dominance score of each pattern for each class. If None, it will be initialized.</p></li>
+<li><p><strong>class_vars</strong> (<em>dict</em><em>[</em><em>list</em><em>]</em>) – dict[list]. The dictionary with the number of times each variable is used in the rule base for each class. If None, it will be initialized.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return class_patterns<span class="colon">:</span></dt>
@@ -842,8 +870,8 @@ of random initialization or data sampling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The number of solutions to generate.</p></li>
-<li><p><strong>test_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – int defines train/test split</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – int. The number of solutions to generate.</p></li>
+<li><p><strong>test_size</strong> (<em>float</em>) – int defines train/test split</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return class_patterns<span class="colon">:</span></dt>
@@ -871,9 +899,9 @@ of random initialization or data sampling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>class_vars</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – dict. The dictionary with the number of times each variable is used in the rule base for each class.</p></li>
+<li><p><strong>class_vars</strong> (<em>dict</em>) – dict. The dictionary with the number of times each variable is used in the rule base for each class.</p></li>
 <li><p><strong>antecedents</strong> – list. The list of antecedents.</p></li>
-<li><p><strong>cutoff</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The number of variables to show in the report.</p></li>
+<li><p><strong>cutoff</strong> (<em>int</em>) – int. The number of variables to show in the report.</p></li>
 </ul>
 </dd>
 </dl>
@@ -886,12 +914,12 @@ of random initialization or data sampling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>class_patterns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – dict[list]. The dictionary with the unique patterns for each class.</p></li>
-<li><p><strong>patterns_dss</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – dict[list]. The dictionary with the dominance score of each pattern for each class.</p></li>
-<li><p><strong>class_vars</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – dict[list]. The dictionary with the number of times each variable is used in the rule base for each class.</p></li>
-<li><p><strong>accuracies</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list. The list with the accuracies of the generated solutions.</p></li>
-<li><p><strong>rule_bases</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list. The list with the generated rule bases.</p></li>
-<li><p><strong>rule_cutoff</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The number of rules to show in the report.</p></li>
+<li><p><strong>class_patterns</strong> (<em>dict</em>) – dict[list]. The dictionary with the unique patterns for each class.</p></li>
+<li><p><strong>patterns_dss</strong> (<em>dict</em>) – dict[list]. The dictionary with the dominance score of each pattern for each class.</p></li>
+<li><p><strong>class_vars</strong> (<em>dict</em>) – dict[list]. The dictionary with the number of times each variable is used in the rule base for each class.</p></li>
+<li><p><strong>accuracies</strong> (<em>list</em>) – list. The list with the accuracies of the generated solutions.</p></li>
+<li><p><strong>rule_bases</strong> (<em>list</em>) – list. The list with the generated rule bases.</p></li>
+<li><p><strong>rule_cutoff</strong> (<em>int</em>) – int. The number of rules to show in the report.</p></li>
 </ul>
 </dd>
 </dl>
@@ -903,7 +931,7 @@ of random initialization or data sampling.</p>
 <dd><p>Generates a stability report for pattern stabilization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The number of solutions to generate.</p>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – int. The number of solutions to generate.</p>
 </dd>
 <dt class="field-even">Return text_report<span class="colon">:</span></dt>
 <dd class="field-even"><p>str. The text report for pattern stability.</p>
@@ -918,8 +946,8 @@ of random initialization or data sampling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>var_ix</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The index of the variable to analyze.</p></li>
-<li><p><strong>class_ix</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The index of the class to analyze.</p></li>
+<li><p><strong>var_ix</strong> (<em>int</em>) – int. The index of the variable to analyze.</p></li>
+<li><p><strong>class_ix</strong> (<em>int</em>) – int. The index of the class to analyze.</p></li>
 </ul>
 </dd>
 </dl>
@@ -931,7 +959,7 @@ of random initialization or data sampling.</p>
 <dd><p>Generates a pie chart for the variable usage in the rule bases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>var_ix</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The index of the variable to analyze.</p>
+<dd class="field-odd"><p><strong>var_ix</strong> (<em>int</em>) – int. The index of the variable to analyze.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -943,8 +971,8 @@ of random initialization or data sampling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>class_ix</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – int. The index of the class to analyze.</p></li>
-<li><p><strong>var_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – list[int]. The list of variables to analyze. If None (default) all variables will be analyzed.</p></li>
+<li><p><strong>class_ix</strong> (<em>int</em>) – int. The index of the class to analyze.</p></li>
+<li><p><strong>var_list</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – list[int]. The list of variables to analyze. If None (default) all variables will be analyzed.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1043,7 +1071,7 @@ of random initialization or data sampling.</p>
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1058,7 +1086,7 @@ of random initialization or data sampling.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

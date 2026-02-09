@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
@@ -116,14 +116,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -161,15 +153,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -182,29 +174,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -442,6 +413,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="examples/index.html">
     Examples
   </a>
@@ -451,34 +429,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -751,13 +701,13 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <section id="your-first-fuzzy-classifier">
 <h2>Your First Fuzzy Classifier<a class="headerlink" href="#your-first-fuzzy-classifier" title="Link to this heading">#</a></h2>
 <p>Let’s start with a simple example using the famous Iris dataset:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.evolutionary_fit</span> <span class="k">as</span> <span class="nn">evf</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.eval_tools</span> <span class="k">as</span> <span class="nn">eval_tools</span>
-<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.eval_tools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eval_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># Load the Iris dataset</span>
 <span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
@@ -788,7 +738,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <span class="n">y_pred</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 
 <span class="c1"># Calculate accuracy manually since score method requires X input too</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
 <span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
@@ -827,9 +777,9 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="fuzzy-variables">
 <h3>Fuzzy Variables<a class="headerlink" href="#fuzzy-variables" title="Link to this heading">#</a></h3>
 <p>Fuzzy variables define how crisp values are mapped to linguistic terms like “Low”, “Medium”, “High”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Create sample data</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
@@ -875,7 +825,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="pattern-stability-analysis">
 <h3>Pattern Stability Analysis<a class="headerlink" href="#pattern-stability-analysis" title="Link to this heading">#</a></h3>
 <p>Analyze the consistency of discovered patterns:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.pattern_stability</span> <span class="k">as</span> <span class="nn">ps</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.pattern_stability</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
 
 <span class="c1"># Analyze pattern stability across multiple runs</span>
 <span class="n">stabilizer</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">pattern_stabilizer</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -958,14 +908,13 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
 <p>Now that you’ve got the basics, explore more advanced features:</p>
 <ul class="simple">
-<li><p><span class="xref std std-doc">user-guide/fuzzy-sets</span>: Learn about different types of fuzzy sets</p></li>
-<li><p><span class="xref std std-doc">user-guide/optimization</span>: Understand the evolutionary optimization process</p></li>
-<li><p><span class="xref std std-doc">user-guide/visualization</span>: Create beautiful visualizations of your models</p></li>
+<li><p><a class="reference internal" href="user-guide/core-concepts.html"><span class="doc">Core Concepts</span></a>: Learn about fuzzy sets, rules, and classifiers</p></li>
+<li><p><a class="reference internal" href="user-guide/rule-mining.html"><span class="doc">Rule Mining Guide</span></a>: Understand automatic rule discovery and tuning workflows</p></li>
 <li><p><a class="reference internal" href="examples/index.html"><span class="doc">Examples</span></a>: See real-world applications and case studies</p></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Check out the <span class="xref std std-doc">examples/basic-classification</span> for more detailed examples with different datasets!</p>
+<p>Check out the <a class="reference internal" href="examples/classification.html"><span class="doc">Classification Examples</span></a> page for detailed classification workflows.</p>
 </div>
 </section>
 </section>
@@ -1064,7 +1013,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1079,7 +1028,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

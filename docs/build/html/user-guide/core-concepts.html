@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=edfbbfd1" />
@@ -118,14 +118,6 @@
   
   
   
-    
-    
-      
-    
-    
-    <img src="../_static/logo-light.png" class="logo__image only-light" alt=""/>
-    <img src="../_static/logo-dark.png" class="logo__image only-dark pst-js-only" alt=""/>
-  
   
     <p class="title logo__title">Ex-Fuzzy</p>
   
@@ -163,15 +155,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
-    Examples
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Working Examples
   </a>
 </li>
 
@@ -184,29 +176,8 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api/eval_tools.html">
-    Evaluation Tools Module
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -227,7 +198,7 @@
 
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
-    Roadmap
+    Current Version: 1.0.0
   </a>
 </li>
 
@@ -444,8 +415,15 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../examples/index.html">
-    Examples
+    Working Examples
   </a>
 </li>
 
@@ -453,34 +431,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api/index.html">
     API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/fuzzy_sets.html">
-    Fuzzy Sets
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/classifiers.html">
-    Classifiers Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/evolutionary_fit.html">
-    Evolutionary Fit Module
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api/eval_tools.html">
-    Evaluation Tools Module
   </a>
 </li>
 
@@ -501,7 +451,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../roadmap.html">
-    Roadmap
+    Current Version: 1.0.0
   </a>
 </li>
 
@@ -655,6 +605,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rule-mining.html">Rule Mining Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conformal-learning.html">Conformal Learning</a></li>
 </ul>
 </div>
 </nav></div>
@@ -825,10 +776,10 @@
 <section id="type-1-fuzzy-sets">
 <h4>Type-1 Fuzzy Sets<a class="headerlink" href="#type-1-fuzzy-sets" title="Link to this heading">#</a></h4>
 <p>Standard fuzzy sets where membership is a crisp value between 0 and 1.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># Create sample data</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]])</span>
@@ -892,9 +843,9 @@
 </section>
 <section id="creating-linguistic-variables">
 <h3><a class="toc-backref" href="#id10" role="doc-backlink">Creating Linguistic Variables</a><a class="headerlink" href="#creating-linguistic-variables" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ex_fuzzy.utils</span> <span class="k">as</span> <span class="nn">utils</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.fuzzy_sets</span> <span class="k">as</span> <span class="nn">fs</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Create sample data</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">60</span><span class="p">]])</span>
@@ -928,24 +879,21 @@
 </dd>
 </dl>
 <p>Ex-fuzzy uses rule classes like <cite>RuleSimple</cite> and rule base classes like <cite>RuleBaseT1</cite>, <cite>RuleBaseT2</cite>, and <cite>RuleBaseGT2</cite> to manage collections of rules for different fuzzy set types.</p>
-<blockquote>
-<div><p># Simple rule: IF temperature is high THEN comfort is low
-rule1 = rules.RuleSimple(</p>
-<blockquote>
-<div><p>antecedents=[temperature[2]],  # high temperature
-consequent=0,  # low comfort class
-weight=1.0</p>
-</div></blockquote>
-<p>)</p>
-<p># Complex rule: IF temperature is high AND humidity is high THEN comfort is very_low
-rule2 = rules.RuleSimple(</p>
-<blockquote>
-<div><p>antecedents=[temperature[2], humidity[2]],  # high temp AND high humidity
-consequent=0,  # very low comfort
-weight=0.9</p>
-</div></blockquote>
-<p>)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simple rule: IF temperature is high THEN comfort is low</span>
+<span class="n">rule1</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">(</span>
+    <span class="n">antecedents</span><span class="o">=</span><span class="p">[</span><span class="n">temperature</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span>  <span class="c1"># high temperature</span>
+    <span class="n">consequent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># low comfort class</span>
+    <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+
+<span class="c1"># Complex rule: IF temperature is high AND humidity is high THEN comfort is very_low</span>
+<span class="n">rule2</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">RuleSimple</span><span class="p">(</span>
+    <span class="n">antecedents</span><span class="o">=</span><span class="p">[</span><span class="n">temperature</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">humidity</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span>  <span class="c1"># high temp AND high humidity</span>
+    <span class="n">consequent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># very low comfort</span>
+    <span class="n">weight</span><span class="o">=</span><span class="mf">0.9</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="types-of-fuzzy-rules">
 <h3><a class="toc-backref" href="#id13" role="doc-backlink">Types of Fuzzy Rules</a><a class="headerlink" href="#types-of-fuzzy-rules" title="Link to this heading">#</a></h3>
@@ -1044,7 +992,7 @@ Values     Degrees                       Output        Result
 <dt><strong>Fuzzy Classification</strong></dt><dd><p>Predicts discrete class labels</p>
 </dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ex_fuzzy.classifiers</span> <span class="kn">import</span> <span class="n">RuleMineClassifier</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy.classifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RuleMineClassifier</span>
 
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
@@ -1071,7 +1019,7 @@ Values     Degrees                       Output        Result
 <li><p><strong>Evolutionary Optimization</strong>: Select optimal rule combinations</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Stage 1: Mine candidate rules</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.rule_mining</span> <span class="k">as</span> <span class="nn">rm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.rule_mining</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rm</span>
 
 <span class="n">candidate_rules</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mine_fuzzy_rules</span><span class="p">(</span>
     <span class="n">antecedents</span><span class="o">=</span><span class="n">linguistic_vars</span><span class="p">,</span>
@@ -1082,7 +1030,7 @@ Values     Degrees                       Output        Result
 <span class="p">)</span>
 
 <span class="c1"># Stage 2: Optimize rule selection</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.evolutionary_fit</span> <span class="k">as</span> <span class="nn">evf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
 
 <span class="n">problem</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">FitRuleBase</span><span class="p">(</span>
     <span class="n">antecedents</span><span class="o">=</span><span class="n">linguistic_vars</span><span class="p">,</span>
@@ -1158,7 +1106,7 @@ Rule 3: IF temperature is medium THEN comfort is medium (weight: 0.72)
 <h3><a class="toc-backref" href="#id27" role="doc-backlink">Visualization</a><a class="headerlink" href="#visualization" title="Link to this heading">#</a></h3>
 <p>Visual representation aids understanding:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot fuzzy partitions</span>
-<span class="kn">import</span> <span class="nn">ex_fuzzy.vis_rules</span> <span class="k">as</span> <span class="nn">vis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.vis_rules</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vis</span>
 
 <span class="n">vis</span><span class="o">.</span><span class="n">plot_fuzzy_variable</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="s2">&quot;Temperature&quot;</span><span class="p">)</span>
 <span class="n">vis</span><span class="o">.</span><span class="n">plot_rules</span><span class="p">(</span><span class="n">rule_base</span><span class="p">,</span> <span class="s2">&quot;Comfort Classification Rules&quot;</span><span class="p">)</span>
@@ -1247,15 +1195,15 @@ Rule 3: IF temperature is medium THEN comfort is medium (weight: 0.72)
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="../getting-started.html"><span class="doc">Getting Started</span></a> - Hands-on tutorial</p></li>
 <li><p><a class="reference internal" href="index.html"><span class="doc">User Guide</span></a> - Detailed user guides</p></li>
-<li><p><a class="reference internal" href="../examples/index.html"><span class="doc">Examples</span></a> - Real-world examples</p></li>
+<li><p><a class="reference internal" href="../examples/index.html"><span class="doc">Working Examples</span></a> - Real-world examples</p></li>
 <li><p><a class="reference internal" href="../api/index.html"><span class="doc">API Reference</span></a> - Complete API reference</p></li>
 </ol>
 <p>For specific applications:</p>
 <ul class="simple">
 <li><p><strong>Classification</strong>: See <a class="reference internal" href="../examples/classification.html"><span class="doc">Classification Examples</span></a></p></li>
 <li><p><strong>Rule Mining</strong>: See <a class="reference internal" href="rule-mining.html"><span class="doc">Rule Mining Guide</span></a></p></li>
-<li><p><strong>Optimization</strong>: See <span class="xref std std-doc">../user-guide/evolutionary-optimization</span></p></li>
-<li><p><strong>Visualization</strong>: See <span class="xref std std-doc">../user-guide/visualization</span></p></li>
+<li><p><strong>Optimization</strong>: See <a class="reference internal" href="../optimize.html"><span class="doc">Genetic algorithm details</span></a></p></li>
+<li><p><strong>Visualization</strong>: See <a class="reference internal" href="../examples/classification.html"><span class="doc">Classification Examples</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -1376,7 +1324,7 @@ Rule 3: IF temperature is medium THEN comfort is medium (weight: 0.72)
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Javier Fumanal Idocin.
+      © Copyright 2023-2026, Javier Fumanal Idocin.
       <br/>
     
   </p>
@@ -1391,7 +1339,7 @@ Rule 3: IF temperature is medium THEN comfort is medium (weight: 0.72)
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
