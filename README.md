@@ -88,7 +88,7 @@ pip install ex-fuzzy evox torch
 
 ```python
 import numpy as np
-from ex_fuzzy import BaseFuzzyRulesClassifier
+from ex_fuzzy.evolutionary_fit import BaseFuzzyRulesClassifier
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
