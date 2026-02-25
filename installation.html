@@ -1,0 +1,1339 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Installation &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=30646c52"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'installation';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Guide" href="user-guide/index.html" />
+    <link rel="prev" title="Getting Started" href="getting-started.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="roadmap.html">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Installation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
+<p>This guide provides detailed instructions for installing Ex-Fuzzy on different platforms and environments.</p>
+<section id="quick-install">
+<h2>Quick Install<a class="headerlink" href="#quick-install" title="Link to this heading">#</a></h2>
+<p>The easiest way to install Ex-Fuzzy is using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+<p>This will install Ex-Fuzzy and all required dependencies.</p>
+</section>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h2>
+<section id="system-requirements">
+<h3>System Requirements<a class="headerlink" href="#system-requirements" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Python</strong>: 3.8 or later</p></li>
+<li><p><strong>Operating System</strong>: Windows, macOS, or Linux</p></li>
+<li><p><strong>Memory</strong>: At least 2GB RAM (4GB+ recommended for large datasets)</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h3>
+<p>Ex-Fuzzy depends on several well-established scientific Python packages:</p>
+<p><strong>Core Dependencies</strong>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 15.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>Version</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>numpy</p></td>
+<td><p>≥1.19.0</p></td>
+<td><p>Numerical computations and array operations</p></td>
+</tr>
+<tr class="row-odd"><td><p>pandas</p></td>
+<td><p>≥1.3.0</p></td>
+<td><p>Data manipulation and analysis</p></td>
+</tr>
+<tr class="row-even"><td><p>scikit-learn</p></td>
+<td><p>≥1.0.0</p></td>
+<td><p>Machine learning utilities and metrics</p></td>
+</tr>
+<tr class="row-odd"><td><p>matplotlib</p></td>
+<td><p>≥3.3.0</p></td>
+<td><p>Plotting and visualization</p></td>
+</tr>
+<tr class="row-even"><td><p>pymoo</p></td>
+<td><p>≥0.6.0</p></td>
+<td><p>Multi-objective evolutionary optimization</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Optional Dependencies</strong>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 15.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>Version</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>evox</p></td>
+<td><p>≥0.8.0</p></td>
+<td><p>GPU-accelerated evolutionary optimization</p></td>
+</tr>
+<tr class="row-odd"><td><p>torch</p></td>
+<td><p>≥1.9.0</p></td>
+<td><p>PyTorch for GPU acceleration (required by EvoX)</p></td>
+</tr>
+<tr class="row-even"><td><p>jupyter</p></td>
+<td><p>≥1.0.0</p></td>
+<td><p>For running notebook examples</p></td>
+</tr>
+<tr class="row-odd"><td><p>seaborn</p></td>
+<td><p>≥0.11.0</p></td>
+<td><p>Enhanced statistical visualizations</p></td>
+</tr>
+<tr class="row-even"><td><p>plotly</p></td>
+<td><p>≥5.0.0</p></td>
+<td><p>Interactive plotting (experimental)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="installation-methods">
+<h2>Installation Methods<a class="headerlink" href="#installation-methods" title="Link to this heading">#</a></h2>
+<section id="method-1-using-pip-recommended">
+<h3>Method 1: Using pip (Recommended)<a class="headerlink" href="#method-1-using-pip-recommended" title="Link to this heading">#</a></h3>
+<p>Install the latest stable release from PyPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+<p>To install with GPU support (EvoX backend):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox<span class="w"> </span>torch
+</pre></div>
+</div>
+<p>For CUDA-specific PyTorch installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># CUDA 11.8</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu118
+
+<span class="c1"># CUDA 12.1</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu121
+</pre></div>
+</div>
+<p>To install with optional dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[viz]&quot;</span><span class="w">      </span><span class="c1"># Enhanced visualization</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[jupyter]&quot;</span><span class="w">  </span><span class="c1"># Jupyter notebook support</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[gpu]&quot;</span><span class="w">      </span><span class="c1"># GPU support (EvoX + PyTorch)</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;ex-fuzzy[all]&quot;</span><span class="w">      </span><span class="c1"># All optional dependencies</span>
+</pre></div>
+</div>
+</section>
+<section id="method-2-using-conda">
+<h3>Method 2: Using conda<a class="headerlink" href="#method-2-using-conda" title="Link to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Conda package is coming soon! For now, use pip even in conda environments.</p>
+</div>
+<p>If you’re using conda, you can still install Ex-Fuzzy with pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>exfuzzy<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
+conda<span class="w"> </span>activate<span class="w"> </span>exfuzzy
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+<section id="method-3-development-installation">
+<h3>Method 3: Development Installation<a class="headerlink" href="#method-3-development-installation" title="Link to this heading">#</a></h3>
+<p>For contributors or users who want the latest features:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fuminides/ex-fuzzy.git
+<span class="nb">cd</span><span class="w"> </span>ex-fuzzy
+
+<span class="c1"># Install in development mode</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+
+<span class="c1"># Or with optional dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[all]&quot;</span>
+</pre></div>
+</div>
+<p>This installs Ex-Fuzzy in “editable” mode, so changes to the source code are immediately available.</p>
+</section>
+<section id="method-4-from-source-archive">
+<h3>Method 4: From Source Archive<a class="headerlink" href="#method-4-from-source-archive" title="Link to this heading">#</a></h3>
+<p>Download and install from a source archive:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the latest release</span>
+wget<span class="w"> </span>https://github.com/fuminides/ex-fuzzy/archive/v1.0.0.tar.gz
+tar<span class="w"> </span>-xzf<span class="w"> </span>v1.0.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>ex-fuzzy-1.0.0
+
+<span class="c1"># Install</span>
+pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="platform-specific-instructions">
+<h2>Platform-Specific Instructions<a class="headerlink" href="#platform-specific-instructions" title="Link to this heading">#</a></h2>
+<section id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading">#</a></h3>
+<p><strong>Option 1: Using Python from python.org</strong></p>
+<ol class="arabic simple">
+<li><p>Download Python 3.8+ from <a class="reference external" href="https://www.python.org/downloads/">python.org</a></p></li>
+<li><p>During installation, check “Add Python to PATH”</p></li>
+<li><p>Open Command Prompt or PowerShell and run:</p></li>
+</ol>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>pip install ex-fuzzy
+</pre></div>
+</div>
+<p><strong>Option 2: Using Anaconda</strong></p>
+<ol class="arabic simple">
+<li><p>Download Anaconda from <a class="reference external" href="https://www.anaconda.com/products/distribution">anaconda.com</a></p></li>
+<li><p>Open Anaconda Prompt and run:</p></li>
+</ol>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>pip install ex-fuzzy
+</pre></div>
+</div>
+</section>
+<section id="macos">
+<h3>macOS<a class="headerlink" href="#macos" title="Link to this heading">#</a></h3>
+<p><strong>Option 1: Using Homebrew</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Python if not already installed</span>
+brew<span class="w"> </span>install<span class="w"> </span>python
+
+<span class="c1"># Install Ex-Fuzzy</span>
+pip3<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+<p><strong>Option 2: Using Anaconda</strong></p>
+<ol class="arabic simple">
+<li><p>Download Anaconda for macOS</p></li>
+<li><p>Open Terminal and run:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+<section id="linux-ubuntu-debian">
+<h3>Linux (Ubuntu/Debian)<a class="headerlink" href="#linux-ubuntu-debian" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Python and pip if not already installed</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3<span class="w"> </span>python3-pip
+
+<span class="c1"># Install Ex-Fuzzy</span>
+pip3<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+<section id="linux-centos-rhel-fedora">
+<h3>Linux (CentOS/RHEL/Fedora)<a class="headerlink" href="#linux-centos-rhel-fedora" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Python and pip if not already installed</span>
+sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w">  </span><span class="c1"># CentOS/RHEL</span>
+<span class="c1"># OR</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w">  </span><span class="c1"># Fedora</span>
+
+<span class="c1"># Install Ex-Fuzzy</span>
+pip3<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+</section>
+<section id="virtual-environments">
+<h2>Virtual Environments<a class="headerlink" href="#virtual-environments" title="Link to this heading">#</a></h2>
+<p>It’s highly recommended to use virtual environments to avoid dependency conflicts:</p>
+<section id="using-venv-python-built-in">
+<h3>Using venv (Python built-in)<a class="headerlink" href="#using-venv-python-built-in" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create virtual environment</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>exfuzzy_env
+
+<span class="c1"># Activate it</span>
+<span class="c1"># On Windows:</span>
+exfuzzy_env<span class="se">\\</span>Scripts<span class="se">\\</span>activate
+<span class="c1"># On macOS/Linux:</span>
+<span class="nb">source</span><span class="w"> </span>exfuzzy_env/bin/activate
+
+<span class="c1"># Install Ex-Fuzzy</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+<section id="using-conda">
+<h3>Using conda<a class="headerlink" href="#using-conda" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create conda environment</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>exfuzzy<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
+
+<span class="c1"># Activate it</span>
+conda<span class="w"> </span>activate<span class="w"> </span>exfuzzy
+
+<span class="c1"># Install Ex-Fuzzy</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+<section id="using-pipenv">
+<h3>Using pipenv<a class="headerlink" href="#using-pipenv" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install pipenv if not already installed</span>
+pip<span class="w"> </span>install<span class="w"> </span>pipenv
+
+<span class="c1"># Create environment and install Ex-Fuzzy</span>
+pipenv<span class="w"> </span>install<span class="w"> </span>ex-fuzzy
+
+<span class="c1"># Activate the environment</span>
+pipenv<span class="w"> </span>shell
+</pre></div>
+</div>
+</section>
+</section>
+<section id="verification">
+<h2>Verification<a class="headerlink" href="#verification" title="Link to this heading">#</a></h2>
+<p>Test your installation by running this simple Python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_installation.py</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Ex-Fuzzy successfully imported!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📦 Version: </span><span class="si">{</span><span class="n">ex_fuzzy</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Test basic functionality</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+    <span class="c1"># Create a simple dataset</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># Create a classifier</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Classifier created successfully!&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🎉 Installation test passed!&quot;</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Import error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please check your installation.&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️  Warning: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Basic import works, but there might be issues with dependencies.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save this as <code class="docutils literal notranslate"><span class="pre">test_installation.py</span></code> and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>test_installation.py
+</pre></div>
+</div>
+</section>
+<section id="gpu-support">
+<h2>GPU Support<a class="headerlink" href="#gpu-support" title="Link to this heading">#</a></h2>
+<p>Ex-Fuzzy currently runs on CPU only. GPU acceleration is planned for future releases.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While Ex-Fuzzy doesn’t directly use GPUs, some operations may benefit from optimized BLAS libraries like Intel MKL or OpenBLAS, which are automatically used by NumPy when available.</p>
+</div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<section id="common-issues">
+<h3>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading">#</a></h3>
+<p><strong>Issue</strong>: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ex-fuzzy</span></code> fails with permission errors</p>
+<p><strong>Solution</strong>: Use the <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag or a virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+<p><strong>Issue</strong>: Import errors related to missing dependencies</p>
+<p><strong>Solution</strong>: Ensure all dependencies are installed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>pandas<span class="w"> </span>scikit-learn<span class="w"> </span>matplotlib<span class="w"> </span>pymoo
+</pre></div>
+</div>
+<p><strong>Issue</strong>: Older Python version</p>
+<p><strong>Solution</strong>: Ex-Fuzzy requires Python 3.8+. Upgrade your Python installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check your Python version</span>
+python<span class="w"> </span>--version
+</pre></div>
+</div>
+<p><strong>Issue</strong>: Installation fails on Apple Silicon Macs</p>
+<p><strong>Solution</strong>: Use Rosetta or install dependencies through conda:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create conda environment with compatible packages</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>exfuzzy<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
+conda<span class="w"> </span>activate<span class="w"> </span>exfuzzy
+conda<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>pandas<span class="w"> </span>scikit-learn<span class="w"> </span>matplotlib
+pip<span class="w"> </span>install<span class="w"> </span>pymoo<span class="w"> </span>ex-fuzzy
+</pre></div>
+</div>
+</section>
+</section>
+<section id="gpu-acceleration-setup">
+<h2>GPU Acceleration Setup<a class="headerlink" href="#gpu-acceleration-setup" title="Link to this heading">#</a></h2>
+<p>Ex-Fuzzy supports GPU-accelerated evolutionary optimization through the EvoX backend.</p>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h3>
+<p>To use GPU acceleration, you need:</p>
+<ol class="arabic simple">
+<li><p><strong>CUDA-compatible GPU</strong> (NVIDIA) with compute capability ≥3.5</p></li>
+<li><p><strong>CUDA Toolkit</strong> (11.8 or 12.1 recommended)</p></li>
+<li><p><strong>cuDNN</strong> (optional but recommended)</p></li>
+</ol>
+</section>
+<section id="installing-gpu-support">
+<h3>Installing GPU Support<a class="headerlink" href="#installing-gpu-support" title="Link to this heading">#</a></h3>
+<p><strong>Option 1: Automatic Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox<span class="w"> </span>torch
+</pre></div>
+</div>
+<p>This installs PyTorch with CPU support. For GPU support:</p>
+<p><strong>Option 2: CUDA-Specific Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># For CUDA 11.8</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu118
+
+<span class="c1"># For CUDA 12.1</span>
+pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="w"> </span>evox
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu121
+</pre></div>
+</div>
+</section>
+<section id="verifying-gpu-installation">
+<h3>Verifying GPU Installation<a class="headerlink" href="#verifying-gpu-installation" title="Link to this heading">#</a></h3>
+<p>Check if GPU is available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">evolutionary_backends</span>
+
+<span class="c1"># Check available backends</span>
+<span class="n">backends</span> <span class="o">=</span> <span class="n">evolutionary_backends</span><span class="o">.</span><span class="n">list_available_backends</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available backends: </span><span class="si">{</span><span class="n">backends</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check GPU availability</span>
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ GPU available: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  CUDA version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  GPU memory: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_properties</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">total_memory</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> GB&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠ No GPU detected. EvoX will use CPU.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Expected Output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Available backends: [&#39;pymoo&#39;, &#39;evox&#39;]
+✓ GPU available: NVIDIA GeForce RTX 3080
+  CUDA version: 11.8
+  GPU memory: 10.00 GB
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting-gpu-setup">
+<h3>Troubleshooting GPU Setup<a class="headerlink" href="#troubleshooting-gpu-setup" title="Link to this heading">#</a></h3>
+<p><strong>Issue</strong>: GPU not detected</p>
+<p><strong>Solution 1</strong>: Verify CUDA installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nvidia-smi<span class="w">  </span><span class="c1"># Should show GPU information</span>
+</pre></div>
+</div>
+<p><strong>Solution 2</strong>: Check PyTorch CUDA version matches your drivers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyTorch version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CUDA available: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CUDA version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Solution 3</strong>: Reinstall PyTorch with correct CUDA version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>uninstall<span class="w"> </span>torch
+pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cu118
+</pre></div>
+</div>
+<p><strong>Issue</strong>: Out of memory errors with GPU</p>
+<p><strong>Solution</strong>: Ex-Fuzzy automatically batches operations, but you can:</p>
+<ol class="arabic simple">
+<li><p>Reduce population size: <code class="docutils literal notranslate"><span class="pre">pop_size=30</span></code> instead of <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p>Monitor GPU memory: <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> or <code class="docutils literal notranslate"><span class="pre">watch</span> <span class="pre">-n</span> <span class="pre">1</span> <span class="pre">nvidia-smi</span></code></p></li>
+<li><p>Use CPU mode temporarily: Set <code class="docutils literal notranslate"><span class="pre">backend='pymoo'</span></code></p></li>
+</ol>
+</section>
+<section id="performance-comparison">
+<h3>Performance Comparison<a class="headerlink" href="#performance-comparison" title="Link to this heading">#</a></h3>
+<p>Typical speedup with GPU (RTX 3080) vs CPU (Intel i7):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Dataset Size</p></th>
+<th class="head"><p>PyMoo (CPU)</p></th>
+<th class="head"><p>EvoX (GPU)</p></th>
+<th class="head"><p>Speedup</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1,000 samples</p></td>
+<td><p>12s</p></td>
+<td><p>15s</p></td>
+<td><p>0.8x (GPU overhead)</p></td>
+</tr>
+<tr class="row-odd"><td><p>10,000 samples</p></td>
+<td><p>98s</p></td>
+<td><p>35s</p></td>
+<td><p>2.8x</p></td>
+</tr>
+<tr class="row-even"><td><p>100,000 samples</p></td>
+<td><p>856s</p></td>
+<td><p>89s</p></td>
+<td><p>9.6x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GPU acceleration is most beneficial for large datasets (&gt;10,000 samples) and
+complex rule bases. For small datasets, CPU (PyMoo) may be faster due to
+GPU transfer overhead.</p>
+</div>
+</section>
+</section>
+<section id="performance-optimization">
+<h2>Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading">#</a></h2>
+<p>For better performance, consider installing optimized versions of NumPy and SciPy:</p>
+<section id="intel-optimized-packages">
+<h3>Intel-Optimized Packages<a class="headerlink" href="#intel-optimized-packages" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Uninstall existing numpy/scipy</span>
+pip<span class="w"> </span>uninstall<span class="w"> </span>numpy<span class="w"> </span>scipy
+
+<span class="c1"># Install Intel-optimized versions</span>
+pip<span class="w"> </span>install<span class="w"> </span>intel-numpy<span class="w"> </span>intel-scipy
+</pre></div>
+</div>
+<p>Or use conda with Intel MKL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>scipy<span class="w"> </span>scikit-learn<span class="w"> </span>-c<span class="w"> </span>intel
+</pre></div>
+</div>
+</section>
+</section>
+<section id="docker-installation">
+<h2>Docker Installation<a class="headerlink" href="#docker-installation" title="Link to this heading">#</a></h2>
+<p>Use our official Docker image for a consistent environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pull the image</span>
+docker<span class="w"> </span>pull<span class="w"> </span>exfuzzy/ex-fuzzy:latest
+
+<span class="c1"># Run with Jupyter</span>
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>exfuzzy/ex-fuzzy:latest
+</pre></div>
+</div>
+<p>Or build your own:</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.9-slim</span>
+
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>ex-fuzzy<span class="o">[</span>all<span class="o">]</span>
+
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/workspace</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading">#</a></h2>
+<p>If you encounter issues during installation:</p>
+<ol class="arabic simple">
+<li><p><strong>Check the logs</strong>: Look for specific error messages in the installation output</p></li>
+<li><p><strong>Update pip</strong>: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span></code></p></li>
+<li><p><strong>Clear cache</strong>: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">cache</span> <span class="pre">purge</span></code></p></li>
+<li><p><strong>Check dependencies</strong>: Ensure all required packages are compatible</p></li>
+<li><p><strong>Ask for help</strong>: Open an issue on <a class="reference external" href="https://github.com/fuminides/ex-fuzzy/issues">GitHub</a></p></li>
+</ol>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<p>Once Ex-Fuzzy is installed, check out:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="getting-started.html"><span class="doc">Getting Started</span></a>: Learn the basics with a quick tutorial</p></li>
+<li><p><a class="reference internal" href="examples/index.html"><span class="doc">Examples</span></a>: See practical examples and use cases</p></li>
+<li><p><a class="reference internal" href="user-guide/index.html"><span class="doc">User Guide</span></a>: Dive deeper into Ex-Fuzzy’s capabilities</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-install">Quick Install</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#system-requirements">System Requirements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-methods">Installation Methods</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-1-using-pip-recommended">Method 1: Using pip (Recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-2-using-conda">Method 2: Using conda</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-3-development-installation">Method 3: Development Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-4-from-source-archive">Method 4: From Source Archive</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-specific-instructions">Platform-Specific Instructions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows">Windows</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#macos">macOS</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linux-ubuntu-debian">Linux (Ubuntu/Debian)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linux-centos-rhel-fedora">Linux (CentOS/RHEL/Fedora)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#virtual-environments">Virtual Environments</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-venv-python-built-in">Using venv (Python built-in)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-conda">Using conda</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pipenv">Using pipenv</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verification">Verification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-support">GPU Support</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#common-issues">Common Issues</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-acceleration-setup">GPU Acceleration Setup</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-gpu-support">Installing GPU Support</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verifying-gpu-installation">Verifying GPU Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting-gpu-setup">Troubleshooting GPU Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-comparison">Performance Comparison</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-optimization">Performance Optimization</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intel-optimized-packages">Intel-Optimized Packages</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-installation">Docker Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-help">Getting Help</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

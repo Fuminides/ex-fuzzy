@@ -1,0 +1,1150 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Roadmap &#8212; Ex-Fuzzy 1.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=30646c52"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'roadmap';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="usage.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    Roadmap
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Roadmap
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="usage.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step4.html">
+    Visualize rules and results
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Roadmap</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="roadmap">
+<h1>Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading">#</a></h1>
+<p>This document outlines the planned development direction for Ex-Fuzzy. Our roadmap balances new features, performance improvements, and community feedback.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This roadmap is subject to change based on community feedback, contributions, and emerging research. Dates are approximate targets.</p>
+</div>
+</section>
+<section id="current-version-1-0-0">
+<h1>Current Version: 1.0.0<a class="headerlink" href="#current-version-1-0-0" title="Link to this heading">#</a></h1>
+<p>Ex-Fuzzy has reached a stable 1.0 release with core fuzzy logic capabilities, comprehensive testing, and modern documentation.</p>
+</section>
+<section id="short-term-next-3-6-months">
+<h1>Short Term (Next 3-6 months)<a class="headerlink" href="#short-term-next-3-6-months" title="Link to this heading">#</a></h1>
+<section id="version-1-1-0-performance-usability">
+<h2>Version 1.1.0 - Performance &amp; Usability<a class="headerlink" href="#version-1-1-0-performance-usability" title="Link to this heading">#</a></h2>
+<p><strong>Target Release</strong>: Q2 2024</p>
+<p><strong>Focus Areas:</strong></p>
+<dl class="simple">
+<dt>🚀 <strong>Performance Optimizations</strong></dt><dd><ul class="simple">
+<li><p>GPU acceleration for large datasets</p></li>
+<li><p>Improved memory management</p></li>
+<li><p>Faster evolutionary algorithms</p></li>
+<li><p>Better parallel processing</p></li>
+</ul>
+</dd>
+<dt>🎯 <strong>Usability Improvements</strong></dt><dd><ul class="simple">
+<li><p>Simplified API for common use cases</p></li>
+<li><p>Better error messages and debugging</p></li>
+<li><p>Auto-tuning of hyperparameters</p></li>
+<li><p>Integration with popular ML libraries</p></li>
+</ul>
+</dd>
+<dt>📊 <strong>Enhanced Visualizations</strong></dt><dd><ul class="simple">
+<li><p>Interactive plots with Plotly</p></li>
+<li><p>3D fuzzy set visualizations</p></li>
+<li><p>Real-time training progress</p></li>
+<li><p>Better rule visualization</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Key Features:</strong></p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+⚡ GPU Acceleration</div>
+<p class="sd-card-text">CUDA support for fuzzy operations and evolutionary algorithms</p>
+</div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🔧 AutoML Integration</div>
+<p class="sd-card-text">Integration with AutoML frameworks for automated hyperparameter tuning</p>
+</div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📱 Interactive Widgets</div>
+<p class="sd-card-text">Jupyter widgets for interactive model exploration</p>
+</div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🌐 Web Interface</div>
+<p class="sd-card-text">Optional web interface for non-programmers</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="version-1-2-0-advanced-features">
+<h2>Version 1.2.0 - Advanced Features<a class="headerlink" href="#version-1-2-0-advanced-features" title="Link to this heading">#</a></h2>
+<p><strong>Target Release</strong>: Q3 2024</p>
+<p><strong>Focus Areas:</strong></p>
+<dl class="simple">
+<dt>🧠 <strong>Advanced Fuzzy Systems</strong></dt><dd><ul class="simple">
+<li><p>Interval Type-2 fuzzy sets</p></li>
+<li><p>General Type-2 fuzzy sets</p></li>
+<li><p>Fuzzy clustering integration</p></li>
+<li><p>Neuro-fuzzy systems</p></li>
+</ul>
+</dd>
+<dt>🔬 <strong>Research Features</strong></dt><dd><ul class="simple">
+<li><p>Multi-objective optimization</p></li>
+<li><p>Ensemble fuzzy classifiers</p></li>
+<li><p>Online learning capabilities</p></li>
+<li><p>Explainability metrics</p></li>
+</ul>
+</dd>
+<dt>🔌 <strong>Ecosystem Integration</strong></dt><dd><ul class="simple">
+<li><p>Scikit-learn pipeline compatibility</p></li>
+<li><p>MLflow integration for experiment tracking</p></li>
+<li><p>Docker containers for deployment</p></li>
+<li><p>REST API for model serving</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="medium-term-6-12-months">
+<h1>Medium Term (6-12 months)<a class="headerlink" href="#medium-term-6-12-months" title="Link to this heading">#</a></h1>
+<section id="version-1-3-0-domain-specialization">
+<h2>Version 1.3.0 - Domain Specialization<a class="headerlink" href="#version-1-3-0-domain-specialization" title="Link to this heading">#</a></h2>
+<p><strong>Target Release</strong>: Q4 2024</p>
+<p><strong>Specialized Modules:</strong></p>
+<dl class="simple">
+<dt>🏥 <strong>Healthcare Applications</strong></dt><dd><ul class="simple">
+<li><p>Medical decision support systems</p></li>
+<li><p>Diagnostic rule mining</p></li>
+<li><p>Clinical data integration</p></li>
+<li><p>Regulatory compliance tools</p></li>
+</ul>
+</dd>
+<dt>💰 <strong>Financial Applications</strong></dt><dd><ul class="simple">
+<li><p>Risk assessment models</p></li>
+<li><p>Credit scoring systems</p></li>
+<li><p>Fraud detection rules</p></li>
+<li><p>Market analysis tools</p></li>
+</ul>
+</dd>
+<dt>🏭 <strong>Industrial Applications</strong></dt><dd><ul class="simple">
+<li><p>Quality control systems</p></li>
+<li><p>Predictive maintenance</p></li>
+<li><p>Process optimization</p></li>
+<li><p>Safety monitoring</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="version-2-0-0-next-generation">
+<h2>Version 2.0.0 - Next Generation<a class="headerlink" href="#version-2-0-0-next-generation" title="Link to this heading">#</a></h2>
+<p><strong>Target Release</strong>: Q1 2025</p>
+<p><strong>Major Changes:</strong></p>
+<dl class="simple">
+<dt>🔄 <strong>Architecture Overhaul</strong></dt><dd><ul class="simple">
+<li><p>Plugin-based architecture</p></li>
+<li><p>Microservices deployment</p></li>
+<li><p>Cloud-native design</p></li>
+<li><p>Streaming data support</p></li>
+</ul>
+</dd>
+<dt>🤖 <strong>AI Integration</strong></dt><dd><ul class="simple">
+<li><p>LLM-powered rule explanation</p></li>
+<li><p>Automated feature engineering</p></li>
+<li><p>Natural language rule queries</p></li>
+<li><p>AI-assisted model building</p></li>
+</ul>
+</dd>
+<dt>🌍 <strong>Scalability</strong></dt><dd><ul class="simple">
+<li><p>Distributed computing support</p></li>
+<li><p>Big data integration (Spark, Dask)</p></li>
+<li><p>Kubernetes deployment</p></li>
+<li><p>Edge computing optimization</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="long-term-1-2-years">
+<h1>Long Term (1-2 years)<a class="headerlink" href="#long-term-1-2-years" title="Link to this heading">#</a></h1>
+<section id="version-2-x-series-research-frontiers">
+<h2>Version 2.x Series - Research Frontiers<a class="headerlink" href="#version-2-x-series-research-frontiers" title="Link to this heading">#</a></h2>
+<p><strong>Emerging Technologies:</strong></p>
+<dl class="simple">
+<dt>🔬 <strong>Quantum Computing</strong></dt><dd><ul class="simple">
+<li><p>Quantum fuzzy algorithms</p></li>
+<li><p>Hybrid classical-quantum optimization</p></li>
+<li><p>Quantum advantage exploration</p></li>
+</ul>
+</dd>
+<dt>🧬 <strong>Bio-inspired Computing</strong></dt><dd><ul class="simple">
+<li><p>DNA computing algorithms</p></li>
+<li><p>Swarm intelligence optimization</p></li>
+<li><p>Evolutionary-developmental approaches</p></li>
+</ul>
+</dd>
+<dt>🌐 <strong>Federated Learning</strong></dt><dd><ul class="simple">
+<li><p>Privacy-preserving fuzzy learning</p></li>
+<li><p>Distributed model training</p></li>
+<li><p>Blockchain integration</p></li>
+</ul>
+</dd>
+<dt>🎨 <strong>Extended Reality (XR)</strong></dt><dd><ul class="simple">
+<li><p>VR/AR model visualization</p></li>
+<li><p>Immersive rule exploration</p></li>
+<li><p>Gesture-based interaction</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="community-ecosystem">
+<h1>Community &amp; Ecosystem<a class="headerlink" href="#community-ecosystem" title="Link to this heading">#</a></h1>
+<section id="documentation-education">
+<h2>Documentation &amp; Education<a class="headerlink" href="#documentation-education" title="Link to this heading">#</a></h2>
+<p><strong>Ongoing Efforts:</strong></p>
+<dl class="simple">
+<dt>📚 <strong>Educational Content</strong></dt><dd><ul class="simple">
+<li><p>Online courses and tutorials</p></li>
+<li><p>Academic curriculum integration</p></li>
+<li><p>Workshop materials</p></li>
+<li><p>Certification programs</p></li>
+</ul>
+</dd>
+<dt>🎓 <strong>Research Support</strong></dt><dd><ul class="simple">
+<li><p>Academic partnerships</p></li>
+<li><p>Research grants and funding</p></li>
+<li><p>Conference presentations</p></li>
+<li><p>Peer-reviewed publications</p></li>
+</ul>
+</dd>
+<dt>👥 <strong>Community Building</strong></dt><dd><ul class="simple">
+<li><p>User groups and meetups</p></li>
+<li><p>Contributor mentorship</p></li>
+<li><p>Industry partnerships</p></li>
+<li><p>Open source advocacy</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="infrastructure-quality">
+<h2>Infrastructure &amp; Quality<a class="headerlink" href="#infrastructure-quality" title="Link to this heading">#</a></h2>
+<p><strong>Continuous Improvements:</strong></p>
+<dl class="simple">
+<dt>🔧 <strong>Development Tools</strong></dt><dd><ul class="simple">
+<li><p>Better development environment</p></li>
+<li><p>Advanced testing frameworks</p></li>
+<li><p>Performance profiling tools</p></li>
+<li><p>Security scanning</p></li>
+</ul>
+</dd>
+<dt>📊 <strong>Metrics &amp; Analytics</strong></dt><dd><ul class="simple">
+<li><p>Usage analytics (privacy-respecting)</p></li>
+<li><p>Performance benchmarks</p></li>
+<li><p>Quality metrics</p></li>
+<li><p>User satisfaction tracking</p></li>
+</ul>
+</dd>
+<dt>🌍 <strong>Internationalization</strong></dt><dd><ul class="simple">
+<li><p>Multi-language documentation</p></li>
+<li><p>Localized examples</p></li>
+<li><p>Cultural adaptation</p></li>
+<li><p>Global community support</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="research-directions">
+<h1>Research Directions<a class="headerlink" href="#research-directions" title="Link to this heading">#</a></h1>
+<section id="active-research-areas">
+<h2>Active Research Areas<a class="headerlink" href="#active-research-areas" title="Link to this heading">#</a></h2>
+<p><strong>Theoretical Advances:</strong></p>
+<dl class="simple">
+<dt>🧮 <strong>Mathematical Foundations</strong></dt><dd><ul class="simple">
+<li><p>Novel fuzzy set theories</p></li>
+<li><p>Advanced aggregation operators</p></li>
+<li><p>Uncertainty quantification</p></li>
+<li><p>Computational complexity analysis</p></li>
+</ul>
+</dd>
+<dt>🎯 <strong>Optimization Methods</strong></dt><dd><ul class="simple">
+<li><p>Hybrid optimization algorithms</p></li>
+<li><p>Multi-objective approaches</p></li>
+<li><p>Constraint handling techniques</p></li>
+<li><p>Dynamic optimization</p></li>
+</ul>
+</dd>
+<dt>📈 <strong>Applications Research</strong></dt><dd><ul class="simple">
+<li><p>Domain-specific adaptations</p></li>
+<li><p>Real-world case studies</p></li>
+<li><p>Comparative analysis</p></li>
+<li><p>Best practices development</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="collaboration-opportunities">
+<h1>Collaboration Opportunities<a class="headerlink" href="#collaboration-opportunities" title="Link to this heading">#</a></h1>
+<section id="academic-partnerships">
+<h2>Academic Partnerships<a class="headerlink" href="#academic-partnerships" title="Link to this heading">#</a></h2>
+<p>We actively seek collaborations with:</p>
+<ul class="simple">
+<li><p><strong>Universities</strong>: Research projects and student internships</p></li>
+<li><p><strong>Research Institutes</strong>: Joint development and publications</p></li>
+<li><p><strong>Academic Conferences</strong>: Presentations and workshops</p></li>
+<li><p><strong>Peer Review</strong>: Journal submissions and evaluations</p></li>
+</ul>
+</section>
+<section id="industry-partnerships">
+<h2>Industry Partnerships<a class="headerlink" href="#industry-partnerships" title="Link to this heading">#</a></h2>
+<p>We welcome partnerships with:</p>
+<ul class="simple">
+<li><p><strong>Technology Companies</strong>: Integration and use cases</p></li>
+<li><p><strong>Consulting Firms</strong>: Real-world applications</p></li>
+<li><p><strong>Startups</strong>: Innovation and rapid development</p></li>
+<li><p><strong>Enterprise</strong>: Large-scale deployments</p></li>
+</ul>
+</section>
+</section>
+<section id="contributing-to-the-roadmap">
+<h1>Contributing to the Roadmap<a class="headerlink" href="#contributing-to-the-roadmap" title="Link to this heading">#</a></h1>
+<section id="community-input">
+<h2>Community Input<a class="headerlink" href="#community-input" title="Link to this heading">#</a></h2>
+<p>The roadmap is shaped by community feedback:</p>
+<dl class="simple">
+<dt>📝 <strong>Feature Requests</strong></dt><dd><p>Submit requests through GitHub issues with the “enhancement” label</p>
+</dd>
+<dt>🗳️ <strong>Priority Voting</strong></dt><dd><p>Vote on proposed features in GitHub discussions</p>
+</dd>
+<dt>💬 <strong>Community Discussions</strong></dt><dd><p>Join our Discord/Slack for informal discussions</p>
+</dd>
+<dt>📊 <strong>User Surveys</strong></dt><dd><p>Participate in periodic surveys about priorities</p>
+</dd>
+</dl>
+</section>
+<section id="development-participation">
+<h2>Development Participation<a class="headerlink" href="#development-participation" title="Link to this heading">#</a></h2>
+<p>Help shape the future by:</p>
+<dl class="simple">
+<dt>🛠️ <strong>Contributing Code</strong></dt><dd><p>Implement features from the roadmap</p>
+</dd>
+<dt>📖 <strong>Writing Documentation</strong></dt><dd><p>Help document new features and improvements</p>
+</dd>
+<dt>🧪 <strong>Testing &amp; Feedback</strong></dt><dd><p>Test beta releases and provide feedback</p>
+</dd>
+<dt>🎨 <strong>Design &amp; UX</strong></dt><dd><p>Contribute to user experience improvements</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="stay-updated">
+<h1>Stay Updated<a class="headerlink" href="#stay-updated" title="Link to this heading">#</a></h1>
+<p>Keep track of roadmap progress:</p>
+<ul class="simple">
+<li><p><strong>GitHub Milestones</strong>: Track feature development</p></li>
+<li><p><strong>Release Notes</strong>: See what’s been completed</p></li>
+<li><p><strong>Blog Posts</strong>: Detailed updates and announcements</p></li>
+<li><p><strong>Newsletter</strong>: Monthly progress updates</p></li>
+<li><p><strong>Social Media</strong>: Quick updates and news</p></li>
+</ul>
+</section>
+<section id="questions-feedback">
+<h1>Questions &amp; Feedback<a class="headerlink" href="#questions-feedback" title="Link to this heading">#</a></h1>
+<p>Have questions about the roadmap?</p>
+<ul class="simple">
+<li><p>💬 <strong>GitHub Discussions</strong>: General questions and suggestions</p></li>
+<li><p>📧 <strong>Email</strong>: Direct feedback to the core team</p></li>
+<li><p>🐛 <strong>Issues</strong>: Specific feature requests or bug reports</p></li>
+<li><p>📱 <strong>Social Media</strong>: Quick questions and updates</p></li>
+</ul>
+<p>Thank you for being part of the Ex-Fuzzy community! Your feedback and contributions help shape the future of explainable fuzzy logic in Python. 🚀</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Roadmap</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#current-version-1-0-0">Current Version: 1.0.0</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#short-term-next-3-6-months">Short Term (Next 3-6 months)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1-0-performance-usability">Version 1.1.0 - Performance &amp; Usability</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-2-0-advanced-features">Version 1.2.0 - Advanced Features</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#medium-term-6-12-months">Medium Term (6-12 months)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-3-0-domain-specialization">Version 1.3.0 - Domain Specialization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-2-0-0-next-generation">Version 2.0.0 - Next Generation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#long-term-1-2-years">Long Term (1-2 years)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-2-x-series-research-frontiers">Version 2.x Series - Research Frontiers</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#community-ecosystem">Community &amp; Ecosystem</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation-education">Documentation &amp; Education</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure-quality">Infrastructure &amp; Quality</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#research-directions">Research Directions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#active-research-areas">Active Research Areas</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#collaboration-opportunities">Collaboration Opportunities</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#academic-partnerships">Academic Partnerships</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#industry-partnerships">Industry Partnerships</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing-to-the-roadmap">Contributing to the Roadmap</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#community-input">Community Input</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-participation">Development Participation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#stay-updated">Stay Updated</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#questions-feedback">Questions &amp; Feedback</a></li>
+</ul>
+
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/roadmap.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
