@@ -177,7 +177,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
             var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta:float=7.0, tournament_size:int=3, bootstrap_size:int=1000, checkpoint_path:str='',
-            p_value_compute:bool=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None) -> None:
+            p_value_compute:bool=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None,
+            patience: Optional[int] = 10, min_delta: float = 1e-4) -> None:
         '''
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
@@ -195,8 +196,13 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         :param mutation_eta: float. Eta parameter for the polynomial mutation.
         :param tournament_size: integer. Size of the tournament for the genetic algorithm.
         :param checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
+        :param patience: integer. Stop early when the best fitness does not improve for this many generations. Default is 10. Use None to run all generations.
+        :param min_delta: float. Minimum fitness improvement required to reset patience. Default is 1e-4.
         :return: None. The classifier is fitted to the data.
         '''
+        if patience is not None and patience <= 0:
+            patience = None
+        min_delta = max(0.0, float(min_delta))
 
         if isinstance(X, pd.DataFrame):
             lvs_names = list(X.columns)
@@ -292,7 +298,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     sbx_eta=sbx_eta,
                     mutation_eta=mutation_eta,
                     tournament_size=tournament_size,
-                    sampling=rules_gene
+                    sampling=rules_gene,
+                    patience=patience,
+                    min_delta=min_delta
                 )
                 
                 best_individual = result['X']
@@ -311,7 +319,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     sbx_eta=sbx_eta,
                     mutation_eta=mutation_eta,
                     tournament_size=tournament_size,
-                    sampling=rules_gene
+                    sampling=rules_gene,
+                    patience=patience,
+                    min_delta=min_delta
                 )
                 
                 best_individual = result['X']
@@ -328,11 +338,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 sbx_eta=sbx_eta,
                 mutation_eta=mutation_eta,
                 tournament_size=tournament_size,
-                sampling=rules_gene
+                sampling=rules_gene,
+                patience=patience,
+                min_delta=min_delta
             )
             
             best_individual = result['X']
             self.performance = 1 - result['F']
+        self.optimization_result_ = result
+        self.n_generations_run_ = result.get('n_gen_run', n_gen)
+        self.stopped_early_ = result.get('stopped_early', False)
 
         try:
             self.var_names = list(X.columns)
@@ -2069,4 +2084,3 @@ class FitRuleBase(Problem):
             
         return score
     
-

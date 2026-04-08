@@ -76,7 +76,7 @@ class RuleMineClassifier(ClassifierMixin, BaseEstimator):
         :param y: labels for each sample.
         :param n_gen: number of generations to compute in the genetic optimization.
         :param pop_size: number of subjects per generation.
-        :param kwargs: additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.
+        :param kwargs: additional parameters for the genetic optimization, including early stopping with patience=10 and min_delta=1e-4 by default. See fit method in BaseRuleBaseClassifier.
         '''
         fuzzy_vars = utils.construct_partitions(X, self.fuzzy_type)
         candidate_rules = rm.multiclass_mine_rulebase(X, y, fuzzy_vars, self.tolerance, max_depth=self.nAnts)
@@ -140,7 +140,7 @@ class FuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         :param n_gen: number of generations to compute in the genetic optimization.
         :param pop_size: number of subjects per generation.
         :param checkpoints: if bigger than 0, will save the best subject per x generations in a text file.
-        :param kwargs: additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.
+        :param kwargs: additional parameters for the genetic optimization, including early stopping with patience=10 and min_delta=1e-4 by default. See fit method in BaseRuleBaseClassifier.
         '''
         self.fl_classifier1.fit(X, y, n_gen, pop_size, checkpoints, **kwargs)
         self.phase1_rules = self.fl_classifier1.rule_base
@@ -200,7 +200,7 @@ class RuleFineTuneClassifier(ClassifierMixin, BaseEstimator):
         :param n_gen: number of generations to compute in the genetic optimization.
         :param pop_size: number of subjects per generation.
         :param checkpoints: if bigger than 0, will save the best subject per x generations in a text file.
-        :param kwargs: additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.
+        :param kwargs: additional parameters for the genetic optimization, including early stopping with patience=10 and min_delta=1e-4 by default. See fit method in BaseRuleBaseClassifier.
         '''
         candidate_rules = rm.multiclass_mine_rulebase(X, y, self.fl_classifier1.lvs, self.tolerance)
 

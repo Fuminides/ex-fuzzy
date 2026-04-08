@@ -78,12 +78,101 @@ class PyMooBackend(EvolutionaryBackend):
     
     def name(self) -> str:
         return "pymoo"
+
+    def _build_ga_algorithm(self, pop_size: int, var_prob: float, sbx_eta: float,
+                            mutation_eta: float, tournament_size: int,
+                            sampling: Any):
+        """Create a configured pymoo GA instance."""
+        from pymoo.algorithms.soo.nonconvex.ga import GA
+        from pymoo.operators.repair.rounding import RoundingRepair
+        from pymoo.operators.sampling.rnd import IntegerRandomSampling
+        from pymoo.operators.crossover.sbx import SBX
+        from pymoo.operators.mutation.pm import PolynomialMutation
+
+        if sampling is None:
+            sampling = IntegerRandomSampling()
+
+        return GA(
+            pop_size=pop_size,
+            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
+            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
+            tournament_size=tournament_size,
+            sampling=sampling,
+            eliminate_duplicates=False
+        )
+
+    def _run_ga_loop(self, problem: Any, algorithm: Any, n_gen: int,
+                     random_state: int, verbose: bool,
+                     checkpoint_freq: Optional[int] = None,
+                     checkpoint_callback: Optional[Callable] = None,
+                     patience: Optional[int] = None,
+                     min_delta: float = 0.0) -> dict:
+        """Run a pymoo GA loop with optional checkpoints and early stopping."""
+        algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen))
+
+        if verbose:
+            print('=================================================')
+            print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
+            print('=================================================')
+
+        best_individual = None
+        best_fitness = None
+        generations_without_improvement = 0
+        patience_enabled = patience is not None and patience > 0
+        min_delta = max(0.0, float(min_delta))
+        executed_generations = 0
+
+        for gen in range(n_gen):
+            algorithm.next()
+            executed_generations = gen + 1
+            pop = algorithm.pop
+            fitness_last_gen = pop.get('F').reshape(-1)
+            best_solution_arg = int(np.argmin(fitness_last_gen))
+            current_best_fitness = float(fitness_last_gen[best_solution_arg])
+            current_best_individual = pop.get('X')[best_solution_arg, :].copy()
+
+            if verbose:
+                print('%-6s | %-8s | %-8s | %-8s' % (
+                    algorithm.n_gen, algorithm.evaluator.n_eval,
+                    float(np.mean(fitness_last_gen)), current_best_fitness
+                ))
+
+            if best_fitness is None or current_best_fitness < (best_fitness - min_delta):
+                best_fitness = current_best_fitness
+                best_individual = current_best_individual
+                generations_without_improvement = 0
+            else:
+                generations_without_improvement += 1
+
+            if checkpoint_freq is not None and checkpoint_callback is not None and gen % checkpoint_freq == 0:
+                checkpoint_callback(gen, best_individual.copy())
+
+            if patience_enabled and generations_without_improvement >= patience:
+                if verbose:
+                    print(
+                        f"Early stopping at generation {executed_generations} "
+                        f"(no improvement larger than {min_delta} for {patience} generations)."
+                    )
+                break
+
+        pop = algorithm.pop
+
+        return {
+            'X': best_individual,
+            'F': best_fitness,
+            'pop': pop,
+            'algorithm': algorithm,
+            'res': algorithm,
+            'n_gen_run': executed_generations,
+            'stopped_early': executed_generations < n_gen
+        }
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int, 
                  random_state: int, verbose: bool, 
                  var_prob: float = 0.3, sbx_eta: float = 3.0, 
                  mutation_eta: float = 7.0, tournament_size: int = 3,
-                 sampling: Any = None, **kwargs) -> dict:
+                 sampling: Any = None, patience: Optional[int] = 10,
+                 min_delta: float = 1e-4, **kwargs) -> dict:
         """
         Optimize using pymoo's genetic algorithm.
         
@@ -103,54 +192,32 @@ class PyMooBackend(EvolutionaryBackend):
         Returns:
             dict with optimization results
         """
-        from pymoo.algorithms.soo.nonconvex.ga import GA
-        from pymoo.optimize import minimize
-        from pymoo.operators.repair.rounding import RoundingRepair
-        from pymoo.operators.sampling.rnd import IntegerRandomSampling
-        from pymoo.operators.crossover.sbx import SBX
-        from pymoo.operators.mutation.pm import PolynomialMutation
-        
-        if sampling is None:
-            sampling = IntegerRandomSampling()
-        
-        algorithm = GA(
+        algorithm = self._build_ga_algorithm(
             pop_size=pop_size,
-            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
-            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
+            var_prob=var_prob,
+            sbx_eta=sbx_eta,
+            mutation_eta=mutation_eta,
             tournament_size=tournament_size,
-            sampling=sampling,
-            eliminate_duplicates=False
+            sampling=sampling
         )
-        
-        res = minimize(
-            problem,
-            algorithm,
-            ('n_gen', n_gen),
-            seed=random_state,
-            copy_algorithm=False,
-            save_history=False,
-            verbose=verbose
+
+        return self._run_ga_loop(
+            problem=problem,
+            algorithm=algorithm,
+            n_gen=n_gen,
+            random_state=random_state,
+            verbose=verbose,
+            patience=patience,
+            min_delta=min_delta
         )
-        
-        pop = res.pop
-        fitness_last_gen = pop.get('F')
-        best_solution = np.argmin(fitness_last_gen)
-        best_individual = pop.get('X')[best_solution, :]
-        
-        return {
-            'X': best_individual,
-            'F': fitness_last_gen[best_solution],
-            'pop': pop,
-            'algorithm': res.algorithm,
-            'res': res
-        }
     
     def optimize_with_checkpoints(self, problem: Any, n_gen: int, pop_size: int,
                                    random_state: int, verbose: bool,
                                    checkpoint_freq: int, checkpoint_callback: Callable,
                                    var_prob: float = 0.3, sbx_eta: float = 3.0,
                                    mutation_eta: float = 7.0, tournament_size: int = 3,
-                                   sampling: Any = None, **kwargs) -> dict:
+                                   sampling: Any = None, patience: Optional[int] = 10,
+                                   min_delta: float = 1e-4, **kwargs) -> dict:
         """
         Optimize with checkpoint callbacks at specified intervals.
         
@@ -172,63 +239,26 @@ class PyMooBackend(EvolutionaryBackend):
         Returns:
             dict with optimization results
         """
-        from pymoo.algorithms.soo.nonconvex.ga import GA
-        from pymoo.operators.repair.rounding import RoundingRepair
-        from pymoo.operators.sampling.rnd import IntegerRandomSampling
-        from pymoo.operators.crossover.sbx import SBX
-        from pymoo.operators.mutation.pm import PolynomialMutation
-        
-        if sampling is None:
-            sampling = IntegerRandomSampling()
-        
-        algorithm = GA(
+        algorithm = self._build_ga_algorithm(
             pop_size=pop_size,
-            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
-            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
+            var_prob=var_prob,
+            sbx_eta=sbx_eta,
+            mutation_eta=mutation_eta,
             tournament_size=tournament_size,
-            sampling=sampling,
-            eliminate_duplicates=False
+            sampling=sampling
         )
-        
-        if verbose:
-            print('=================================================')
-            print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
-            print('=================================================')
-        
-        algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen))
-        
-        for k in range(n_gen):
-            algorithm.next()
-            res = algorithm
-            
-            if verbose:
-                print('%-6s | %-8s | %-8s | %-8s' % (
-                    res.n_gen, res.evaluator.n_eval, 
-                    res.pop.get('F').mean(), res.pop.get('F').min()
-                ))
-            
-            if k % checkpoint_freq == 0:
-                pop = algorithm.pop
-                fitness_last_gen = pop.get('F')
-                best_solution_arg = np.argmin(fitness_last_gen)
-                best_individual = pop.get('X')[best_solution_arg, :]
-                
-                # Call user-provided checkpoint callback
-                checkpoint_callback(k, best_individual)
-        
-        # Extract final results
-        pop = algorithm.pop
-        fitness_last_gen = pop.get('F')
-        best_solution = np.argmin(fitness_last_gen)
-        best_individual = pop.get('X')[best_solution, :]
-        
-        return {
-            'X': best_individual,
-            'F': fitness_last_gen[best_solution],
-            'pop': pop,
-            'algorithm': algorithm,
-            'res': algorithm
-        }
+
+        return self._run_ga_loop(
+            problem=problem,
+            algorithm=algorithm,
+            n_gen=n_gen,
+            random_state=random_state,
+            verbose=verbose,
+            checkpoint_freq=checkpoint_freq,
+            checkpoint_callback=checkpoint_callback,
+            patience=patience,
+            min_delta=min_delta
+        )
 
 
 class EvoXBackend(EvolutionaryBackend):
@@ -325,7 +355,7 @@ class EvoXBackend(EvolutionaryBackend):
         import torch
         
         # TRUE BATCHED EVALUATION - evaluate entire population at once
-        if hasattr(problem, '_evaluate_torch_batch'):
+        if hasattr(problem, '_evaluate_torch_batch') and getattr(problem, 'lvs', None) is not None:
             # Use fully batched evaluation if available
             fitness = problem._evaluate_torch_batch(population, problem.y, problem.fuzzy_type, device=device)
             return 1.0 - fitness  # Convert MCC to minimization
@@ -347,7 +377,8 @@ class EvoXBackend(EvolutionaryBackend):
                  random_state: int, verbose: bool,
                  var_prob: float = 0.3, sbx_eta: float = 20.0,
                  mutation_eta: float = 20.0, tournament_size: int = 3,
-                 sampling: Any = None, **kwargs) -> dict:
+                 sampling: Any = None, patience: Optional[int] = 10,
+                 min_delta: float = 1e-4, **kwargs) -> dict:
         """
         Optimize using EvoX's genetic algorithm with PyTorch backend.
         
@@ -415,6 +446,9 @@ class EvoXBackend(EvolutionaryBackend):
         # Create a simple GA workflow with elitism
         best_solutions = []
         best_fitness = []
+        generations_without_improvement = 0
+        patience_enabled = patience is not None and patience > 0
+        min_delta = max(0.0, float(min_delta))
         
         # Convert bounds to PyTorch tensors for mutation
         lb_torch = torch.tensor(xl, dtype=torch.float32, device=device)
@@ -482,10 +516,23 @@ class EvoXBackend(EvolutionaryBackend):
             best_idx = torch.argmin(fitness)
             best_solutions.append(population[best_idx].cpu().numpy())
             best_fitness.append(float(fitness[best_idx]))
+
+            if len(best_fitness) == 1 or best_fitness[-1] < (min(best_fitness[:-1]) - min_delta):
+                generations_without_improvement = 0
+            else:
+                generations_without_improvement += 1
             
             if verbose and gen % max(1, n_gen // 10) == 0:
                 print(f'Gen {gen:4d} | Best fitness: {fitness[best_idx]:.6f} | '
                       f'Avg fitness: {torch.mean(fitness):.6f}')
+
+            if patience_enabled and generations_without_improvement >= patience:
+                if verbose:
+                    print(
+                        f"Early stopping at generation {gen + 1} "
+                        f"(no improvement larger than {min_delta} for {patience} generations)."
+                    )
+                break
         
         # Get final best solution
         best_gen = int(np.argmin(best_fitness))
@@ -504,7 +551,9 @@ class EvoXBackend(EvolutionaryBackend):
             'history': {
                 'best_solutions': best_solutions,
                 'best_fitness': best_fitness
-            }
+            },
+            'n_gen_run': len(best_fitness),
+            'stopped_early': len(best_fitness) < n_gen
         }
 
 

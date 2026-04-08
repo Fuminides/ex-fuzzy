@@ -122,6 +122,7 @@ Here's a simple example to get you started:
     # Create and train fuzzy classifier
     classifier = evf.BaseFuzzyRulesClassifier(nRules=10, nAnts=4)
     classifier.fit(X_train, y_train, n_gen=50, pop_size=30)
+    # Early stopping defaults: patience=10, min_delta=1e-4
 
     # Evaluate and visualize
     evaluator = eval_tools.FuzzyEvaluator(classifier)

@@ -109,6 +109,20 @@ class TestPyMooBackend:
         predictions = clf.predict(X_test)
         assert len(predictions) == len(y_test)
 
+    def test_pymoo_backend_patience_early_stops(self, simple_dataset):
+        """Test PyMoo backend early stopping with patience and min_delta."""
+        X_train, X_test, y_train, y_test = simple_dataset
+
+        clf = evf.BaseFuzzyRulesClassifier(
+            nRules=10, nAnts=3,
+            backend='pymoo',
+            verbose=False
+        )
+        clf.fit(X_train, y_train, n_gen=6, pop_size=10, patience=1, min_delta=10.0)
+
+        assert clf.n_generations_run_ == 2
+        assert clf.stopped_early_ is True
+
 
 @pytest.mark.skipif(not HAS_EVOX, reason="EvoX not installed")
 class TestEvoXBackend:
@@ -141,6 +155,23 @@ class TestEvoXBackend:
 
             predictions = clf.predict(X_test)
             assert len(predictions) == len(y_test)
+        except (ImportError, RuntimeError) as e:
+            pytest.skip(f"EvoX backend not properly configured: {e}")
+
+    def test_evox_backend_patience_early_stops(self, simple_dataset):
+        """Test EvoX backend early stopping with patience and min_delta."""
+        X_train, X_test, y_train, y_test = simple_dataset
+
+        try:
+            clf = evf.BaseFuzzyRulesClassifier(
+                nRules=10, nAnts=3,
+                backend='evox',
+                verbose=False
+            )
+            clf.fit(X_train, y_train, n_gen=6, pop_size=10, patience=1, min_delta=10.0)
+
+            assert clf.n_generations_run_ == 2
+            assert clf.stopped_early_ is True
         except (ImportError, RuntimeError) as e:
             pytest.skip(f"EvoX backend not properly configured: {e}")
 

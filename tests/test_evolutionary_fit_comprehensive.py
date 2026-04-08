@@ -7,6 +7,7 @@ configuration options including fuzzy types, backends, and parameters.
 import pytest
 import numpy as np
 import pandas as pd
+import inspect
 from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -52,6 +53,12 @@ class TestBaseFuzzyRulesClassifierBasic:
         assert clf.tolerance == 0.0
         assert clf.verbose == False
 
+    def test_fit_defaults_include_early_stopping(self):
+        """Test fit exposes the expected default early stopping parameters."""
+        signature = inspect.signature(evf.BaseFuzzyRulesClassifier.fit)
+        assert signature.parameters['patience'].default == 10
+        assert signature.parameters['min_delta'].default == 1e-4
+
     def test_classifier_creation_custom(self):
         """Test classifier creation with custom parameters."""
         clf = evf.BaseFuzzyRulesClassifier(
@@ -78,6 +85,18 @@ class TestBaseFuzzyRulesClassifierBasic:
         assert clf.rule_base is not None
         assert hasattr(clf, 'nclasses_')
         assert clf.nclasses_ == 2
+
+    def test_fit_exposes_optimization_metadata(self, simple_dataset):
+        """Test fit stores optimization execution metadata."""
+        X_train, X_test, y_train, y_test = simple_dataset
+        clf = evf.BaseFuzzyRulesClassifier(nRules=10, nAnts=3, verbose=False)
+        clf.fit(X_train, y_train, n_gen=5, pop_size=10)
+
+        assert hasattr(clf, 'optimization_result_')
+        assert hasattr(clf, 'n_generations_run_')
+        assert hasattr(clf, 'stopped_early_')
+        assert clf.n_generations_run_ == 5
+        assert clf.stopped_early_ is False
 
     def test_predict_basic(self, simple_dataset):
         """Test basic prediction."""

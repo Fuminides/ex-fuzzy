@@ -76,6 +76,8 @@ Using EvoX Backend
                  n_gen=50,
                  pop_size=100)
 
+   # Early stopping defaults: patience=10, min_delta=1e-4
+
 Checking Available Backends
 ----------------------------
 

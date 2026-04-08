@@ -260,6 +260,9 @@ classifier.fit(X_train, y_train,
               n_gen=50,
               pop_size=100)
 
+# Early stopping is enabled by default:
+# patience=10, min_delta=1e-4
+
 # EvoX provides significant speedups for:
 # - Large datasets (>10,000 samples)
 # - Complex rule bases (many rules/antecedents)
