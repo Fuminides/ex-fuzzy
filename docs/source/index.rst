@@ -252,11 +252,11 @@ If you use Ex-Fuzzy in your research, please cite:
 
 .. code-block:: bibtex
 
-    @article{ex_fuzzy_2023,
-        title={Ex-Fuzzy: A Python Library for Explainable Fuzzy Logic Inference},
-        author={Fumanal Idocin, Javier},
-        journal={Software Impacts},
-        year={2023},
+    @article{fumanal2024ex,
+        title={Ex-Fuzzy: A Library for Symbolic Explainable Ai Through Fuzzy Logic Programming},
+        author={Fumanal Idocin, Javier and Andreu-Perez, Javier},
+        journal={Neurocomputing},
+        year={2024},
         publisher={Elsevier}
     }
 
