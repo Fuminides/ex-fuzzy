@@ -10,14 +10,16 @@ from datetime import datetime
 # -- Path setup --------------------------------------------------------------
 sys.path.insert(0, os.path.abspath('../../ex_fuzzy/'))
 
-from ex_fuzzy import __version__  # noqa: E402
+version_ns = {}
+with open(os.path.abspath('../../ex_fuzzy/ex_fuzzy/_version.py'), encoding='utf-8') as f:
+    exec(f.read(), version_ns)
 
 # -- Project information -----------------------------------------------------
 project = 'Ex-Fuzzy'
 copyright = f'2023-{datetime.now().year}, Javier Fumanal Idocin'
 author = 'Javier Fumanal Idocin'
-release = __version__
-version = __version__
+release = version_ns['__version__']
+version = version_ns['__version__']
 
 # -- General configuration ---------------------------------------------------
 extensions = [
