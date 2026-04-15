@@ -409,10 +409,10 @@ Business application for customer classification:
 
    # Business insights from rules (example interpretations)
    print("\\nBusiness Insights from Fuzzy Rules:")
-   print("- High income + High spending → Premium segment")
-   print("- Long tenure + Moderate spending → Standard segment")  
-   print("- Young age + Low income → Basic segment")
-   print("- Senior age + High income → Premium segment")
+   print("- High income + High spending -> Premium segment")
+   print("- Long tenure + Moderate spending -> Standard segment")
+   print("- Young age + Low income -> Basic segment")
+   print("- Senior age + High income -> Premium segment")
 
 Model Interpretation and Analysis
 ---------------------------------

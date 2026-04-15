@@ -48,7 +48,7 @@ A fuzzy set A in universe X is defined by a membership function:
 
 .. math::
 
-   \\mu_A: X \\rightarrow [0, 1]
+   \mu_A: X \to [0, 1]
 
 where :math:`\\mu_A(x)` represents the degree to which element x belongs to set A.
 
@@ -244,7 +244,7 @@ System Architecture
 
 .. code-block:: text
 
-   Input → Fuzzification → Rule Evaluation → Aggregation → Defuzzification → Output
+   Input -> Fuzzification -> Rule Evaluation -> Aggregation -> Defuzzification -> Output
       ↓           ↓              ↓             ↓              ↓
    Crisp      Fuzzy        Rule Strengths   Combined      Crisp
    Values     Degrees                       Output        Result
@@ -268,10 +268,10 @@ Building a Complete System
    
    # 2. Create rules
    rule_list = [
-       rules.RuleSimple([temperature[0], humidity[0]], 2, 1.0),  # Low temp, low humid → high comfort
-       rules.RuleSimple([temperature[0], humidity[1]], 1, 0.8),  # Low temp, med humid → med comfort
-       rules.RuleSimple([temperature[1], humidity[1]], 1, 0.9),  # Med temp, med humid → med comfort
-       rules.RuleSimple([temperature[2], humidity[2]], 0, 1.0),  # High temp, high humid → low comfort
+       rules.RuleSimple([temperature[0], humidity[0]], 2, 1.0),  # Low temp, low humid -> high comfort
+       rules.RuleSimple([temperature[0], humidity[1]], 1, 0.8),  # Low temp, med humid -> med comfort
+       rules.RuleSimple([temperature[1], humidity[1]], 1, 0.9),  # Med temp, med humid -> med comfort
+       rules.RuleSimple([temperature[2], humidity[2]], 0, 1.0),  # High temp, high humid -> low comfort
    ]
    
    # 3. Create rule base
