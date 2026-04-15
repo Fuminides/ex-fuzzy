@@ -9,8 +9,10 @@ The Ex-Fuzzy User Guide provides comprehensive documentation for all aspects of 
    :caption: Core Concepts
 
    core-concepts
+   choosing-workflow
    rule-mining
    conformal-learning
+   troubleshooting
 
 Overview
 ========
@@ -20,11 +22,13 @@ This user guide is organized into several sections:
 **Core Concepts**
   Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets, classifiers, and optimization algorithms.
 
-**Advanced Topics**
-  Explore advanced features like pattern stability analysis, visualization techniques, and performance optimization.
+**Choosing a Workflow**
+  Match common modeling goals to the appropriate classifier, rule-mining path,
+  fuzzy-set type, and backend.
 
 **Practical Guides**
-  Get practical advice on best practices, troubleshooting common issues, and extending Ex-Fuzzy for your needs.
+  Get practical advice on rule mining, conformal prediction, troubleshooting
+  common issues, and extending Ex-Fuzzy for your needs.
 
 Getting Help
 ============

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Classification Examples &#8212; Ex-Fuzzy 1.0.0</title>
+    <title>Classification Examples &#8212; Ex-Fuzzy 2.1.5</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=786ba454"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,10 +52,10 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API Reference" href="../api/index.html" />
-    <link rel="prev" title="Working Examples" href="index.html" />
+    <link rel="prev" title="Examples" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.0" />
+  <meta name="docsearch:version" content="2.1.5" />
   </head>
   
   
@@ -161,7 +161,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Working Examples
+    Examples
   </a>
 </li>
 
@@ -196,7 +196,7 @@
 
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
-    Current Version: 1.0.0
+    Roadmap
   </a>
 </li>
 
@@ -421,7 +421,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Working Examples
+    Examples
   </a>
 </li>
 
@@ -449,7 +449,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../roadmap.html">
-    Current Version: 1.0.0
+    Roadmap
   </a>
 </li>
 
@@ -642,7 +642,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Working Examples</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Classification Examples</span></li>
   </ul>
@@ -713,10 +713,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">accuracy_score</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.classifiers</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">clf</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.eval_tools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eval_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseFuzzyRulesClassifier</span><span class="p">,</span>
+    <span class="n">FUZZY_SETS</span><span class="p">,</span>
+    <span class="n">FuzzyRulesClassifier</span><span class="p">,</span>
+    <span class="n">RuleFineTuneClassifier</span><span class="p">,</span>
+    <span class="n">RuleMineClassifier</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">eval_tools</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="c1"># Load the Iris dataset</span>
 <span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
@@ -735,13 +739,13 @@
 <span class="p">)</span>
 
 <span class="c1"># Compute linguistic variables (fuzzy partitions) for each feature</span>
-<span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
+<span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
 
 <span class="c1"># Create and train the rule-mining fuzzy classifier</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">RuleMineClassifier</span><span class="p">(</span>
+<span class="n">classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>                                    <span class="c1"># Number of rules to optimize</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>                                      <span class="c1"># Maximum antecedents per rule</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>                 <span class="c1"># Type-1 fuzzy sets</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>                    <span class="c1"># Type-1 fuzzy sets</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>                              <span class="c1"># Tolerance for rule dominance</span>
     <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">precomputed_partitions</span>  <span class="c1"># Precomputed fuzzy partitions</span>
 <span class="p">)</span>
@@ -822,20 +826,20 @@ Advanced Usage
 <h3><a class="toc-backref" href="#id3" role="doc-backlink">Alternative Classifiers</a><a class="headerlink" href="#alternative-classifiers" title="Link to this heading">#</a></h3>
 <p>Ex-fuzzy provides multiple classifier options:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Two-stage classifier with rule mining and optimization</span>
-<span class="n">fuzzy_classifier</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">FuzzyRulesClassifier</span><span class="p">(</span>
+<span class="n">fuzzy_classifier</span> <span class="o">=</span> <span class="n">FuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
     <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">precomputed_partitions</span>
 <span class="p">)</span>
 <span class="n">fuzzy_classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">n_gen</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
 
 <span class="c1"># Rule fine-tuning classifier</span>
-<span class="n">fine_tune_classifier</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">RuleFineTuneClassifier</span><span class="p">(</span>
+<span class="n">fine_tune_classifier</span> <span class="o">=</span> <span class="n">RuleFineTuneClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
     <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">precomputed_partitions</span>
 <span class="p">)</span>
@@ -845,7 +849,7 @@ Advanced Usage
 <span class="n">smote</span> <span class="o">=</span> <span class="n">SMOTE</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">X_train_smote</span><span class="p">,</span> <span class="n">y_train_smote</span> <span class="o">=</span> <span class="n">smote</span><span class="o">.</span><span class="n">fit_resample</span><span class="p">(</span><span class="n">X_train_imb</span><span class="p">,</span> <span class="n">y_train_imb</span><span class="p">)</span>
 
-<span class="n">smote_classifier</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">RuleMineClassifier</span><span class="p">(</span>
+<span class="n">smote_classifier</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
@@ -907,26 +911,26 @@ Rule 3: IF petal length (cm) is high AND petal width (cm) is high THEN virginica
 <h3><a class="toc-backref" href="#id6" role="doc-backlink">Working with Different Fuzzy Set Types</a><a class="headerlink" href="#working-with-different-fuzzy-set-types" title="Link to this heading">#</a></h3>
 <p>Ex-fuzzy supports different types of fuzzy sets:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Type-1 fuzzy sets (default)</span>
-<span class="n">classifier_t1</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">RuleMineClassifier</span><span class="p">(</span>
+<span class="n">classifier_t1</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>  <span class="c1"># Type-1 fuzzy sets</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>  <span class="c1"># Type-1 fuzzy sets</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span>
 <span class="p">)</span>
 
 <span class="c1"># Type-2 fuzzy sets</span>
-<span class="n">classifier_t2</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">RuleMineClassifier</span><span class="p">(</span>
+<span class="n">classifier_t2</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">,</span>  <span class="c1"># Type-2 fuzzy sets</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">,</span>  <span class="c1"># Type-2 fuzzy sets</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span>
 <span class="p">)</span>
 
 <span class="c1"># General Type-2 fuzzy sets</span>
-<span class="n">classifier_gt2</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">RuleMineClassifier</span><span class="p">(</span>
+<span class="n">classifier_gt2</span> <span class="o">=</span> <span class="n">RuleMineClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">,</span>  <span class="c1"># General Type-2 fuzzy sets</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">gt2</span><span class="p">,</span>  <span class="c1"># General Type-2 fuzzy sets</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span>
 <span class="p">)</span>
 </pre></div>
@@ -935,18 +939,16 @@ Rule 3: IF petal length (cm) is high AND petal width (cm) is high THEN virginica
 <section id="direct-use-of-basefuzzyrulesclassifier">
 <h3><a class="toc-backref" href="#id7" role="doc-backlink">Direct Use of BaseFuzzyRulesClassifier</a><a class="headerlink" href="#direct-use-of-basefuzzyrulesclassifier" title="Link to this heading">#</a></h3>
 <p>For more direct control, you can use the underlying classifier:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
-
-<span class="c1"># Create linguistic variables manually</span>
-<span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create linguistic variables manually</span>
+<span class="n">precomputed_partitions</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
 
 <span class="c1"># Create the base classifier directly</span>
-<span class="n">base_classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+<span class="n">base_classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">precomputed_partitions</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span>
 <span class="p">)</span>

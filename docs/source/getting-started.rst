@@ -12,11 +12,11 @@ Ex-Fuzzy is a Python library designed for building explainable fuzzy rule-based 
 .. note::
     **Why Choose Ex-Fuzzy?**
     
-    - 🔍 **Explainable**: Generate interpretable fuzzy rules
-    - ⚡ **Fast**: Optimized for performance with multiprocessing support
-    - 🎯 **Accurate**: Competitive classification performance
-    - 📊 **Visual**: Rich visualization capabilities
-    - 🔧 **Flexible**: Highly customizable fuzzy systems
+    - **Explainable**: Generate interpretable fuzzy rules
+    - **Fast**: Optimized for performance with multiprocessing support
+    - **Accurate**: Competitive classification performance
+    - **Visual**: Rich visualization capabilities
+    - **Flexible**: Highly customizable fuzzy systems
 
 Installation
 ============
@@ -54,10 +54,8 @@ Let's start with a simple example using the famous Iris dataset:
 
 .. code-block:: python
 
-    import ex_fuzzy.evolutionary_fit as evf
-    import ex_fuzzy.fuzzy_sets as fs
-    import ex_fuzzy.utils as utils
-    import ex_fuzzy.eval_tools as eval_tools
+    from ex_fuzzy import BaseFuzzyRulesClassifier, FUZZY_SETS
+    from ex_fuzzy import eval_tools, utils
     from sklearn.datasets import load_iris
     from sklearn.model_selection import train_test_split
     import pandas as pd
@@ -73,14 +71,14 @@ Let's start with a simple example using the famous Iris dataset:
     )
 
     # Create linguistic variables (fuzzy partitions) from the data
-    linguistic_variables = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1)
+    linguistic_variables = utils.construct_partitions(X_train, FUZZY_SETS.t1)
 
     # Create a fuzzy classifier
-    classifier = evf.BaseFuzzyRulesClassifier(
+    classifier = BaseFuzzyRulesClassifier(
         nRules=15,                            # Number of rules to evolve
         nAnts=4,                              # Maximum antecedents per rule
         linguistic_variables=linguistic_variables,  # Pre-computed fuzzy variables
-        fuzzy_type=fs.FUZZY_SETS.t1,         # Type-1 fuzzy sets
+        fuzzy_type=FUZZY_SETS.t1,            # Type-1 fuzzy sets
         verbose=True                          # Show training progress
     )
 
@@ -138,15 +136,14 @@ Fuzzy variables define how crisp values are mapped to linguistic terms like "Low
 
 .. code-block:: python
 
-    import ex_fuzzy.fuzzy_sets as fs
-    import ex_fuzzy.utils as utils
+    from ex_fuzzy import FUZZY_SETS, fuzzy_sets, utils
     import numpy as np
     
     # Create sample data
     data = np.array([[4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5]]).T
     
     # Create fuzzy variables automatically from data
-    fuzzy_vars = utils.construct_partitions(data, fs.FUZZY_SETS.t1, n_partitions=3)
+    fuzzy_vars = utils.construct_partitions(data, FUZZY_SETS.t1, n_partitions=3)
     
     # This creates linguistic variables with terms like "Low", "Medium", "High"
 
@@ -178,9 +175,9 @@ For handling uncertainty in fuzzy membership:
 
 .. code-block:: python
 
-    classifier = evf.BaseFuzzyRulesClassifier(
+    classifier = BaseFuzzyRulesClassifier(
         nRules=10,
-        fuzzy_type=evf.fs.FUZZY_SETS.t2,  # Type-2 fuzzy sets
+        fuzzy_type=FUZZY_SETS.t2,  # Type-2 fuzzy sets
         verbose=True
     )
 
@@ -205,7 +202,7 @@ Define your own membership functions:
 .. code-block:: python
 
     # Create custom Gaussian fuzzy sets
-    custom_var = fs.fuzzyVariable(
+    custom_var = fuzzy_sets.fuzzyVariable(
         domain=[0, 10],
         name="custom_feature",
         linguistic_variable_names=["Very Low", "Low", "Medium", "High", "Very High"]
@@ -220,7 +217,7 @@ For Large Datasets
 .. code-block:: python
 
     # Use multiprocessing for faster training
-    classifier = evf.BaseFuzzyRulesClassifier(
+    classifier = BaseFuzzyRulesClassifier(
         nRules=20,
         runner=4,  # Use 4 CPU cores
         tolerance=0.1  # Allow some rule overlap
@@ -249,7 +246,7 @@ Issue: Training is Too Slow
 
 .. code-block:: python
 
-    classifier = evf.BaseFuzzyRulesClassifier(
+    classifier = BaseFuzzyRulesClassifier(
         nRules=5,     # Fewer rules
         runner=4,     # Use multiple cores
         verbose=False # Disable verbose output
@@ -271,7 +268,7 @@ Issue: Rules are Too Complex
 
 .. code-block:: python
 
-    classifier = evf.BaseFuzzyRulesClassifier(
+    classifier = BaseFuzzyRulesClassifier(
         nRules=10,
         nAnts=2,      # Maximum 2 conditions per rule
         tolerance=0.2 # Allow more rule overlap for simplicity
@@ -283,7 +280,9 @@ Next Steps
 Now that you've got the basics, explore more advanced features:
 
 - :doc:`user-guide/core-concepts`: Learn about fuzzy sets, rules, and classifiers
+- :doc:`user-guide/choosing-workflow`: Choose the right classifier, fuzzy set type, and backend
 - :doc:`user-guide/rule-mining`: Understand automatic rule discovery and tuning workflows
+- :doc:`user-guide/troubleshooting`: Diagnose installation, backend, and runtime issues
 - :doc:`examples/index`: See real-world applications and case studies
 
 .. tip::

@@ -37,7 +37,7 @@ With EvoX Support
 
 .. code-block:: bash
 
-   pip install ex-fuzzy evox torch
+   pip install "ex-fuzzy[evox]"
 
 For GPU support, ensure you have CUDA-compatible hardware and drivers installed.
 

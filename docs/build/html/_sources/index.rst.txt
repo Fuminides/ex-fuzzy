@@ -1,6 +1,6 @@
-========================
+======================
 Ex-Fuzzy Documentation
-========================
+======================
 
 .. image:: https://img.shields.io/pypi/v/ex-fuzzy.svg
    :target: https://pypi.org/project/ex-fuzzy/
@@ -18,35 +18,36 @@ Ex-Fuzzy Documentation
    :target: https://github.com/fuminides/ex-fuzzy
    :alt: GitHub stars
 
-**Ex-Fuzzy** is a powerful Python library for explainable fuzzy logic inference and approximate reasoning. 
-It provides comprehensive tools for building, training, and analyzing fuzzy rule-based classifiers with 
-a special focus on interpretability and explainability.
+**Ex-Fuzzy** is a Python library for explainable fuzzy logic inference and
+approximate reasoning. It provides tools for building, training, and analyzing
+fuzzy rule-based classifiers with a focus on readable rules and reproducible
+experiments.
 
 .. grid:: 2
     :gutter: 3
 
-    .. grid-item-card:: 🚀 Quick Start
+    .. grid-item-card:: Quick Start
         :link: getting-started
         :link-type: doc
 
         Get up and running with Ex-Fuzzy in minutes. Learn the basics of fuzzy classification
         and see practical examples.
 
-    .. grid-item-card:: 📖 User Guide
+    .. grid-item-card:: User Guide
         :link: user-guide/index
         :link-type: doc
 
         Comprehensive tutorials and examples for building fuzzy classifiers, analyzing patterns,
         and visualizing results.
 
-    .. grid-item-card:: 🔍 API Reference
+    .. grid-item-card:: API Reference
         :link: api/index
         :link-type: doc
 
         Complete reference for all classes, functions, and modules with detailed descriptions
         and examples.
 
-    .. grid-item-card:: 🧪 Examples
+    .. grid-item-card:: Examples
         :link: examples/index
         :link-type: doc
 
@@ -59,38 +60,38 @@ Key Features
 .. grid:: 3
     :gutter: 2
 
-    .. grid-item-card:: 🧠 Explainable AI
+    .. grid-item-card:: Explainable AI
         :class-header: border-0
 
         Generate interpretable fuzzy rules that provide transparent decision-making processes
         for your machine learning models.
 
-    .. grid-item-card:: ⚡ High Performance
+    .. grid-item-card:: High Performance
         :class-header: border-0
 
         GPU-accelerated evolutionary optimization with EvoX backend. Optimized implementations 
         with support for both Type-1 and Type-2 fuzzy systems, automatic memory management,
         and 2-10x speedups on large datasets.
 
-    .. grid-item-card:: 📊 Rich Visualizations
+    .. grid-item-card:: Rich Visualizations
         :class-header: border-0
 
         Built-in plotting capabilities for fuzzy sets, rules, pattern stability analysis,
         and model performance metrics.
 
-    .. grid-item-card:: 🔧 Flexible Architecture
+    .. grid-item-card:: Flexible Architecture
         :class-header: border-0
 
         Modular design allows easy customization of fuzzy sets, membership functions,
         and inference mechanisms.
 
-    .. grid-item-card:: 📈 Pattern Analysis
+    .. grid-item-card:: Pattern Analysis
         :class-header: border-0
 
         Advanced tools for analyzing pattern stability, variable importance, and
         rule discovery consistency across multiple runs.
 
-    .. grid-item-card:: 🔬 Research Ready
+    .. grid-item-card:: Research Ready
         :class-header: border-0
 
         Designed for academic research with comprehensive statistical testing,
@@ -103,8 +104,7 @@ Here's a simple example to get you started:
 
 .. code-block:: python
 
-    import ex_fuzzy.evolutionary_fit as evf
-    import ex_fuzzy.eval_tools as eval_tools
+    from ex_fuzzy import BaseFuzzyRulesClassifier, eval_tools
     from sklearn.datasets import load_iris
     from sklearn.model_selection import train_test_split
     import pandas as pd
@@ -120,8 +120,9 @@ Here's a simple example to get you started:
     )
 
     # Create and train fuzzy classifier
-    classifier = evf.BaseFuzzyRulesClassifier(nRules=10, nAnts=4)
+    classifier = BaseFuzzyRulesClassifier(nRules=10, nAnts=4)
     classifier.fit(X_train, y_train, n_gen=50, pop_size=30)
+    # Early stopping defaults: patience=10, min_delta=1e-4
 
     # Evaluate and visualize
     evaluator = eval_tools.FuzzyEvaluator(classifier)
@@ -147,17 +148,25 @@ Or install from source:
     cd ex-fuzzy
     pip install -e .
 
-What's New
-==========
+Choosing a Workflow
+===================
 
-.. admonition:: Version 1.0.0
-    :class: note
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
 
-    - 🎉 **New comprehensive test suite** with >90% code coverage
-    - 📚 **Modernized documentation** with interactive examples
-    - 🔧 **Improved API consistency** across all modules
-    - ⚡ **Performance optimizations** for large datasets
-    - 🐛 **Bug fixes** and stability improvements
+   * - Goal
+     - Start with
+   * - Train a standard interpretable classifier
+     - :class:`ex_fuzzy.BaseFuzzyRulesClassifier`
+   * - Mine candidate rules before optimization
+     - :class:`ex_fuzzy.RuleMineClassifier` or :mod:`ex_fuzzy.rule_mining`
+   * - Return prediction sets with coverage guarantees
+     - :class:`ex_fuzzy.ConformalFuzzyClassifier`
+   * - Use GPU-accelerated evolutionary optimization
+     - ``backend="evox"`` with the ``ex-fuzzy[evox]`` extra
+   * - Save and reload fuzzy variables
+     - :mod:`ex_fuzzy.persistence`
 
 Documentation Contents
 ======================
@@ -198,7 +207,7 @@ Documentation Contents
 
 .. toctree::
     :maxdepth: 1
-    :caption: Legacy Documentation
+    :caption: Topic Reference
 
     usage
     step1
@@ -232,7 +241,7 @@ Community and Support
 
         Found a bug or have a feature request? Let us know on GitHub.
 
-    .. grid-item-card:: 📖 Contributing
+    .. grid-item-card:: Contributing
         :link: contributing
         :link-type: doc
 
@@ -251,11 +260,11 @@ If you use Ex-Fuzzy in your research, please cite:
 
 .. code-block:: bibtex
 
-    @article{ex_fuzzy_2023,
-        title={Ex-Fuzzy: A Python Library for Explainable Fuzzy Logic Inference},
-        author={Fumanal Idocin, Javier},
-        journal={Software Impacts},
-        year={2023},
+    @article{fumanal2024ex,
+        title={Ex-Fuzzy: A Library for Symbolic Explainable Ai Through Fuzzy Logic Programming},
+        author={Fumanal Idocin, Javier and Andreu-Perez, Javier},
+        journal={Neurocomputing},
+        year={2024},
         publisher={Elsevier}
     }
 

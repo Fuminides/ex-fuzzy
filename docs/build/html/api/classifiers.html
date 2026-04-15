@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Classifiers Module &#8212; Ex-Fuzzy 1.0.0</title>
+    <title>Classifiers Module &#8212; Ex-Fuzzy 2.1.5</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=786ba454"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Fuzzy Sets" href="fuzzy_sets.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.0" />
+  <meta name="docsearch:version" content="2.1.5" />
   </head>
   
   
@@ -722,7 +722,7 @@ the optimal combination of those rules.</p>
 <li><p><strong>y</strong> (<em>array</em>) – labels for each sample.</p></li>
 <li><p><strong>n_gen</strong> (<em>int</em>) – number of generations to compute in the genetic optimization.</p></li>
 <li><p><strong>pop_size</strong> (<em>int</em>) – number of subjects per generation.</p></li>
-<li><p><strong>kwargs</strong> – additional parameters for the genetic optimization. See fit method in BaseRuleBaseClassifier.</p></li>
+<li><p><strong>kwargs</strong> – additional parameters for the genetic optimization, including early stopping with patience=10 and min_delta=1e-4 by default. See fit method in BaseRuleBaseClassifier.</p></li>
 </ul>
 </dd>
 </dl>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Getting Started &#8212; Ex-Fuzzy 1.0.0</title>
+    <title>Getting Started &#8212; Ex-Fuzzy 2.1.5</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=786ba454"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Ex-Fuzzy Documentation" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.0" />
+  <meta name="docsearch:version" content="2.1.5" />
   </head>
   
   
@@ -665,11 +665,11 @@
 <p class="admonition-title">Note</p>
 <p><strong>Why Choose Ex-Fuzzy?</strong></p>
 <ul class="simple">
-<li><p>🔍 <strong>Explainable</strong>: Generate interpretable fuzzy rules</p></li>
-<li><p>⚡ <strong>Fast</strong>: Optimized for performance with multiprocessing support</p></li>
-<li><p>🎯 <strong>Accurate</strong>: Competitive classification performance</p></li>
-<li><p>📊 <strong>Visual</strong>: Rich visualization capabilities</p></li>
-<li><p>🔧 <strong>Flexible</strong>: Highly customizable fuzzy systems</p></li>
+<li><p><strong>Explainable</strong>: Generate interpretable fuzzy rules</p></li>
+<li><p><strong>Fast</strong>: Optimized for performance with multiprocessing support</p></li>
+<li><p><strong>Accurate</strong>: Competitive classification performance</p></li>
+<li><p><strong>Visual</strong>: Rich visualization capabilities</p></li>
+<li><p><strong>Flexible</strong>: Highly customizable fuzzy systems</p></li>
 </ul>
 </div>
 </section>
@@ -701,10 +701,8 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <section id="your-first-fuzzy-classifier">
 <h2>Your First Fuzzy Classifier<a class="headerlink" href="#your-first-fuzzy-classifier" title="Link to this heading">#</a></h2>
 <p>Let’s start with a simple example using the famous Iris dataset:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.evolutionary_fit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">evf</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.eval_tools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eval_tools</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">,</span> <span class="n">FUZZY_SETS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">eval_tools</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -720,14 +718,14 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <span class="p">)</span>
 
 <span class="c1"># Create linguistic variables (fuzzy partitions) from the data</span>
-<span class="n">linguistic_variables</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
+<span class="n">linguistic_variables</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">)</span>
 
 <span class="c1"># Create a fuzzy classifier</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+<span class="n">classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>                            <span class="c1"># Number of rules to evolve</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>                              <span class="c1"># Maximum antecedents per rule</span>
     <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">linguistic_variables</span><span class="p">,</span>  <span class="c1"># Pre-computed fuzzy variables</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>         <span class="c1"># Type-1 fuzzy sets</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span>            <span class="c1"># Type-1 fuzzy sets</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>                          <span class="c1"># Show training progress</span>
 <span class="p">)</span>
 
@@ -777,15 +775,14 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="fuzzy-variables">
 <h3>Fuzzy Variables<a class="headerlink" href="#fuzzy-variables" title="Link to this heading">#</a></h3>
 <p>Fuzzy variables define how crisp values are mapped to linguistic terms like “Low”, “Medium”, “High”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.fuzzy_sets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fs</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ex_fuzzy.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">utils</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FUZZY_SETS</span><span class="p">,</span> <span class="n">fuzzy_sets</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Create sample data</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
 
 <span class="c1"># Create fuzzy variables automatically from data</span>
-<span class="n">fuzzy_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">fuzzy_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">construct_partitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t1</span><span class="p">,</span> <span class="n">n_partitions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="c1"># This creates linguistic variables with terms like &quot;Low&quot;, &quot;Medium&quot;, &quot;High&quot;</span>
 </pre></div>
@@ -814,9 +811,9 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="type-2-fuzzy-sets">
 <h3>Type-2 Fuzzy Sets<a class="headerlink" href="#type-2-fuzzy-sets" title="Link to this heading">#</a></h3>
 <p>For handling uncertainty in fuzzy membership:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">evf</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">,</span>  <span class="c1"># Type-2 fuzzy sets</span>
+    <span class="n">fuzzy_type</span><span class="o">=</span><span class="n">FUZZY_SETS</span><span class="o">.</span><span class="n">t2</span><span class="p">,</span>  <span class="c1"># Type-2 fuzzy sets</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
@@ -837,7 +834,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <h3>Custom Fuzzy Sets<a class="headerlink" href="#custom-fuzzy-sets" title="Link to this heading">#</a></h3>
 <p>Define your own membership functions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create custom Gaussian fuzzy sets</span>
-<span class="n">custom_var</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
+<span class="n">custom_var</span> <span class="o">=</span> <span class="n">fuzzy_sets</span><span class="o">.</span><span class="n">fuzzyVariable</span><span class="p">(</span>
     <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;custom_feature&quot;</span><span class="p">,</span>
     <span class="n">linguistic_variable_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Very Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Very High&quot;</span><span class="p">]</span>
@@ -851,7 +848,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="for-large-datasets">
 <h3>For Large Datasets<a class="headerlink" href="#for-large-datasets" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use multiprocessing for faster training</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+<span class="n">classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">runner</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># Use 4 CPU cores</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span>  <span class="c1"># Allow some rule overlap</span>
@@ -877,7 +874,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="issue-training-is-too-slow">
 <h3>Issue: Training is Too Slow<a class="headerlink" href="#issue-training-is-too-slow" title="Link to this heading">#</a></h3>
 <p><strong>Solution</strong>: Reduce the number of rules or use multiprocessing:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>     <span class="c1"># Fewer rules</span>
     <span class="n">runner</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>     <span class="c1"># Use multiple cores</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="c1"># Disable verbose output</span>
@@ -895,7 +892,7 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <section id="issue-rules-are-too-complex">
 <h3>Issue: Rules are Too Complex<a class="headerlink" href="#issue-rules-are-too-complex" title="Link to this heading">#</a></h3>
 <p><strong>Solution</strong>: Reduce the maximum number of antecedents:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">evf</span><span class="o">.</span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
     <span class="n">nRules</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>      <span class="c1"># Maximum 2 conditions per rule</span>
     <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.2</span> <span class="c1"># Allow more rule overlap for simplicity</span>
@@ -909,7 +906,9 @@ Rule 3: IF petal length (cm) is Medium AND sepal width (cm) is High THEN versico
 <p>Now that you’ve got the basics, explore more advanced features:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="user-guide/core-concepts.html"><span class="doc">Core Concepts</span></a>: Learn about fuzzy sets, rules, and classifiers</p></li>
+<li><p><a class="reference internal" href="user-guide/choosing-workflow.html"><span class="doc">Choosing a Workflow</span></a>: Choose the right classifier, fuzzy set type, and backend</p></li>
 <li><p><a class="reference internal" href="user-guide/rule-mining.html"><span class="doc">Rule Mining Guide</span></a>: Understand automatic rule discovery and tuning workflows</p></li>
+<li><p><a class="reference internal" href="user-guide/troubleshooting.html"><span class="doc">Troubleshooting</span></a>: Diagnose installation, backend, and runtime issues</p></li>
 <li><p><a class="reference internal" href="examples/index.html"><span class="doc">Examples</span></a>: See real-world applications and case studies</p></li>
 </ul>
 <div class="admonition tip">

@@ -1,6 +1,17 @@
 # Re-export everything from the inner ex_fuzzy package
 from .ex_fuzzy import *
 from .ex_fuzzy import (
+    __version__,
+    BaseFuzzyRulesClassifier,
+    ConformalFuzzyClassifier,
+    FS,
+    FUZZY_SETS,
+    FitRuleBase,
+    FuzzyRulesClassifier,
+    RuleFineTuneClassifier,
+    RuleMineClassifier,
+    evaluate_conformal_coverage,
+    fuzzyVariable,
     centroid,
     eval_rules,
     eval_tools,

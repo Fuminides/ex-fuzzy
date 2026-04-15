@@ -3,6 +3,8 @@
 Results/*
 ex_Fuzzy.egg-info/*
 build/*
+docs/build/
+docs/source/api/generated/
 *.gexf
 *.log
 checkpoint*

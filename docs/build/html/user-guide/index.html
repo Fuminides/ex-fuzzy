@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; Ex-Fuzzy 1.0.0</title>
+    <title>User Guide &#8212; Ex-Fuzzy 2.1.5</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=786ba454"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Installation" href="../installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.0" />
+  <meta name="docsearch:version" content="2.1.5" />
   </head>
   
   
@@ -161,7 +161,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../examples/index.html">
-    Working Examples
+    Examples
   </a>
 </li>
 
@@ -196,7 +196,7 @@
 
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../roadmap.html">
-    Current Version: 1.0.0
+    Roadmap
   </a>
 </li>
 
@@ -421,7 +421,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../examples/index.html">
-    Working Examples
+    Examples
   </a>
 </li>
 
@@ -449,7 +449,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../roadmap.html">
-    Current Version: 1.0.0
+    Roadmap
   </a>
 </li>
 
@@ -602,8 +602,10 @@
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Concepts</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="core-concepts.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing-workflow.html">Choosing a Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rule-mining.html">Rule Mining Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="conformal-learning.html">Conformal Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 </div>
 </nav></div>
@@ -679,6 +681,14 @@
 <li class="toctree-l2"><a class="reference internal" href="core-concepts.html#next-steps">Next Steps</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="choosing-workflow.html">Choosing a Workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="choosing-workflow.html#classifier-choices">Classifier Choices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing-workflow.html#fuzzy-set-types">Fuzzy Set Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing-workflow.html#backend-choices">Backend Choices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing-workflow.html#minimal-example">Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing-workflow.html#reproducibility">Reproducibility</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="rule-mining.html">Rule Mining Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="rule-mining.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rule-mining.html#getting-started">Getting Started</a></li>
@@ -702,6 +712,14 @@
 <li class="toctree-l2"><a class="reference internal" href="conformal-learning.html#practical-notes">Practical Notes</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#import-errors">Import Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#evox-or-jax-installation">EvoX or JAX Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#slow-training">Slow Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#unexpected-accuracy-differences">Unexpected Accuracy Differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#documentation-build-issues">Documentation Build Issues</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <section id="overview">
@@ -710,9 +728,11 @@
 <dl class="simple">
 <dt><strong>Core Concepts</strong></dt><dd><p>Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets, classifiers, and optimization algorithms.</p>
 </dd>
-<dt><strong>Advanced Topics</strong></dt><dd><p>Explore advanced features like pattern stability analysis, visualization techniques, and performance optimization.</p>
+<dt><strong>Choosing a Workflow</strong></dt><dd><p>Match common modeling goals to the appropriate classifier, rule-mining path,
+fuzzy-set type, and backend.</p>
 </dd>
-<dt><strong>Practical Guides</strong></dt><dd><p>Get practical advice on best practices, troubleshooting common issues, and extending Ex-Fuzzy for your needs.</p>
+<dt><strong>Practical Guides</strong></dt><dd><p>Get practical advice on rule mining, conformal prediction, troubleshooting
+common issues, and extending Ex-Fuzzy for your needs.</p>
 </dd>
 </dl>
 </section>
@@ -720,7 +740,7 @@
 <h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading">#</a></h2>
 <p>If you can’t find what you’re looking for in this guide:</p>
 <ul class="simple">
-<li><p>Check the <a class="reference internal" href="../examples/index.html"><span class="doc">Working Examples</span></a> for practical examples</p></li>
+<li><p>Check the <a class="reference internal" href="../examples/index.html"><span class="doc">Examples</span></a> for practical examples</p></li>
 <li><p>Consult the <a class="reference internal" href="../api/index.html"><span class="doc">API Reference</span></a> for detailed API documentation</p></li>
 <li><p>Ask questions on our <a class="reference external" href="https://github.com/fuminides/ex-fuzzy/discussions">GitHub Discussions</a></p></li>
 <li><p>Report bugs on our <a class="reference external" href="https://github.com/fuminides/ex-fuzzy/issues">Issue Tracker</a></p></li>

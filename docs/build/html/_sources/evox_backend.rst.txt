@@ -37,7 +37,7 @@ With EvoX Support
 
 .. code-block:: bash
 
-   pip install ex-fuzzy evox torch
+   pip install "ex-fuzzy[evox]"
 
 For GPU support, ensure you have CUDA-compatible hardware and drivers installed.
 
@@ -75,6 +75,8 @@ Using EvoX Backend
    classifier.fit(X_train, y_train, 
                  n_gen=50,
                  pop_size=100)
+
+   # Early stopping defaults: patience=10, min_delta=1e-4
 
 Checking Available Backends
 ----------------------------

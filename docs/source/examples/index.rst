@@ -6,7 +6,7 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 .. grid:: 1
     :gutter: 3
 
-    .. grid-item-card:: 🌸 Classification Examples
+    .. grid-item-card:: Classification Examples
         :link: classification
         :link-type: doc
 
@@ -74,8 +74,8 @@ Interactive Notebooks
 
 All examples are available as interactive Jupyter notebooks:
 
-- 📓 Download Notebooks or use Colab with previous links.
-- `🏗️ Open in Binder <https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos>`_
+- Download notebooks or use Colab with previous links.
+- `Open in Binder <https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos>`_
 
 Example Categories
 ==================

@@ -22,10 +22,14 @@ A complete walkthrough using the classic Iris dataset:
    from sklearn.model_selection import train_test_split
    from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
    
-   import ex_fuzzy.fuzzy_sets as fs
-   import ex_fuzzy.classifiers as clf
-   import ex_fuzzy.utils as utils
-   import ex_fuzzy.eval_tools as eval_tools
+   from ex_fuzzy import (
+       BaseFuzzyRulesClassifier,
+       FUZZY_SETS,
+       FuzzyRulesClassifier,
+       RuleFineTuneClassifier,
+       RuleMineClassifier,
+   )
+   from ex_fuzzy import eval_tools, utils
 
    # Load the Iris dataset
    iris = load_iris()
@@ -44,13 +48,13 @@ A complete walkthrough using the classic Iris dataset:
    )
 
    # Compute linguistic variables (fuzzy partitions) for each feature
-   precomputed_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1)
+   precomputed_partitions = utils.construct_partitions(X_train, FUZZY_SETS.t1)
 
    # Create and train the rule-mining fuzzy classifier
-   classifier = clf.RuleMineClassifier(
+   classifier = RuleMineClassifier(
        nRules=15,                                    # Number of rules to optimize
        nAnts=4,                                      # Maximum antecedents per rule
-       fuzzy_type=fs.FUZZY_SETS.t1,                 # Type-1 fuzzy sets
+       fuzzy_type=FUZZY_SETS.t1,                    # Type-1 fuzzy sets
        tolerance=0.01,                              # Tolerance for rule dominance
        linguistic_variables=precomputed_partitions  # Precomputed fuzzy partitions
    )
@@ -138,20 +142,20 @@ Ex-fuzzy provides multiple classifier options:
 .. code-block:: python
 
    # Two-stage classifier with rule mining and optimization
-   fuzzy_classifier = clf.FuzzyRulesClassifier(
+   fuzzy_classifier = FuzzyRulesClassifier(
        nRules=20,
        nAnts=4,
-       fuzzy_type=fs.FUZZY_SETS.t1,
+       fuzzy_type=FUZZY_SETS.t1,
        tolerance=0.01,
        linguistic_variables=precomputed_partitions
    )
    fuzzy_classifier.fit(X_train, y_train, n_gen=40, pop_size=60)
 
    # Rule fine-tuning classifier
-   fine_tune_classifier = clf.RuleFineTuneClassifier(
+   fine_tune_classifier = RuleFineTuneClassifier(
        nRules=15,
        nAnts=3,
-       fuzzy_type=fs.FUZZY_SETS.t1,
+       fuzzy_type=FUZZY_SETS.t1,
        tolerance=0.01,
        linguistic_variables=precomputed_partitions
    )
@@ -161,7 +165,7 @@ Ex-fuzzy provides multiple classifier options:
    smote = SMOTE(random_state=42)
    X_train_smote, y_train_smote = smote.fit_resample(X_train_imb, y_train_imb)
 
-   smote_classifier = clf.RuleMineClassifier(
+   smote_classifier = RuleMineClassifier(
        nRules=25,
        nAnts=3,
        verbose=False
@@ -229,26 +233,26 @@ Ex-fuzzy supports different types of fuzzy sets:
 .. code-block:: python
 
    # Type-1 fuzzy sets (default)
-   classifier_t1 = clf.RuleMineClassifier(
+   classifier_t1 = RuleMineClassifier(
        nRules=15,
        nAnts=4,
-       fuzzy_type=fs.FUZZY_SETS.t1,  # Type-1 fuzzy sets
+       fuzzy_type=FUZZY_SETS.t1,  # Type-1 fuzzy sets
        tolerance=0.01
    )
 
    # Type-2 fuzzy sets
-   classifier_t2 = clf.RuleMineClassifier(
+   classifier_t2 = RuleMineClassifier(
        nRules=15,
        nAnts=4,
-       fuzzy_type=fs.FUZZY_SETS.t2,  # Type-2 fuzzy sets
+       fuzzy_type=FUZZY_SETS.t2,  # Type-2 fuzzy sets
        tolerance=0.01
    )
 
    # General Type-2 fuzzy sets
-   classifier_gt2 = clf.RuleMineClassifier(
+   classifier_gt2 = RuleMineClassifier(
        nRules=15,
        nAnts=4,
-       fuzzy_type=fs.FUZZY_SETS.gt2,  # General Type-2 fuzzy sets
+       fuzzy_type=FUZZY_SETS.gt2,  # General Type-2 fuzzy sets
        tolerance=0.01
    )
 
@@ -259,18 +263,16 @@ For more direct control, you can use the underlying classifier:
 
 .. code-block:: python
 
-   import ex_fuzzy.evolutionary_fit as evf
-
    # Create linguistic variables manually
-   precomputed_partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1)
+   precomputed_partitions = utils.construct_partitions(X_train, FUZZY_SETS.t1)
 
    # Create the base classifier directly
-   base_classifier = evf.BaseFuzzyRulesClassifier(
+   base_classifier = BaseFuzzyRulesClassifier(
        nRules=15,
        linguistic_variables=precomputed_partitions,
        nAnts=4,
        n_linguistic_variables=3,
-       fuzzy_type=fs.FUZZY_SETS.t1,
+       fuzzy_type=FUZZY_SETS.t1,
        verbose=True,
        tolerance=0.01
    )

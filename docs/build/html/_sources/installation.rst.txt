@@ -96,28 +96,29 @@ To install with GPU support (EvoX backend):
 
 .. code-block:: bash
 
-    pip install ex-fuzzy evox torch
+    pip install "ex-fuzzy[evox]"
 
 For CUDA-specific PyTorch installation:
 
 .. code-block:: bash
 
     # CUDA 11.8
-    pip install ex-fuzzy evox
+    pip install "ex-fuzzy[evox]"
     pip install torch --index-url https://download.pytorch.org/whl/cu118
     
     # CUDA 12.1
-    pip install ex-fuzzy evox
+    pip install "ex-fuzzy[evox]"
     pip install torch --index-url https://download.pytorch.org/whl/cu121
 
 To install with optional dependencies:
 
 .. code-block:: bash
 
-    pip install "ex-fuzzy[viz]"      # Enhanced visualization
-    pip install "ex-fuzzy[jupyter]"  # Jupyter notebook support
-    pip install "ex-fuzzy[gpu]"      # GPU support (EvoX + PyTorch)
-    pip install "ex-fuzzy[all]"      # All optional dependencies
+    pip install "ex-fuzzy[viz]"   # NetworkX-based rule visualization
+    pip install "ex-fuzzy[gpu]"   # PyTorch support for GPU tensors
+    pip install "ex-fuzzy[evox]"  # EvoX/JAX evolutionary backend
+    pip install "ex-fuzzy[docs]"  # Documentation build dependencies
+    pip install "ex-fuzzy[all]"   # All optional dependencies
 
 Method 2: Using conda
 ---------------------
@@ -148,7 +149,8 @@ For contributors or users who want the latest features:
     pip install -e .
 
     # Or with optional dependencies
-    pip install -e ".[all]"
+    pip install -e ".[dev]"
+    pip install -e ".[docs,evox]"
 
 This installs Ex-Fuzzy in "editable" mode, so changes to the source code are immediately available.
 
@@ -160,9 +162,9 @@ Download and install from a source archive:
 .. code-block:: bash
 
     # Download the latest release
-    wget https://github.com/fuminides/ex-fuzzy/archive/v1.0.0.tar.gz
-    tar -xzf v1.0.0.tar.gz
-    cd ex-fuzzy-1.0.0
+    wget https://github.com/fuminides/ex-fuzzy/archive/v2.1.5.tar.gz
+    tar -xzf v2.1.5.tar.gz
+    cd ex-fuzzy-2.1.5
 
     # Install
     pip install .
@@ -299,12 +301,11 @@ Test your installation by running this simple Python script:
     # test_installation.py
     try:
         import ex_fuzzy
-        print(f"✅ Ex-Fuzzy successfully imported!")
-        print(f"📦 Version: {ex_fuzzy.__version__}")
+        print("Ex-Fuzzy successfully imported.")
+        print(f"Version: {ex_fuzzy.__version__}")
         
         # Test basic functionality
-        import ex_fuzzy.fuzzy_sets as fs
-        import ex_fuzzy.evolutionary_fit as evf
+        from ex_fuzzy import BaseFuzzyRulesClassifier
         import numpy as np
         
         # Create a simple dataset
@@ -312,16 +313,16 @@ Test your installation by running this simple Python script:
         y = np.random.randint(0, 3, 100)
         
         # Create a classifier
-        classifier = evf.BaseFuzzyRulesClassifier(nRules=3, verbose=False)
-        print("✅ Classifier created successfully!")
+        classifier = BaseFuzzyRulesClassifier(nRules=3, verbose=False)
+        print("Classifier created successfully.")
         
-        print("🎉 Installation test passed!")
+        print("Installation test passed.")
         
     except ImportError as e:
-        print(f"❌ Import error: {e}")
+        print(f"Import error: {e}")
         print("Please check your installation.")
     except Exception as e:
-        print(f"⚠️  Warning: {e}")
+        print(f"Warning: {e}")
         print("Basic import works, but there might be issues with dependencies.")
 
 Save this as ``test_installation.py`` and run:
@@ -330,13 +331,12 @@ Save this as ``test_installation.py`` and run:
 
     python test_installation.py
 
-GPU Support
-===========
+Backend Support
+===============
 
-Ex-Fuzzy currently runs on CPU only. GPU acceleration is planned for future releases.
-
-.. note::
-    While Ex-Fuzzy doesn't directly use GPUs, some operations may benefit from optimized BLAS libraries like Intel MKL or OpenBLAS, which are automatically used by NumPy when available.
+The default backend is the CPU-based PyMoo optimizer. Ex-Fuzzy also supports
+GPU-oriented evolutionary optimization through the optional EvoX backend. See
+:doc:`evox_backend` for backend-specific behavior and limitations.
 
 Troubleshooting
 ===============
@@ -402,7 +402,7 @@ Installing GPU Support
 
 .. code-block:: bash
 
-    pip install ex-fuzzy evox torch
+    pip install "ex-fuzzy[evox]"
 
 This installs PyTorch with CPU support. For GPU support:
 
@@ -411,11 +411,11 @@ This installs PyTorch with CPU support. For GPU support:
 .. code-block:: bash
 
     # For CUDA 11.8
-    pip install ex-fuzzy evox
+    pip install "ex-fuzzy[evox]"
     pip install torch --index-url https://download.pytorch.org/whl/cu118
     
     # For CUDA 12.1
-    pip install ex-fuzzy evox
+    pip install "ex-fuzzy[evox]"
     pip install torch --index-url https://download.pytorch.org/whl/cu121
 
 Verifying GPU Installation
@@ -434,20 +434,20 @@ Check if GPU is available:
     
     # Check GPU availability
     if torch.cuda.is_available():
-        print(f"✓ GPU available: {torch.cuda.get_device_name(0)}")
+        print(f"GPU available: {torch.cuda.get_device_name(0)}")
         print(f"  CUDA version: {torch.version.cuda}")
         print(f"  GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
     else:
-        print("⚠ No GPU detected. EvoX will use CPU.")
+        print("No GPU detected. EvoX will use CPU.")
 
-Expected Output:
+Example output:
 
 .. code-block:: text
 
     Available backends: ['pymoo', 'evox']
-    ✓ GPU available: NVIDIA GeForce RTX 3080
-      CUDA version: 11.8
-      GPU memory: 10.00 GB
+    GPU available: <your GPU name>
+      CUDA version: <detected CUDA version>
+      GPU memory: <detected GPU memory> GB
 
 Troubleshooting GPU Setup
 --------------------------
@@ -487,7 +487,7 @@ Troubleshooting GPU Setup
 Performance Comparison
 ----------------------
 
-Typical speedup with GPU (RTX 3080) vs CPU (Intel i7):
+Illustrative backend timing pattern:
 
 .. list-table::
    :header-rows: 1

@@ -6,7 +6,7 @@ This document outlines the planned development direction for Ex-Fuzzy. Our roadm
 .. note::
    This roadmap is subject to change based on community feedback, contributions, and emerging research. Dates are approximate targets.
 
-Current Version: 1.0.0
+Current Version: 2.1.5
 ======================
 
 Ex-Fuzzy has reached a stable 1.0 release with core fuzzy logic capabilities, comprehensive testing, and modern documentation.

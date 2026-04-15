@@ -43,5 +43,5 @@ sphinx-external-toc>=0.3.0
 doc8>=0.11.0
 rstcheck>=6.0.0
 
-# And ex-fuzzy itself
-ex-fuzzy>=2.0.0
+# Install Ex-Fuzzy itself from the repository checkout when building locally:
+# pip install -e ".[docs]"
