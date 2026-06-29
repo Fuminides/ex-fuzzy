@@ -120,7 +120,7 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
             
 
     if b == a:
-        b += epsilon
+        a -= epsilon
     if c == d:
         d += epsilon
 
