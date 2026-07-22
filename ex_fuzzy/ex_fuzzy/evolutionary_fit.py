@@ -762,7 +762,7 @@ class FitRuleBase(Problem):
             import utils
 
         self.lvs = None
-        self.vl_names = [FitRuleBase.vl_names[n_linguist_variables[nn]] if n_linguist_variables[nn] < 6 else list(map(str, np.arange(nn))) for nn in range(len(n_linguist_variables))]
+        self.vl_names = [FitRuleBase.vl_names[n_vars] if n_vars < len(FitRuleBase.vl_names) else [str(ix) for ix in range(n_vars)] for n_vars in n_linguist_variables]
         
 
         self.fuzzy_type = fuzzy_type
