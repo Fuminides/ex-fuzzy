@@ -204,6 +204,8 @@ Try our hands-on examples in Google Colab:
 | **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
 | **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
 
+#### Real Applications
+  - Ex-Fuzzy in fNIRS data: https://github.com/jjcato9/ex_fuzzy_fnirs_demo
 ### 💻 Code Examples
 
 <details>

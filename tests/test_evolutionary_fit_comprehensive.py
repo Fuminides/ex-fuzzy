@@ -378,7 +378,7 @@ class TestClassifierWithDifferentParameters:
         """Test with different numbers of linguistic variables."""
         X_train, X_test, y_train, y_test = dataset
 
-        for n_lv in [2, 3, 5]:
+        for n_lv in [2, 3, 5, 6, 7]:
             clf = evf.BaseFuzzyRulesClassifier(
                 nRules=10, nAnts=3,
                 n_linguistic_variables=n_lv,
@@ -418,6 +418,69 @@ class TestClassifierWithDifferentParameters:
 
             predictions = clf.predict(X_test)
             assert len(predictions) == len(y_test)
+
+
+class TestOptimizedLabelNames:
+    """Regression tests for label-name initialization in optimized partitions.
+
+    Guards against the bug where the fallback branch of ``_init_optimize_vl``
+    built label names from the feature index instead of the requested number of
+    linguistic variables, producing undersized name lists (and an ``IndexError``
+    during decoding) for six or more linguistic variables.
+    """
+
+    @staticmethod
+    def _make_problem(n_linguistic_variables, n_features=3):
+        X = np.arange(n_features * 12, dtype=float).reshape(12, n_features)
+        y = np.array([0, 1] * 6)
+        return evf.FitRuleBase(
+            X=X, y=y, nRules=4, nAnts=2, n_classes=2,
+            n_linguistic_variables=n_linguistic_variables,
+        )
+
+    def test_scalar_seven_gives_seven_names_per_feature(self):
+        problem = self._make_problem(7)
+        assert problem.n_lv_possible == [7, 7, 7]
+        assert [len(names) for names in problem.vl_names] == [7, 7, 7]
+
+    @pytest.mark.parametrize("n_lv", [6, 7, 8])
+    def test_counts_at_and_above_boundary_are_unique_and_sized(self, n_lv):
+        problem = self._make_problem(n_lv)
+        for names in problem.vl_names:
+            assert len(names) == n_lv
+            assert len(set(names)) == n_lv  # names are unique
+
+    def test_per_feature_list_matches_requested_lengths(self):
+        problem = self._make_problem([3, 7, 6])
+        assert [len(names) for names in problem.vl_names] == [3, 7, 6]
+
+    def test_predefined_names_for_two_through_five_unchanged(self):
+        expected = {
+            2: ['Low', 'High'],
+            3: ['Low', 'Medium', 'High'],
+            4: ['Low', 'Medium', 'High', 'Very High'],
+            5: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
+        }
+        for n_lv, names in expected.items():
+            problem = self._make_problem(n_lv)
+            assert all(feature_names == names for feature_names in problem.vl_names)
+
+    def test_name_list_length_matches_n_lv_possible_invariant(self):
+        problem = self._make_problem([3, 7, 6])
+        assert [len(names) for names in problem.vl_names] == problem.n_lv_possible
+
+    def test_end_to_end_fit_with_seven_labels(self):
+        X, y = make_classification(
+            n_samples=60, n_features=4, n_informative=3, n_redundant=1,
+            n_classes=2, random_state=0,
+        )
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.25, random_state=0)
+        clf = evf.BaseFuzzyRulesClassifier(
+            nRules=4, nAnts=2, n_linguistic_variables=7, verbose=False)
+        clf.fit(X_train, y_train, n_gen=1, pop_size=8, random_state=0)
+        predictions = clf.predict(X_test)
+        assert len(predictions) == len(y_test)
 
 
 class TestClassifierRuleBase:
