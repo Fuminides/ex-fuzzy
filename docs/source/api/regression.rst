@@ -5,7 +5,8 @@ Fuzzy Regression
 The :mod:`ex_fuzzy.evolutionary_fit_regression` module learns interpretable
 Type-1 fuzzy rules for continuous targets. During optimization it precomputes
 the fixed input-partition memberships and scores candidate rule bases through a
-vectorized NumPy inference path.
+vectorized NumPy inference path with PyMoo, or a batched PyTorch path with the
+optional EvoX backend.
 
 Two consequent styles are available, selected with ``consequent_type``:
 
@@ -73,6 +74,22 @@ Example
    print(regressor.score(X_test, y_test))
    regressor.print_rules()
    # Rule 1: IF x0 IS Low AND x2 IS High THEN output = 41.8203
+
+GPU optimization
+================
+
+Install ``ex-fuzzy[evox]`` and select the EvoX backend to evaluate complete
+populations on CUDA. If CUDA is unavailable, EvoX runs the same PyTorch path on
+the CPU.
+
+.. code-block:: python
+
+   regressor = BaseFuzzyRulesRegressor(
+       nRules=30, nAnts=4, backend="evox", verbose=True
+   )
+   regressor.fit(X_train, y_train, n_gen=50, pop_size=100)
+   print(regressor.optimization_device_)
+   print(regressor.gpu_accelerated_)
 
 Linguistic consequents
 ======================

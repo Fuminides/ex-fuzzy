@@ -25,7 +25,7 @@ Install extras only when you need the corresponding feature:
 
     python -m pip install "ex-fuzzy[viz]"   # NetworkX-based rule visualization
     python -m pip install "ex-fuzzy[gpu]"   # PyTorch support for GPU tensors
-    python -m pip install "ex-fuzzy[evox]"  # EvoX/JAX evolutionary backend
+    python -m pip install "ex-fuzzy[evox]"  # EvoX/PyTorch evolutionary backend
     python -m pip install "ex-fuzzy[docs]"  # Documentation build dependencies
     python -m pip install "ex-fuzzy[all]"   # All optional dependencies
 
@@ -134,13 +134,14 @@ backend, install the EvoX extra in the same environment:
 
     python -m pip install "ex-fuzzy[evox]"
 
-Then select it when creating the classifier:
+Then select it when creating a classifier or regressor:
 
 .. code-block:: python
 
-    from ex_fuzzy import BaseFuzzyRulesClassifier
+    from ex_fuzzy import BaseFuzzyRulesClassifier, BaseFuzzyRulesRegressor
 
     classifier = BaseFuzzyRulesClassifier(backend="evox")
+    regressor = BaseFuzzyRulesRegressor(backend="evox")
 
 For CUDA-specific PyTorch wheels, install PyTorch using the command recommended
 by the PyTorch project for your platform, then install Ex-Fuzzy with the EvoX

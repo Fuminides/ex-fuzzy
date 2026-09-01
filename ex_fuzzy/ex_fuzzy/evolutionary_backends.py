@@ -372,6 +372,34 @@ class EvoXBackend(EvolutionaryBackend):
                 fitness_list.append(1 - mcc)  # Convert MCC to minimization objective
             
             return torch.tensor(fitness_list, dtype=torch.float32, device=device)
+
+    def _evaluate_population(self, population: 'torch.Tensor', problem: Any,
+                             device: 'torch.device') -> 'torch.Tensor':
+        """Evaluate a population on ``device`` using the fastest available path.
+
+        Problems can expose ``_evaluate_torch_population`` when their complete
+        objective is implemented as a batched PyTorch operation.  Regression
+        uses this hook so membership lookup, inference, and R-squared scoring
+        remain on the GPU.  The older classification hooks are retained for
+        backward compatibility.
+        """
+        import torch
+
+        if hasattr(problem, '_evaluate_torch_population'):
+            fitness = problem._evaluate_torch_population(population, device=device)
+        elif hasattr(problem, '_evaluate_torch_fast'):
+            fitness = self._batch_evaluate_torch(population, problem, device)
+        else:
+            fitness_values = []
+            for individual in population:
+                out = {}
+                problem._evaluate(individual.detach().cpu().numpy().astype(int), out)
+                fitness_values.append(float(np.asarray(out['F']).reshape(-1)[0]))
+            fitness = torch.tensor(fitness_values, dtype=torch.float32, device=device)
+
+        if not isinstance(fitness, torch.Tensor):
+            fitness = torch.as_tensor(fitness, dtype=torch.float32, device=device)
+        return fitness.to(device=device, dtype=torch.float32).reshape(-1)
     
     def optimize(self, problem: Any, n_gen: int, pop_size: int,
                  random_state: int, verbose: bool,
@@ -411,9 +439,6 @@ class EvoXBackend(EvolutionaryBackend):
         
         # Get device (GPU if available)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        
-        # Create problem wrapper (CPU evaluation for now - PyTorch-based GPU eval would need different approach)
-        evox_problem = EvoXProblemWrapper(problem, use_gpu_eval=False)
         
         # Initialize population
         if sampling is not None:
@@ -456,21 +481,13 @@ class EvoXBackend(EvolutionaryBackend):
         
         population = init_pop  # Keep as integers
         
-        # Check if problem has torch evaluation method
-        has_torch_eval = hasattr(problem, '_evaluate_torch_fast')
-        
+        uses_torch_fitness = (
+            hasattr(problem, '_evaluate_torch_population')
+            or hasattr(problem, '_evaluate_torch_fast')
+        )
+
         # Initial evaluation
-        if has_torch_eval:
-            # Use PyTorch evaluation for GPU acceleration with batched MCC computation
-            fitness = self._batch_evaluate_torch(population, problem, device)
-        else:
-            # Fallback to numpy evaluation
-            fitness_list = []
-            for ind in population:
-                out = {}
-                problem._evaluate(ind.cpu().numpy().astype(int), out)
-                fitness_list.append(out['F'])
-            fitness = torch.tensor(fitness_list, dtype=torch.float32, device=device)
+        fitness = self._evaluate_population(population, problem, device)
         
         for gen in range(n_gen):
             # Selection - VECTORIZED tournament selection (select pop_size parents for mating)
@@ -491,17 +508,7 @@ class EvoXBackend(EvolutionaryBackend):
             offspring = torch.round(offspring).int()
             
             # Evaluate offspring
-            if has_torch_eval:
-                # Use PyTorch evaluation for GPU acceleration with batched MCC computation
-                offspring_fitness = self._batch_evaluate_torch(offspring, problem, device)
-            else:
-                # Fallback to numpy evaluation
-                offspring_fitness_list = []
-                for ind in offspring:
-                    out = {}
-                    problem._evaluate(ind.cpu().numpy().astype(int), out)
-                    offspring_fitness_list.append(out['F'])
-                offspring_fitness = torch.tensor(offspring_fitness_list, dtype=torch.float32, device=device)
+            offspring_fitness = self._evaluate_population(offspring, problem, device)
             
             # Elitist survival selection: combine parents and offspring, select best pop_size
             combined_pop = torch.cat([population, offspring], dim=0)
@@ -553,7 +560,9 @@ class EvoXBackend(EvolutionaryBackend):
                 'best_fitness': best_fitness
             },
             'n_gen_run': len(best_fitness),
-            'stopped_early': len(best_fitness) < n_gen
+            'stopped_early': len(best_fitness) < n_gen,
+            'device': str(device),
+            'gpu_accelerated': device.type == 'cuda' and uses_torch_fitness
         }
 
 

@@ -81,14 +81,13 @@ Install Ex-Fuzzy using pip:
 pip install ex-fuzzy
 
 # With GPU support (EvoX backend with PyTorch)
-pip install ex-fuzzy evox torch
+pip install "ex-fuzzy[evox]"
 ```
 
 ### Basic Usage
 
 ```python
-import numpy as np
-from ex_fuzzy.evolutionary_fit import BaseFuzzyRulesClassifier
+from ex_fuzzy import BaseFuzzyRulesClassifier
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
@@ -98,9 +97,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # Create and train fuzzy classifier
 classifier = BaseFuzzyRulesClassifier(
-    n_rules=15,
-    n_antecedents=4,
-    fuzzy_type="t1",  # Type-1 fuzzy sets
+    nRules=15,
+    nAnts=4,
     backend="pymoo"  # or "evox" for GPU acceleration
 )
 
@@ -114,6 +112,35 @@ predictions = classifier.predict(X_test)
 from ex_fuzzy.eval_tools import eval_fuzzy_model
 eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test, 
                 plot_rules=True, plot_partitions=True)
+```
+
+### Regression Usage
+
+`BaseFuzzyRulesRegressor` learns interpretable Type-1 rules for continuous
+targets. It supports crisp Takagi-Sugeno consequents and fuzzy Mamdani
+consequents.
+
+```python
+from ex_fuzzy import BaseFuzzyRulesRegressor
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+
+X, y = make_regression(n_samples=500, n_features=5, noise=5.0, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0
+)
+
+regressor = BaseFuzzyRulesRegressor(
+    nRules=20,
+    nAnts=3,
+    consequent_type="crisp",  # use "fuzzy" for Mamdani consequents
+    backend="pymoo",
+)
+regressor.fit(X_train, y_train, n_gen=50, pop_size=50)
+
+predictions = regressor.predict(X_test)
+print(f"Test R2: {regressor.score(X_test, y_test):.3f}")
+regressor.print_rules()
 ```
 
 ## 📊 Visualizations
@@ -154,8 +181,8 @@ Ex-Fuzzy supports two evolutionary optimization backends:
 
 | Backend | Hardware | Best For |
 |---------|----------|----------|
-| **PyMoo** | CPU | Small datasets (<10K samples), checkpoint support |
-| **EvoX** | GPU | Large datasets with high generation counts |
+| **PyMoo** | CPU | Classification/regression on small datasets, checkpoint support |
+| **EvoX** | GPU/CPU | Batched classification/regression on large datasets |
 
 ### When to Use Each Backend
 
@@ -201,6 +228,7 @@ Try our hands-on examples in Google Colab:
 | **Advanced Rules** | Using pre-computed rule populations | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing) |
 | **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
 | **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
+| **Fuzzy Regression** | Interpretable continuous prediction | [📓 Notebook](Demos/regression_demo.ipynb) |
 | **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
 | **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
 
@@ -247,12 +275,12 @@ classifier.plot_fuzzy_variables()
 <summary><b>🚀 GPU-Accelerated Training (EvoX Backend)</b></summary>
 
 ```python
-from ex_fuzzy import BaseFuzzyRulesClassifier
+from ex_fuzzy import BaseFuzzyRulesClassifier, BaseFuzzyRulesRegressor
 
 # Create classifier with EvoX backend for GPU acceleration
 classifier = BaseFuzzyRulesClassifier(
-    n_rules=30,
-    n_antecedents=4,
+    nRules=30,
+    nAnts=4,
     backend='evox',  # Use GPU-accelerated EvoX backend
     verbose=True
 )
@@ -265,11 +293,19 @@ classifier.fit(X_train, y_train,
 # Early stopping is enabled by default:
 # patience=10, min_delta=1e-4
 
-# EvoX provides significant speedups for:
-# - Large datasets (>10,000 samples)
-# - Complex rule bases (many rules/antecedents)
-# - High generation counts
-print("Training completed with GPU acceleration!")
+# Regression uses the same EvoX backend. Both crisp and fuzzy
+# consequents are evaluated in memory-aware PyTorch batches.
+regressor = BaseFuzzyRulesRegressor(
+    nRules=30,
+    nAnts=4,
+    consequent_type="crisp",
+    backend="evox",
+)
+regressor.fit(X_reg_train, y_reg_train, n_gen=50, pop_size=100)
+
+# CUDA is selected automatically when available; otherwise EvoX uses CPU.
+print(regressor.optimization_device_)  # "cuda" or "cpu"
+print(regressor.gpu_accelerated_)      # True only when CUDA was used
 ```
 </details>
 
@@ -285,7 +321,7 @@ bootstrap_samples = generate_bootstrap_samples(X_train, y_train, n_samples=100)
 # Evaluate model stability
 bootstrap_results = []
 for X_boot, y_boot in bootstrap_samples:
-    classifier_boot = BaseFuzzyRulesClassifier(n_rules=10)
+    classifier_boot = BaseFuzzyRulesClassifier(nRules=10)
     classifier_boot.fit(X_boot, y_boot)
     accuracy = classifier_boot.score(X_test, y_test)
     bootstrap_results.append(accuracy)
@@ -312,8 +348,8 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 
 ### Optional Dependencies
 - **NetworkX** >= 2.6 (for rule visualization)
-- **EvoX** >= 0.8.0 (for GPU-accelerated evolutionary optimization)
-- **PyTorch** >= 1.9.0 (required by EvoX for GPU acceleration)
+- **EvoX** >= 1.3.0 (for GPU-accelerated evolutionary optimization)
+- **PyTorch** >= 2.6.0 (required by EvoX)
 - **Scikit-learn** >= 0.24.0 (for compatibility examples)
 
 ## 🤝 Contributing

@@ -78,6 +78,23 @@ Using EvoX Backend
 
    # Early stopping defaults: patience=10, min_delta=1e-4
 
+Regression uses the same backend selection. Its crisp and Mamdani objectives
+are evaluated as memory-aware PyTorch batches:
+
+.. code-block:: python
+
+   from ex_fuzzy import BaseFuzzyRulesRegressor
+
+   regressor = BaseFuzzyRulesRegressor(
+       nRules=30,
+       nAnts=4,
+       backend='evox'
+   )
+   regressor.fit(X_train, y_train, n_gen=50, pop_size=100)
+
+   print(regressor.optimization_device_)  # 'cuda' or 'cpu'
+   print(regressor.gpu_accelerated_)
+
 Checking Available Backends
 ----------------------------
 
@@ -297,13 +314,13 @@ If EvoX backend is not available:
    
    available = evolutionary_backends.list_available_backends()
    if 'evox' not in available:
-       print("EvoX not installed. Install with: pip install evox torch")
+       print('EvoX not installed. Install with: pip install "ex-fuzzy[evox]"')
 
 **Solution**: Install EvoX and PyTorch:
 
 .. code-block:: bash
 
-   pip install evox torch
+   pip install "ex-fuzzy[evox]"
 
 GPU Not Detected
 ----------------
@@ -366,9 +383,16 @@ API Reference
 Backend Selection Parameter
 ---------------------------
 
+The same parameter is available on both estimators:
+
 .. code-block:: python
 
    BaseFuzzyRulesClassifier(
+       ...,
+       backend='pymoo'  # or 'evox'
+   )
+
+   BaseFuzzyRulesRegressor(
        ...,
        backend='pymoo'  # or 'evox'
    )

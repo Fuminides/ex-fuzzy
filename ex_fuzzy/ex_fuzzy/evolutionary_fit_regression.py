@@ -16,12 +16,7 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.core.problem import Problem
-from pymoo.operators.crossover.sbx import SBX
-from pymoo.operators.mutation.pm import PolynomialMutation
-from pymoo.operators.repair.rounding import RoundingRepair
-from pymoo.optimize import minimize
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.metrics import r2_score
 from sklearn.utils.validation import check_is_fitted
@@ -30,10 +25,12 @@ try:
     from . import fuzzy_sets as fs
     from . import rules
     from . import utils
+    from . import evolutionary_backends as ev_backends
 except ImportError:
     import fuzzy_sets as fs
     import rules
     import utils
+    import evolutionary_backends as ev_backends
 
 
 def _as_2d_float_array(X, *, expected_features: Optional[int] = None) -> np.ndarray:
@@ -525,6 +522,7 @@ class FitRuleBaseRegression(Problem):
             if self.y_range == 0
             else np.linspace(self.y_min, self.y_max, self.n_universe_points)
         )
+        self._torch_tensor_cache = {}
 
     def _rule_term_matrix(self, chromosome: np.ndarray) -> np.ndarray:
         """Decode antecedent genes into a rule-by-feature term matrix."""
@@ -633,6 +631,263 @@ class FitRuleBaseRegression(Problem):
         )
         out["F"] = -fitness[:, None]
 
+    def _torch_chunk_sizes(self, population_size: int, device) -> tuple[int, int]:
+        """Choose conservative population/sample chunks for GPU evaluation."""
+        import torch
+
+        n_samples, n_features = self.X.shape
+        # The largest temporary tensors are antecedent memberships and, for
+        # Mamdani inference, clipped output curves.  Include a generous factor
+        # for reductions and allocator workspace.
+        floats_per_population_sample = self.nRules * (n_features + 2)
+        if self.consequent_type == "fuzzy":
+            floats_per_population_sample += self.n_output_lvs * (
+                self.n_universe_points + 1
+            )
+        bytes_per_population_sample = max(1, 12 * floats_per_population_sample)
+
+        if torch.device(device).type == "cuda" and torch.cuda.is_available():
+            try:
+                free_memory, _ = torch.cuda.mem_get_info(device)
+                memory_budget = int(free_memory * 0.35)
+            except Exception:
+                memory_budget = 256 * 1024**2
+        else:
+            memory_budget = 512 * 1024**2
+
+        max_pairs = max(1, memory_budget // bytes_per_population_sample)
+        population_batch = max(1, min(population_size, max_pairs // max(1, n_samples)))
+        sample_batch = max(1, min(n_samples, max_pairs // population_batch))
+        return population_batch, sample_batch
+
+    def _torch_rule_terms(self, population, torch):
+        """Decode a population into rule/feature term matrices on the GPU."""
+        population = torch.round(population).long()
+        population_size = population.shape[0]
+        n_features = self.X.shape[1]
+        slot_count = self.nRules * self.nAnts
+        chosen_features = population[:, :slot_count].reshape(
+            population_size, self.nRules, self.nAnts
+        ).clamp(0, n_features - 1)
+        chosen_terms = population[:, slot_count : 2 * slot_count].reshape(
+            population_size, self.nRules, self.nAnts
+        )
+        n_lv = torch.as_tensor(self.n_lv, dtype=torch.long, device=population.device)
+        valid = (chosen_terms >= 0) & (chosen_terms < n_lv[chosen_features])
+
+        rule_terms = torch.full(
+            (population_size, self.nRules, n_features),
+            self._dont_care,
+            dtype=torch.long,
+            device=population.device,
+        )
+        # Assign slots in chromosome order so repeated features preserve the
+        # NumPy scorer's documented "last valid slot wins" behavior.
+        for slot in range(self.nAnts):
+            valid_rows, valid_rules = torch.where(valid[:, :, slot])
+            if valid_rows.numel() == 0:
+                continue
+            features = chosen_features[valid_rows, valid_rules, slot]
+            rule_terms[valid_rows, valid_rules, features] = chosen_terms[
+                valid_rows, valid_rules, slot
+            ]
+        return rule_terms
+
+    def _torch_tensors(self, device, torch):
+        """Cache immutable training tensors on each evaluation device."""
+        cache_key = str(device)
+        cached = self._torch_tensor_cache.get(cache_key)
+        if cached is None:
+            cached = {
+                "membership": torch.as_tensor(
+                    self._membership_array, dtype=torch.float32, device=device
+                ),
+                "target": torch.as_tensor(
+                    self.y, dtype=torch.float32, device=device
+                ),
+                "universe": torch.as_tensor(
+                    self._universe, dtype=torch.float32, device=device
+                ),
+                "feature_indices": torch.arange(
+                    self.X.shape[1], device=device
+                ).view(1, 1, -1),
+            }
+            self._torch_tensor_cache[cache_key] = cached
+        return cached
+
+    def _torch_output_curves(self, population, universe, torch):
+        """Decode Mamdani output trapezoids entirely with PyTorch."""
+        population_size = population.shape[0]
+        start = 2 * self.nRules * self.nAnts + self.nRules
+        encoded = torch.round(
+            population[:, start : start + 4 * self.n_output_lvs]
+        ).clamp(0, 100).reshape(population_size, self.n_output_lvs, 4)
+        params = self.y_min + (
+            torch.sort(encoded, dim=2).values.float() / 100.0
+        ) * self.y_range
+        a, b, c, d = params.unbind(dim=2)
+        singleton = a == d
+        epsilon = 10e-5
+        adjusted_a = torch.where((b == a) & ~singleton, a - epsilon, a)
+        adjusted_d = torch.where((c == d) & ~singleton, d + epsilon, d)
+        points = universe.view(1, 1, -1)
+        rising = (points - adjusted_a.unsqueeze(2)) / (
+            b - adjusted_a
+        ).unsqueeze(2)
+        falling = (adjusted_d.unsqueeze(2) - points) / (
+            adjusted_d - c
+        ).unsqueeze(2)
+        curves = torch.minimum(rising, falling).clamp(0.0, 1.0)
+        singleton_curves = (points == a.unsqueeze(2)).float()
+        return torch.where(singleton.unsqueeze(2), singleton_curves, curves)
+
+    def _evaluate_torch_population(
+        self,
+        population,
+        device="cuda",
+        population_batch_size: Optional[int] = None,
+        sample_batch_size: Optional[int] = None,
+    ):
+        """Return negative R-squared for a population using batched PyTorch.
+
+        All chromosome decoding, membership lookup, fuzzy inference, and
+        objective computation happen on ``device``.  Both the population and
+        samples are chunked, so the same implementation works on modest GPUs
+        and large datasets without materializing the full four-dimensional
+        inference tensor at once.
+        """
+        try:
+            import torch
+        except ImportError as exc:
+            raise ImportError(
+                "PyTorch is required for EvoX regression. "
+                "Install with: pip install ex-fuzzy[evox]"
+            ) from exc
+
+        device = torch.device(device)
+        if not isinstance(population, torch.Tensor):
+            population = torch.as_tensor(population, device=device)
+        population = population.to(device=device)
+        if population.ndim == 1:
+            population = population.unsqueeze(0)
+        if population.ndim != 2 or population.shape[1] != self.n_var:
+            raise ValueError(
+                f"population must have shape (population_size, {self.n_var})."
+            )
+
+        cached = self._torch_tensors(device, torch)
+        automatic_population_batch, automatic_sample_batch = self._torch_chunk_sizes(
+            population.shape[0], device
+        )
+        population_batch_size = (
+            automatic_population_batch
+            if population_batch_size is None
+            else max(1, int(population_batch_size))
+        )
+        sample_batch_size = (
+            automatic_sample_batch
+            if sample_batch_size is None
+            else max(1, int(sample_batch_size))
+        )
+
+        membership = cached["membership"]
+        target = cached["target"]
+        universe = cached["universe"]
+        feature_indices = cached["feature_indices"]
+        objective_batches = []
+
+        for population_start in range(0, population.shape[0], population_batch_size):
+            population_end = min(
+                population_start + population_batch_size, population.shape[0]
+            )
+            batch = torch.round(population[population_start:population_end]).long()
+            batch_size = batch.shape[0]
+            rule_terms = self._torch_rule_terms(batch, torch)
+            active_rules = torch.any(rule_terms != self._dont_care, dim=2)
+            expanded_features = feature_indices.expand(
+                batch_size, self.nRules, self.X.shape[1]
+            )
+
+            consequent_start = 2 * self.nRules * self.nAnts
+            if self.consequent_type == "fuzzy":
+                consequent_indices = torch.round(
+                    batch[:, consequent_start : consequent_start + self.nRules]
+                ).long().clamp(0, self.n_output_lvs - 1)
+                output_curves = self._torch_output_curves(batch, universe, torch)
+            else:
+                encoded = torch.round(
+                    batch[:, consequent_start : consequent_start + self.nRules]
+                ).clamp(0, 100).float()
+                consequents = self.y_min + (encoded / 100.0) * self.y_range
+                active_min = torch.where(
+                    active_rules, consequents, torch.full_like(consequents, torch.inf)
+                ).min(dim=1).values
+                active_max = torch.where(
+                    active_rules, consequents, torch.full_like(consequents, -torch.inf)
+                ).max(dim=1).values
+
+            residual_ss = torch.zeros(batch_size, dtype=torch.float32, device=device)
+            constant_target_match = torch.ones(batch_size, dtype=torch.bool, device=device)
+            for sample_start in range(0, self.X.shape[0], sample_batch_size):
+                sample_end = min(sample_start + sample_batch_size, self.X.shape[0])
+                membership_slice = membership[sample_start:sample_end].permute(1, 2, 0)
+                gathered = membership_slice[expanded_features, rule_terms]
+                firing = gathered.prod(dim=2).permute(0, 2, 1)
+                firing = torch.where(active_rules[:, None, :], firing, 0.0)
+
+                if self.rule_mode == "sufficient":
+                    peak, strongest = firing.max(dim=2, keepdim=True)
+                    winning_strength = torch.where(peak > self.tolerance, peak, 0.0)
+                    selected = torch.zeros_like(firing)
+                    selected.scatter_(2, strongest, winning_strength)
+                    firing = selected
+
+                if self.consequent_type == "fuzzy":
+                    set_firing = []
+                    for output_set in range(self.n_output_lvs):
+                        members = consequent_indices == output_set
+                        set_firing.append(
+                            torch.where(members[:, None, :], firing, 0.0).amax(dim=2)
+                        )
+                    set_firing = torch.stack(set_firing, dim=2)
+                    aggregated = torch.minimum(
+                        output_curves[:, None, :, :], set_firing[:, :, :, None]
+                    ).amax(dim=2)
+                    mass = aggregated.sum(dim=2)
+                    numerator = (aggregated * universe.view(1, 1, -1)).sum(dim=2)
+                    prediction = torch.where(
+                        mass > 1e-10,
+                        numerator / mass.clamp_min(1e-10),
+                        self.y_mean,
+                    )
+                else:
+                    denominator = firing.sum(dim=2)
+                    numerator = torch.einsum("bsr,br->bs", firing, consequents)
+                    prediction = torch.where(
+                        denominator > 1e-10,
+                        numerator / denominator.clamp_min(1e-10),
+                        self.y_mean,
+                    )
+                    clipped = torch.minimum(
+                        torch.maximum(prediction, active_min[:, None]),
+                        active_max[:, None],
+                    )
+                    prediction = torch.where(denominator > 1e-10, clipped, prediction)
+
+                expected = target[sample_start:sample_end].unsqueeze(0)
+                residual_ss += ((prediction - expected) ** 2).sum(dim=1)
+                constant_target_match &= torch.isclose(
+                    prediction, expected, rtol=1e-5, atol=1e-8
+                ).all(dim=1)
+
+            if self._target_ss <= 0:
+                r_squared = constant_target_match.float()
+            else:
+                r_squared = 1.0 - residual_ss / float(self._target_ss)
+            objective_batches.append(-r_squared)
+
+        return torch.cat(objective_batches)
+
     def _construct_ruleBase(self, chromosome: np.ndarray) -> _RegressionRuleBase:
         """Decode a chromosome into a prediction-equivalent concrete rule base."""
         chromosome = np.rint(np.asarray(chromosome)).astype(int)
@@ -696,6 +951,10 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
     every rule contribute, while ``sufficient`` keeps only the single
     strongest rule and falls back to the target mean when even that one fires
     below ``tolerance``.
+
+    ``backend="pymoo"`` uses the vectorized NumPy objective on the CPU.
+    ``backend="evox"`` evolves populations with EvoX and evaluates complete
+    population batches with PyTorch on CUDA when available.
     """
 
     def __init__(
@@ -711,6 +970,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         rule_mode: str = "additive",
         tolerance: float = 0.0,
         verbose: bool = False,
+        backend: str = "pymoo",
     ) -> None:
         """Configure the regressor; optimization is performed in :meth:`fit`."""
         self.nRules = nRules
@@ -724,6 +984,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         self.rule_mode = rule_mode
         self.tolerance = tolerance
         self.verbose = verbose
+        self.backend = backend
 
     def _validate_parameters(self) -> None:
         """Validate estimator hyperparameters without mutating them."""
@@ -814,26 +1075,30 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
             tolerance=float(self.tolerance),
         )
 
-        algorithm = GA(
+        backend = ev_backends.get_backend(self.backend)
+        result = backend.optimize(
+            problem=problem,
+            n_gen=int(n_gen),
             pop_size=int(pop_size),
-            crossover=SBX(prob=0.9, eta=3.0, repair=RoundingRepair()),
-            mutation=PolynomialMutation(eta=7.0, repair=RoundingRepair()),
-            eliminate_duplicates=False,
-        )
-        result = minimize(
-            problem,
-            algorithm,
-            ("n_gen", int(n_gen)),
-            seed=random_state,
-            save_history=False,
+            random_state=random_state,
             verbose=self.verbose,
+            var_prob=0.9,
+            sbx_eta=3.0,
+            mutation_eta=7.0,
+            tournament_size=3,
+            patience=None,
         )
-        if result.X is None or result.F is None:
+        if result.get("X") is None or result.get("F") is None:
             raise RuntimeError("The evolutionary optimizer did not return a valid solution.")
 
         self.optimization_result_ = result
-        self.best_chromosome_ = np.rint(np.asarray(result.X)).astype(int)
-        self.performance_ = float(-np.asarray(result.F).reshape(-1)[0])
+        self.backend_ = backend.name()
+        self.optimization_device_ = result.get("device", "cpu")
+        self.gpu_accelerated_ = bool(result.get("gpu_accelerated", False))
+        self.n_generations_run_ = int(result.get("n_gen_run", n_gen))
+        self.stopped_early_ = bool(result.get("stopped_early", False))
+        self.best_chromosome_ = np.rint(np.asarray(result["X"])).astype(int)
+        self.performance_ = float(-np.asarray(result["F"]).reshape(-1)[0])
         self.performance = self.performance_
         self.rule_base = problem._construct_ruleBase(self.best_chromosome_)
         self.lvs = self.rule_base.antecedents

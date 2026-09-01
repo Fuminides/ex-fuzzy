@@ -17,11 +17,11 @@ The genetic algorithm searches for the optimal rule base for a problem. Ex-Fuzzy
   - Automatic population batching for memory management
   - Seamlessly falls back to CPU if GPU unavailable
 
-You can select the backend when creating a classifier:
+You can select the backend when creating a classifier or regressor:
 
 .. code-block:: python
 
-   from ex_fuzzy import BaseFuzzyRulesClassifier
+   from ex_fuzzy import BaseFuzzyRulesClassifier, BaseFuzzyRulesRegressor
    
    # PyMoo backend (default)
    clf_pymoo = BaseFuzzyRulesClassifier(backend='pymoo')
@@ -29,7 +29,21 @@ You can select the backend when creating a classifier:
    # EvoX backend (GPU-accelerated)
    clf_evox = BaseFuzzyRulesClassifier(backend='evox')
 
-The criteria used to determine optimal is the one mentioned in :ref:`step3`:
+   # Regression uses the same backend abstraction
+   reg_evox = BaseFuzzyRulesRegressor(
+       nRules=20,
+       nAnts=3,
+       consequent_type='crisp',
+       backend='evox',
+   )
+
+For regression, the search maximizes training-set :math:`R^2`. EvoX evaluates
+crisp Takagi-Sugeno and fuzzy Mamdani regression populations with PyTorch on
+CUDA when available, and falls back to the same batched path on CPU. See
+:doc:`user-guide/regression` for the full workflow.
+
+For classification, the criteria used to determine optimal are the ones
+mentioned in :ref:`step3`:
 
 1. Matthew Correlation Coefficient: it is a metric that ranges from [-1, 1] that measures the quality of a classification performance. It less sensible to imbalance classification than the standard accuracy.
 2. Less antecedents: the less antecedents per rule, the better. We compute this using the average number of antecedents per rule. We to normalize this by dividing the number of antecedents per rule by the maximum allowed in the optimization) 

@@ -12,6 +12,12 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 Added
 -----
+- **Fuzzy Regression**: Scikit-learn-compatible Type-1 rule learning for
+  continuous targets with crisp Takagi-Sugeno and fuzzy Mamdani consequents
+- **GPU-Accelerated Regression**: EvoX/PyTorch population evaluation for both
+  regression consequent types and additive or sufficient rule modes
+- **Regression Runtime Metadata**: Fitted estimators expose ``backend_``,
+  ``optimization_device_``, ``gpu_accelerated_``, and generation status
 - **EvoX Backend Support**: GPU-accelerated evolutionary optimization using EvoX and PyTorch
 - **Automatic Memory Management**: Batch processing for large datasets to prevent out-of-memory errors
 - **Performance Improvements**: 2-10x speedup for large datasets with GPU acceleration
@@ -35,6 +41,8 @@ Changed
 
 Fixed
 -----
+- Unknown classification consequents no longer cause invalid one-hot indices
+  during CUDA population evaluation
 - Bug in fuzzy set membership calculation
 - Memory leak in evolutionary optimization
 - Incorrect rule dominance score calculation

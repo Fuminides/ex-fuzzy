@@ -20,8 +20,8 @@ For documentation builds and examples, install the docs extra:
 
     pip install -e ".[docs]"
 
-EvoX or JAX Installation
-========================
+EvoX, PyTorch, or CUDA Installation
+===================================
 
 The EvoX backend is optional. Install it only when you need GPU-accelerated
 optimization:
@@ -30,15 +30,29 @@ optimization:
 
     pip install "ex-fuzzy[evox]"
 
-If JAX cannot find a compatible accelerator, first confirm the CPU backend works:
+If PyTorch cannot find a compatible CUDA device, first confirm that the default
+CPU backend works:
 
 .. code-block:: python
 
-    from ex_fuzzy import BaseFuzzyRulesClassifier
+    from ex_fuzzy import BaseFuzzyRulesClassifier, BaseFuzzyRulesRegressor
 
     clf = BaseFuzzyRulesClassifier(backend="pymoo")
+    reg = BaseFuzzyRulesRegressor(backend="pymoo")
 
-Then check the JAX installation that matches your platform and CUDA version.
+Then install the CUDA-specific PyTorch wheel recommended by the PyTorch project
+for your platform and driver. After an EvoX fit, inspect the actual device:
+
+.. code-block:: python
+
+    reg = BaseFuzzyRulesRegressor(backend="evox")
+    reg.fit(X_train, y_train, n_gen=10, pop_size=20)
+
+    print(reg.optimization_device_)  # "cuda" or "cpu"
+    print(reg.gpu_accelerated_)      # True only when CUDA was used
+
+An EvoX run on ``"cpu"`` is valid; it means CUDA was not available to
+PyTorch. Both crisp and fuzzy regression consequents use the same device.
 
 Slow Training
 =============
@@ -48,7 +62,7 @@ population size. Start with a small run and scale gradually:
 
 .. code-block:: python
 
-    clf.fit(X_train, y_train, n_gen=10, pop_size=20)
+    estimator.fit(X_train, y_train, n_gen=10, pop_size=20)
 
 For larger datasets, compare ``backend="pymoo"`` and ``backend="evox"`` with the
 same split and seed before committing to a backend.

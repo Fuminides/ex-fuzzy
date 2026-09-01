@@ -20,8 +20,8 @@ Ex-Fuzzy Documentation
 
 **Ex-Fuzzy** is a Python library for explainable fuzzy logic inference and
 approximate reasoning. It provides tools for building, training, and analyzing
-fuzzy rule-based classifiers with a focus on readable rules and reproducible
-experiments.
+fuzzy rule-based classifiers and regressors with a focus on readable rules and
+reproducible experiments.
 
 .. grid:: 2
     :gutter: 3
@@ -31,14 +31,14 @@ experiments.
         :link-type: doc
 
         Get up and running with Ex-Fuzzy in minutes. Learn the basics of fuzzy classification
-        and see practical examples.
+        and regression through practical examples.
 
     .. grid-item-card:: User Guide
         :link: user-guide/index
         :link-type: doc
 
-        Comprehensive tutorials and examples for building fuzzy classifiers, analyzing patterns,
-        and visualizing results.
+        Comprehensive tutorials and examples for building fuzzy classifiers and regressors,
+        analyzing patterns, and visualizing results.
 
     .. grid-item-card:: API Reference
         :link: api/index
@@ -69,9 +69,8 @@ Key Features
     .. grid-item-card:: High Performance
         :class-header: border-0
 
-        GPU-accelerated evolutionary optimization with EvoX backend. Optimized implementations 
-        with support for both Type-1 and Type-2 fuzzy systems, automatic memory management,
-        and 2-10x speedups on large datasets.
+        GPU-accelerated evolutionary optimization with the EvoX backend for classifiers and
+        Type-1 regressors, with automatic population and sample batching.
 
     .. grid-item-card:: Rich Visualizations
         :class-header: border-0
@@ -131,6 +130,35 @@ Here's a simple example to get you started:
         plot_rules=True, print_rules=True, plot_partitions=True
     )
 
+Regression Example
+==================
+
+Regression follows the same estimator workflow and optimizes training-set
+:math:`R^2`:
+
+.. code-block:: python
+
+    from ex_fuzzy import BaseFuzzyRulesRegressor
+    from sklearn.datasets import make_regression
+    from sklearn.model_selection import train_test_split
+
+    X, y = make_regression(n_samples=500, n_features=5, noise=5.0, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=0
+    )
+
+    regressor = BaseFuzzyRulesRegressor(
+        nRules=20,
+        nAnts=3,
+        consequent_type="crisp",  # or "fuzzy" for Mamdani output sets
+        backend="pymoo",          # or "evox" for batched PyTorch optimization
+    )
+    regressor.fit(X_train, y_train, n_gen=50, pop_size=50)
+
+    predictions = regressor.predict(X_test)
+    print(regressor.score(X_test, y_test))
+    regressor.print_rules()
+
 Installation
 ============
 
@@ -166,7 +194,7 @@ Choosing a Workflow
    * - Return prediction sets with coverage guarantees
      - :class:`ex_fuzzy.ConformalFuzzyClassifier`
    * - Use GPU-accelerated evolutionary optimization
-     - ``backend="evox"`` with the ``ex-fuzzy[evox]`` extra
+     - ``backend="evox"`` with either estimator and the ``ex-fuzzy[evox]`` extra
    * - Save and reload fuzzy variables
      - :mod:`ex_fuzzy.persistence`
 

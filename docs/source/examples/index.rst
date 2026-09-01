@@ -3,7 +3,7 @@ Examples
 
 Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples demonstrating how to use Ex-Fuzzy for various machine learning tasks.
 
-.. grid:: 1
+.. grid:: 2
     :gutter: 3
 
     .. grid-item-card:: Classification Examples
@@ -12,11 +12,18 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 
         Learn fuzzy classification with practical examples using the Iris dataset and other scenarios.
 
+    .. grid-item-card:: Regression Examples
+        :link: regression
+        :link-type: doc
+
+        Train interpretable regressors with crisp or fuzzy consequents on CPU or GPU.
+
 .. toctree::
    :maxdepth: 2
    :hidden:
 
    classification
+   regression
 
 Working Examples
 ================
@@ -48,6 +55,9 @@ The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run 
    * - **Rule Mining**
      - Automatic rule discovery
      - `Open Rule Mining in Colab <https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing>`_
+   * - **Fuzzy Regression**
+     - Interpretable prediction of continuous targets
+     - Local notebook ``Demos/regression_demo.ipynb``
    * - **Conformal Learning**
      - Prediction sets with coverage guarantees and rule-aware uncertainty
      - Notebook `Demos/conformal_learning_demo.ipynb` and local script `Demos/demos_module/conformal_learning_demo.py`
@@ -62,7 +72,8 @@ The repository also contains local Jupyter notebooks in the `Demos/` directory:
 - **iris_demo_persistence.ipynb**: Saving and loading trained models
 - **heart_attack.ipynb**: Medical diagnosis classification
 - **occupancy_demo_temporal.ipynb**: Time-series occupancy detection
-- **regression_demo.ipynb**: Fuzzy regression examples
+- **regression_demo.ipynb**: Interpretable fuzzy regression with continuous targets
+- **demos_module/regression_demo.py**: Manually constructed Type-2 regression inference
 - **pattern_analysis_demo.ipynb**: Pattern stability analysis
 - **conformal_learning_demo.ipynb**: Conformal prediction with calibration and set-valued outputs
 - **demos_module/conformal_learning_demo.py**: Conformal prediction with calibration, set-valued outputs, and coverage metrics
@@ -82,6 +93,7 @@ Example Categories
 
 **Beginner Examples**
   - Basic iris classification
+  - Trainable Type-1 fuzzy regression
   - Simple pattern analysis
   - Visualization basics
 

@@ -11,7 +11,12 @@ Introduction
 :class:`ex_fuzzy.BaseFuzzyRulesRegressor` learns Type-1 fuzzy rules for a
 numeric target using a genetic algorithm. The input partitions are fixed before
 the search starts, so every membership can be precomputed once and each
-candidate rule base scored through a vectorized NumPy path.
+candidate rule base can be scored through a vectorized NumPy or PyTorch path.
+
+The default ``backend="pymoo"`` runs that search on the CPU. With the optional
+``backend="evox"``, population evolution and batched regression fitness run in
+PyTorch on CUDA when a compatible GPU is available. EvoX automatically uses
+the same PyTorch implementation on the CPU when CUDA is unavailable.
 
 The estimator follows the scikit-learn API, so it works with ``cross_val_score``,
 ``Pipeline`` and ``GridSearchCV``.
@@ -42,6 +47,31 @@ Quick Start Example
 
    print(regressor.score(X_test, y_test))
    regressor.print_rules()
+
+GPU-Accelerated Search
+======================
+
+Install the optional backend and select it on the estimator:
+
+.. code-block:: bash
+
+   python -m pip install "ex-fuzzy[evox]"
+
+.. code-block:: python
+
+   regressor = BaseFuzzyRulesRegressor(
+       nRules=30,
+       nAnts=4,
+       backend="evox",
+       verbose=True,
+   )
+   regressor.fit(X_train, y_train, n_gen=50, pop_size=100)
+
+After fitting, ``optimization_device_`` is ``"cuda"`` or ``"cpu"`` and
+``gpu_accelerated_`` records whether CUDA handled the optimization. Both crisp
+and fuzzy consequents and both rule modes use the batched PyTorch fitness path.
+Population and sample chunks are sized from available memory to reduce the
+risk of out-of-memory errors.
 
 Consequent Types
 ================

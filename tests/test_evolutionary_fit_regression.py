@@ -110,6 +110,79 @@ class TestFastPredictionEquivalence:
             np.testing.assert_allclose(decoded, fast, rtol=1e-12, atol=1e-12)
 
 
+class TestTorchPopulationEvaluation:
+    @pytest.mark.parametrize("consequent_type", ["crisp", "fuzzy"])
+    @pytest.mark.parametrize("rule_mode", ["additive", "sufficient"])
+    def test_torch_objective_matches_numpy_with_forced_chunks(
+        self, consequent_type, rule_mode
+    ):
+        torch = pytest.importorskip("torch")
+        rng = np.random.default_rng(123)
+        X = rng.uniform(-1.0, 1.0, size=(29, 4))
+        y = 3.0 * X[:, 0] - 2.0 * X[:, 2] + 0.5
+        problem = evr.FitRuleBaseRegression(
+            X,
+            y,
+            nRules=7,
+            nAnts=3,
+            linguistic_variables=_partitions(X),
+            consequent_type=consequent_type,
+            rule_mode=rule_mode,
+            tolerance=0.05,
+        )
+        population = rng.integers(
+            problem.xl, problem.xu + 1, size=(9, problem.n_var)
+        )
+        numpy_output = {}
+        problem._evaluate(population, numpy_output)
+
+        torch_output = problem._evaluate_torch_population(
+            population,
+            device="cpu",
+            population_batch_size=3,
+            sample_batch_size=7,
+        )
+
+        assert torch_output.device.type == "cpu"
+        np.testing.assert_allclose(
+            torch_output.numpy(),
+            numpy_output["F"].reshape(-1),
+            rtol=2e-5,
+            atol=2e-5,
+        )
+
+    def test_cuda_objective_matches_numpy(self):
+        torch = pytest.importorskip("torch")
+        if not torch.cuda.is_available():
+            pytest.skip("CUDA is not available")
+        rng = np.random.default_rng(321)
+        X = rng.uniform(0.0, 1.0, size=(31, 3))
+        y = X[:, 0] - 4.0 * X[:, 2]
+        problem = evr.FitRuleBaseRegression(
+            X, y, 6, 2, _partitions(X), consequent_type="fuzzy"
+        )
+        population = rng.integers(
+            problem.xl, problem.xu + 1, size=(8, problem.n_var)
+        )
+        numpy_output = {}
+        problem._evaluate(population, numpy_output)
+
+        cuda_output = problem._evaluate_torch_population(
+            population,
+            device="cuda",
+            population_batch_size=2,
+            sample_batch_size=11,
+        )
+
+        assert cuda_output.device.type == "cuda"
+        np.testing.assert_allclose(
+            cuda_output.cpu().numpy(),
+            numpy_output["F"].reshape(-1),
+            rtol=2e-5,
+            atol=2e-5,
+        )
+
+
 class TestRuleBaseT1Regression:
     def test_empty_rulebase_fallback_and_rule_validation(self):
         X = np.array([[0.1, 0.2], [0.4, 0.8]])
@@ -214,6 +287,44 @@ class TestBaseFuzzyRulesRegressor:
 
         np.testing.assert_allclose(prediction, y)
         assert regressor.score(X, y) == pytest.approx(1.0)
+
+    def test_default_backend_metadata_is_pymoo(self, dataset):
+        X, y = dataset
+        regressor = evr.BaseFuzzyRulesRegressor(nRules=3, nAnts=2)
+
+        regressor.fit(X, y, n_gen=1, pop_size=6, random_state=5)
+
+        assert regressor.backend == "pymoo"
+        assert regressor.backend_ == "pymoo"
+        assert regressor.optimization_device_ == "cpu"
+        assert regressor.gpu_accelerated_ is False
+
+    def test_evox_backend_trains_regressor(self, dataset):
+        torch = pytest.importorskip("torch")
+        try:
+            __import__("evox")
+        except Exception as exc:
+            pytest.skip(f"EvoX cannot be imported: {exc}")
+        X, y = dataset
+        regressor = evr.BaseFuzzyRulesRegressor(
+            nRules=5, nAnts=2, backend="evox"
+        )
+
+        regressor.fit(X, y, n_gen=2, pop_size=8, random_state=5)
+
+        assert regressor.backend_ == "evox"
+        assert regressor.optimization_device_ == (
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
+        assert regressor.gpu_accelerated_ is torch.cuda.is_available()
+        assert np.all(np.isfinite(regressor.predict(X[:5])))
+
+    def test_unknown_backend_is_rejected(self, dataset):
+        X, y = dataset
+        with pytest.raises(ValueError, match="Unknown backend"):
+            evr.BaseFuzzyRulesRegressor(
+                nRules=3, nAnts=2, backend="not-a-backend"
+            ).fit(X, y, n_gen=1, pop_size=6)
 
 
 def _naive_mamdani(firing, consequent_ix, output_curves, universe, fallback):

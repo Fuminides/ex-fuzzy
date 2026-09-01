@@ -4,7 +4,9 @@ Getting Started
 ====================================
 
 
-The most straightforward way to use Ex-Fuzzy is to fit a fuzzy rule based classifier to a dataset, and then explore the results and the rules obtained.
+The most straightforward way to use Ex-Fuzzy is to fit a fuzzy rule-based
+classifier or regressor to a dataset, then inspect the learned rules and
+predictions.
 A couple of examples of this can be found in the "demos" folder.
 
 A brief piece of code that does this case of use is the following::
@@ -28,6 +30,11 @@ A brief piece of code that does this case of use is the following::
                         plot_rules=True, print_rules=True, plot_partitions=True)
 
 This code trains the classifier and also plots the rules, prints them on screen and show the linguistic variables optimized in the process.
+
+For continuous targets, use ``ex_fuzzy.BaseFuzzyRulesRegressor``. It supports
+crisp Takagi-Sugeno and fuzzy Mamdani consequents, with either the default
+PyMoo backend or GPU-oriented ``backend="evox"`` optimization. See
+:doc:`user-guide/regression` for a complete example.
 
 In the following, we will explain how the different processes to perform fuzzy inference are automated in this code, and how they can be perfomed manually.
 

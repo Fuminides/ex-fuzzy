@@ -1772,8 +1772,17 @@ class FitRuleBase(Problem):
             rule_weights = x[fifth_pointer:fifth_pointer + self.nRules].float() / 100.0
             rule_memberships = rule_memberships * rule_weights.unsqueeze(0)
         
-        # One-hot encoding and matrix multiplication
-        rule_onehot = torch.nn.functional.one_hot(rule_class_consequents, num_classes=self.n_classes).float()
+        # Encode the optional unknown consequent (-1) as an extra class.  Passing
+        # -1 directly to one_hot triggers a device-side CUDA assertion and leaves
+        # the CUDA context unusable for subsequent optimizations.
+        rule_class_consequents = torch.where(
+            rule_class_consequents == -1,
+            self.n_classes,
+            rule_class_consequents,
+        )
+        rule_onehot = torch.nn.functional.one_hot(
+            rule_class_consequents, num_classes=self.n_classes + 1
+        ).float()
         memberships_pred = rule_memberships @ rule_onehot  # (n_samples, nRules) @ (nRules, n_classes)
         predicted_classes = torch.argmax(memberships_pred, dim=1)
         

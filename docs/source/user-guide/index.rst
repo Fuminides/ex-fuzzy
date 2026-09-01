@@ -2,7 +2,8 @@
 User Guide
 ==========
 
-The Ex-Fuzzy User Guide provides comprehensive documentation for all aspects of building, training, and analyzing fuzzy rule-based classifiers.
+The Ex-Fuzzy User Guide provides comprehensive documentation for building,
+training, and analyzing fuzzy rule-based classifiers and regressors.
 
 .. toctree::
    :maxdepth: 2
@@ -21,15 +22,16 @@ Overview
 This user guide is organized into several sections:
 
 **Core Concepts**
-  Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets, classifiers, and optimization algorithms.
+  Learn about the fundamental building blocks of Ex-Fuzzy: fuzzy sets,
+  classifiers, regressors, and optimization algorithms.
 
 **Choosing a Workflow**
-  Match common modeling goals to the appropriate classifier, rule-mining path,
+  Match common modeling goals to the appropriate estimator, rule-mining path,
   fuzzy-set type, and backend.
 
 **Practical Guides**
-  Get practical advice on rule mining, conformal prediction, troubleshooting
-  common issues, and extending Ex-Fuzzy for your needs.
+  Get practical advice on regression, rule mining, conformal prediction,
+  troubleshooting common issues, and extending Ex-Fuzzy for your needs.
 
 Getting Help
 ============

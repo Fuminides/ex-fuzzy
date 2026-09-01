@@ -50,7 +50,7 @@ DOCS_REQUIRES = [
 OPTIONAL_REQUIRES = {
     "viz": ["networkx"],
     "gpu": ["torch"],
-    "evox": ["evox[jax]"],
+    "evox": ["evox>=1.3.0", "torch>=2.6.0"],
     "docs": DOCS_REQUIRES,
     "test": ["pytest", "pytest-cov"],
 }

@@ -302,8 +302,20 @@ Classification vs. Regression
 
 .. code-block:: python
 
-   # Fuzzy regression with continuous outputs
-   # (Advanced topic covered in separate guides)
+   from ex_fuzzy import BaseFuzzyRulesRegressor
+
+   regressor = BaseFuzzyRulesRegressor(
+       nRules=20,
+       nAnts=3,
+       consequent_type="crisp",  # or "fuzzy" for Mamdani consequents
+       backend="pymoo",          # or "evox" for GPU-oriented optimization
+   )
+   regressor.fit(X_train, y_train, n_gen=50, pop_size=50)
+   predictions = regressor.predict(X_test)
+   print(regressor.score(X_test, y_test))  # R-squared
+
+For the complete regression workflow, consequent choices, rule modes, and GPU
+configuration, see :doc:`regression`.
 
 Rule Learning and Optimization
 ------------------------------

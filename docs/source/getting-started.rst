@@ -2,19 +2,23 @@
 Getting Started
 ===============
 
-Welcome to Ex-Fuzzy! This guide will help you get up and running with fuzzy logic classification in just a few minutes.
+Welcome to Ex-Fuzzy! This guide will help you get up and running with fuzzy
+logic classification and regression in just a few minutes.
 
 What is Ex-Fuzzy?
 ==================
 
-Ex-Fuzzy is a Python library designed for building explainable fuzzy rule-based classifiers. Unlike traditional "black box" machine learning models, Ex-Fuzzy generates human-readable fuzzy rules that clearly explain how decisions are made.
+Ex-Fuzzy is a Python library for building explainable fuzzy rule-based
+classifiers and regressors. Unlike traditional "black box" machine learning
+models, Ex-Fuzzy generates human-readable fuzzy rules that explain how
+predictions are made.
 
 .. note::
     **Why Choose Ex-Fuzzy?**
     
     - **Explainable**: Generate interpretable fuzzy rules
     - **Fast**: Optimized for performance with multiprocessing support
-    - **Accurate**: Competitive classification performance
+    - **Predictive**: Supports classification and continuous regression
     - **Visual**: Rich visualization capabilities
     - **Flexible**: Highly customizable fuzzy systems
 
@@ -26,6 +30,12 @@ Install Ex-Fuzzy using pip:
 .. code-block:: bash
 
     pip install ex-fuzzy
+
+Install the optional EvoX/PyTorch backend for GPU-oriented optimization:
+
+.. code-block:: bash
+
+    pip install "ex-fuzzy[evox]"
 
 Or from source:
 
@@ -92,6 +102,38 @@ Let's start with a simple example using the famous Iris dataset:
     from sklearn.metrics import accuracy_score
     accuracy = accuracy_score(y_test, y_pred)
     print(f"Accuracy: {accuracy:.3f}")
+
+Your First Fuzzy Regressor
+==========================
+
+For a continuous target, use :class:`ex_fuzzy.BaseFuzzyRulesRegressor`.
+The default crisp consequents form a zero-order Takagi-Sugeno model:
+
+.. code-block:: python
+
+    from ex_fuzzy import BaseFuzzyRulesRegressor
+    from sklearn.datasets import make_regression
+    from sklearn.model_selection import train_test_split
+
+    X, y = make_regression(n_samples=500, n_features=5, noise=5.0, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=0
+    )
+
+    regressor = BaseFuzzyRulesRegressor(
+        nRules=20,
+        nAnts=3,
+        consequent_type="crisp",  # use "fuzzy" for Mamdani consequents
+        backend="pymoo",          # use "evox" for GPU-oriented optimization
+    )
+    regressor.fit(X_train, y_train, n_gen=50, pop_size=50)
+
+    predictions = regressor.predict(X_test)
+    print(f"Test R2: {regressor.score(X_test, y_test):.3f}")
+    regressor.print_rules()
+
+See :doc:`user-guide/regression` for consequent styles, rule modes, custom
+partitions, and EvoX device metadata.
 
 Understanding the Output
 ========================
