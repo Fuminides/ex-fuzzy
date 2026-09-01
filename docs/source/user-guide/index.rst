@@ -11,6 +11,7 @@ The Ex-Fuzzy User Guide provides comprehensive documentation for all aspects of 
    core-concepts
    choosing-workflow
    rule-mining
+   regression
    conformal-learning
    troubleshooting
 

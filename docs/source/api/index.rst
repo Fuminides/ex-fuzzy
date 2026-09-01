@@ -9,6 +9,7 @@ Core Modules
 
 - :doc:`fuzzy_sets`
 - :doc:`evolutionary_fit`
+- :doc:`regression`
 - :doc:`rules`
 - :doc:`classifiers`
 - :doc:`conformal`
@@ -30,5 +31,6 @@ Module Documentation
    conformal
    rules
    evolutionary_fit
+   regression
    rule_mining
    eval_tools

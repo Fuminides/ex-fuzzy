@@ -159,6 +159,8 @@ Choosing a Workflow
      - Start with
    * - Train a standard interpretable classifier
      - :class:`ex_fuzzy.BaseFuzzyRulesClassifier`
+   * - Train an interpretable Type-1 fuzzy regressor
+     - :class:`ex_fuzzy.BaseFuzzyRulesRegressor`
    * - Mine candidate rules before optimization
      - :class:`ex_fuzzy.RuleMineClassifier` or :mod:`ex_fuzzy.rule_mining`
    * - Return prediction sets with coverage guarantees

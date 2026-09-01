@@ -2,6 +2,7 @@ from . import centroid
 from . import eval_rules
 from . import eval_tools
 from . import evolutionary_fit
+from . import evolutionary_fit_regression
 from . import evolutionary_backends
 from . import evolutionary_search
 from . import fuzzy_sets
@@ -20,4 +21,10 @@ from ._version import __version__
 from .classifiers import FuzzyRulesClassifier, RuleFineTuneClassifier, RuleMineClassifier
 from .conformal import ConformalFuzzyClassifier, evaluate_conformal_coverage
 from .evolutionary_fit import BaseFuzzyRulesClassifier, FitRuleBase
+from .evolutionary_fit_regression import (
+    BaseFuzzyRulesRegressor,
+    FitRuleBaseRegression,
+    RuleBaseT1MamdaniRegression,
+    RuleBaseT1Regression,
+)
 from .fuzzy_sets import FS, FUZZY_SETS, fuzzyVariable
