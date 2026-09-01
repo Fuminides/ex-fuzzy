@@ -18,12 +18,19 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 
         Train interpretable regressors with crisp or fuzzy consequents on CPU or GPU.
 
+    .. grid-item-card:: FERL
+        :link: ferl
+        :link-type: doc
+
+        Learn a fuzzy rule tree with native belief, plausibility, ignorance, and prediction sets.
+
 .. toctree::
    :maxdepth: 2
    :hidden:
 
    classification
    regression
+   ferl
 
 Working Examples
 ================
@@ -74,6 +81,7 @@ The repository also contains local Jupyter notebooks in the `Demos/` directory:
 - **occupancy_demo_temporal.ipynb**: Time-series occupancy detection
 - **regression_demo.ipynb**: Interpretable fuzzy regression with continuous targets
 - **demos_module/regression_demo.py**: Manually constructed Type-2 regression inference
+- **demos_module/ferl_demo.py**: FERL classification with native evidential predictions
 - **pattern_analysis_demo.ipynb**: Pattern stability analysis
 - **conformal_learning_demo.ipynb**: Conformal prediction with calibration and set-valued outputs
 - **demos_module/conformal_learning_demo.py**: Conformal prediction with calibration, set-valued outputs, and coverage metrics

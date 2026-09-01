@@ -78,6 +78,12 @@ Key Features
         Built-in plotting capabilities for fuzzy sets, rules, pattern stability analysis,
         and model performance metrics.
 
+    .. grid-item-card:: Evidential Rule Learning
+        :class-header: border-0
+
+        Train FERL rule trees with native belief, plausibility, ignorance, and
+        set-valued predictions in a single deterministic pass.
+
     .. grid-item-card:: Flexible Architecture
         :class-header: border-0
 
@@ -193,6 +199,8 @@ Choosing a Workflow
      - :class:`ex_fuzzy.RuleMineClassifier` or :mod:`ex_fuzzy.rule_mining`
    * - Return prediction sets with coverage guarantees
      - :class:`ex_fuzzy.ConformalFuzzyClassifier`
+   * - Learn a greedy rule tree with native evidential uncertainty
+     - :class:`ex_fuzzy.FERL`
    * - Use GPU-accelerated evolutionary optimization
      - ``backend="evox"`` with either estimator and the ``ex-fuzzy[evox]`` extra
    * - Save and reload fuzzy variables

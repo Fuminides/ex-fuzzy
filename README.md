@@ -52,6 +52,8 @@
 
 ### **Explainable Rule-Based Learning**
 - **Fuzzy Association Rules**: For both classification and regression problems with genetic fine-tuning.
+- **FERL Rule Trees**: Greedy fuzzy rule learning with native belief,
+  plausibility, ignorance, and set-valued predictions.
 - **Out-of-the-box Results**: Complete compatibility with scikit-learn, minimal to none fuzzy knowledge required to obtain good results.
 - **Complete Complexity Control**: Number of rules, rule length, linguistic variables, etc. can be specified by the user with strong and soft constrains.
 - **Statistical Analysis of Results**: Confidence intervals for all rule quality metrics, repeated experiments for rule robustness.
@@ -113,6 +115,29 @@ from ex_fuzzy.eval_tools import eval_fuzzy_model
 eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test, 
                 plot_rules=True, plot_partitions=True)
 ```
+
+### FERL Evidential Classification
+
+`FERL` learns a fuzzy rule tree and derives Dempster--Shafer evidence directly
+from rule firing strengths. It is implemented natively in Ex-Fuzzy and needs no
+separate fuzzy-tree package.
+
+```python
+from ex_fuzzy import FERL
+
+ferl = FERL(max_rules=15, random_state=0)
+ferl.fit(X_train, y_train)
+
+predictions = ferl.predict(X_test)
+betp, belief, plausibility, ignorance = ferl.predict_credal(X_test)
+prediction_sets = ferl.predict_set(X_test)
+ferl.print_tree()
+```
+
+Use `split_mode="learned"` for data-driven soft split locations or
+`partition="mdlp"` for supervised trapezoidal partitions. Native FERL sets are
+calibration-free evidential outputs; use `ConformalFuzzyClassifier` when a
+finite-sample marginal coverage guarantee is required.
 
 ### Regression Usage
 
@@ -231,6 +256,7 @@ Try our hands-on examples in Google Colab:
 | **Fuzzy Regression** | Interpretable continuous prediction | [📓 Notebook](Demos/regression_demo.ipynb) |
 | **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
 | **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
+| **FERL** | Evidential fuzzy rule-tree classification | [🐍 Script](Demos/demos_module/ferl_demo.py) |
 
 #### Real Applications
   - Ex-Fuzzy in fNIRS data: https://github.com/jjcato9/ex_fuzzy_fnirs_demo

@@ -13,6 +13,7 @@ training, and analyzing fuzzy rule-based classifiers and regressors.
    choosing-workflow
    rule-mining
    regression
+   ferl
    conformal-learning
    troubleshooting
 

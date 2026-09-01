@@ -27,6 +27,10 @@ from .ex_fuzzy import (
     pattern_stability,
     permutation_test,
     bootstrapping_test,
-    tree_learning,
+    FERL,
+    ferl,
+    ferl_partitions,
+    learn_partitions_mdlp,
+    mdlp_cuts,
     conformal,
 )

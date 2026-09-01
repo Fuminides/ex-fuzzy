@@ -24,6 +24,10 @@ Estimator Choices
    * - Mine rules before optimization
      - :class:`ex_fuzzy.RuleMineClassifier`
      - Useful when frequent, high-confidence patterns should seed the model.
+   * - Greedy fuzzy rule tree with native evidential uncertainty
+     - :class:`ex_fuzzy.FERL`
+     - Returns belief, plausibility, ignorance, and prediction sets without a
+       calibration split.
    * - Coverage-aware predictions
      - :class:`ex_fuzzy.ConformalFuzzyClassifier`
      - Produces prediction sets after calibration on held-out data.
@@ -114,3 +118,7 @@ Evolutionary fitting is stochastic. For experiments, report the data split,
 random seeds, population size, number of generations, backend, and fuzzy set
 type. For benchmark tables, run multiple seeds and summarize the distribution
 instead of relying on one run.
+
+FERL's fixed-partition mode is deterministic. Learned-split FERL uses bootstrap
+cut estimates; set ``random_state`` and report ``learned_n_boot`` for
+reproducible experiments.

@@ -12,6 +12,11 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 Added
 -----
+- **FERL**: Native Fast Evidential Rule Learning with compact or learned fuzzy
+  splits, soft rule aggregation, Dempster--Shafer belief/plausibility,
+  ignorance, prediction sets, missing-feature masks, and MDLP partitioning
+- **FERL Demo and Documentation**: Runnable Iris example, user guide, and API
+  reference
 - **Fuzzy Regression**: Scikit-learn-compatible Type-1 rule learning for
   continuous targets with crisp Takagi-Sugeno and fuzzy Mamdani consequents
 - **GPU-Accelerated Regression**: EvoX/PyTorch population evaluation for both
@@ -31,6 +36,8 @@ Added
 
 Changed
 -------
+- **Fuzzy Tree Learning**: The experimental prototype implementations were
+  replaced by the public :class:`ex_fuzzy.FERL` estimator
 - **Evolutionary Optimization**: Vectorized fitness evaluation for significant speedups
 - **Memory Efficiency**: Automatic batching prevents memory overflow on large datasets
 - **GPU Utilization**: Seamless GPU/CPU switching based on hardware availability

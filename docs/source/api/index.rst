@@ -12,6 +12,7 @@ Core Modules
 - :doc:`regression`
 - :doc:`rules`
 - :doc:`classifiers`
+- :doc:`ferl`
 - :doc:`conformal`
 - :doc:`eval_tools`
 
@@ -28,6 +29,7 @@ Module Documentation
 
    fuzzy_sets
    classifiers
+   ferl
    conformal
    rules
    evolutionary_fit
