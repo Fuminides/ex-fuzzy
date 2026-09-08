@@ -37,6 +37,44 @@ terms per feature and uses additive soft rule voting for point predictions.
    labels = model.predict(X_test)
    probabilities = model.predict_proba(X_test)
 
+Optional compiled backend
+=========================
+
+``FERL(backend="cython")`` uses a native additive-vote scoring kernel adapted
+from ``fgrt_fast`` in the ``fuzzy_greedy_tree`` repository. That implementation
+uses Cython compiled to **C**, rather than C++. Ex-Fuzzy includes its own source;
+the sibling repository is not a runtime dependency.
+
+Build from the Ex-Fuzzy source directory with a C compiler and the development
+headers for your Python interpreter installed:
+
+.. code-block:: bash
+
+   python -m pip install Cython numpy
+   EX_FUZZY_BUILD_FERL=1 python -m pip install --no-build-isolation -e .
+
+On PowerShell, set ``$env:EX_FUZZY_BUILD_FERL = "1"`` before running the second
+Python command. Ordinary installations do not build the extension and do not
+require Cython or a compiler.
+
+.. code-block:: python
+
+   model = FERL(backend="cython", max_rules=15, random_state=0)
+   model.fit(X_train, y_train)
+   probabilities = model.predict_proba(X_test)
+
+The initial compiled backend accelerates candidate vote simulation for
+consistent CCI with soft voting, for both fixed and learned splits. It avoids
+allocating a sample-by-class vote matrix for every candidate. Partitioning,
+normalization, split tie-breaking, pruning, prediction and evidence outputs
+retain the Python implementation. Purity and legacy scoring also retain the
+Python path. This is a port of the vote-scoring kernel, not the complete set
+of ``fgrt_fast`` optimizations; end-to-end gains depend on the workload.
+
+``backend="python"`` remains the default. Selecting ``"cython"`` without a
+built extension raises an installation error at ``fit()``. The backend flag
+works with estimator cloning and ``set_params``; all existing calls remain valid.
+
 Evidential predictions
 ======================
 

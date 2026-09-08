@@ -21,3 +21,7 @@ Demos/demos_module/Processed_csv.csv
 Processed_csv.csv
 test_fuzzy_node_prediction.py
 test_cache_reset.py
+
+# Optional FERL native build artifacts
+ex_fuzzy/ex_fuzzy/_ferl_kernels*.so
+ex_fuzzy/ex_fuzzy/_ferl_kernels*.pyd

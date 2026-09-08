@@ -7,20 +7,20 @@ EvoX Backend Guide
 Overview
 ========
 
-Ex-Fuzzy now supports GPU-accelerated evolutionary optimization through the EvoX backend. 
-This provides significant performance improvements for large datasets and complex rule bases
-while maintaining full compatibility with the existing PyMoo backend.
+Ex-Fuzzy supports evolutionary optimization through the EvoX backend, using
+PyTorch for its population operations. The amount of GPU acceleration depends
+on the optimization problem and its fitness evaluator.
 
-Why EvoX?
-=========
+Classification uses the same CPU objective as PyMoo. For the built-in T1/T2
+objective, both backends automatically use a reduced-work evaluator that
+computes firing strengths once per chromosome and retains reference pruning,
+weights and winner-rule prediction. Custom losses and other fuzzy types keep
+the full reference path. No extra option or dependency is required.
 
-The EvoX backend offers several advantages:
-
-- **GPU Acceleration**: Leverages PyTorch for GPU computation, providing 2-10x speedups
-- **Large Dataset Support**: Efficient memory management for datasets with millions of samples
-- **Automatic Batching**: Intelligent memory management prevents out-of-memory errors
-- **Seamless Fallback**: Automatically uses CPU if GPU is unavailable
-- **Modern Architecture**: Built on PyTorch ecosystem for easy integration
+EvoX still performs classification fitness on the CPU; moving population
+operations to a GPU does not imply GPU fitness evaluation or a training speedup.
+Regression retains its separate batched Torch evaluator. See the
+:mod:`ex_fuzzy.evolutionary_fit` documentation for the parity benchmark.
 
 Installation
 ============
@@ -112,94 +112,23 @@ Checking Available Backends
    else:
        print("No GPU available, EvoX will use CPU")
 
-Performance Comparison
+Performance and memory
 ======================
 
-Backend Characteristics
------------------------
+Keep PyMoo as the baseline for classification. Benchmark the same dataset,
+population size, generation budget and stopping settings before switching
+backends. GPU population operations alone may not offset the cost of transferring
+chromosomes to the CPU reference fitness evaluator.
 
-+-----------+----------+------------------------+------------------+
-| Backend   | Hardware | Best Use Case          | Speedup          |
-+===========+==========+========================+==================+
-| PyMoo     | CPU      | Small datasets         | Baseline         |
-|           |          | (<10K samples)         |                  |
-|           |          |                        |                  |
-|           |          | Checkpoint support     |                  |
-+-----------+----------+------------------------+------------------+
-| EvoX      | GPU/CPU  | Large datasets         | 2-10x faster*    |
-|           |          | (>10K samples)         |                  |
-|           |          |                        |                  |
-|           |          | Complex rule bases     |                  |
-+-----------+----------+------------------------+------------------+
+The regression evaluator can batch Torch fitness operations; the classification
+reference evaluator evaluates one chromosome at a time. It does not provide the
+sample or population memory-budget guarantees of the removed classification
+shortcuts. Larger datasets and rule bases require correspondingly more memory.
 
-\*Speedup varies based on dataset size, rule complexity, and hardware configuration.
-
-When to Use Each Backend
-------------------------
-
-**Use PyMoo if:**
-
-- Working with small to medium datasets (<10,000 samples)
-- Running on CPU-only systems
-- Need checkpoint/resume functionality
-- Memory is very limited
-- Require maximum stability and compatibility
-
-**Use EvoX if:**
-
-- Have CUDA-compatible GPU available
-- Working with large datasets (>10,000 samples)
-- Training complex models (many rules, high generations)
-- Speed is critical
-- GPU memory is sufficient (>4GB recommended)
-
-Performance Tips
-================
-
-Memory Management
------------------
-
-Both backends implement automatic memory management:
-
-**PyMoo Backend:**
-  - Automatically batches samples when dataset exceeds available memory
-  - Conservative memory budget (30% of available RAM)
-  - Processes samples in chunks while maintaining full accuracy
-
-**EvoX Backend:**
-  - Automatically batches population evaluation
-  - Dynamic batch size based on available GPU/CPU memory
-  - Uses 60% of GPU memory or 40% of CPU RAM
-  - Rounds batch sizes for optimal performance
-
-Optimization Tips
------------------
-
-1. **Start with EvoX**: Try EvoX first if you have a GPU - the performance gains are often significant
-
-2. **Monitor Memory**: Watch GPU memory usage with ``nvidia-smi`` for GPU or system monitor for CPU
-
-3. **Adjust Population Size**: Larger populations benefit more from GPU acceleration
-
-.. code-block:: python
-
-   # Smaller population for quick testing
-   classifier.fit(X_train, y_train, pop_size=30, n_gen=20)
-   
-   # Larger population for better results (benefits from GPU)
-   classifier.fit(X_train, y_train, pop_size=100, n_gen=50)
-
-4. **Batch Size**: Both backends compute optimal batch sizes automatically, but you can monitor:
-
-.. code-block:: python
-
-   # EvoX will log batch size information in verbose mode
-   classifier = BaseFuzzyRulesClassifier(
-       nRules=30,
-       nAnts=4,
-       backend='evox',
-       verbose=True  # Shows batch size decisions
-   )
+Reduce ``pop_size`` and ``nRules`` for smaller trial runs. Increasing the search
+budget changes the optimization task and should not be presented as a pure
+execution speed comparison. Early stopping remains available through ``patience``
+and ``min_delta``.
 
 Examples
 ========
@@ -357,7 +286,7 @@ If you encounter out-of-memory errors:
 
    classifier.fit(X_train, y_train, pop_size=30)  # Instead of 100
 
-2. **Let automatic batching handle it**: Both backends batch automatically, but if issues persist:
+2. **Reduce rule count**: Classification evaluates each decoded rule base on the CPU; fewer rules reduce its intermediate arrays.
 
 3. **Use CPU mode for debugging**:
 

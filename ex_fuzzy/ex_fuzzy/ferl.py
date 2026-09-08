@@ -475,7 +475,8 @@ class FERL(BaseEstimator, ClassifierMixin):
                  split_mode: str = 'fixed', learned_width='bootstrap',
                  learned_n_boot: int = 25, prediction_mode: str = 'soft',
                  consistent_cci: bool = True, coverage_weight: float = 0.0,
-                 multiway_splits: bool = False, random_state=None):
+                 multiway_splits: bool = False, random_state=None,
+                 backend: str = 'python'):
         """
         Initialize FERL.
 
@@ -491,6 +492,10 @@ class FERL(BaseEstimator, ClassifierMixin):
             A node with fuzzy training support N is trusted by r = N / (N + k),
             so low-support (thin, deep) leaves send mass to ignorance instead of
             their noisy class estimate. None (default) disables discounting.
+        backend : {'python', 'cython'}, default='python'
+            Use the optional compiled additive-vote scoring kernel during CCI
+            split search. Both backends retain the same tree and prediction API.
+            Other criteria and inference modes use the Python implementation.
         """
         self.fuzzy_partitions = fuzzy_partitions
         self.fuzzy_partitions_ = None
@@ -498,6 +503,7 @@ class FERL(BaseEstimator, ClassifierMixin):
         self.n_partitions = n_partitions
         self.overlap_frac = overlap_frac
         self.random_state = random_state
+        self.backend = backend
         self.max_depth = max_depth
         self.tree = None
         self.tree_rules = 1 # Start with 1 (so that the first split creates the first rule)
@@ -607,6 +613,12 @@ class FERL(BaseEstimator, ClassifierMixin):
             raise ValueError(
                 "prediction_mode must be 'soft', 'soft_gate', 'hard_gate', or 'winner'."
             )
+        if self.backend not in ("python", "cython"):
+            raise ValueError("backend must be either 'python' or 'cython'.")
+        if self.backend == "cython":
+            # Resolve at fit time: constructing/cloning an estimator needs no
+            # compiler or extension, and the default backend stays dependency-free.
+            self._load_native_kernels()
 
         if self.fuzzy_partitions is None:
             if self.partition == "mdlp":
@@ -913,6 +925,28 @@ class FERL(BaseEstimator, ClassifierMixin):
         }
 
 
+    @staticmethod
+    def _load_native_kernels():
+        try:
+            from ._ferl_backend import load_kernels
+        except ImportError:
+            from _ferl_backend import load_kernels
+        return load_kernels()
+
+    def _candidate_vote_prediction(self, base_votes, membership, probabilities):
+        """Simulate one candidate without changing probability or tie semantics."""
+        if self.backend == "cython":
+            kernels = self._load_native_kernels()
+            indices = kernels.added_vote_argmax(
+                np.ascontiguousarray(base_votes, dtype=np.float64),
+                np.ascontiguousarray(membership, dtype=np.float64),
+                np.ascontiguousarray(probabilities, dtype=np.float64),
+            )
+        else:
+            votes = base_votes + membership[:, None] * probabilities[None, :]
+            indices = np.argmax(votes, axis=1)
+        return self.classes_[indices]
+
     def _node_cci_checks(self, node, X: np.array, y: np.array, ctx: dict = None) -> float:
         """
         Evaluate all possible fuzzy splits for a node using Complete Classification Index (CCI).
@@ -1015,8 +1049,8 @@ class FERL(BaseEstimator, ClassifierMixin):
                         # Simulate adding this candidate node in the soft-vote space:
                         # add its membership-weighted class distribution and re-argmax.
                         child_probs = self._class_probabilities(y_sample, full_path_membership)
-                        new_votes = base_votes + full_path_membership[:, np.newaxis] * child_probs[np.newaxis, :]
-                        new_pred = self.classes_[np.argmax(new_votes, axis=1)]
+                        new_pred = self._candidate_vote_prediction(
+                            base_votes, full_path_membership, child_probs)
                         cci = compute_fuzzy_cci(y_sample, full_path_membership, base_pred, new_pred, self.coverage_threshold)
                     else:
                         # Legacy: hard override of predictions for samples with
@@ -1162,8 +1196,8 @@ class FERL(BaseEstimator, ClassifierMixin):
                     if coverage < self.coverage_threshold:
                         continue
                     child_probs = self._class_probabilities(y_sample, full)
-                    new_votes = base_votes + full[:, np.newaxis] * child_probs[np.newaxis, :]
-                    new_pred = self.classes_[np.argmax(new_votes, axis=1)]
+                    new_pred = self._candidate_vote_prediction(
+                        base_votes, full, child_probs)
                     cci = compute_fuzzy_cci(y_sample, full, base_pred, new_pred, self.coverage_threshold)
                     if coverage_weight > 0.0 and n_uncovered > 0:
                         cci = cci + coverage_weight * np.mean(full[uncovered_mask] > 1e-3)

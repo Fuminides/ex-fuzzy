@@ -6,7 +6,7 @@ import os
 # read the contents of your README file
 from os import path
 
-from setuptools import setup
+from setuptools import setup, Extension
 
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
@@ -70,6 +70,25 @@ CLASSIFIERS = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+# Native FERL is opt-in so ordinary installations need no compiler or Cython.
+ext_modules = []
+if os.environ.get("EX_FUZZY_BUILD_FERL") == "1":
+    from Cython.Build import cythonize
+    import numpy as np
+
+    ext_modules = cythonize(
+        [Extension(
+            "ex_fuzzy._ferl_kernels",
+            ["ex_fuzzy/ex_fuzzy/_ferl_kernels.pyx"],
+            include_dirs=[np.get_include()],
+            define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+            extra_compile_args=(["/O2", "/fp:strict"] if os.name == "nt"
+                                else ["-O3", "-ffp-contract=off"]),
+        )],
+        compiler_directives={"language_level": "3"},
+        build_dir="build/cython",
+    )
+
 setup(
     name=DISTNAME,
     maintainer=MAINTAINER,
@@ -79,6 +98,8 @@ setup(
     url=URL,
     version=VERSION,
     download_url=DOWNLOAD_URL,
+    ext_modules=ext_modules,
+    package_data={'ex_fuzzy': ['*.pyx']},
     packages=['ex_fuzzy'],
     package_dir={'ex_fuzzy': 'ex_fuzzy/ex_fuzzy'},
     install_requires=INSTALL_REQUIRES,
