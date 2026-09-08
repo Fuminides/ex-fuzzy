@@ -13,31 +13,6 @@ custom-loss interfaces wherever possible. New configuration flags or changes to
 search behavior need an explicit decision. Do not silently replace the algorithm
 with an approximation to obtain a faster benchmark.
 
-## 1. Completed baseline
-
-The current working tree already contains the following work:
-
-- Removed incorrect classification shortcuts that disagreed with normalized
-  decoding, pruning, winner-rule prediction and custom losses.
-- Retained `_evaluate_slow` and `fitness_func` as the full reference evaluator.
-- Added `_fitness.py`: compute firing strengths once per chromosome and reuse
-  them for dominance scoring, pruning and final predictions.
-- Preserve removal of rules with zero correctly classified wins, including
-  rules with otherwise acceptable dominance scores.
-- Avoid redundant full reporting during candidate evaluation. Compute the
-  selected model's full reporting metrics through the existing workflow.
-- Compute internal integer-label MCC directly from a confusion matrix.
-- Automatically use this CPU path for the built-in T1/T2 objective. Custom
-  losses and unsupported cases retain the reference path. EvoX classification
-  currently reaches the CPU evaluator; GPU classification fitness is not done.
-- Add fitness, pruning, evaluation-order and seeded-training parity tests and
-  `benchmarks/benchmark_classifier_fitness.py`.
-
-Separately, FERL has an optional Cython-to-C vote-scoring kernel **inside
-ex-fuzzy**, with no import from `../fuzzy_greedy_tree`. It is not a genetic
-fitness backend. Its optional packaging infrastructure could be reused for
-future compiled genetic kernels.
-
 ### Measured baseline
 
 Local x86-64 environment: Python 3.12.3, NumPy 2.4.2, pymoo 0.6.1.6.
@@ -69,47 +44,7 @@ overhead. Nested profile entries must not be added as independent costs.
 Eliminating a component taking one third of total time can at most give about
 1.5× overall speedup by itself; kernel speedups do not multiply automatically.
 
-## 2. Correctness and cache boundaries
-
-| Reused quantity | Allowed scope | Required invalidation or key |
-| --- | --- | --- |
-| Feature bounds, label encodings, chromosome layout | One fit/problem | Dataset, labels, parameter configuration |
-| Fixed fuzzy-set memberships | Across chromosomes in that fit | Dataset and complete partition definitions |
-| Optimized fuzzy-set memberships | Within one chromosome by default | Any relevant membership gene, normalization/domain or data change |
-| Per-feature optimized memberships, if a cache is added | Only identical decoded feature partitions | All genes affecting that feature's normalization, set parameters and data |
-| Rule firing strengths | Within one evaluation; optionally identical rules across evaluations | Ordered effective antecedents, sets, modifiers, t-norm, data and dtype |
-| Dominance/support/confidence | Identical rule, consequent and training data | Memberships, consequent, labels and scoring definition |
-| Rule accuracy, pruning outcome, final fitness | Whole rule-base context | All competing rules, their order, weights, thresholds and labels |
-
-Even with fixed fuzzy sets, different antecedents require new rule firing
-strengths. With optimized fuzzy sets, memberships and firing strengths are
-currently recomputed for each chromosome. Within that evaluation, surviving
-rules retain their raw firing strengths after other rules are removed.
-Their winning samples can change, so predictions must be recomputed.
-
-Instrumentation already checked two chromosomes in each mode: optimized
-partitions caused two membership computations; fixed partitions caused no
-additional membership computations after initialization. Both modes caused
-two rule firing computations.
-
-Required invariants for all equivalence-preserving proposals:
-
-- Preserve partition normalization, endpoint/epsilon behavior, categorical
-  sets, interval membership semantics and supported custom fuzzy sets.
-- Preserve clamping, disabled rules, don't-care antecedents, repeated-feature
-  resolution, duplicate-rule handling and consequent ordering.
-- Preserve first-winner ties, unknown predictions, all-zero firing and empty
-  rule bases. Reordering rules can change results even if the rules look equal.
-- Preserve pre-pruning competition, zero-accuracy removal, strict versus
-  non-strict threshold comparisons, penalties and post-pruning predictions.
-- Preserve float64 arithmetic initially. Reduction order matters near ties and
-  pruning thresholds; algebraically equivalent formulas are not enough.
-- Keep stochastic/stateful custom losses on their existing path unless a user
-  explicitly opts into a separate contract. Do not memoize them automatically.
-- Keep caches fit-local, bounded, safe for concurrent reads and invalidated on
-  refit. Never key data-dependent caches by array shape alone.
-
-## 3. Decision catalogue
+## 1. Decision catalogue
 
 For each selected ID, record **execute / investigate / defer / reject**.
 All entries below are currently **pending**.
@@ -194,39 +129,9 @@ capability to test, not evidence of an ex-fuzzy speedup. Keep ordinary installs
 compiler-free and provide tested fallback behavior.
 [Cython parallelism documentation](https://cython.readthedocs.io/en/latest/src/userguide/parallelism.html).
 
-### E. Change the search budget, search space or numerical behavior
 
-These options can be useful, but they **do not qualify as transparent execution
-speedups**. They require separate user selection and accuracy/quality studies.
-Use optional settings or explicit workflows; do not silently change defaults.
 
-| ID | Proposal | Possible benefit | Main tradeoff |
-| --- | --- | --- | --- |
-| E01 | Lower population/generation budgets; tune existing early stopping | Fewer evaluations | Can stop before finding equally good models |
-| E02 | Adaptive population sizes, restarts or mutation/crossover schedules | Better progress per evaluation | Changes search trajectory and reproducibility |
-| E03 | Enable population duplicate elimination or canonical genotype repair | Less exploration of redundant candidates | Changes generated candidates, diversity and RNG consumption |
-| E04 | Warm starts / seed rules from mining or FERL | Better initial candidates | Initialization bias and changed search; no train/test leakage |
-| E05 | Optimize rules with fixed partitions, then optimize partitions | Smaller alternating optimization problems | Different algorithm; may miss joint optima |
-| E06 | Feature selection, fewer fuzzy sets, tighter rule/antecedent limits | Smaller search and evaluation costs | Changes hypothesis space and explanation capacity |
-| E07 | Successive halving, sample minibatches, progressive fidelity | Spend less on weak candidates | Noisy/biased fitness; final full-data rescoring is insufficient to restore the original search |
-| E08 | Surrogate-assisted optimization / learned fitness prediction | Avoid expensive evaluations | Approximate ranking and surrogate training overhead |
-| E09 | Safe fitness bounds and early rejection | Skip candidates provably unable to matter | A bound on final MCC/pruning is difficult; survival/tournament requirements matter, not only beating the current best |
-| E10 | Local search, memetic search, alternative GA operators or another optimizer | Better solutions per unit time | Different algorithm; compare across seeds and quality targets |
-| E11 | Island models and asynchronous evolution | Better utilization/diversity at scale | Migration or completion order changes evolution |
-| E12 | Float32/mixed precision, approximate memberships, fast-math or approximate reductions | Lower bandwidth and faster hardware operations | Can change ties, pruning, fitness and selected rules |
-| E13 | Log-domain products or mathematically reordered reductions | Numerical robustness or hardware efficiency | Changes underflow/rounding behavior; not automatically an equivalent speedup |
-
-### F. Related scopes to decide separately
-
-| ID | Proposal | Reason to consider | Boundary |
-| --- | --- | --- | --- |
-| F01 | Optimize selection among mined candidate rules (`ExploreRuleBases`) | Fixed candidate memberships offer reuse opportunities | Candidate subsets still change competition and pruning |
-| F02 | Extend verified primitives to regression and GT2/temporal models | Broader library benefit | Different objectives and tensor semantics require separate oracles |
-| F03 | Accelerate fitted-model prediction and explanation | Benefits repeated inference and evaluation | May not materially improve genetic training |
-| F04 | Port more FERL native kernels | Builds on the existing self-contained Cython backend | Separate from `BaseFuzzyRulesClassifier` genetic optimization |
-| F05 | Optimize partition construction, preprocessing and experiment I/O | Useful if end-to-end profiles show these dominate | Measure separately from GA fitness; preserve preprocessing semantics |
-
-## 4. Implementation sketches for the leading candidates
+## 2. Implementation sketches for the leading candidates
 
 ### A01–A03: firing strengths and immutable metadata
 
@@ -398,3 +303,5 @@ Current implementation and test entry points:
 - `tests/test_fast_fitness.py`
 - `tests/test_genetic_fitness_semantics.py`
 - `benchmarks/benchmark_classifier_fitness.py`
+
+When we finish implementing everything, it would be nice to have a visual report wih the speedup that everything brought.
