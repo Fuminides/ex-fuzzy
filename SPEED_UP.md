@@ -1,12 +1,53 @@
 # Genetic training speedup plan
 
-**Status: proposals for user review; no new implementation is authorized by this document.**
+**Status: the exact-speedup implementation is complete for the routes that could
+be made bit-exact. Shipped: direct membership lookup and batched gathering
+(A01), scratch reuse (A02), fit-local metadata (A03), an object-free array
+evaluator with array pruning and degenerate shortcuts (A04, A08, A09), packed
+membership tables (A05), grouped dominance reductions (A06), class masks and
+integer label encoding (A07), fit-scoped pools (C07), duplicate-lookup
+simplification (A11), redundant-finalization removal (A10), exact fitness
+memoization (B01, B02) and fit-local firing reuse (B04). Every remaining
+proposal has a measurement or a stated blocker in the
+[complete catalogue review](SPEED_UP_REVIEW.md); none of them can be adopted
+without either a numerical-policy decision or substantial new evaluator work.**
+
+### Current implementation status
+
+The entries below describe bounded increments, not completion of their entire
+proposal IDs. The current user authorization covers continued exact speedup
+implementation guided by this plan. Search-changing behavior and new public
+configuration options still require an explicit decision.
+
+| ID | Current status | Implemented or authorized scope |
+| --- | --- | --- |
+| A01 | Implemented | Direct indexed lookup, plus one shared gathered kernel now used for T1 and T2 inside the array evaluator. |
+| A02 | Implemented | Evaluation-local scratch reuse, plus fit-local packed membership tables that remove the per-candidate table build. |
+| A03 | Implemented | Fit-local normalization bounds, label layout and packed membership table. |
+| A04 | Implemented | Object-free decode/score path for built-in T1/T2 objectives; the object decoder stays the oracle and the fallback. |
+| A05 | Implemented (packing route) | Memberships are evaluated straight into the gather table. Vectorising the trapezoid formula itself was measured and **not** adopted. |
+| A06 | Implemented | Grouped, layout-preserving dominance reductions over contiguous consequent runs. |
+| A07 | Implemented | Evaluation-local class masks and a fit-local integer label layout replacing the per-candidate `np.unique` in the MCC. |
+| A08 | Implemented | Pruning masks and both complexity penalties computed on arrays. |
+| A09 | Implemented | Empty-phenotype and fully-pruned candidates return the reference's `0.0` without scoring. |
+| A10 | Implemented | Final fit computes the global classification metrics once, after pruning. |
+| A11 | Partial: implemented | Exact `dict.setdefault` lookup; the pre-existing hash/equality inconsistency is preserved deliberately. |
+| B01 | Done: diagnostic | Seeded reuse measurements and bounded offline cache simulation. |
+| B02 | Implemented: scoped | Exact-genotype memoization for serial, built-in PyMoo fits only. |
+| B04 | Implemented: scoped | Fit-local firing reuse, fixed partitions only, 8 MiB of retained columns. |
+| B05 | Measured: rejected | Reusing firing across candidates with optimized partitions changed the objective of about half the candidates. |
+| C01/C02 | Measured: not implemented | Batching headroom quantified; see the review. |
+| C05 | Blocked: diagnosed | `FUZZY_SETS` cannot be pickled by reference; see the review. |
+| C07 | Partial: implemented | Fit-scoped owned pools; success/error cleanup and external ownership preserved. |
+| C10 | Measured | Peak RSS of the new fit-local caches reported below. |
+| D01/D02/D03 | Measured: blocked on parity | A compiled route cannot reproduce NumPy's pairwise summation with ordinary loops. |
+| Other IDs | Reviewed, pending or deferred | See [all 36 decisions and evidence](SPEED_UP_REVIEW.md). |
 
 Scope: `BaseFuzzyRulesClassifier`, primarily its built-in classification objective
 and `FitRuleBase`. This is a comprehensive catalogue of practical optimization
 families, including speculative alternatives; it is not a claim that every
-conceivable optimization has been enumerated. Select individual IDs below before
-implementation. Recommendations are proposals, not selected work.
+conceivable optimization has been enumerated. Record selected IDs and their
+bounded scope before implementation; unselected recommendations remain proposals.
 
 Preserve existing constructor, `fit()`, prediction, explanation, checkpoint and
 custom-loss interfaces wherever possible. New configuration flags or changes to
@@ -47,7 +88,8 @@ Eliminating a component taking one third of total time can at most give about
 ## 1. Decision catalogue
 
 For each selected ID, record **execute / investigate / defer / reject**.
-All entries below are currently **pending**.
+See the review record for shipped changes and [the catalogue review](SPEED_UP_REVIEW.md)
+for every proposal's evidence and remaining work.
 
 Effort is relative: S = localized work, M = several coordinated changes,
 L = substantial evaluator or backend work. Benefits are hypotheses unless
@@ -84,7 +126,7 @@ criterion, not an assertion that an implementation is already proven exact.
 
 Do not confuse B03 with enabling pymoo's duplicate elimination. The current GA
 sets `eliminate_duplicates=False`. Sharing an evaluation preserves population
-members; eliminating and replacing them changes the search (see E03).
+members; eliminating and replacing them changes the search.
 
 ### C. Batching, parallelism and memory
 
@@ -220,8 +262,9 @@ Do not advertise GPU fitness based only on GPU crossover/mutation operations.
 
 ## 5. Proposed execution order and decision points
 
-Each phase remains pending user selection. Completion of an earlier phase does
-not authorize later phases or imply their benefits will compound.
+The phases below are a sequencing guide for the currently authorized exact
+speedup work. Completion of an earlier phase does not imply that benefits will
+compound, and search-changing behavior or new options still require a decision.
 
 1. **Measure and validate:** expand workload coverage, retain the reference
    oracle, and collect B01 duplication statistics.
@@ -236,8 +279,9 @@ not authorize later phases or imply their benefits will compound.
    D02/D03 are alternatives, not automatic additions.
 6. **Select one concurrency route:** C04, C05 or C06 based on the new workload.
    Consider D04 only when CPU batching and dataset sizes justify GPU work.
-7. **Separate research decisions:** E01–E13 and F01–F05 require individual
-   selection and their own outcome criteria.
+7. **Separate research decisions:** search-changing alternatives require individual
+   selection and their own outcome criteria. Earlier references to E/F proposal
+   IDs were dangling references: this document defines only A01–D08 (36 items).
 
 Recommended starting selection: **A01, A02, A03 and B01**, with measurement and
 parity checks. A04 is the next substantial opportunity if profiling still shows
@@ -291,17 +335,486 @@ prototype/measurement with a stated scope, not automatic production adoption.
 
 | Selected IDs | Decision | Target workload / constraints | Acceptance requirement |
 | --- | --- | --- | --- |
-| — | Pending user review | — | — |
+| A01 (direct lookup subset), A02 (local buffer reuse) | Execute: first increment implemented | T1/T2 built-in product/minimum reductions; preserve ordered float64 reduction, modifiers and custom t-norm behavior | Exact firing arrays and seeded search/model parity; compare against the previous optimized evaluator |
+| A03 (normalization bounds) | Execute: second increment implemented | Compute empirical bounds once per problem; skip for fixed partitions | Exact decoded-model and seeded fitness parity; refit isolation |
+| B01 | Execute: diagnostic implemented | Actual seeded populations, 256-entry simulated LRU; raw genotypes, decoded partitions and firing-equivalent rules | Instrumentation must preserve fitted result; report key cost and memory estimates |
+| B02 | Execute: serial built-in PyMoo fits implemented | 256 entries, 1 MiB key-payload limit, one fit context; no custom losses, checkpoint mode, workers or custom backends | Preserve fitness sequence, final population, logical evaluation count and stopping; discard on return/exception |
+| A01 (batched indexed gathering) | Execute for T2; defer T1 after experiment | Built-in product, unmodified rules, supplied memberships; bounded sample/rule blocks | Exact original firing arrays and seeded search/model results; complete-fit improvement |
+| A07 (class masks) | Execute: bounded reuse implemented | Reuse masks across the two dominance passes of one candidate, up to 1 MiB retained payload | Exact original reductions, bounded retention and evaluation isolation; broader label encoding remains pending |
+| A11 (dictionary lookup) | Execute: exact lookup optimization implemented | Use `dict.setdefault` while preserving existing `RuleSimple` equality/hash behavior and first retention/order | Match the original dictionary algorithm, including collision and hash-inconsistency cases |
+| A03 (other metadata), B03–B07 | Pending | Reprofile before adding metadata or membership caches | Measure benefit and preserve search semantics |
+
+### First implementation increment (2026-09-08)
+
+`rules.py` now indexes list/tuple/array membership containers directly and reuses
+one scratch array within each T1/T2 rule-base firing call for `np.prod` and
+`np.min`. Every feature column is overwritten before reduction. Feature order,
+don't-care slots, modifier arithmetic and reduction layout are preserved.
+Custom t-norms keep independent per-rule allocations, and GT2 keeps its existing
+allocation path. No persistent cache, new option or search change is introduced.
+
+`tests/test_firing_buffers.py` compares exact results with an independent copy
+of the original firing algorithm, including T1/T2, unequal partitions, modifiers,
+disabled/duplicate rules, C/Fortran/strided arrays, changed rules and memberships,
+and custom t-norm input ownership. The focused firing/fitness/semantics/rules
+suite passes: **109 passed, 11 skipped**.
+
+The benchmark now explicitly imports this checkout and reports its source path
+and individual timing runs. Previously, executing the script directly could
+benchmark a different installed release.
+
+Complete-fit comparison against the optimized evaluator at `e67fc16`, replacing
+only its firing method with the new method: Python 3.12.3, NumPy 2.3.5,
+pymoo 0.6.1.6, Ryzen 5 5600X. Synthetic T1 data, 10 features, 3 classes,
+20 rules, 4 antecedents, population 40, 5 generations, seed 7, no early stopping,
+single evaluator worker and no competing test/benchmark run. Medians of three
+runs; brackets show min–max seconds. These small gains need confirmation on
+other machines; the optimized-partition 10K result is within timing noise.
+
+| Samples | Partitions | Previous optimized fit (s) | New fit (s) | Speedup |
+| --- | --- | --- | --- | --- |
+| 150 | Optimized | 0.323 [0.323–0.327] | 0.317 [0.316–0.319] | 1.019× |
+| 150 | Fixed | 0.245 [0.244–0.248] | 0.239 [0.238–0.242] | 1.024× |
+| 1,000 | Optimized | 0.468 [0.465–0.470] | 0.458 [0.456–0.460] | 1.020× |
+| 1,000 | Fixed | 0.392 [0.390–0.392] | 0.383 [0.383–0.384] | 1.022× |
+| 10,000 | Optimized | 2.368 [2.368–2.397] | 2.373 [2.340–2.376] | 0.998× |
+| 10,000 | Fixed | 2.367 [2.365–2.370] | 2.265 [2.257–2.331] | 1.045× |
+
+All six comparisons checked exact equality of the evaluated fitness sequence,
+selected chromosomes, final rule matrices/order/scores and predictions.
+Peak RSS and hardware utilization were not measured in this increment.
+
+### Second implementation increment (2026-09-08)
+
+Profiling 100 optimized-partition T1 candidates at 10K samples after the first
+increment put firing at about 48% and construction at about 13% of evaluation
+time. Inspection also found an unnecessary full data scan in every decoder call,
+including fixed-partition candidates which never use its results.
+
+A03 now computes empirical normalization bounds once when creating an
+optimized-partition `FitRuleBase`. Bounds are read-only and local to that
+problem. Fixed-partition decoding skips this work entirely. The nan-aware
+numeric bounds and categorical unique-count behavior remain the same, including
+the existing distinction between empirical normalization and a supplied sampling
+domain. Refit creates a new problem; optimized partitions get new bounds and
+fixed partitions need none. The classifier's existing behavior of retaining
+learned partitions on subsequent fits is preserved. As with existing
+precomputed memberships, a problem's training data must stay stable during its
+optimization. The helper can also initialize bounds for older serialized problems.
+
+Comparison below retains the first increment's firing code in both variants and
+swaps only the previous/current decoder method. Both variants include the new
+one-time initialization scan, making the old-decoder timings slightly conservative.
+Workload, versions and hardware match the first increment. Three paired runs
+alternate previous/new implementations; every pair checks the complete fitness
+sequence, selected chromosome, final rule matrices/order/scores and predictions.
+
+| Samples | Type | Partitions | Previous decoder fit (s) | New fit (s) | Speedup |
+| --- | --- | --- | --- | --- | --- |
+| 150 | T1 | Optimized | 0.312 [0.312–0.314] | 0.292 [0.291–0.294] | 1.071× |
+| 150 | T1 | Fixed | 0.239 [0.238–0.239] | 0.218 [0.217–0.218] | 1.097× |
+| 1,000 | T1 | Optimized | 0.454 [0.454–0.456] | 0.425 [0.424–0.426] | 1.070× |
+| 1,000 | T1 | Fixed | 0.384 [0.384–0.385] | 0.357 [0.356–0.358] | 1.075× |
+| 10,000 | T1 | Optimized | 2.265 [2.196–2.336] | 2.253 [2.223–2.291] | 1.005× |
+| 10,000 | T1 | Fixed | 2.286 [1.905–2.349] | 2.253 [2.251–2.266] | 1.015× |
+| 1,000 | T2 | Optimized | 1.319 [1.318–1.319] | 1.290 [1.289–1.292] | 1.022× |
+| 1,000 | T2 | Fixed | 1.260 [1.260–1.263] | 1.235 [1.227–1.238] | 1.021× |
+
+The 10K runs have too much variability to establish a gain. No peak-memory or
+utilization measurements were added. `tests/test_decoder_metadata.py` covers
+empirical versus supplied domains, NaNs, categorical counts, constant columns,
+absence of candidate-time scans, and repeated fits on different same-shaped data.
+The combined metadata, firing, fast-fitness, genetic-semantics, training and
+backend test suites pass: **147 passed**.
+
+### Third implementation increment (2026-09-08): B01 and B02
+
+`benchmarks/benchmark_candidate_reuse.py` now observes actual seeded searches
+and simulates entry-bounded LRU caches offline. It measures exact-genotype,
+decoded feature-partition and rule-firing repetition, key/lookup cost, extra
+decoding time, retained key payload and hypothetical firing-cache value bytes.
+It disables production memoization while measuring candidate evaluation costs
+and checks the observed fit against an unobserved fit. Its generated T1/T2
+workloads use built-in sets, product reductions and no modifiers; its decoded
+keys are diagnostic representations, not production cache keys. Memory figures
+exclude Python object overhead and are not peak RSS measurements.
+
+For 1K samples, 10 features, 20 rules, population 40, 30 generations and seed 7,
+the 256-entry simulation found:
+
+| Partition mode | Exact genotype hits | Decoded feature-partition hits | Rule-firing hits |
+| --- | --- | --- | --- |
+| Optimized | 587 / 1,200 (48.9%) | 10,532 / 12,000 (87.8%) | 14,948 / 19,118 (78.2%) |
+| Fixed | 777 / 1,200 (64.8%) | 11,990 / 12,000 (99.9%) | 17,490 / 19,594 (89.3%) |
+
+Raw key payload peaked at about 598 KB / 372 KB respectively. A full 256-entry
+T1 firing cache at this sample size would need 2,048,000 bytes for values alone.
+Decoded diagnostic keys were much more expensive than raw keys, so this
+increment selects exact-genotype fitness caching instead of partition/rule caches.
+In a diagnostic rerun, raw key/lookup work cost 0.0049 s / 0.0042 s for the
+1,200 candidates, versus 0.224 s / 1.732 s for decoded keys and an additional
+0.642 s / 0.387 s for offline decoding. Estimated avoided raw-genotype
+evaluation work was 1.092 s / 1.182 s before lookup overhead; actual fit gains
+are measured separately below. Both observed fits matched the unobserved fits.
+
+B02 is enabled only during a normal, serial, built-in PyMoo classifier fit.
+It caches scalar fitness for exact one-dimensional numeric genotype bytes plus
+dtype, with an LRU limit of 256 entries and a separate 1 MiB key-payload limit.
+Oversized/non-numeric keys bypass caching. The cache belongs to the newly created
+problem and is removed in a `finally` block before model finalization, including
+when optimization fails. There is no persistent cache or constructor option.
+Training data and objective configuration are fixed within this scope; no large
+dataset hash is computed for each candidate. Custom losses, checkpoint mode,
+workers, other/custom backends and direct standalone problem evaluation retain
+their previous behavior. T1/T2 built-in objectives alone read the cache.
+
+Population entries, fitness assignment, optimizer evaluation counts, RNG calls
+and early stopping all remain in the original optimizer loop; only repeated
+objective computation is skipped. `benchmark_classifier_fitness.py` now includes
+an uncached optimized fit alongside the full reference and cached fit, and
+reports `cache_fit_speedup` separately from the full-reference speedup.
+
+Complete-fit timings with the previous two increments enabled in both variants,
+same hardware/versions as above, population 40, seed 7 and early stopping disabled.
+Medians of three paired uncached/cached runs; brackets show min–max seconds.
+
+| Samples | Generations | Type | Partitions | Uncached fit (s) | Cached fit (s) | Cache speedup |
+| --- | --- | --- | --- | --- | --- | --- |
+| 150 | 5 | T1 | Optimized | 0.289 [0.289–0.291] | 0.202 [0.201–0.202] | 1.432× |
+| 150 | 5 | T1 | Fixed | 0.216 [0.216–0.217] | 0.138 [0.137–0.138] | 1.568× |
+| 1,000 | 30 | T1 | Optimized | 2.339 [2.336–2.348] | 1.255 [1.249–1.257] | 1.864× |
+| 1,000 | 30 | T1 | Fixed | 1.937 [1.935–1.953] | 0.764 [0.764–0.764] | 2.534× |
+| 10,000 | 30 | T1 | Optimized | 12.091 [11.744–12.432] | 7.006 [6.787–7.053] | 1.726× |
+| 10,000 | 30 | T1 | Fixed | 12.273 [10.000–12.350] | 4.883 [4.883–4.909] | 2.514× |
+| 1,000 | 30 | T2 | Optimized | 7.544 [7.513–7.547] | 4.143 [4.143–4.151] | 1.821× |
+| 1,000 | 30 | T2 | Fixed | 6.904 [6.882–6.908] | 2.929 [2.920–2.934] | 2.357× |
+
+All paired runs produced identical complete fitness sequences, selected
+chromosomes, final rule scores and predictions. The longer runs reuse more
+genotypes; these factors are workload-specific, not a promise for every search.
+Larger key sets may also hit the byte limit before reaching 256 entries.
+The combined cache, diagnostic, metadata, firing, fitness, training and backend
+suite passes: **167 passed**. Cache tests cover T1/T2, all three weighting modes,
+unknown predictions, fixed/optimized partitions, exact population and evaluation
+count parity, early stopping, LRU/byte limits, exception cleanup and custom-loss,
+checkpoint and worker fallbacks.
+
+### Fourth implementation increment (2026-09-08): batched T2 firing (A01)
+
+A profile of the cached 1K fixed-partition fit attributed about 30% of total fit
+time to firing and 27% to dominance scoring. The gathering experiment packs
+supplied membership values by feature/term, indexes all ordered antecedents in
+small rule/sample blocks, and reduces over the original full feature axis.
+Don't-cares remain explicit ones and completely disabled rules remain zero.
+The float64 feature/interval layout matches the original T2 product reduction.
+Table and gathered scratch target about 1 MiB (at least one sample), excluding
+the output, index arrays and NumPy's internal temporaries. Scratch is call-local.
+
+The new `rules._gather_rule_firing` path is enabled only for ordinary
+`RuleBaseT2` bases with product t-norm, no modifiers, and supplied numeric
+membership arrays of the expected shape. T1, GT2, custom bases/reductions,
+modifiers, instance overrides, unsupported membership containers and empty
+inputs keep the previous implementation. No persistent membership cache is
+introduced, and prediction without supplied memberships keeps its prior path.
+
+The T1 prototype showed inconsistent gains: the 1K optimized-partition fit
+regressed from 0.291 s to 0.304 s (about 4%), while other T1 cases were close to
+noise or improved only 2–3%. It was not enabled in production. T2 was retained
+after the following paired complete-fit measurements, with all prior increments
+enabled, 20 rules, 10 features, 4 antecedents, population 40, 5 generations,
+seed 7 and early stopping disabled. Hardware and versions match prior sections.
+Medians of three pairs; brackets show min–max seconds.
+
+| Samples | T2 partitions | Previous firing fit (s) | Gathered firing fit (s) | Speedup |
+| --- | --- | --- | --- | --- |
+| 150 | Optimized | 0.370 [0.369–0.373] | 0.359 [0.359–0.360] | 1.030× |
+| 150 | Fixed | 0.269 [0.268–0.270] | 0.258 [0.257–0.258] | 1.041× |
+| 1,000 | Optimized | 0.778 [0.776–0.782] | 0.741 [0.738–0.742] | 1.049× |
+| 1,000 | Fixed | 0.800 [0.800–0.801] | 0.754 [0.752–0.755] | 1.061× |
+| 10,000 | Optimized | 6.150 [6.121–6.152] | 5.757 [5.743–5.767] | 1.068× |
+| 10,000 | Fixed | 5.605 [5.094–5.624] | 5.275 [5.271–5.276] | 1.063× |
+
+Paired runs checked complete fitness sequences, selected chromosomes, rule
+scores and predictions. The 150/10K follow-up also checked final population
+chromosomes and consequent order. The new kernel tests compare exact output
+against the original per-rule path across 1/180/4097 samples, 1/7/33 features,
+float32/float64 and strided memberships, uneven term counts, zero/disabled rules,
+empty classes and rule/sample block boundaries. Fallback cases are tested too.
+The broad relevant suite passes: **211 passed, 11 skipped**.
+
+The existing benchmark now accepts `--fuzzy-type t2` and a benchmark-only
+`--legacy-firing` switch to reproduce comparisons with the previous firing path:
+
+```bash
+python benchmarks/benchmark_classifier_fitness.py --fuzzy-type t2
+python benchmarks/benchmark_classifier_fitness.py --fuzzy-type t2 --legacy-firing
+```
+
+### Fifth implementation increment (2026-09-09): A07 and A11
+
+Work followed `Delegation_strategy/MULTIAGENT_ASTRA.md` and the configured
+Terra/medium worker default: Terra handled scoring, Luna handled the status audit
+and narrow duplicate-lookup change, and the root agent integrated, reviewed and
+verified their changes. File ownership was separated and timing runs did not
+overlap test execution.
+
+A07 reuses `y == consequent` masks within one candidate's fitness evaluation,
+including the second dominance pass after pruning. The cache retains at most
+1 MiB of boolean-array payload; uncached masks are temporary. This is not a cap
+on total RSS or dictionary overhead. Per-rule slicing, reduction order and T2
+pooling remain unchanged. The cache ends with the evaluation, so it cannot reuse
+labels from a different candidate evaluation or fit. Integer-label encoding and
+MCC/count-layout reuse remain pending under A07.
+
+A11 now uses `dict.setdefault(rule, index)` instead of a lookup followed by a
+second lookup/insertion on a miss. Existing keys, hash/equality semantics,
+first-rule retention and rule order are preserved. This removes duplicate hash
+work for new entries without changing the pre-existing inconsistency between
+`RuleSimple.__eq__` and its string-based hash. A semantic correction to that
+inconsistency remains deferred because it could change the search result.
+
+Separate and combined comparisons check exact fitness sequences, selected
+chromosomes, final population chromosomes, rule scores, consequents, predictions
+and logical evaluation counts. Initial single-process 10K timings showed large
+order/allocation variability, so fresh-process measurements are used to assess
+the new changes. Imports and process startup are excluded from fit timing.
+
+Fresh-process T1 results (three repetitions per variant, randomized execution
+order, each fit in a new process): 10 features, 3 classes, 20 rules, 4 antecedents,
+population 40, 5 generations, seed 7, early stopping disabled. Python 3.12.3,
+NumPy 2.3.5, pymoo 0.6.1.6 on the same Ryzen 5 5600X. All previous increments
+stay enabled in both variants. Medians and min–max ranges are shown in seconds.
+
+| Samples | Partitions | Before A07/A11 | Both changes | Speedup |
+| --- | --- | --- | --- | --- |
+| 1,000 | Optimized | 0.2925 [0.2923–0.2936] | 0.2839 [0.2829–0.2854] | 1.030× |
+| 1,000 | Fixed | 0.2364 [0.2349–0.2373] | 0.2275 [0.2267–0.2301] | 1.040× |
+| 10,000 | Optimized | 1.4860 [1.4839–1.4905] | 1.4782 [1.4726–1.4799] | 1.005× |
+| 10,000 | Fixed | 1.3342 [1.3325–1.3459] | 1.3414 [1.3182–1.3445] | 0.995× |
+
+The 1K improvement is primarily A11: isolated A11 medians were 0.2843 s /
+0.2288 s for optimized/fixed partitions; isolated A07 medians were 0.2913 s /
+0.2350 s. A07's isolated benefit is small and close to noise. The 10K results
+are effectively neutral; no substantial large-data gain is claimed. Initial
+single-process T2 runs were also nearly neutral (about 1% combined), and are
+not used to claim a robust T2 speedup.
+
+Benchmark-only switches reproduce the previous paths without changing public
+classifier options:
+
+```bash
+python benchmarks/benchmark_classifier_fitness.py --samples 1000
+python benchmarks/benchmark_classifier_fitness.py --samples 1000 --legacy-masks --legacy-duplicate-lookup
+```
+
+Use one switch at a time to isolate each optimization. New tests cover exact
+T1/T2 dominance reductions on C/Fortran/strided arrays, absent classes and zero
+firing, mask payload bounds and per-evaluation isolation. Duplicate-rule tests
+compare object identity/order with the original dictionary algorithm, including
+interleaved duplicates, modifier/score/weight differences and hash collisions.
+Final combined verification: **230 passed, 11 skipped** across the dominance,
+duplicate-rule, firing, cache, metadata, fitness, training and backend suites.
+
+### Sixth implementation increment (2026-09-09): the array evaluator, A04–A10 and B04
+
+This increment replaces the per-candidate rule-object pipeline for the built-in
+T1/T2 classification objective. `FitRuleBase._array_score` decodes a chromosome
+into integer antecedent/consequent/weight arrays and scores it without creating
+any `RuleSimple`, `RuleBase` or `MasterRuleBase`. The object decoder plus
+`_fitness.score_rulebase` remains both the oracle and the fallback: the array
+path returns `None`, and the previous code runs, whenever a problem or candidate
+leaves the supported case (custom losses, non-numeric labels, GT2, temporal
+partitions, `time_moment`, `FitRuleBase` subclasses, out-of-range consequents,
+membership containers the gather kernel cannot read). `_construct_ruleBase` is
+still what builds the final fitted model, the checkpoint rule bases and anything
+a custom loss or callback sees, so explanations, persistence and the public API
+are unchanged.
+
+Partition normalization was **not** duplicated. `_construct_ruleBase`'s fuzzy
+variable decoding was extracted into `FitRuleBase._decode_antecedents`, and the
+consequent gene offset into `FitRuleBase._consequent_pointer`; both decoders now
+call the same helpers.
+
+What ships:
+
+- **A04/A08/A09** `_array_fitness.py`: array decoding with the reference's
+  slot-overwrite order, per-class duplicate removal, array pruning masks, array
+  complexity penalties and immediate `0.0` for empty or fully pruned candidates.
+  Duplicate removal keeps `RuleSimple`'s observable dictionary behavior,
+  including the hash/equality inconsistency that only appears in `ds_mode == 2`.
+- **A01/A02** one gathered firing kernel, `rules._gather_firing_from_arrays`,
+  now shared by T1 and T2 and by the object and array paths.
+- **A05** `rules.pack_membership_table_from_variables` evaluates memberships
+  straight into the gather table, removing both the intermediate per-feature
+  arrays and the per-candidate table build. It calls the ordinary fuzzy-set
+  `membership` methods, so categorical, gaussian and custom sets are covered.
+- **A03** fixed partitions pack that table once per problem
+  (`FitRuleBase._packed_memberships`), like the existing normalization bounds.
+- **A06** `_fitness._dominance` reduces rules that share a consequent together.
+  Every reduced axis is made contiguous first, so NumPy applies the same
+  pairwise summation as the per-rule reference. `_dominance_reference` is kept
+  as the parity oracle. The one reduction with no exact vectorised form is the
+  T2 denominator, whose reference operand is a strided `(samples, 2)` view; it
+  keeps its per-rule call.
+- **A07** `_fitness._LabelDomain` rebuilds the MCC's sorted label set by
+  counting instead of sorting `2 × samples` values on every candidate.
+- **B04** `_fitness._FiringCache`, a fit-local LRU of firing columns keyed on a
+  rule's effective antecedents, bounded to 8 MiB of retained columns. It is
+  installed **only for fixed partitions**, in the same scope as the B02 fitness
+  cache, and removed on optimizer return or exception.
+- **A10** the final fit already computed the pre-pruning global metrics once;
+  `tests/test_finalization_work.py` now covers it (its seeded-fit test had an
+  undefined name and could not run).
+
+#### Complete-fit results
+
+Fresh processes, randomized execution order, medians. Ryzen 5 5600X,
+Python 3.12.3, NumPy 2.3.5, pymoo 0.6.1.6. 10 features, 3 classes, 20 rules,
+4 antecedents, population 40, 20 generations, seed 7, early stopping disabled.
+`baseline` is the state before this increment, with all earlier increments
+enabled. Every pair was checked for identical fitness, selected chromosome,
+consequents, rule scores and predictions.
+
+| Type | Samples | Partitions | Baseline (s) | Current (s) | Speedup |
+| --- | ---: | --- | ---: | ---: | ---: |
+| T1 | 150 | Optimized | 0.595 | 0.439 | 1.36× |
+| T1 | 150 | Fixed | 0.320 | 0.168 | 1.91× |
+| T1 | 1,000 | Optimized | 0.819 | 0.638 | 1.28× |
+| T1 | 1,000 | Fixed | 0.471 | 0.255 | 1.85× |
+| T1 | 10,000 | Optimized | 4.578 | 2.960 | 1.55× |
+| T1 | 10,000 | Fixed | 3.235 | 1.432 | 2.26× |
+| T2 | 150 | Optimized | 1.177 | 0.967 | 1.22× |
+| T2 | 150 | Fixed | 0.622 | 0.343 | 1.81× |
+| T2 | 1,000 | Optimized | 2.910 | 2.278 | 1.28× |
+| T2 | 1,000 | Fixed | 1.807 | 0.951 | 1.90× |
+| T2 | 10,000 | Optimized | 22.095 | 19.043 | 1.16× |
+| T2 | 10,000 | Fixed | 14.039 | 7.472 | 1.88× |
+
+Fixed partitions gain most because only they can reuse firing columns and a
+packed membership table. Against the **full reference evaluator** at 1,000
+samples and 5 generations the complete fit is now 16.0×/28.4× (T1
+optimized/fixed) and 17.0×/24.5× (T2). Those reference multipliers are not the
+useful comparison for future work; compare against the current evaluator.
+
+Isolating the individual changes at 1,000 samples, 20 generations, T1:
+
+| Variant | Optimized (s) | Fixed (s) |
+| --- | ---: | ---: |
+| Baseline | 0.819 | 0.474 |
+| Grouped dominance only | 0.797 | 0.433 |
+| Array evaluator only | 0.700 | 0.395 |
+| Array + dominance, no firing cache | 0.679 | 0.351 |
+| All of them | 0.678 | 0.281 |
+
+#### Measured and rejected
+
+- **A05, vectorised trapezoid formula.** Evaluating all terms of a variable in
+  one broadcast expression was 0.85–0.87× (slower) for T1 and 1.09–1.12× for T2
+  on the membership step alone, and did not beat writing the ordinary
+  `membership` results straight into the packed table. It was removed rather
+  than kept as an unused second implementation of the membership semantics.
+- **B05, reusing firing across candidates with optimized partitions.** The same
+  antecedent indexes denote different fuzzy sets on each candidate. With a
+  256-entry firing cache, 104 of 200 candidates got a different objective. It is
+  rejected under exact parity; `benchmarks/prototype_firing_cache.py` reproduces
+  the divergence.
+- **A06, naive axis vectorisation.** Reducing `firing` along axis 0 does not
+  reproduce the per-column summation, and boolean-indexing `(rules, samples)`
+  along axis 1 produces a Fortran-ordered array whose row sums differ. Both are
+  covered by `tests/test_dominance_grouped.py`.
+
+#### Memory (C10)
+
+Peak RSS of a complete 10,000-sample, 10-generation fit, measured in fresh
+processes with `benchmarks/prototype_remaining_routes.py --memory`. Both caches
+are bounded to 8 MiB of payload each; the extra peak also covers dictionary and
+array-object overhead and allocator behavior, and is not a promise for other
+workloads.
+
+| Type | Partitions | Caches on | Caches off | Extra peak |
+| --- | --- | ---: | ---: | ---: |
+| T1 | Fixed | 222.0 MB | 201.6 MB | +20.4 MB |
+| T1 | Optimized | 210.7 MB | 211.1 MB | −0.4 MB |
+| T2 | Fixed | 243.7 MB | 209.6 MB | +34.1 MB |
+| T2 | Optimized | 229.3 MB | 229.1 MB | +0.2 MB |
+
+Optimized partitions get neither cache, which is why they show no growth. The
+budgets are module constants in `_fitness._FiringCache` and
+`rules.pack_membership_table`; they are not public options.
+
+#### Remaining headroom
+
+Uncached candidate evaluation time fits `a + b × samples` closely. The
+sample-independent part `a` — interpreter dispatch and fixed-size decoding — is
+what batching a whole population (C01/C02) could remove:
+
+| Samples | T1 fixed share | T2 fixed share |
+| ---: | ---: | ---: |
+| 100 | 87% | 60% |
+| 400 | 58% | 27% |
+| 1,600 | 26% | 8% |
+| 3,200 | 15% | 4% |
+
+So population batching is worth a lot on small datasets and very little beyond a
+few thousand samples. It also needs `elementwise=False`, padded rule masks and
+per-candidate pruning, and it interacts with the thread runner and the custom
+loss fallback, so it remains a separate decision rather than part of this work.
+
+A compiled route (D01/D02/D03) hits a harder wall: a sequential Numba product
+matches `np.prod` exactly in all 60 tested shapes, but a sequential sum differs
+from `np.sum` in 42 of them, because NumPy uses pairwise summation on contiguous
+reductions. A compiled kernel would have to reimplement pairwise summation
+exactly, or the project would have to accept a numerical-policy change. Neither
+is decided here.
+
+#### Defects found and not fixed
+
+Both are pre-existing and outside this speedup work:
+
+- `rules.RuleBase.__init__` ends with `self.delete_duplicates()`, a method that
+  does not exist anywhere in the package. It is unreachable in practice because
+  `RuleBaseT1`, `RuleBaseT2` and `RuleBaseGT2` all override `__init__`, so only a
+  direct `RuleBase(...)` instantiation would raise.
+- `fuzzy_sets.FUZZY_SETS` defines `__eq__` without `__hash__`, so its members are
+  unhashable, and `temporal` re-creates the enum so that `pickle` cannot resolve
+  it by reference (`Can't pickle <enum 'FUZZY_SETS'>: attribute lookup
+  FUZZY_SETS on temporal failed`). This is the concrete blocker behind C05:
+  process workers cannot serialize a `FitRuleBase` until the enum has a single
+  importable definition.
+
+#### Reproduction
+
+```bash
+python benchmarks/benchmark_evaluator_variants.py --samples 1000 --generations 20
+python benchmarks/benchmark_evaluator_variants.py --fuzzy-type t2 --samples 1000
+python benchmarks/benchmark_classifier_fitness.py --samples 1000 --legacy-arrays
+python benchmarks/prototype_firing_cache.py --fits --samples 1000
+python benchmarks/prototype_remaining_routes.py --memory --overhead --numba
+```
+
+New tests: `tests/test_array_evaluation.py` (objective parity over ds_modes,
+tolerances, penalties, unknown labels, degenerate and duplicate candidates,
+categorical variables, phenotype identity and seeded fits),
+`tests/test_dominance_grouped.py`, `tests/test_firing_cache.py`,
+`tests/test_label_domain.py`, plus new kernel and packing cases in
+`tests/test_gather_firing.py`. Full suite: **629 passed, 40 skipped**.
 
 Current implementation and test entry points:
 
 - `ex_fuzzy/ex_fuzzy/evolutionary_fit.py`
 - `ex_fuzzy/ex_fuzzy/_fitness.py`
+- `ex_fuzzy/ex_fuzzy/_array_fitness.py`
 - `ex_fuzzy/ex_fuzzy/rules.py`
 - `ex_fuzzy/ex_fuzzy/evolutionary_backends.py`
 - `ex_fuzzy/ex_fuzzy/evolutionary_search.py`
+- `tests/test_array_evaluation.py`
+- `tests/test_dominance_grouped.py`
+- `tests/test_firing_cache.py`
+- `tests/test_gather_firing.py`
+- `tests/test_label_domain.py`
 - `tests/test_fast_fitness.py`
 - `tests/test_genetic_fitness_semantics.py`
 - `benchmarks/benchmark_classifier_fitness.py`
-
-When we finish implementing everything, it would be nice to have a visual report wih the speedup that everything brought.
+- `benchmarks/benchmark_evaluator_variants.py`
+- `benchmarks/prototype_firing_cache.py`
+- `benchmarks/prototype_remaining_routes.py`

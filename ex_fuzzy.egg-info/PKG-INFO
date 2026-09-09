@@ -23,15 +23,87 @@ Requires-Dist: matplotlib
 Requires-Dist: pymoo
 Requires-Dist: pandas
 Requires-Dist: scikit-learn
-Provides-Extra: rule-visualization
-Requires-Dist: networkx; extra == "rule-visualization"
-Provides-Extra: gpu-inference
-Requires-Dist: torch; extra == "gpu-inference"
+Provides-Extra: viz
+Requires-Dist: networkx; extra == "viz"
+Provides-Extra: gpu
+Requires-Dist: torch; extra == "gpu"
 Provides-Extra: evox
-Requires-Dist: evox[jax]; extra == "evox"
+Requires-Dist: evox>=1.3.0; extra == "evox"
+Requires-Dist: torch>=2.6.0; extra == "evox"
+Provides-Extra: docs
+Requires-Dist: sphinx>=5.0.0; extra == "docs"
+Requires-Dist: pydata-sphinx-theme>=0.13.0; extra == "docs"
+Requires-Dist: sphinx-design>=0.4.0; extra == "docs"
+Requires-Dist: myst-parser>=0.18.0; extra == "docs"
+Requires-Dist: sphinx-copybutton>=0.5.0; extra == "docs"
+Requires-Dist: sphinx-autobuild>=2021.3.14; extra == "docs"
+Requires-Dist: nbsphinx>=0.8.0; extra == "docs"
+Requires-Dist: sphinxcontrib-bibtex>=2.5.0; extra == "docs"
+Requires-Dist: sphinx-gallery>=0.11.0; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints>=1.19.0; extra == "docs"
+Requires-Dist: sphinx-autoapi>=2.1.0; extra == "docs"
+Requires-Dist: pygments>=2.12.0; extra == "docs"
+Requires-Dist: jupyter>=1.0.0; extra == "docs"
+Requires-Dist: ipykernel>=6.0.0; extra == "docs"
+Requires-Dist: sphinx-math-dollar>=1.2.0; extra == "docs"
+Requires-Dist: seaborn>=0.11.0; extra == "docs"
+Requires-Dist: sphinxext-opengraph>=0.7.0; extra == "docs"
+Requires-Dist: sphinx-external-toc>=0.3.0; extra == "docs"
+Requires-Dist: doc8>=0.11.0; extra == "docs"
+Requires-Dist: rstcheck>=6.0.0; extra == "docs"
 Provides-Extra: test
 Requires-Dist: pytest; extra == "test"
 Requires-Dist: pytest-cov; extra == "test"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: sphinx>=5.0.0; extra == "dev"
+Requires-Dist: pydata-sphinx-theme>=0.13.0; extra == "dev"
+Requires-Dist: sphinx-design>=0.4.0; extra == "dev"
+Requires-Dist: myst-parser>=0.18.0; extra == "dev"
+Requires-Dist: sphinx-copybutton>=0.5.0; extra == "dev"
+Requires-Dist: sphinx-autobuild>=2021.3.14; extra == "dev"
+Requires-Dist: nbsphinx>=0.8.0; extra == "dev"
+Requires-Dist: sphinxcontrib-bibtex>=2.5.0; extra == "dev"
+Requires-Dist: sphinx-gallery>=0.11.0; extra == "dev"
+Requires-Dist: sphinx-autodoc-typehints>=1.19.0; extra == "dev"
+Requires-Dist: sphinx-autoapi>=2.1.0; extra == "dev"
+Requires-Dist: pygments>=2.12.0; extra == "dev"
+Requires-Dist: jupyter>=1.0.0; extra == "dev"
+Requires-Dist: ipykernel>=6.0.0; extra == "dev"
+Requires-Dist: sphinx-math-dollar>=1.2.0; extra == "dev"
+Requires-Dist: seaborn>=0.11.0; extra == "dev"
+Requires-Dist: sphinxext-opengraph>=0.7.0; extra == "dev"
+Requires-Dist: sphinx-external-toc>=0.3.0; extra == "dev"
+Requires-Dist: doc8>=0.11.0; extra == "dev"
+Requires-Dist: rstcheck>=6.0.0; extra == "dev"
+Provides-Extra: all
+Requires-Dist: doc8>=0.11.0; extra == "all"
+Requires-Dist: evox>=1.3.0; extra == "all"
+Requires-Dist: ipykernel>=6.0.0; extra == "all"
+Requires-Dist: jupyter>=1.0.0; extra == "all"
+Requires-Dist: myst-parser>=0.18.0; extra == "all"
+Requires-Dist: nbsphinx>=0.8.0; extra == "all"
+Requires-Dist: networkx; extra == "all"
+Requires-Dist: pydata-sphinx-theme>=0.13.0; extra == "all"
+Requires-Dist: pygments>=2.12.0; extra == "all"
+Requires-Dist: pytest; extra == "all"
+Requires-Dist: pytest-cov; extra == "all"
+Requires-Dist: rstcheck>=6.0.0; extra == "all"
+Requires-Dist: seaborn>=0.11.0; extra == "all"
+Requires-Dist: sphinx-autoapi>=2.1.0; extra == "all"
+Requires-Dist: sphinx-autobuild>=2021.3.14; extra == "all"
+Requires-Dist: sphinx-autodoc-typehints>=1.19.0; extra == "all"
+Requires-Dist: sphinx-copybutton>=0.5.0; extra == "all"
+Requires-Dist: sphinx-design>=0.4.0; extra == "all"
+Requires-Dist: sphinx-external-toc>=0.3.0; extra == "all"
+Requires-Dist: sphinx-gallery>=0.11.0; extra == "all"
+Requires-Dist: sphinx-math-dollar>=1.2.0; extra == "all"
+Requires-Dist: sphinx>=5.0.0; extra == "all"
+Requires-Dist: sphinxcontrib-bibtex>=2.5.0; extra == "all"
+Requires-Dist: sphinxext-opengraph>=0.7.0; extra == "all"
+Requires-Dist: torch; extra == "all"
+Requires-Dist: torch>=2.6.0; extra == "all"
 Dynamic: classifier
 Dynamic: description
 Dynamic: description-content-type
@@ -99,6 +171,8 @@ Dynamic: summary
 
 ### **Explainable Rule-Based Learning**
 - **Fuzzy Association Rules**: For both classification and regression problems with genetic fine-tuning.
+- **FERL Rule Trees**: Greedy fuzzy rule learning with native belief,
+  plausibility, ignorance, and set-valued predictions.
 - **Out-of-the-box Results**: Complete compatibility with scikit-learn, minimal to none fuzzy knowledge required to obtain good results.
 - **Complete Complexity Control**: Number of rules, rule length, linguistic variables, etc. can be specified by the user with strong and soft constrains.
 - **Statistical Analysis of Results**: Confidence intervals for all rule quality metrics, repeated experiments for rule robustness.
@@ -128,14 +202,13 @@ Install Ex-Fuzzy using pip:
 pip install ex-fuzzy
 
 # With GPU support (EvoX backend with PyTorch)
-pip install ex-fuzzy evox torch
+pip install "ex-fuzzy[evox]"
 ```
 
 ### Basic Usage
 
 ```python
-import numpy as np
-from ex_fuzzy.evolutionary_fit import BaseFuzzyRulesClassifier
+from ex_fuzzy import BaseFuzzyRulesClassifier
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
@@ -145,9 +218,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # Create and train fuzzy classifier
 classifier = BaseFuzzyRulesClassifier(
-    n_rules=15,
-    n_antecedents=4,
-    fuzzy_type="t1",  # Type-1 fuzzy sets
+    nRules=15,
+    nAnts=4,
     backend="pymoo"  # or "evox" for GPU acceleration
 )
 
@@ -161,6 +233,58 @@ predictions = classifier.predict(X_test)
 from ex_fuzzy.eval_tools import eval_fuzzy_model
 eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test, 
                 plot_rules=True, plot_partitions=True)
+```
+
+### FERL Evidential Classification
+
+`FERL` learns a fuzzy rule tree and derives Dempster--Shafer evidence directly
+from rule firing strengths. It is implemented natively in Ex-Fuzzy and needs no
+separate fuzzy-tree package.
+
+```python
+from ex_fuzzy import FERL
+
+ferl = FERL(max_rules=15, random_state=0)
+ferl.fit(X_train, y_train)
+
+predictions = ferl.predict(X_test)
+betp, belief, plausibility, ignorance = ferl.predict_credal(X_test)
+prediction_sets = ferl.predict_set(X_test)
+ferl.print_tree()
+```
+
+Use `split_mode="learned"` for data-driven soft split locations or
+`partition="mdlp"` for supervised trapezoidal partitions. Native FERL sets are
+calibration-free evidential outputs; use `ConformalFuzzyClassifier` when a
+finite-sample marginal coverage guarantee is required.
+
+### Regression Usage
+
+`BaseFuzzyRulesRegressor` learns interpretable Type-1 rules for continuous
+targets. It supports crisp Takagi-Sugeno consequents and fuzzy Mamdani
+consequents.
+
+```python
+from ex_fuzzy import BaseFuzzyRulesRegressor
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+
+X, y = make_regression(n_samples=500, n_features=5, noise=5.0, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0
+)
+
+regressor = BaseFuzzyRulesRegressor(
+    nRules=20,
+    nAnts=3,
+    consequent_type="crisp",  # use "fuzzy" for Mamdani consequents
+    backend="pymoo",
+)
+regressor.fit(X_train, y_train, n_gen=50, pop_size=50)
+
+predictions = regressor.predict(X_test)
+print(f"Test R2: {regressor.score(X_test, y_test):.3f}")
+regressor.print_rules()
 ```
 
 ## 📊 Visualizations
@@ -201,8 +325,8 @@ Ex-Fuzzy supports two evolutionary optimization backends:
 
 | Backend | Hardware | Best For |
 |---------|----------|----------|
-| **PyMoo** | CPU | Small datasets (<10K samples), checkpoint support |
-| **EvoX** | GPU | Large datasets with high generation counts |
+| **PyMoo** | CPU | Classification/regression on small datasets, checkpoint support |
+| **EvoX** | GPU/CPU | Batched classification/regression on large datasets |
 
 ### When to Use Each Backend
 
@@ -248,9 +372,13 @@ Try our hands-on examples in Google Colab:
 | **Advanced Rules** | Using pre-computed rule populations | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing) |
 | **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
 | **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
+| **Fuzzy Regression** | Interpretable continuous prediction | [📓 Notebook](Demos/regression_demo.ipynb) |
 | **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
 | **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
+| **FERL** | Evidential fuzzy rule-tree classification | [🐍 Script](Demos/demos_module/ferl_demo.py) |
 
+#### Real Applications
+  - Ex-Fuzzy in fNIRS data: https://github.com/jjcato9/ex_fuzzy_fnirs_demo
 ### 💻 Code Examples
 
 <details>
@@ -292,12 +420,12 @@ classifier.plot_fuzzy_variables()
 <summary><b>🚀 GPU-Accelerated Training (EvoX Backend)</b></summary>
 
 ```python
-from ex_fuzzy import BaseFuzzyRulesClassifier
+from ex_fuzzy import BaseFuzzyRulesClassifier, BaseFuzzyRulesRegressor
 
 # Create classifier with EvoX backend for GPU acceleration
 classifier = BaseFuzzyRulesClassifier(
-    n_rules=30,
-    n_antecedents=4,
+    nRules=30,
+    nAnts=4,
     backend='evox',  # Use GPU-accelerated EvoX backend
     verbose=True
 )
@@ -307,11 +435,22 @@ classifier.fit(X_train, y_train,
               n_gen=50,
               pop_size=100)
 
-# EvoX provides significant speedups for:
-# - Large datasets (>10,000 samples)
-# - Complex rule bases (many rules/antecedents)
-# - High generation counts
-print("Training completed with GPU acceleration!")
+# Early stopping is enabled by default:
+# patience=10, min_delta=1e-4
+
+# Regression uses the same EvoX backend. Both crisp and fuzzy
+# consequents are evaluated in memory-aware PyTorch batches.
+regressor = BaseFuzzyRulesRegressor(
+    nRules=30,
+    nAnts=4,
+    consequent_type="crisp",
+    backend="evox",
+)
+regressor.fit(X_reg_train, y_reg_train, n_gen=50, pop_size=100)
+
+# CUDA is selected automatically when available; otherwise EvoX uses CPU.
+print(regressor.optimization_device_)  # "cuda" or "cpu"
+print(regressor.gpu_accelerated_)      # True only when CUDA was used
 ```
 </details>
 
@@ -327,7 +466,7 @@ bootstrap_samples = generate_bootstrap_samples(X_train, y_train, n_samples=100)
 # Evaluate model stability
 bootstrap_results = []
 for X_boot, y_boot in bootstrap_samples:
-    classifier_boot = BaseFuzzyRulesClassifier(n_rules=10)
+    classifier_boot = BaseFuzzyRulesClassifier(nRules=10)
     classifier_boot.fit(X_boot, y_boot)
     accuracy = classifier_boot.score(X_test, y_test)
     bootstrap_results.append(accuracy)
@@ -354,8 +493,8 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 
 ### Optional Dependencies
 - **NetworkX** >= 2.6 (for rule visualization)
-- **EvoX** >= 0.8.0 (for GPU-accelerated evolutionary optimization)
-- **PyTorch** >= 1.9.0 (required by EvoX for GPU acceleration)
+- **EvoX** >= 1.3.0 (for GPU-accelerated evolutionary optimization)
+- **PyTorch** >= 2.6.0 (required by EvoX)
 - **Scikit-learn** >= 0.24.0 (for compatibility examples)
 
 ## 🤝 Contributing
@@ -428,7 +567,7 @@ If you use Ex-Fuzzy in your research, please cite our paper:
 ## 👥 Main Authors
 
 - **[Javier Fumanal-Idocin](https://github.com/Fuminides)** - *Lead Developer*
-- **[Javier Andreu-Perez](https://github.com/jandreu)** - *Licensing officer*
+- **[Javier Andreu-Perez](https://github.com/jandreu)** - *Development manager & Licensing officer*
 
 ## 🌟 Acknowledgments
 

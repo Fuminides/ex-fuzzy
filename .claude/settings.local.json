@@ -33,7 +33,9 @@
       "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_classifiers.py::TestFuzzyRulesClassifier::test_fuzzy_rules_classifier_fit_predict -v --tb=short)",
       "Bash(\"C:\\\\Users\\\\javi-\\\\OneDrive\\\\Documentos\\\\GitHub\\\\Dynamic-Feature-Selection-Rules\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_classifiers.py -v --tb=short)",
       "Bash(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=ex_fuzzy python *)",
-      "Bash(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=ex_fuzzy/ex_fuzzy python *)"
+      "Bash(PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=ex_fuzzy/ex_fuzzy python *)",
+      "Bash(lscpu)",
+      "Bash(nvidia-smi)"
     ]
   }
 }

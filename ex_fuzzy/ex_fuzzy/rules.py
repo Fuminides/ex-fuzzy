@@ -21,6 +21,7 @@ for rule quality assessment.
 import abc
 import numbers
 import copy
+from typing import Optional
 
 import numpy as np
 try:
@@ -31,6 +32,186 @@ except ImportError:
     import centroid
 
 modifiers_names = {0.5: 'Somewhat', 1.0: '', 1.3: 'A little', 1.7: 'Slightly', 2.0: 'Very', 3.0: 'Extremely', 4.0: 'Very very'}
+
+def _gather_rule_firing(rule_bases: list, X: np.ndarray, truth) -> Optional[np.ndarray]:
+    """Gather built-in unmodified T2 antecedents in bounded numeric blocks.
+
+    Return None for unsupported cases so their original inference path runs.
+    The full feature axis (including don't-cares) and its reduction layout are
+    retained. All scratch arrays belong to this call; memberships are read-only.
+    """
+    if truth is None or not rule_bases or len(X) == 0:
+        return None
+    base_type = type(rule_bases[0])
+    # T1 experiments did not improve fit time consistently.
+    if base_type is not RuleBaseT2:
+        return None
+    if any(type(base) is not base_type or base.tnorm is not np.prod
+           or 'compute_rule_antecedent_memberships' in vars(base)
+           for base in rule_bases):
+        return None
+    all_rules = [rule for base in rule_bases for rule in base.rules]
+    if not all_rules or any(getattr(rule, 'modifiers', None) is not None for rule in all_rules):
+        return None
+    features = len(truth)
+    if not features or any(len(rule.antecedents) != features for rule in all_rules):
+        return None
+    antecedents = np.asarray([rule.antecedents for rule in all_rules])
+    return _gather_firing_from_arrays(antecedents, truth, len(X))
+
+
+def pack_membership_table(truth, n_samples: int, tail: tuple = (2,),
+                          max_bytes: int = 8 * 1024 * 1024) -> Optional[tuple]:
+    """Pack per-feature memberships into one gather table, or None.
+
+    Returns ``(table, offsets, lengths)`` where ``table`` holds every term of
+    every feature followed by a trailing column of ones for don't-cares.  Only
+    worth building when the memberships are fixed for the whole fit; ``None`` is
+    returned for unsupported containers or when the table exceeds ``max_bytes``.
+    """
+    terms, offsets = [], []
+    for feature in truth:
+        if not isinstance(feature, (list, tuple, np.ndarray)):
+            return None
+        offsets.append(len(terms))
+        for values in feature:
+            if not isinstance(values, np.ndarray) or values.shape != (n_samples,) + tail:
+                return None
+            if values.dtype.kind not in 'biuf':
+                return None
+            terms.append(values)
+    if not terms:
+        return None
+    table = np.empty((n_samples, len(terms) + 1) + tail)
+    if table.nbytes > max_bytes:
+        return None
+    for index, values in enumerate(terms):
+        table[:, index] = values
+    table[:, -1] = 1.
+    table.flags.writeable = False
+    lengths = np.asarray([len(feature) for feature in truth])
+    return table, np.asarray(offsets), lengths
+
+
+def pack_membership_table_from_variables(antecedents: list, X: np.ndarray, tail: tuple,
+                                         max_bytes: int = 8 * 1024 * 1024) -> Optional[tuple]:
+    """Evaluate memberships straight into a gather table, or return None.
+
+    Same values as ``compute_antecedents_memberships`` followed by
+    ``pack_membership_table``, including the per-variable domain clipping, but
+    without the intermediate per-feature arrays and their extra copy.  Any fuzzy
+    set works: only the packing changes, not the membership functions.
+    """
+    sets = [variable.linguistic_variables for variable in antecedents]
+    total = sum(len(group) for group in sets)
+    if not total or len(sets) != X.shape[1]:
+        return None
+    table = np.empty((X.shape[0], total + 1) + tail)
+    if table.nbytes > max_bytes:
+        return None
+    offsets, index = [], 0
+    for feature, group in enumerate(sets):
+        offsets.append(index)
+        column = X[:, feature]
+        try:
+            column = np.clip(column, group[0].domain[0], group[0].domain[1])
+        except Exception:
+            pass  # fuzzyVariable.compute_memberships ignores an absent domain
+        for fuzzy_set in group:
+            values = fuzzy_set.membership(column)
+            if not isinstance(values, np.ndarray) or values.shape != (X.shape[0],) + tail:
+                return None
+            table[:, index] = values
+            index += 1
+    table[:, -1] = 1.
+    table.flags.writeable = False
+    return table, np.asarray(offsets), np.asarray([len(group) for group in sets])
+
+
+def _gather_firing_from_arrays(antecedents: np.ndarray, truth, n_samples: int,
+                               tail: tuple = (2,),
+                               packed: Optional[tuple] = None) -> Optional[np.ndarray]:
+    """Gathered product firing for an already decoded antecedent matrix.
+
+    ``tail`` is the trailing membership shape: ``(2,)`` for T2 intervals and
+    ``()`` for T1.  Shared by :func:`_gather_rule_firing` and the object-free
+    evaluation path so both produce identical arrays.  The reduction still runs
+    over the full feature axis, so don't-cares contribute an explicit one and
+    completely disabled rules stay zero.  Returns None for unsupported inputs.
+    """
+    if antecedents.dtype.kind not in 'biu' or antecedents.ndim != 2:
+        return None
+    n_rules, features = antecedents.shape
+    if not n_rules or not features:
+        return None
+    if packed is not None:
+        return _gather_from_packed(antecedents, packed, n_samples, tail)
+    if features != len(truth):
+        return None
+    terms = []
+    offsets = []
+    for feature in truth:
+        if not isinstance(feature, (list, tuple, np.ndarray)):
+            return None
+        offsets.append(len(terms))
+        for values in feature:
+            if not isinstance(values, np.ndarray) or values.shape != (n_samples,) + tail:
+                return None
+            if values.dtype.kind not in 'biuf':
+                return None
+            terms.append(values)
+    if not terms:
+        return None
+    lengths = np.asarray([len(feature) for feature in truth])
+    if np.any(antecedents >= lengths):
+        return None
+    indexes = np.where(antecedents >= 0, antecedents + offsets, len(terms))
+    disabled = np.all(antecedents < 0, axis=1)
+    result = np.empty((n_samples, n_rules) + tail)
+    # Bound table + gathered scratch to about 1 MiB (at least one sample).
+    rule_chunk = min(n_rules, 16)
+    tail_size = int(np.prod(tail, dtype=int))
+    bytes_per_sample = 8 * tail_size * (len(terms) + 1 + rule_chunk * features)
+    sample_chunk = max(1, min(n_samples, 1024 * 1024 // bytes_per_sample))
+    for start in range(0, n_samples, sample_chunk):
+        stop = min(start + sample_chunk, n_samples)
+        table = np.empty((stop - start, len(terms) + 1) + tail)
+        for index, values in enumerate(terms):
+            table[:, index] = values[start:stop]
+        table[:, -1] = 1.
+        for first in range(0, n_rules, rule_chunk):
+            last = first + rule_chunk
+            gathered = np.take(table, indexes[first:last], axis=1)
+            result[start:stop, first:last] = np.prod(gathered, axis=2)
+            # axis=2 is the feature axis for both tails, so the reduction and
+            # its rounding match the per-rule reference in either case.
+            del gathered
+        del table
+    result[:, disabled] = 0.
+    return result
+
+
+def _gather_from_packed(antecedents: np.ndarray, packed: tuple, n_samples: int,
+                        tail: tuple) -> Optional[np.ndarray]:
+    """Gather from an already packed table; the reduction is unchanged.
+
+    Only the table build is skipped, so each rule's product still runs over the
+    full feature axis and does not depend on any chunking.
+    """
+    table, offsets, lengths = packed
+    if antecedents.shape[1] != len(lengths) or np.any(antecedents >= lengths):
+        return None
+    indexes = np.where(antecedents >= 0, antecedents + offsets, table.shape[1] - 1)
+    result = np.empty((n_samples, len(antecedents)) + tail)
+    rule_chunk = min(len(antecedents), 16)
+    for first in range(0, len(antecedents), rule_chunk):
+        last = first + rule_chunk
+        gathered = np.take(table, indexes[first:last], axis=1)
+        result[:, first:last] = np.prod(gathered, axis=2)
+        del gathered
+    result[:, np.all(antecedents < 0, axis=1)] = 0.
+    return result
+
 
 def compute_antecedents_memberships(antecedents: list[fs.fuzzyVariable], x: np.array) -> list[dict]:
     """
@@ -466,10 +647,9 @@ class RuleBase():
         # Delete the rules that are duplicated in the rule list
         unique = {}
         for ix, rule in enumerate(list_rules):
-            try:
-                unique[rule]
-            except KeyError:
-                unique[rule] = ix
+            # Preserve the existing dict key/hash/equality semantics and first
+            # occurrence ordering, while avoiding a second hash on new keys.
+            unique.setdefault(rule, ix)
 
         new_list = [list_rules[x] for x in unique.values()]
         
@@ -526,7 +706,12 @@ class RuleBase():
 
         if antecedents_memberships is None:
             antecedents_memberships = self.compute_antecedents_memberships(x)
-        
+
+        # Reuse one evaluation-local buffer only for known reductions. Custom
+        # t-norms may retain their input, so preserve fresh arrays for them.
+        reuse_buffer = (self.fuzzy_type() in (fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2)
+                        and (self.tnorm is np.prod or self.tnorm is np.min))
+        scratch = None
         for jx, rule in enumerate(self.rules):
             rule_antecedents = rule.antecedents
             try:
@@ -534,7 +719,12 @@ class RuleBase():
             except AttributeError:
                 fuzzy_modifier = None
 
-            if self.fuzzy_type() == fs.FUZZY_SETS.t1:
+            if reuse_buffer:
+                shape = (x.shape[0], len(rule_antecedents)) + res.shape[2:]
+                if scratch is None or scratch.shape != shape:
+                    scratch = np.empty(shape)
+                membership = scratch
+            elif self.fuzzy_type() == fs.FUZZY_SETS.t1:
                 membership = np.zeros((x.shape[0], len(rule_antecedents)))
             elif self.fuzzy_type() == fs.FUZZY_SETS.t2:
                 membership = np.zeros((x.shape[0], len(rule_antecedents), 2))
@@ -545,7 +735,9 @@ class RuleBase():
             n_nonvl = 0
             for ix, vl in enumerate(rule_antecedents):
                 if vl >= 0:
-                    membership_antecedent = list(antecedents_memberships[ix])[vl]
+                    terms = antecedents_memberships[ix]
+                    membership_antecedent = (terms[vl] if isinstance(terms, (list, tuple, np.ndarray))
+                                            else list(terms)[vl])
 
                     if fuzzy_modifier is not None:
                         if fuzzy_modifier[ix] != -1:
@@ -1205,6 +1397,9 @@ class MasterRuleBase():
         :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
         :return: array with the firing strength of each rule for each sample.
         '''
+        gathered = _gather_rule_firing(self.rule_bases, X, precomputed_truth)
+        if gathered is not None:
+            return gathered
         aux = []
         for ix in range(len(self.rule_bases)):
             aux.append(self[ix].compute_rule_antecedent_memberships(X, antecedents_memberships=precomputed_truth))

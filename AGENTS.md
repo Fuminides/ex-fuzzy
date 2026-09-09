@@ -1,4 +1,4 @@
-# CODEX.md - AI Assistant Guide for Ex-Fuzzy
+# AGENTS.md - AI Assistant Guide for Ex-Fuzzy
 
 ## Project Overview
 
@@ -8,7 +8,6 @@
 - **License**: AGPL v3
 - **Python**: 3.7+
 - **Main Branch**: `main`
-- **Current Branch**: `evox-support` (GPU backend support)
 
 ## Quick Commands
 
@@ -32,9 +31,13 @@ pytest tests/test_fuzzy_sets_comprehensive.py -v
 ex-fuzzy/
 ├── ex_fuzzy/ex_fuzzy/          # Main package
 │   ├── fuzzy_sets.py           # Fuzzy set classes (FS, IVFS, fuzzyVariable)
-│   ├── rules.py                # Rule classes & inference engine
+│   ├── rules.py                # Rule classes, inference engine & firing kernels
 │   ├── evolutionary_fit.py     # GA-based rule optimization (main classifier)
 │   ├── evolutionary_backends.py # Backend abstraction (pymoo/evox)
+│   ├── evolutionary_search.py  # Search loop helpers shared by the backends
+│   ├── evolutionary_fit_regression.py # GA-based fuzzy regression
+│   ├── _fitness.py             # Private fitness primitives for the built-in objective
+│   ├── _array_fitness.py       # Private object-free candidate evaluation (see SPEED_UP.md)
 │   ├── classifiers.py          # High-level classifiers (RuleMineClassifier)
 │   ├── rule_mining.py          # Association rule mining (Apriori)
 │   ├── utils.py                # Utilities & partition construction
@@ -48,10 +51,14 @@ ex-fuzzy/
 │   ├── temporal.py             # Temporal fuzzy sets
 │   ├── centroid.py             # Centroid computation
 │   ├── cognitive_maps.py       # Fuzzy Cognitive Maps
-│   ├── tree_learning.py        # Fuzzy decision trees
-│   ├── tree_learning_new/      # New modular tree implementation
+│   ├── ferl.py                 # Native FERL classifier (optional Cython backend)
+│   ├── ferl_partitions.py      # FERL partition construction
+│   ├── maintenance.py          # Usage instrumentation
+│   ├── tree_learning_new/      # Modular fuzzy decision trees
 │   └── conformal.py            # Conformal prediction for uncertainty quantification
 ├── tests/                      # Pytest test suite
+├── benchmarks/                 # Opt-in performance benchmarks & prototypes
+├── Delegation_strategy/        # Multi-agent delegation guidelines
 ├── Demos/                      # Example notebooks
 └── docs/                       # Sphinx documentation
 ```
@@ -142,17 +149,6 @@ clf.fit(X_train, y_train, n_gen=50, pop_size=50)
 predictions = clf.predict(X_test)
 ```
 
-### Mine Rules
-```python
-from ex_fuzzy import rule_mining, utils
-
-fuzzy_vars = utils.construct_partitions(X_train)
-rules = rule_mining.multiclass_mine_rulebase(
-    X_train, y_train, fuzzy_vars,
-    support_threshold=0.1, max_depth=3
-)
-```
-
 ### Backend Selection
 ```python
 # PyMoo (default, CPU, supports checkpoints)
@@ -241,7 +237,8 @@ metrics = evaluate_conformal_coverage(conf_clf, X_test, y_test, alpha=0.1)
    - `pop_size`: Population size (30-100 typical)
    - `checkpoints`: Checkpoint frequency (pymoo only)
 
-9. **Current Development**: The `evox-support` branch adds GPU acceleration via EvoX/JAX
+9. **Exact Objective**: The genetic evaluator is optimized under a bit-exact parity
+   requirement. See the performance section below before touching it.
 
 10. **No Interactive Git**: Never use `-i` flags with git commands (e.g., `git rebase -i`)
 
@@ -259,3 +256,37 @@ metrics = evaluate_conformal_coverage(conf_clf, X_test, y_test, alpha=0.1)
 | Add statistical test | `bootstrapping_test.py`, `permutation_test.py` |
 | Update persistence | `persistence.py` |
 | Add conformal prediction | `conformal.py` |
+| Change the training objective | `_fitness.py`, `_array_fitness.py` (read `SPEED_UP.md` first) |
+| Add a benchmark | `benchmarks/` |
+
+## Performance-critical paths
+
+Genetic training has been optimized under a strict rule: **the objective must
+stay bit-for-bit identical**. Before changing anything under
+`evolutionary_fit.FitRuleBase`, `_fitness.py`, `_array_fitness.py` or the firing
+kernels in `rules.py`, read [SPEED_UP.md](SPEED_UP.md) for what is already done
+and [SPEED_UP_REVIEW.md](SPEED_UP_REVIEW.md) for the routes that were measured
+and rejected.
+
+Key points:
+
+- `FitRuleBase._array_score` evaluates a candidate without building any rule
+  object. It returns `None` for unsupported cases, and `_construct_ruleBase`
+  plus `_fitness.score_rulebase` runs instead. That object path is still the
+  oracle, the fallback, and what builds the final model and checkpoints.
+- Reduction order matters. NumPy uses pairwise summation on contiguous
+  reductions, so a "simpler" vectorization usually changes the last bits and
+  therefore the search. New reductions need a parity test against the
+  reference, not just a closeness check.
+- Fit-local caches (`_FitnessCache`, `_FiringCache`, the packed membership
+  table) are created and destroyed inside one fit and are bounded in bytes.
+  Do not make them global or unbounded.
+- Measure with `benchmarks/benchmark_evaluator_variants.py`, which refuses to
+  report timings unless every variant produced the identical fitted model.
+
+## Multi-agent delegation
+
+Delegation guidelines for Codex / Astra live in
+[`Delegation_strategy/MULTIAGENT_ASTRA.md`](Delegation_strategy/MULTIAGENT_ASTRA.md).
+Read that file before spawning subagents; it defines what the root agent keeps,
+what is worth delegating, and how to brief and evaluate a subagent.

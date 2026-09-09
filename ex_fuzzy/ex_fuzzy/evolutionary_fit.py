@@ -27,6 +27,7 @@ Key Features:
     - Configurable complexity penalties to avoid overfitting
 """
 import os 
+from functools import wraps
 from typing import Callable, Any, Optional, Union
 
 import numpy as np
@@ -67,6 +68,40 @@ except ImportError:
     import vis_rules
     from evolutionary_search import ExploreRuleBases
 
+
+def _fit_scoped_thread_runner(fit_method):
+    """Create a classifier-owned PyMoo runner for one ``fit`` call only.
+
+    A caller can manually assign ``thread_runner``; that runner is external and
+    must never be closed here.  Constructor-configured workers, however, are
+    owned by the classifier for precisely the duration of one fit.
+    """
+    @wraps(fit_method)
+    def wrapped(self, *args, **kwargs):
+        external_runner = self.thread_runner
+        runner_count = getattr(self, 'runner', 1)
+        owns_pool = (
+            external_runner is None
+            and isinstance(runner_count, (int, np.integer))
+            and runner_count > 1
+            and StarmapParallelization is not None
+        )
+        if not owns_pool:
+            return fit_method(self, *args, **kwargs)
+
+        pool = ThreadPool(runner_count)
+        try:
+            self.thread_runner = StarmapParallelization(pool.starmap)
+            return fit_method(self, *args, **kwargs)
+        finally:
+            # The wrapper owns a bound pool method.  Drop it and join workers
+            # on all exits, including optimizer, callback, and finalization
+            # exceptions.
+            self.thread_runner = external_runner
+            pool.close()
+            pool.join()
+
+    return wrapped
 
 
 class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
@@ -131,13 +166,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 print(f"Warning: {e}. Falling back to pymoo backend.")
             self.backend = ev_backends.get_backend('pymoo')
 
-        if runner > 1 and StarmapParallelization is not None:
-            pool = ThreadPool(runner)
-            self.thread_runner = StarmapParallelization(pool.starmap)
-        else:
-            if runner > 1 and StarmapParallelization is None and verbose:
-                print("Warning: Parallelization not available with this pymoo version. Running single-threaded.")
-            self.thread_runner = None
+        self.runner = runner
+        # A wrapper around ``pool.starmap`` retains the pool.  Keep no pool on
+        # an unfitted estimator; the fit decorator owns the temporary runner.
+        if runner > 1 and StarmapParallelization is None and verbose:
+            print("Warning: Parallelization not available with this pymoo version. Running single-threaded.")
+        self.thread_runner = None
         
         if linguistic_variables is not None:
             # If the linguistic variables are precomputed then we act accordingly
@@ -173,6 +207,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.custom_loss = loss_function
 
 
+    @_fit_scoped_thread_runner
     def fit(self, X: np.array, y: np.array, n_gen:int=70, pop_size:int=30,
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state:int=33,
             var_prob:float=0.3, sbx_eta:float=3.0, mutation_eta:float=7.0, tournament_size:int=3, bootstrap_size:int=1000, checkpoint_path:str='',
@@ -327,20 +362,31 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 self.performance = 1 - result['F']
         else:
             # Normal optimization without checkpoints
-            result = self.backend.optimize(
-                problem=problem,
-                n_gen=n_gen,
-                pop_size=pop_size,
-                random_state=random_state,
-                verbose=self.verbose,
-                var_prob=var_prob,
-                sbx_eta=sbx_eta,
-                mutation_eta=mutation_eta,
-                tournament_size=tournament_size,
-                sampling=rules_gene,
-                patience=patience,
-                min_delta=min_delta
-            )
+            try:
+                from ._fitness import _fitness_cache_scope
+            except ImportError:
+                from _fitness import _fitness_cache_scope
+            # Only the built-in serial PyMoo search has a private, stable fit
+            # context here. Keep callbacks, custom losses/backends and workers
+            # on their existing evaluation path.
+            cache_enabled = (type(problem) is FitRuleBase and self.custom_loss is None
+                             and type(self.backend) is ev_backends.PyMooBackend
+                             and self.thread_runner is None)
+            with _fitness_cache_scope(problem, cache_enabled):
+                result = self.backend.optimize(
+                    problem=problem,
+                    n_gen=n_gen,
+                    pop_size=pop_size,
+                    random_state=random_state,
+                    verbose=self.verbose,
+                    var_prob=var_prob,
+                    sbx_eta=sbx_eta,
+                    mutation_eta=mutation_eta,
+                    tournament_size=tournament_size,
+                    sampling=rules_gene,
+                    patience=patience,
+                    min_delta=min_delta
+                )
             
             best_individual = result['X']
             self.performance = 1 - result['F']
@@ -361,7 +407,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         self.eval_performance = evr.evalRuleBase(
         self.rule_base, np.array(X), y)
-        self.eval_performance.add_full_evaluation()
+        # Pruning needs per-rule dominance scores and winning-rule accuracy,
+        # but not the global MCC/accuracy.  The latter is computed again after
+        # pruning below and is the public final evaluation.
+        self.eval_performance.add_rule_weights()
+        self.eval_performance.add_classification_metrics()
         self.rule_base.purge_rules(self.tolerance)
         self.eval_performance.add_full_evaluation() # After purging the bad rules we update the metrics.
         
@@ -958,6 +1008,9 @@ class FitRuleBase(Problem):
         self.beta_ = beta
         self.backend_name = backend_name
 
+        if self.lvs is None:
+            self._normalization_domain()
+
         if thread_runner is not None:
             super().__init__(
                 vars=vars,
@@ -977,6 +1030,29 @@ class FitRuleBase(Problem):
                 vtype=int,
                 xl=varbound[:, 0],
                 xu=varbound[:, 1])
+
+
+    def _normalization_domain(self) -> tuple:
+        """Return fit-local empirical bounds for chromosome normalization.
+
+        These deliberately use the decoder's nan-aware empirical bounds, not
+        the user-supplied sampling domain. A new problem is created on refit.
+        """
+        if not hasattr(self, '_normalization_domain_cache'):
+            minimum = np.zeros(self.X.shape[1])
+            maximum = np.zeros(self.X.shape[1])
+            for ix in range(self.X.shape[1]):
+                column = self.X[:, ix]
+                if np.issubdtype(column.dtype, np.number):
+                    minimum[ix] = np.nanmin(column)
+                    maximum[ix] = np.nanmax(column)
+                else:
+                    maximum[ix] = len(np.unique(column[~pd.isna(column)]))
+            span = maximum - minimum
+            for values in (minimum, maximum, span):
+                values.flags.writeable = False
+            self._normalization_domain_cache = minimum, maximum, span
+        return self._normalization_domain_cache
 
 
     def _decode_membership_functions(self, x: np.array, fuzzy_type: fs.FUZZY_SETS) -> list[fs.fuzzyVariable]:
@@ -1209,124 +1285,40 @@ class FitRuleBase(Problem):
         
 
 
-    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> rules.MasterRuleBase:
+    def _consequent_pointer(self, fuzzy_type: fs.FUZZY_SETS) -> int:
         '''
-        Given a subject, it creates a rulebase according to its specification.
+        Returns the gene offset at which the consequent classes start.
 
-        :param x: gen of a rulebase. type: dict.
-        :param fuzzy_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
-        :param kwargs: additional parameters to pass to the rule
-        :return: a rulebase object.
-
-        kwargs:
-            - time_moment: if temporal fuzzy sets are used with different partitions for each time interval, 
-                            then this parameter is used to specify which time moment is being used.
+        :param fuzzy_type: a enum type. Check fuzzy_sets for complete specification.
+        :return: int. Index of the first consequent gene.
         '''
-
-        rule_list = [[] for _ in range(self.n_classes)]
-
-        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
-        '''
-        GEN STRUCTURE
-
-        First: features chosen by each rule. Size: nAnts * nRules
-        Second: linguistic labels used. Size: nAnts * nRules
-        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)
-        Four: Consequent classes. Size: nRules
-        Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
-        Sixth: Modifiers for the membership functions. Size: len(self.lvs) * nAnts * nRules
-        '''
-        if self.lvs is None:
-            # If memberships are optimized.
-            if fuzzy_type == fs.FUZZY_SETS.t1:
-                fourth_pointer = 2 * self.nAnts * self.nRules + \
-                    len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4 # 4 is the size of the membership function, 3 is the size of the first (and last) membership function
-            elif fuzzy_type == fs.FUZZY_SETS.t2:
-                fourth_pointer = 2 * self.nAnts * self.nRules + \
-                    len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
-                
-        else:
+        if self.lvs is not None:
             # If no memberships are optimized.
-            fourth_pointer = 2 * self.nAnts * self.nRules
+            return 2 * self.nAnts * self.nRules
 
-        if self.ds_mode == 2:
-            fifth_pointer = fourth_pointer + self.nRules
-        else:
-            fifth_pointer = fourth_pointer
+        # If memberships are optimized.
+        mf_size = 4 if fuzzy_type == fs.FUZZY_SETS.t1 else 6
+        if fuzzy_type == fs.FUZZY_SETS.t1:
+            return 2 * self.nAnts * self.nRules + \
+                len(self.n_lv_possible) * 3 + sum(np.array(self.n_lv_possible)-1) * 4 # 4 is the size of the membership function, 3 is the size of the first (and last) membership function
+        elif fuzzy_type == fs.FUZZY_SETS.t2:
+            return 2 * self.nAnts * self.nRules + \
+                len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
 
-        if self.ds_mode == 2:
-            sixth_pointer = fifth_pointer + self.nRules
-        else:
-            sixth_pointer = fifth_pointer
-        
-        aux_pointer = 0
-        min_domain = np.zeros(self.X.shape[1])
-        max_domain = np.zeros(self.X.shape[1])
-        
-        # Handle mixed data types (numerical and string columns)
-        for ix in range(self.X.shape[1]):
-            if np.issubdtype(self.X[:, ix].dtype, np.number):
-                # For numerical columns, use nanmin/nanmax
-                min_domain[ix] = np.nanmin(self.X[:, ix])
-                max_domain[ix] = np.nanmax(self.X[:, ix])
-            else:
-                # For string/categorical columns, use 0 and number of unique values
-                min_domain[ix] = 0
-                max_domain[ix] = len(np.unique(self.X[:, ix][~pd.isna(self.X[:, ix])]))
-        
-        range_domain = np.zeros((self.X.shape[1],))
-        for ix in range(self.X.shape[1]):
-            try:
-                range_domain[ix] = max_domain[ix] - min_domain[ix]
-            except TypeError:
-                pass
 
-        # Integer sampling doesnt work fine in pymoo, so we do this (which is btw what pymoo is really doing if you just set integer optimization)
-        try:
-            # subject might come as a dict.
-            x = np.array(list(x.values())).astype(int)
-        except AttributeError:
-            x = x.astype(int)
+    def _decode_antecedents(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> list:
+        '''
+        Decodes the fuzzy variables a subject uses as antecedents.
 
-        for i0 in range(self.nRules):  # Reconstruct the rules
-            first_pointer = i0 * self.nAnts
-            chosen_ants = x[first_pointer:first_pointer + self.nAnts]
+        Shared by the rule-object decoder and the array evaluation path so that
+        partition normalization has a single implementation.
 
-            second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
-            # Shape: self.nAnts + self.n_lv_possible  + 1
-            antecedent_parameters = x[second_pointer:second_pointer+self.nAnts]
-
-            init_rule_antecedents = np.zeros(
-                (self.X.shape[1],)) - 1  # -1 is dont care
-            for jx, ant in enumerate(chosen_ants):
-                if self.lvs is not None:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
-                else:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible[ant] - 1)
-
-                init_rule_antecedents[ant] = antecedent_parameters[jx]
-
-            consequent_idx = x[fourth_pointer + aux_pointer]
-
-            assert consequent_idx < self.n_classes, "Consequent class is not valid. Something in the gene is wrong."
-            aux_pointer += 1
- 
-            if self.ds_mode == 2:
-                rule_weight = x[fifth_pointer + i0] / 100
-            else:
-                rule_weight = 1.0
-
-            if consequent_idx != -1 and np.any(init_rule_antecedents != -1):
-                rs_instance = rules.RuleSimple(init_rule_antecedents, 0, None)
-                if self.ds_mode == 1 or self.ds_mode == 2:
-                    rs_instance.weight = rule_weight
-
-                rule_list[consequent_idx].append(
-                    rs_instance)
-
-            
-        # If we optimize the membership functions - decode and normalize them
+        :param x: integer gene of a rulebase.
+        :param fuzzy_type: enum type, see fuzzy_sets.
+        :return: list of fuzzy variables.
+        '''
         if self.lvs is None:
+            min_domain, max_domain, range_domain = self._normalization_domain()
             antecedents_raw = self._decode_membership_functions(x, fuzzy_type)
             
             # Normalize the membership functions to the data domain
@@ -1377,6 +1369,94 @@ class FitRuleBase(Problem):
             except:
                 antecedents = self.lvs
 
+        return antecedents
+
+
+    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> rules.MasterRuleBase:
+        '''
+        Given a subject, it creates a rulebase according to its specification.
+
+        :param x: gen of a rulebase. type: dict.
+        :param fuzzy_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
+        :param kwargs: additional parameters to pass to the rule
+        :return: a rulebase object.
+
+        kwargs:
+            - time_moment: if temporal fuzzy sets are used with different partitions for each time interval, 
+                            then this parameter is used to specify which time moment is being used.
+        '''
+
+        rule_list = [[] for _ in range(self.n_classes)]
+
+        '''
+        GEN STRUCTURE
+
+        First: features chosen by each rule. Size: nAnts * nRules
+        Second: linguistic labels used. Size: nAnts * nRules
+        Third: Parameters for the fuzzy partitions of the chosen variables. Size: X.shape[1] * ((self.n_linguistic_variables-1) * mf_size + 2)
+        Four: Consequent classes. Size: nRules
+        Five: Weights for each rule. Size: nRules (only if ds_mode == 2)
+        Sixth: Modifiers for the membership functions. Size: len(self.lvs) * nAnts * nRules
+        '''
+        fourth_pointer = self._consequent_pointer(fuzzy_type)
+
+        if self.ds_mode == 2:
+            fifth_pointer = fourth_pointer + self.nRules
+        else:
+            fifth_pointer = fourth_pointer
+
+        if self.ds_mode == 2:
+            sixth_pointer = fifth_pointer + self.nRules
+        else:
+            sixth_pointer = fifth_pointer
+        
+        aux_pointer = 0
+
+        # Integer sampling doesnt work fine in pymoo, so we do this (which is btw what pymoo is really doing if you just set integer optimization)
+        try:
+            # subject might come as a dict.
+            x = np.array(list(x.values())).astype(int)
+        except AttributeError:
+            x = x.astype(int)
+
+        for i0 in range(self.nRules):  # Reconstruct the rules
+            first_pointer = i0 * self.nAnts
+            chosen_ants = x[first_pointer:first_pointer + self.nAnts]
+
+            second_pointer = (i0 * self.nAnts) + (self.nAnts * self.nRules)
+            # Shape: self.nAnts + self.n_lv_possible  + 1
+            antecedent_parameters = x[second_pointer:second_pointer+self.nAnts]
+
+            init_rule_antecedents = np.zeros(
+                (self.X.shape[1],)) - 1  # -1 is dont care
+            for jx, ant in enumerate(chosen_ants):
+                if self.lvs is not None:
+                    antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
+                else:
+                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible[ant] - 1)
+
+                init_rule_antecedents[ant] = antecedent_parameters[jx]
+
+            consequent_idx = x[fourth_pointer + aux_pointer]
+
+            assert consequent_idx < self.n_classes, "Consequent class is not valid. Something in the gene is wrong."
+            aux_pointer += 1
+ 
+            if self.ds_mode == 2:
+                rule_weight = x[fifth_pointer + i0] / 100
+            else:
+                rule_weight = 1.0
+
+            if consequent_idx != -1 and np.any(init_rule_antecedents != -1):
+                rs_instance = rules.RuleSimple(init_rule_antecedents, 0, None)
+                if self.ds_mode == 1 or self.ds_mode == 2:
+                    rs_instance.weight = rule_weight
+
+                rule_list[consequent_idx].append(
+                    rs_instance)
+
+            
+        antecedents = self._decode_antecedents(x, fuzzy_type, **kwargs)
 
         for i in range(self.n_classes):
             if fuzzy_type == fs.FUZZY_SETS.temporal:
@@ -1421,6 +1501,92 @@ class FitRuleBase(Problem):
         out["F"] = 1 - score
 
     
+    #: Set to False to force the object decoder, for benchmarks and parity tests.
+    array_evaluation = True
+
+    def _label_domain(self):
+        '''
+        Returns the fit-local integer label layout used by the MCC, or None.
+
+        The training labels of a problem do not change during its optimization,
+        exactly like its precomputed memberships.
+        '''
+        if not hasattr(self, '_label_domain_cache'):
+            try:
+                from ._fitness import _LabelDomain
+            except ImportError:
+                from _fitness import _LabelDomain
+            self._label_domain_cache = _LabelDomain.build(self.y, self.n_classes)
+        return self._label_domain_cache
+
+
+    def _packed_memberships(self) -> Optional[tuple]:
+        '''
+        Returns the packed gather table for fixed partitions, or None.
+
+        Precomputed partitions do not change during a problem's optimization, so
+        the table is built once instead of once per candidate. Optimized
+        partitions get None: their memberships differ per candidate.
+        '''
+        if not hasattr(self, '_packed_memberships_cache'):
+            table = None
+            if self.lvs is not None and self._precomputed_truth is not None:
+                table = rules.pack_membership_table(
+                    self._precomputed_truth, len(self.X),
+                    (2,) if self.fuzzy_type == fs.FUZZY_SETS.t2 else ())
+            self._packed_memberships_cache = table
+        return self._packed_memberships_cache
+
+
+    def _array_score(self, x: np.array, **kwargs) -> Optional[float]:
+        """Score a chromosome without building rule objects, or None if unsupported.
+
+        Returning None means the candidate leaves the supported case and the
+        ordinary object decoder must evaluate it instead.
+        """
+        if not self.array_evaluation or type(self) is not FitRuleBase or kwargs:
+            return None
+        if self.X.shape[1] == 0 or self.fuzzy_type not in (fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2):
+            return None
+        try:
+            from . import _array_fitness as arrfit
+        except ImportError:
+            import _array_fitness as arrfit
+
+        if self.lvs is None:
+            term_counts = np.asarray(self.n_lv_possible)
+        elif isinstance(self.lvs, (list, tuple)):
+            term_counts = np.asarray([len(lv) for lv in self.lvs])
+        else:
+            return None  # Temporal partitions keep the object decoder.
+        try:
+            x = np.array(list(x.values())).astype(int)
+        except AttributeError:
+            x = x.astype(int)
+        decoded = arrfit.decode_rule_arrays(
+            x, self.nRules, self.nAnts, self.X.shape[1], self.n_classes,
+            term_counts, self.ds_mode, self._consequent_pointer(self.fuzzy_type))
+        if decoded is None:
+            return None
+        packed = None
+        if self.lvs is None:
+            antecedents = self._decode_antecedents(x, self.fuzzy_type)
+            tail = (2,) if self.fuzzy_type == fs.FUZZY_SETS.t2 else ()
+            packed = rules.pack_membership_table_from_variables(
+                antecedents, self.X, tail)
+            truth = (self._precomputed_truth if packed is not None
+                     else rules.compute_antecedents_memberships(antecedents, self.X))
+        else:
+            truth = self._precomputed_truth
+            packed = self._packed_memberships()
+        if truth is None and packed is None:
+            return None
+        return arrfit.score_candidate(
+            decoded, truth, self.X, self.y, self.n_classes, self.ds_mode,
+            self.allow_unknown, self.tolerance, self.alpha_, self.beta_,
+            self.fuzzy_type == fs.FUZZY_SETS.t2, self._label_domain(),
+            getattr(self, '_firing_cache', None), packed)
+
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):
         """Use reusable T1/T2 fitness primitives for the built-in objective only."""
         standard_loss = getattr(self.fitness_func, '__func__', None) is FitRuleBase.fitness_func
@@ -1430,10 +1596,21 @@ class FitRuleBase(Problem):
                 from ._fitness import score_rulebase
             except ImportError:
                 from _fitness import score_rulebase
-            rulebase = self._construct_ruleBase(x, self.fuzzy_type)
-            out['F'] = 1 - score_rulebase(
-                rulebase, self.X, self.y, self.tolerance,
-                self.alpha_, self.beta_, self._precomputed_truth)
+            cache = getattr(self, '_fitness_cache', None)
+            key = cache.key(x) if cache is not None else None
+            cached = cache.get(key) if cache is not None else None
+            if cached is not None:
+                out['F'] = cached
+                return
+            score = self._array_score(x, **kwargs)
+            if score is None:
+                rulebase = self._construct_ruleBase(x, self.fuzzy_type)
+                score = score_rulebase(
+                    rulebase, self.X, self.y, self.tolerance,
+                    self.alpha_, self.beta_, self._precomputed_truth)
+            out['F'] = 1 - score
+            if cache is not None:
+                cache.put(key, out['F'])
         else:
             self._evaluate_slow(x, out, *args, **kwargs)
 
