@@ -241,7 +241,6 @@ Documentation Contents
 
     contributing
     changelog
-    roadmap
 
 .. toctree::
     :maxdepth: 1

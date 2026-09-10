@@ -1,4 +1,4 @@
-# Genetic training speedup plan
+# Genetic training speedup development record
 
 **Status (2026-09-10): the earlier exact evaluator optimizations are complete.
 The follow-up adds bounded population batching for fixed-partition T1 fits,
@@ -11,9 +11,8 @@ increments, not shipped capabilities.**
 ### Current implementation status
 
 The entries below describe bounded increments, not completion of their entire
-proposal IDs. The current user authorization covers continued exact speedup
-implementation guided by this plan. Search-changing behavior and new public
-configuration options still require an explicit decision.
+proposal IDs. This record preserves historical decisions and measurements; it does not
+authorize future work. Confirm the scope of new work from the current task.
 
 | ID | Current status | Implemented or authorized scope |
 | --- | --- | --- |
@@ -547,12 +546,6 @@ python benchmarks/benchmark_classifier_fitness.py --fuzzy-type t2 --legacy-firin
 ```
 
 ### Fifth implementation increment (2026-09-09): A07 and A11
-
-Work followed `Delegation_strategy/MULTIAGENT_ASTRA.md` and the configured
-Terra/medium worker default: Terra handled scoring, Luna handled the status audit
-and narrow duplicate-lookup change, and the root agent integrated, reviewed and
-verified their changes. File ownership was separated and timing runs did not
-overlap test execution.
 
 A07 reuses `y == consequent` masks within one candidate's fitness evaluation,
 including the second dominance pass after pruning. The cache retains at most

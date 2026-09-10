@@ -224,8 +224,8 @@ Further reading
 ===============
 
 The development record behind these optimizations lives in the repository rather
-than in this guide. ``SPEED_UP.md`` documents each change, the measurements
-behind it and the reasoning; ``SPEED_UP_REVIEW.md`` catalogues every proposal
+than in this guide. ``LLM_memory/SPEED_UP.md`` documents each change, the measurements
+behind it and the reasoning; ``LLM_memory/SPEED_UP_REVIEW.md`` catalogues every proposal
 that was considered, including the ones that were measured and rejected — which
 is often the more useful half if you are thinking of contributing an
 optimization of your own.
