@@ -59,21 +59,22 @@ class FUZZY_SETS(enum.Enum):
     This enum is used throughout the library to specify which type of fuzzy set
     should be created or used in operations.
     
-    Attributes:
-        t1: Type-1 fuzzy sets with crisp membership functions
-        t2: Type-2 interval fuzzy sets with upper and lower membership bounds  
-        gt2: General Type-2 fuzzy sets with full secondary membership functions
-        
     Example:
         >>> fz_type = FUZZY_SETS.t1
         >>> if fz_type == FUZZY_SETS.t1:
         ...     print("Using Type-1 fuzzy sets")
     """
+    #: Type-1 fuzzy sets with crisp membership functions.
     t1 = 'Type 1'
+    #: Type-2 interval fuzzy sets with upper and lower membership bounds.
     t2 = 'Type 2'
+    #: General Type-2 fuzzy sets with full secondary membership functions.
     gt2 = 'General Type 2'
+    #: Type-1 sets whose membership depends on a discrete temporal moment.
     temporal = 'temporal'
+    #: Interval Type-2 sets whose membership depends on a temporal moment.
     temporal_t2 = 'temporal_t2'
+    #: General Type-2 sets whose membership depends on a temporal moment.
     temporal_gt2 = 'temporal_gt2'
 
 
