@@ -1012,6 +1012,7 @@ class FitRuleBase(Problem):
             self._normalization_domain()
 
         if thread_runner is not None:
+            self._external_elementwise_runner = True
             super().__init__(
                 vars=vars,
                 n_var=nVar,
@@ -1022,6 +1023,7 @@ class FitRuleBase(Problem):
                 xu=varbound[:, 1],
                 elementwise_runner=thread_runner)
         else:
+            self._external_elementwise_runner = False
             super().__init__(
                 vars=vars,
                 n_var=nVar,
@@ -1504,6 +1506,94 @@ class FitRuleBase(Problem):
     #: Set to False to force the object decoder, for benchmarks and parity tests.
     array_evaluation = True
 
+    def _can_batch_population(self, *args, **kwargs) -> bool:
+        """Whether this fit context can use the private C01 evaluator."""
+        if (type(self) is not FitRuleBase or not self.array_evaluation
+                or self.lvs is None or not hasattr(self, '_fitness_cache')
+                or args or kwargs):
+            return False
+        if (getattr(self._evaluate, '__func__', None) is not _BATCH_SCALAR_EVALUATE
+                or getattr(self._array_score, '__func__', None) is not _BATCH_ARRAY_SCORE):
+            return False
+        standard_loss = getattr(self.fitness_func, '__func__', None) is FitRuleBase.fitness_func
+        if (not standard_loss or np.asarray(self.y).dtype.kind not in 'biuf'
+                or self.fuzzy_type != fs.FUZZY_SETS.t1
+                or self.ds_mode not in (0, 1)
+                or self._external_elementwise_runner):
+            return False
+        return True
+
+
+    def _population_scores(self, X: np.ndarray, *args, **kwargs) -> Optional[np.ndarray]:
+        """Score an eligible small fixed-partition population, or return None."""
+        if not self._can_batch_population(*args, **kwargs):
+            return None
+        packed = self._packed_memberships()
+        if packed is None:
+            return None
+        try:
+            from . import _population_fitness as popfit
+        except ImportError:
+            import _population_fitness as popfit
+        values = np.asarray(X)
+        if values.ndim != 2 or values.dtype.kind not in 'biuf':
+            return None
+        integer_values = values.astype(int)
+        term_counts = np.asarray([len(lv) for lv in self.lvs])
+        return popfit.score_population(
+            integer_values, packed, np.asarray(self.y), self.nRules, self.nAnts,
+            self.X.shape[1], self.n_classes, term_counts,
+            self._consequent_pointer(self.fuzzy_type), self.ds_mode,
+            self.allow_unknown, self.tolerance, self.alpha_, self.beta_,
+            self._label_domain(), getattr(self, '_firing_cache', None))
+
+
+    def _population_shape_supported(self, population: int) -> bool:
+        """Check C01's private sample and scratch-memory bounds cheaply."""
+        try:
+            from . import _population_fitness as popfit
+        except ImportError:
+            import _population_fitness as popfit
+        return popfit.supports_shape(
+            population, len(self.X), self.nRules, self.X.shape[1])
+
+
+    def _evaluate_elementwise(self, X, out, *args, **kwargs):
+        """Use population scoring when eligible, retaining scalar fallback."""
+        values = np.asarray(X)
+        cache = getattr(self, '_fitness_cache', None)
+        if (cache is None or values.ndim != 2
+                or not self._can_batch_population(*args, **kwargs)
+                or not self._population_shape_supported(len(values))):
+            return super()._evaluate_elementwise(X, out, *args, **kwargs)
+
+        fitness = np.empty(len(values))
+        missing = []
+        keys = []
+        for index, gene in enumerate(values):
+            key = cache.key(gene)
+            cached = cache.get(key)
+            keys.append(key)
+            if cached is None:
+                missing.append(index)
+            else:
+                fitness[index] = cached
+        # There is no population left to score.  Calling the private evaluator
+        # with an empty input would decline its ``population >= 2`` contract and
+        # unnecessarily route the complete population through scalar pymoo
+        # evaluation again.
+        if not missing:
+            out['F'] = fitness
+            return
+        scores = self._population_scores(values[missing], *args, **kwargs)
+        if scores is None:
+            return super()._evaluate_elementwise(X, out, *args, **kwargs)
+        computed = 1 - scores
+        fitness[missing] = computed
+        for index, value in zip(missing, computed):
+            cache.put(keys[index], value)
+        out['F'] = fitness
+
     def _label_domain(self):
         '''
         Returns the fit-local integer label layout used by the MCC, or None.
@@ -1644,4 +1734,11 @@ class FitRuleBase(Problem):
             score = 0.0
             
         return score
+
+
+# Population evaluation declines when either scalar oracle is monkeypatched.
+# Besides keeping instrumentation meaningful, this makes benchmarks and parity
+# tests able to select the old path without a public configuration flag.
+_BATCH_SCALAR_EVALUATE = FitRuleBase._evaluate
+_BATCH_ARRAY_SCORE = FitRuleBase._array_score
     
