@@ -555,7 +555,53 @@ def gt2_fuzzy_partitions_dataset(x0: np.array, resolution_exp:int=2, n_partition
     return res
 
 
-def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3, shape='trapezoid') -> list[fs.fuzzyVariable]:
+def detect_categorical_mask(X, max_unique_numeric: int = 5) -> np.array:
+    """
+    Detect which variables of a dataset should be treated as categorical.
+
+    A variable is categorical when its values are not numeric (strings, pandas
+    categories or booleans), or when it only takes whole numbers and at most
+    ``max_unique_numeric`` different ones. The latter covers flags like a 0/1
+    indicator, for which a quantile-based numerical partition is degenerate.
+
+    Args:
+        X (np.array or pd.DataFrame): Input data with shape (samples, features).
+        max_unique_numeric (int, optional): Maximum number of different values a
+            whole-numbered variable can take and still be considered categorical.
+            Default is 5.
+
+    Returns:
+        np.array: One entry per variable, in the order of the columns of X: the
+            number of categories for the categorical variables and 0 for the
+            numerical ones. Suitable as the ``categorical_mask`` argument of
+            :func:`construct_partitions`.
+
+    Note:
+        Missing values are ignored when counting categories, so a variable is
+        never categorical because of its NaNs alone.
+    """
+    frame = X if isinstance(X, pd.DataFrame) else pd.DataFrame(np.asarray(X))
+    # A frame built from an object array carries no per column dtype yet.
+    frame = frame.infer_objects()
+    mask = np.zeros(frame.shape[1], dtype=int)
+
+    for ix in range(frame.shape[1]):
+        values = frame.iloc[:, ix].dropna()
+        if len(values) == 0:
+            continue
+
+        n_unique = values.nunique()
+        if not pd.api.types.is_numeric_dtype(values):
+            mask[ix] = n_unique
+        elif n_unique <= max_unique_numeric:
+            numeric = values.to_numpy()
+            if np.all(np.floor(numeric) == numeric):
+                mask[ix] = n_unique
+
+    return mask
+
+
+def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SETS.t1, categorical_mask: np.array=None, n_partitions=3, shape='trapezoid', detect_categorical: bool=True) -> list[fs.fuzzyVariable]:
     """
     Create a list of fuzzy variables from data with automatic partitioning.
     
@@ -568,9 +614,14 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
             Can be either a numpy array or pandas DataFrame.
         fz_type_studied (fs.FUZZY_SETS): Type of fuzzy sets to create (t1, t2, or gt2).
         categorical_mask (list, optional): Boolean mask indicating which variables are 
-            categorical. If None, all variables are treated as numerical.
+            categorical. If None, the mask is detected from the data, unless
+            detect_categorical is False, in which case all variables are treated
+            as numerical.
         n_partitions (int, optional): Number of partitions (fuzzy sets) to create 
             for each numerical variable. Default is 3.
+        detect_categorical (bool, optional): If True (default) and no categorical_mask
+            is given, detect the categorical variables of X with
+            :func:`detect_categorical_mask`. Ignored when categorical_mask is given.
             
     Returns:
         list: List of fuzzyVariable objects, one for each feature in the input data.
@@ -588,6 +639,13 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
         - For categorical variables, one fuzzy set is created per unique category
         - The function automatically handles feature naming from DataFrame columns
     """
+    if categorical_mask is None and detect_categorical:
+        detected = detect_categorical_mask(X)
+        # Left as None when nothing is categorical, so a dataset without
+        # categorical variables is partitioned exactly as it was before.
+        if np.any(detected > 0):
+            categorical_mask = detected
+
     if isinstance(X, pd.DataFrame):
         feat_names = X.columns
         X = X.values
@@ -992,17 +1050,27 @@ def validate_partitions(X, fuzzy_partitions: list[fs.fuzzyVariable], categorical
     :param X: numpy array, shape samples x features.
     :param fuzzy_partitions: list of fuzzy variables.
     :param categorical_mask: boolean mask vector that indicates for each variable if its categorical or not.
-    :return: True if the partitions are valid, False otherwise.
+    :return: list with one entry per fuzzy variable, in the same order: True if the variable
+        is valid, False otherwise. A variable that has no validation to run, either because it
+        is categorical or because it is not Type-1, reports True.
     '''
     if isinstance(X, pd.DataFrame):
         X = X.values
     res = []
 
+    # One entry per variable, so that res[ix] always answers for fuzzy_partitions[ix].
     for ix, fz in enumerate(fuzzy_partitions):
         if categorical_mask is not None and categorical_mask[ix]:
-            continue  # Skip categorical variables
+            res.append(True)  # Categorical variables are valid by definition
+            continue
         if verbose:
             print(f'Validating fuzzy variable {fz.name}...')
-        res.append(fz.validate(X[:, ix], verbose))
+        try:
+            res.append(fz.validate(X[:, ix], verbose))
+        except NotImplementedError as error:
+            # Type-2 variables have no validation to run.
+            if verbose:
+                print(f'Skipping fuzzy variable {fz.name}: {error}')
+            res.append(True)
 
     return res

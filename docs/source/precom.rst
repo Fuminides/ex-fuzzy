@@ -12,6 +12,20 @@ The easiest way to compute these partitions is with the ``utils.construct_partit
     fz_type_studied = fs.FUZZY_SETS.t2
     precomputed_partitions = utils.construct_partitions(X, fz_type_studied)
 
+---------------------------------
+Categorical variables
+---------------------------------
+Quantiles are meaningless for a variable that holds names, or one that is just a 0/1 flag. ``construct_partitions``
+detects those variables and gives them a crisp partition instead: one fuzzy set per category, which is 1 exactly on
+that category and 0 everywhere else. A variable is detected as categorical when its values are not numeric, or when
+it only takes whole numbers and at most five different ones::
+
+    categorical_mask = utils.detect_categorical_mask(X)  # what construct_partitions detects on its own
+
+Pass ``categorical_mask`` yourself to decide it instead of the detection, or ``detect_categorical=False`` to treat
+every variable as numerical. ``BaseFuzzyRulesClassifier`` accepts the same two arguments and uses them when it
+optimizes the partitions itself.
+
 --------------------------------
 About the precomputed partitions
 --------------------------------

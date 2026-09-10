@@ -112,7 +112,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: Union[list, int] = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
-                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, allow_unknown:bool=False, backend: str='pymoo') -> None:
+                 domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: int = 0, allow_unknown:bool=False, backend: str='pymoo',
+                 detect_categorical: bool = True) -> None:
         '''
         Inits the optimizer with the corresponding parameters.
 
@@ -130,6 +131,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         :param ds_mode: mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
         :param allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
         :param backend: evolutionary backend to use. Options: 'pymoo' (default, CPU) or 'evox' (GPU-accelerated). Install with: pip install ex-fuzzy[evox]
+        :param detect_categorical: if True (default) and no categorical_mask is given, the categorical variables are detected from the data with utils.detect_categorical_mask. Ignored when categorical_mask is given or when linguistic_variables are precomputed.
         '''
         if precomputed_rules is not None:
             self.nRules = len(precomputed_rules.get_rules())
@@ -149,13 +151,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     self.classes_names = class_names
             else:
                 self.classes_names = class_names
-            self.categorical_mask = categorical_mask
 
+        self.categorical_mask = categorical_mask
         self.custom_loss = None
         self.verbose = verbose
         self.tolerance = tolerance
         self.ds_mode = ds_mode
         self.allow_unknown = allow_unknown
+        self.detect_categorical = detect_categorical
         
         # Initialize evolutionary backend
         try:
@@ -239,6 +242,19 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             patience = None
         min_delta = max(0.0, float(min_delta))
 
+        # Detected before X loses its column dtypes below.
+        categorical_mask = self.categorical_mask
+        if categorical_mask is None and self.detect_categorical and self.lvs is None:
+            try:
+                from . import utils
+            except ImportError:
+                import utils
+            detected = utils.detect_categorical_mask(X)
+            if np.any(detected > 0):
+                categorical_mask = detected
+                if self.verbose:
+                    print('Detected categorical variables: ' + str(np.flatnonzero(detected).tolist()))
+
         if isinstance(X, pd.DataFrame):
             lvs_names = list(X.columns)
             X = X.values
@@ -278,7 +294,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 # If Fuzzy variables need to be optimized.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
-                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, categorical_mask=self.categorical_mask,
+                                    alpha=self.alpha_, beta=self.beta_, ds_mode=self.ds_mode, categorical_mask=categorical_mask,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names)
             else:
                 # If Fuzzy variables are already precomputed.
