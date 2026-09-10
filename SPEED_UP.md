@@ -1,16 +1,11 @@
 # Genetic training speedup plan
 
-**Status: the exact-speedup implementation is complete for the routes that could
-be made bit-exact. Shipped: direct membership lookup and batched gathering
-(A01), scratch reuse (A02), fit-local metadata (A03), an object-free array
-evaluator with array pruning and degenerate shortcuts (A04, A08, A09), packed
-membership tables (A05), grouped dominance reductions (A06), class masks and
-integer label encoding (A07), fit-scoped pools (C07), duplicate-lookup
-simplification (A11), redundant-finalization removal (A10), exact fitness
-memoization (B01, B02) and fit-local firing reuse (B04). Every remaining
-proposal has a measurement or a stated blocker in the
-[complete catalogue review](SPEED_UP_REVIEW.md); none of them can be adopted
-without either a numerical-policy decision or substantial new evaluator work.**
+**Status (2026-09-10): the earlier exact evaluator optimizations are complete.
+The follow-up adds bounded population batching for small fixed-partition T1
+fits and resolves enum serialization. An exact compiled-reduction prototype
+remains benchmark-only. See the follow-up measurements below; further compiled,
+T2 batching, optimized-partition batching and process-pool work are separate
+increments, not shipped capabilities.**
 
 ### Current implementation status
 
@@ -36,11 +31,11 @@ configuration options still require an explicit decision.
 | B02 | Implemented: scoped | Exact-genotype memoization for serial, built-in PyMoo fits only. |
 | B04 | Implemented: scoped | Fit-local firing reuse, fixed partitions only, 8 MiB of retained columns. |
 | B05 | Measured: rejected | Reusing firing across candidates with optimized partitions changed the objective of about half the candidates. |
-| C01/C02 | Measured: not implemented | Batching headroom quantified; see the review. |
-| C05 | Blocked: diagnosed | `FUZZY_SETS` cannot be pickled by reference; see the review. |
+| C01/C02 | C01 implemented in narrow scope; C02 deferred | Serial built-in T1, fixed partitions, at most 512 samples and a 32 MiB gather estimate; unsupported contexts retain scalar evaluation. |
+| C05 | Serialization prerequisite fixed | Stable enum definition; fresh-process and spawned-worker parity tests. Persistent/shared-memory workers are not implemented. |
 | C07 | Partial: implemented | Fit-scoped owned pools; success/error cleanup and external ownership preserved. |
 | C10 | Measured | Peak RSS of the new fit-local caches reported below. |
-| D01/D02/D03 | Measured: blocked on parity | A compiled route cannot reproduce NumPy's pairwise summation with ordinary loops. |
+| D01/D02/D03 | Exact prototype measured; not adopted | Explicit pairwise reductions pass tested parity; optional Numba dispatch stays in benchmarks. |
 | Other IDs | Reviewed, pending or deferred | See [all 36 decisions and evidence](SPEED_UP_REVIEW.md). |
 
 Scope: `BaseFuzzyRulesClassifier`, primarily its built-in classification objective
@@ -742,7 +737,10 @@ Optimized partitions get neither cache, which is why they show no growth. The
 budgets are module constants in `_fitness._FiringCache` and
 `rules.pack_membership_table`; they are not public options.
 
-#### Remaining headroom
+#### Remaining headroom (2026-09-09 assessment)
+
+The 2026-09-10 follow-up below supersedes the implementation status in this
+historical assessment.
 
 Uncached candidate evaluation time fits `a + b × samples` closely. The
 sample-independent part `a` — interpreter dispatch and fixed-size decoding — is
@@ -767,9 +765,10 @@ reductions. A compiled kernel would have to reimplement pairwise summation
 exactly, or the project would have to accept a numerical-policy change. Neither
 is decided here.
 
-#### Defects found and not fixed
+#### Defects found (2026-09-09)
 
-Both are pre-existing and outside this speedup work:
+Both were pre-existing. The enum defect is fixed in the 2026-09-10 follow-up;
+the direct `RuleBase` constructor defect remains outside this work:
 
 - `rules.RuleBase.__init__` ends with `self.delete_duplicates()`, a method that
   does not exist anywhere in the package. It is unreachable in practice because
@@ -818,3 +817,118 @@ Current implementation and test entry points:
 - `benchmarks/benchmark_evaluator_variants.py`
 - `benchmarks/prototype_firing_cache.py`
 - `benchmarks/prototype_remaining_routes.py`
+
+
+## Exact-speedup follow-up — 2026-09-10
+
+The selected follow-up is complete in its bounded scope: C01 small-data T1
+batching is retained, C05's enum serialization prerequisite is fixed, and the
+D01–D03 exact-reduction experiment remains benchmark-only. No numerical
+tolerance, search change, public option or required dependency was introduced.
+
+### C01: bounded population batching
+
+`_population_fitness.py` batches fixed-partition T1 candidate decoding, firing,
+dominance, pruning and MCC. It runs only for the built-in serial objective with
+`ds_mode` 0/1, a supported integer-label layout, at most 512 samples, and a
+32 MiB estimate for gathered values. This is a dispatch bound, not a promise
+about total process memory. Unsupported cases retain the scalar/object paths;
+custom losses, checkpoints and external runners retain their existing behavior.
+Fitness/firing caches stay fit-local and bounded. All-cache-hit populations
+return immediately. Duplicate population entries and logical evaluation counts
+are preserved.
+
+Fresh-process randomized-order complete fits, median of five repeats, Python
+3.12.3, NumPy 2.3.5, pymoo 0.6.1.6 on the local x86-64 host. No concurrent test
+or benchmark runs. Synthetic data seed 42, search seed 7, 10 features, 3 classes,
+20 rules, 4 antecedents, population 40, 20 generations (800 logical evaluations),
+early stopping disabled. Compare against the current optimized scalar evaluator,
+including its caches. Thread environment was left unchanged.
+
+| Samples | Scalar median (range), seconds | Batch median (range), seconds | Speedup | Peak RSS scalar/batch, MiB |
+| ---: | --- | --- | ---: | ---: |
+| 150 | 0.1700 (0.1689–0.1724) | 0.1077 (0.1061–0.1166) | 1.58× | 184.7/186.8 |
+| 400 | 0.2044 (0.2036–0.2053) | 0.1465 (0.1461–0.1483) | 1.40× | 187.5/194.0 |
+| 512 | 0.2199 (0.2180–0.2229) | 0.1817 (0.1809–0.1830) | 1.21× | 188.8/197.0 |
+| 1,000 | 0.2543 (0.2534–0.2553) | 0.2548 (0.2533–0.2566) | 1.00× | 193.2/193.4 |
+
+At 1,000 samples the batching dispatch declines, so that row measures fallback
+overhead/noise. Peak RSS is the largest process peak among five repeats and
+includes imports and allocator effects. Every repeat compared final population
+chromosomes/fitnesses, selected chromosome, model performance, rule scores,
+predictions and logical evaluation count exactly. The test suite also covers
+penalties, unknown predictions, pruning, empty/duplicate phenotypes, cache hits,
+label fallbacks and the sample/memory dispatch boundary. Additional randomized
+review checked 180 contexts and padded/inactive rules at 512 samples.
+
+### C05: serialization prerequisite
+
+`fuzzy_sets.FUZZY_SETS` now contains the temporal members directly, with a hash
+consistent with the existing value-based equality. `temporal.NEW_FUZZY_SETS`
+is a compatibility alias; the temporal-only enum keeps its existing integer
+values. Importing `temporal` no longer replaces the canonical enum.
+
+Five serialization tests pass: fresh-process object/model/problem round trips
+in both import modes, cross-import enum equality/hash, and real spawned-worker
+candidate evaluation in both import modes. The spawn driver pins `PYTHONPATH`
+to this checkout, avoiding an older installed package found during validation.
+This fixes the serialization prerequisite; persistent/shared-memory worker
+optimization and a process-pool speedup remain unimplemented.
+
+### D01–D03: exact compiled prototype, not production adoption
+
+`prototype_exact_compiled_reductions.py` uses optional Numba 0.63.1, explicitly
+reproduces the tested pairwise sum tree and keeps layout/dtype fallbacks.
+Initial validation: 56 direct sum cases, 72 T1/T2 firing/dominance cases and
+216 fallback cases, with no mismatches. Compiling all tested signatures took
+about 1.48 s in that probe. This supersedes the earlier conclusion that compiled
+work must wait for a numerical-tolerance decision: explicit exact reductions
+are feasible locally. It does not establish portable parity across every
+supported NumPy version, CPU or array layout.
+
+The evaluator benchmark now exposes opt-in `compiled-cold` and `compiled-warm`
+variants. Both temporarily patch only the benchmark worker's array evaluator;
+production never imports the prototype. Cold fit timing includes first-use JIT
+compilation; warm timing follows compilation/parity checks. Package imports are
+outside both fit timers. Fixed-partition firing caches remain enabled, so the
+compiled firing adapter falls back to the cached production path there.
+
+Same 1,000-sample/20-generation workload and environment as above, median of
+three fresh-process randomized repeats. All repeats/variants had identical
+final populations and fitnesses, selected chromosomes, consequents, rule scores,
+predictions, model performance and logical evaluation counts.
+
+| Type | Partitions | Current median (range), s | Compiled cold median (range), s | Compiled warm median (range), s | Warm speedup |
+| --- | --- | --- | --- | --- | ---: |
+| T1 | optimized | 0.649 (0.648–0.652) | 1.619 (1.614–1.634) | 0.559 (0.552–0.561) | 1.16× |
+| T1 | fixed | 0.254 (0.253–0.256) | 1.243 (1.233–1.251) | 0.211 (0.211–0.212) | 1.20× |
+| T2 | optimized | 2.301 (2.291–2.303) | 2.378 (2.364–2.389) | 1.231 (1.229–1.232) | 1.87× |
+| T2 | fixed | 0.946 (0.942–0.947) | 1.887 (1.880–1.905) | 0.769 (0.768–0.771) | 1.23× |
+
+**Decision:** retain the exact prototype and reproducible benchmarks, but do not
+adopt it in production in this increment. Warm gains are real, especially T2
+optimized partitions, but cold fits are slower in all four measured cases.
+Production adoption still needs supported-version/platform parity, compiled CI,
+optional-dependency fallback coverage and an approach to startup cost. No new
+numerical tolerance is authorized or needed for the local results above.
+
+### Reproduction and validation
+
+```bash
+pytest -q tests/
+python benchmarks/benchmark_population_batching.py --samples 150 400 512 1000 --repeats 5
+python benchmarks/prototype_exact_compiled_reductions.py
+python benchmarks/benchmark_evaluator_variants.py --samples 1000 --generations 20 --variants current compiled-cold compiled-warm
+python benchmarks/benchmark_evaluator_variants.py --fuzzy-type t2 --samples 1000 --generations 20 --variants current compiled-cold compiled-warm
+```
+
+The compiled variants require the optional local Numba installation and are
+excluded from the benchmark's default variant list. The standalone prototype
+reports availability and skips timing when Numba is absent; it does not install
+anything. Timing is withheld if its parity checks fail.
+
+Final validation of the complete working tree: **671 passed, 40 skipped**,
+60 warnings, in 93.48 s (`pytest -q tests/`). The five enum serialization tests
+include actual spawned-worker evaluation; 37 population tests cover exact
+objective/search parity and fallback behavior. `git diff --check` passes when
+respecting the existing CRLF files (`core.whitespace=cr-at-eol`).

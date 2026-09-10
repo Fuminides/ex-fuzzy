@@ -1,4 +1,4 @@
-# Speedup catalogue review — 2026-09-09
+# Speedup catalogue review — updated 2026-09-10
 
 All **36 defined proposals** in `SPEED_UP.md` now have a decision backed by code,
 a measurement, or a stated blocker. "Inspect" means a code/dependency
@@ -7,8 +7,9 @@ means a local experiment. Deferred and rejected items are not implemented.
 Native and accelerator backends are competing alternatives, not a requirement to
 maintain every implementation simultaneously.
 
-Every implemented item preserves the objective bit for bit. Nothing here changes
-the search, a public option, or a default.
+Implemented evaluator changes preserve the objective bit for bit. Nothing here
+changes the search or public configuration; eligible small fits automatically
+use the internal batching route.
 
 ## Coverage and decisions
 
@@ -32,19 +33,19 @@ the search, a public option, or a default.
 | B05 | Measured; rejected | With optimized partitions the same antecedent indexes denote different fuzzy sets per candidate. Reusing columns changed the objective of 104 of 200 candidates. `benchmarks/prototype_firing_cache.py` reproduces it. |
 | B06 | Inspect; defer | Offspring provenance absent; one rule change can invalidate all winners/pruning. Needs a dependency design before incremental objective updates. |
 | B07 | Prototype prerequisite; defer | The array decoder now exposes decoded arrays, but a phenotype key must still preserve weights, order and normalization and outweigh the decoding cost that B02's raw-genotype key avoids entirely. |
-| C01 | Measured; not implemented | Uncached evaluation fits `a + b × samples`; the sample-independent share is 87%/58%/15% of a T1 fixed-partition candidate at 100/400/3,200 samples, and 60%/27%/4% for T2. Batching is therefore valuable only on small data, and needs `elementwise=False`, padded rule masks, per-candidate pruning and an ordered scatter that also serves the thread runner and custom-loss fallbacks. |
+| C01 | Implemented in narrow scope | Small fixed-partition T1 serial built-in fits now batch, limited to 512 samples and a 32 MiB gather estimate. Other contexts fall back. Historical headroom: Uncached evaluation fits `a + b × samples`; the sample-independent share is 87%/58%/15% of a T1 fixed-partition candidate at 100/400/3,200 samples, and 60%/27%/4% for T2. The implementation overrides the internal elementwise evaluation hook, pads/prunes per candidate and scatters ordered results while retaining existing runner/custom-loss fallbacks. |
 | C02 | Measured; follows C01 | Same headroom, plus a per-candidate membership dimension and a much larger memory budget. Optimized partitions also cannot share the packed table. |
 | C03 | Numerical experiment; rejected as formulated | Chunked partial sums change rounding. Exact streaming needs an explicit accumulation design and global-pruning passes. |
 | C04 | Measured | Complete serial/2-thread/4-thread diagnostic checks fit parity. Note that threads disable both fit-local caches, so the array evaluator widened the gap a worker pool has to make up. |
-| C05 | Blocked; cause identified | Pickling a `FitRuleBase` fails with `Can't pickle <enum 'FUZZY_SETS'>: attribute lookup FUZZY_SETS on temporal failed`, because `temporal` re-creates the enum, and with `it's not the same object as fuzzy_sets.FUZZY_SETS` under the package's dual import modes. `FUZZY_SETS` members are also unhashable (`__eq__` without `__hash__`). Process workers need one importable enum definition first; that is a package-structure fix, not a speedup. |
-| C06 | Inspect; defer | GCC/OpenMP available, but D01–D03 must clear the parity bar below before parallel scheduling over compiled kernels is meaningful. |
+| C05 | Serialization prerequisite fixed; worker optimization deferred | `FUZZY_SETS` has a stable definition and value-consistent hash; temporal retains compatibility aliases. Fresh-process round trips and actual spawned-worker evaluation parity are tested. Persistent shared-memory workers and a process speedup are not claimed. |
+| C06 | Inspect; defer | GCC/OpenMP available. D02 clears local kernel parity, but production native integration and parallel scheduling remain unimplemented. |
 | C07 | Implemented; tested | Classifier-owned pools exist only during a fit and close/join on failure and success; external runners remain caller-owned. Global thread limits are not changed. |
 | C08 | Measured | Diagnostic compares two independent serial-worker fits with two spawned processes; throughput, not single-fit acceleration. |
 | C09 | Hardware inspected; defer | One local GPU, no multi-node test environment. No distributed scaling claim. |
 | C10 | Measured | Peak RSS of complete 10,000-sample fits: +20.4 MB (T1 fixed) and +34.1 MB (T2 fixed) for the two 8 MiB fit-local caches; optimized partitions are unchanged because they get neither. Reported with `benchmarks/prototype_remaining_routes.py --memory`. |
-| D01 | Measured; blocked on parity | Cython is installed, but see D02: the arithmetic bar is the same for any compiled route. |
-| D02 | Measured; blocked on parity | A sequential Numba product matches `np.prod` in all 60 tested shapes; a sequential Numba sum differs from `np.sum` in 42 of them, because NumPy uses pairwise summation on contiguous reductions. A compiled kernel must reimplement pairwise summation exactly, or the project must accept a numerical-policy change. |
-| D03 | Inspect; defer selection | Same parity bar as D01/D02, with more build and maintenance burden and no advantage established. |
+| D01 | Prototype prerequisite cleared locally; deferred | Explicit pairwise reductions now pass the tested shapes in the D02 Numba prototype. No Cython evaluator or packaging changes adopted. |
+| D02 | Exact prototype measured; not adopted | `prototype_exact_compiled_reductions.py` reproduces the tested NumPy pairwise tree, with layout/dtype fallback. Complete-fit cold/warm comparisons are in the follow-up in `SPEED_UP.md`; this is benchmark-only, with no production dependency. |
+| D03 | Defer selection | The D02 prototype establishes local exact-kernel feasibility; no separate C++/SIMD implementation or maintenance benefit established. |
 | D04 | Kernel prototype/measured; investigate | RTX 5060 Ti available. Ordered CUDA products preserve tested parity; generic products do not. The full batched classification objective remains pending and inherits the C01 padding and pruning problems. |
 | D05 | Prototype available; pending | Opt-in `--compile` probe exists; compilation not yet exercised. Depends on a stable tensor objective and warm-up accounting. |
 | D06 | Inspect; defer | Custom kernels need evidence of bottlenecks in a validated D04/D05 first. |
@@ -105,14 +106,16 @@ The original object-oracle prototype. The production decoder in
 `tests/test_array_evaluation.py`, which compares complete objective values
 against the object decoder rather than only the decoded phenotype.
 
-## What is worth doing next
+## Follow-up and next work
 
-1. **Population batching (C01), for small datasets only.** The headroom is real
-   below roughly 1,000 samples and negligible above a few thousand. It is the
-   only remaining route with a large exact win, and it is a substantial change
-   to the pymoo integration.
-2. **Fix the `FUZZY_SETS` definition.** It unblocks C05, makes models and
-   problems picklable, and is a correctness fix independent of performance.
-3. **A numerical-policy decision.** Compiled and GPU routes (D01–D06) are all
-   blocked on reproducing NumPy's pairwise summation. Deciding what tolerance,
-   if any, is acceptable would reopen them; without it they stay closed.
+The 2026-09-10 follow-up in [SPEED_UP.md](SPEED_UP.md) records population
+batching measurements, serialization validation, and cold/warm compiled-fit
+comparisons. This completes the selected bounded follow-up, not every proposal.
+
+1. Extend C01 to T2 or C02 only after a fresh profile and exact full-fit evidence.
+2. C05 serialization is fixed; persistent shared-memory workers still need a
+   separate implementation and speed comparison against the optimized serial fit.
+3. D02 remains experimental. Production adoption needs supported-version/platform
+   parity, optional-dependency/compiled CI coverage and a startup-cost strategy.
+   Numerical tolerance remains unauthorized; it is not needed merely to explore
+   the explicit pairwise route now demonstrated locally.
