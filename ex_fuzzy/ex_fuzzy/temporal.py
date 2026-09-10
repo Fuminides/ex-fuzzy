@@ -61,16 +61,18 @@ except:
     import eval_rules as evr
 
 
-TMP_FUZZY_SETS = enum.Enum(
-    "NEW_FUZZY_SETS",
-    ['temporal', 'temporal_t2', 'temporal_gt2']
-)
-NEW_FUZZY_SETS = enum.Enum(
-    "FUZZY_SETS",
-    [(es.name, es.value) for es in fs.FUZZY_SETS] + [(es.name, es.name) for es in TMP_FUZZY_SETS]
-)
+class TMP_FUZZY_SETS(enum.Enum):
+    """Legacy temporal-only enum retained with stable member values."""
 
-fs.FUZZY_SETS = NEW_FUZZY_SETS
+    temporal = 1
+    temporal_t2 = 2
+    temporal_gt2 = 3
+
+
+# Compatibility alias for callers that imported the formerly generated enum.
+# FUZZY_SETS now has one stable, importable definition in fuzzy_sets.py so enum
+# members, fitted models, and optimization problems can be pickled by reference.
+NEW_FUZZY_SETS = fs.FUZZY_SETS
 ### DEFINE THE FUZZY SET ####
 class temporalFS(fs.FS):
     '''

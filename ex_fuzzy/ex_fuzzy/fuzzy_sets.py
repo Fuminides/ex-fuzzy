@@ -72,10 +72,19 @@ class FUZZY_SETS(enum.Enum):
     t1 = 'Type 1'
     t2 = 'Type 2'
     gt2 = 'General Type 2'
+    temporal = 'temporal'
+    temporal_t2 = 'temporal_t2'
+    temporal_gt2 = 'temporal_gt2'
 
 
     def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, enum.Enum):
+            return NotImplemented
         return self.value == __value.value
+
+    def __hash__(self) -> int:
+        """Hash consistently with the value-based equality used by the library."""
+        return hash(self.value)
 
 
 def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> np.array:
