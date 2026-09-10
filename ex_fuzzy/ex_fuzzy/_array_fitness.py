@@ -226,6 +226,9 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
                               firing_cache, packed)
     if firing is None:
         return None
+    # score_rulebase normalizes the labels here: a pandas Series would broadcast
+    # against the grouped (rules, samples) reductions instead of masking them.
+    y = np.asarray(y)
     consequents = decoded.consequents
     weights = decoded.weights if ds_mode == 2 else np.ones(n_rules)
     mask_cache = _ClassMaskCache(y)
