@@ -10,6 +10,10 @@ rule scores and predictions before reporting any timing.
 
 Variants are benchmark-only switches; they do not change public classifier
 options.  ``baseline`` disables every evaluator change these variants isolate.
+Explicit ``--variants current compiled-cold compiled-warm`` compares the optional
+Numba prototype with and without first-use compilation inside the fit timer.
+Warm compilation/parity checks happen before timing; neither variant is enabled
+by default or imported by production code.
 """
 import argparse
 import json
@@ -33,6 +37,9 @@ VARIANTS = {
     'no-firing-cache': ('firing-cache',),
     'current': (),
 }
+DEFAULT_VARIANTS = list(VARIANTS)
+# Optional benchmark-only dispatch; ordinary runs do not require Numba.
+VARIANTS.update({'compiled-cold': (), 'compiled-warm': ()})
 
 WORKER = r'''
 import json, sys, time
@@ -80,6 +87,22 @@ with ExitStack() as stack:
                                          lambda *a, **k: (_ for _ in ()).throw(TypeError)))
         stack.enter_context(patch.object(
             fitness, '_fitness_cache_scope', _no_firing_cache_scope(fitness)))
+    if cfg.get('compiled'):
+        sys.path.insert(0, {benchmarks!r})
+        import prototype_exact_compiled_reductions as compiled
+        if compiled.KERNELS is None:
+            raise RuntimeError('compiled variants require optional Numba')
+        if cfg['compiled'] == 'compiled-warm':
+            parity = compiled.parity_checks()
+            if any(parity[key] for key in (
+                    'firing_mismatches', 'dominance_mismatches', 'fallback_mismatches')):
+                raise RuntimeError('compiled kernel parity failed')
+        arrfit = importlib.import_module(evf.__package__ + '._array_fitness')
+        stack.enter_context(patch.object(
+            arrfit, 'firing_strengths',
+            compiled._compiled_array_firing(arrfit.firing_strengths)))
+        stack.enter_context(patch.object(
+            arrfit, '_dominance', compiled.compiled_dominance))
     model = evf.BaseFuzzyRulesClassifier(
         nRules=cfg['rules'], nAnts=cfg['antecedents'],
         linguistic_variables=partitions, fuzzy_type=fuzzy_type)
@@ -91,6 +114,9 @@ with ExitStack() as stack:
 print(json.dumps({{
     'seconds': elapsed,
     'performance': float(model.performance),
+    'population_x': np.asarray(model.optimization_result_['algorithm'].pop.get('X')).tolist(),
+    'population_f': np.asarray(model.optimization_result_['algorithm'].pop.get('F')).tolist(),
+    'n_eval': int(model.optimization_result_['algorithm'].evaluator.n_eval),
     'chromosome': [int(v) for v in np.asarray(model.optimization_result_['X'])],
     'consequents': [int(v) for v in model.rule_base.get_consequents()],
     'scores': [float(v) for v in np.asarray(model.rule_base.get_scores())],
@@ -100,7 +126,7 @@ print(json.dumps({{
 
 
 def _run(config):
-    script = WORKER.format(root=str(ROOT))
+    script = WORKER.format(root=str(ROOT), benchmarks=str(ROOT / 'benchmarks'))
     result = subprocess.run([sys.executable, '-c', script, json.dumps(config)],
                             capture_output=True, text=True, cwd=str(ROOT))
     if result.returncode != 0:
@@ -125,9 +151,12 @@ def run(args):
         schedule = [(name, index) for name in selected for index in range(args.repeats)]
         random.Random(args.seed).shuffle(schedule)
         for name, _ in schedule:
-            observed = _run(dict(base, disable=list(VARIANTS[name])))
+            observed = _run(dict(base, disable=list(VARIANTS[name]),
+                                 compiled=name if name.startswith('compiled-') else None))
             timings[name].append(observed.pop('seconds'))
-            outcomes.setdefault(name, observed)
+            previous = outcomes.setdefault(name, observed)
+            if previous != observed:
+                raise SystemExit('variant %r changed the fitted model between repeats' % name)
         expected = outcomes[selected[-1]]
         for name in selected:
             if outcomes[name] != expected:
@@ -157,5 +186,5 @@ if __name__ == '__main__':
     parser.add_argument('--repeats', type=int, default=3)
     parser.add_argument('--seed', type=int, default=11)
     parser.add_argument('--fuzzy-type', choices=['t1', 't2'], default='t1')
-    parser.add_argument('--variants', nargs='+', default=list(VARIANTS))
+    parser.add_argument('--variants', nargs='+', default=DEFAULT_VARIANTS)
     run(parser.parse_args())
