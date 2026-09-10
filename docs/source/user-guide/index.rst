@@ -15,6 +15,7 @@ training, and analyzing fuzzy rule-based classifiers and regressors.
    regression
    ferl
    conformal-learning
+   training-performance
    troubleshooting
 
 Overview
@@ -32,7 +33,8 @@ This user guide is organized into several sections:
 
 **Practical Guides**
   Get practical advice on regression, rule mining, conformal prediction,
-  troubleshooting common issues, and extending Ex-Fuzzy for your needs.
+  training performance, troubleshooting common issues, and extending Ex-Fuzzy
+  for your needs.
 
 Getting Help
 ============

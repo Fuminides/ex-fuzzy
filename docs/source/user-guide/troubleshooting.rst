@@ -67,6 +67,13 @@ population size. Start with a small run and scale gradually:
 For larger datasets, compare ``backend="pymoo"`` and ``backend="evox"`` with the
 same split and seed before committing to a backend.
 
+Several optimizations run automatically during training, and each one is
+disabled by particular settings: a custom loss, a thread runner,
+checkpointing or optimizer-tuned partitions among them. If one fit is much
+slower than another you expected to be comparable, :doc:`training-performance`
+lists what enables each fast path, and how to fall back to the original
+implementation if you suspect one of them is misbehaving.
+
 Unexpected Accuracy Differences
 ===============================
 
