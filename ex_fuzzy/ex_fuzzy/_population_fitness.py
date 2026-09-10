@@ -18,18 +18,31 @@ except ImportError:  # pragma: no cover - direct module execution
     from _fitness import _FiringCache, _LabelDomain
 
 
-_MAX_SAMPLES = 512
 _GATHER_BUDGET = 32 * 1024 * 1024
+
+
+def chunk_size(n_samples: int, n_rules: int, n_features: int,
+               gather_budget: int = _GATHER_BUDGET) -> int:
+    """Candidates whose gathered intermediates fit ``gather_budget`` at once.
+
+    Every quantity here is computed per candidate along the population axis,
+    with no reduction across candidates, so splitting a population into chunks
+    of this size cannot change any score.  Zero means a single candidate
+    already exceeds the budget and this route has nothing to offer.
+    """
+    bytes_per_candidate = 8 * n_samples * n_rules * n_features
+    if bytes_per_candidate <= 0:
+        return 0
+    return int(gather_budget // bytes_per_candidate)
 
 
 def supports_shape(population: int, n_samples: int, n_rules: int,
                    n_features: int,
                    gather_budget: int = _GATHER_BUDGET) -> bool:
-    """Whether the bounded population intermediates fit this workload."""
-    bytes_per_candidate = 8 * n_samples * n_rules * n_features
-    return (population >= 2 and 0 < n_samples <= _MAX_SAMPLES
-            and bytes_per_candidate > 0
-            and population * bytes_per_candidate <= gather_budget)
+    """Whether one ``score_population`` call may score this many candidates."""
+    return (population >= 2 and n_samples > 0
+            and population <= chunk_size(n_samples, n_rules, n_features,
+                                         gather_budget))
 
 
 def _decode_population(genes: np.ndarray, n_rules: int, n_ants: int,
@@ -255,3 +268,110 @@ def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
         if beta != 0.0:
             result += beta * rulesize
     return result
+
+
+class _RouteProbe:
+    """Fit-local choice between scalar and batched population evaluation.
+
+    Both routes compute the same objective bit for bit, so which one runs is
+    purely a speed question and can be answered from the fit's own candidates.
+    Each probing generation runs entirely on one route and records its cost per
+    candidate, so probing duplicates no work: the fit pays only the difference
+    between the routes on the generations that used the slower one.
+
+    Measuring whole generations matters.  Batching amortizes a fixed per-call
+    cost over the population, so timing it on a partial population understates
+    it badly -- on a 400-sample fit a half population measured 1.14x where the
+    full population reaches 1.40x.
+
+    The first generation is a warm-up and is not recorded.  It is unlike every
+    later one: it scores the whole initial population rather than the offspring
+    that survive the fitness cache, and it pays the fit-local caches' first
+    touch.  Measured on one 2,400-sample fit, the scalar route cost 1,625 us per
+    candidate in that generation against 1,208 us in a later one, which is
+    enough to misread a route boundary.  The warm-up runs on the scalar route
+    because its worst case is a modest loss on small data, where fits are short
+    anyway, while the batched route's worst case falls on large data where the
+    same ratio costs far more wall clock.
+
+    The remaining order is counterbalanced (scalar, batch, batch, scalar)
+    because the firing cache keeps warming up, which would otherwise flatter
+    whichever route happens to run later.
+    """
+
+    SCALAR = 0
+    BATCH = 1
+
+    #: Unrecorded generations run before measuring, to settle cache warm-up.
+    WARMUP = (SCALAR,)
+
+    #: Counterbalanced probing order; a symmetric sequence cancels warm-up drift.
+    ORDER = (SCALAR, BATCH, BATCH, SCALAR)
+
+    #: Ratio beyond which a matched pair already decides, skipping the rest.
+    DECISIVE = 1.25
+
+    def __init__(self, minimum_candidates: int = 4):
+        self._minimum_candidates = minimum_candidates
+        self._generation = 0
+        self._seconds = [0.0, 0.0]
+        self._candidates = [0, 0]
+        self.decision: Optional[int] = None
+
+    def route(self, population: int) -> Optional[int]:
+        """Route to run this generation, or None once probing is over."""
+        if (self.decision is not None
+                or self._generation >= len(self.WARMUP) + len(self.ORDER)
+                or population < self._minimum_candidates):
+            return None
+        if self._generation < len(self.WARMUP):
+            return self.WARMUP[self._generation]
+        return self.ORDER[self._generation - len(self.WARMUP)]
+
+    def record(self, route: int, seconds: float, candidates: int) -> None:
+        """Record one probing generation and settle when the timings decide.
+
+        A lopsided matched pair settles immediately: averaging further pairs
+        cannot plausibly reverse it, and every extra probing generation risks
+        running the slower route again.  Close results use the whole budget,
+        where the additional pair genuinely reduces noise.
+        """
+        warming = self._generation < len(self.WARMUP)
+        self._generation += 1
+        if warming or self.decision is not None:
+            return
+        self._seconds[route] += seconds
+        self._candidates[route] += candidates
+        measured = self._generation - len(self.WARMUP)
+        exhausted = measured >= len(self.ORDER)
+        costs = self.costs()
+        if costs is None:
+            if exhausted:
+                self.decision = self.BATCH
+            return
+        scalar_cost, batch_cost = costs
+        # Only settle early on a completed, order-balanced pair.
+        decisive = (scalar_cost > batch_cost * self.DECISIVE
+                    or batch_cost > scalar_cost * self.DECISIVE)
+        if exhausted or (measured % 2 == 0 and decisive):
+            self.decision = self.BATCH if batch_cost < scalar_cost else self.SCALAR
+
+    def costs(self):
+        """Per-candidate seconds for each route, or None while one is unmeasured."""
+        scalar, batch = self._candidates
+        if scalar == 0 or batch == 0:
+            return None
+        return (self._seconds[self.SCALAR] / scalar,
+                self._seconds[self.BATCH] / batch)
+
+    def measured(self) -> dict:
+        """Per-candidate seconds observed for each route, for diagnostics."""
+        costs = self.costs()
+        return {
+            'scalar_candidates': self._candidates[self.SCALAR],
+            'batch_candidates': self._candidates[self.BATCH],
+            'scalar_seconds_per_candidate': costs[0] if costs else None,
+            'batch_seconds_per_candidate': costs[1] if costs else None,
+            'probing_generations': self._generation,
+            'decision': self.decision,
+        }

@@ -8,8 +8,8 @@ Native and accelerator backends are competing alternatives, not a requirement to
 maintain every implementation simultaneously.
 
 Implemented evaluator changes preserve the objective bit for bit. Nothing here
-changes the search or public configuration; eligible small fits automatically
-use the internal batching route.
+changes the search or public configuration; eligible fits choose the internal
+batching route automatically, by measuring it against the scalar one.
 
 ## Coverage and decisions
 
@@ -33,7 +33,7 @@ use the internal batching route.
 | B05 | Measured; rejected | With optimized partitions the same antecedent indexes denote different fuzzy sets per candidate. Reusing columns changed the objective of 104 of 200 candidates. `benchmarks/prototype_firing_cache.py` reproduces it. |
 | B06 | Inspect; defer | Offspring provenance absent; one rule change can invalidate all winners/pruning. Needs a dependency design before incremental objective updates. |
 | B07 | Prototype prerequisite; defer | The array decoder now exposes decoded arrays, but a phenotype key must still preserve weights, order and normalization and outweigh the decoding cost that B02's raw-genotype key avoids entirely. |
-| C01 | Implemented in narrow scope | Small fixed-partition T1 serial built-in fits now batch, limited to 512 samples and a 32 MiB gather estimate. Other contexts fall back. Historical headroom: Uncached evaluation fits `a + b × samples`; the sample-independent share is 87%/58%/15% of a T1 fixed-partition candidate at 100/400/3,200 samples, and 60%/27%/4% for T2. The implementation overrides the internal elementwise evaluation hook, pads/prunes per candidate and scatters ordered results while retaining existing runner/custom-loss fallbacks. |
+| C01 | Implemented; dispatch measured | Fixed-partition T1 serial built-in fits batch, with the population chunked to the 32 MiB gather budget rather than refused above 512 samples. The route is chosen per fit by a counterbalanced probe with an unrecorded warm-up generation, or looked up in an opt-in stored calibration. Across 106 calibrated workloads batching wins 72; the former constants refused 26 speedups of up to 1.49x and accepted no slowdowns. Probe cost against a perfect choice: median 1.07x over the grid, 1.05x-1.06x at realistic generation counts. Historical headroom: uncached evaluation fits `a + b x samples`; the sample-independent share is 87%/58%/15% of a T1 fixed-partition candidate at 100/400/3,200 samples, and 60%/27%/4% for T2. |
 | C02 | Measured; follows C01 | Same headroom, plus a per-candidate membership dimension and a much larger memory budget. Optimized partitions also cannot share the packed table. |
 | C03 | Numerical experiment; rejected as formulated | Chunked partial sums change rounding. Exact streaming needs an explicit accumulation design and global-pruning passes. |
 | C04 | Measured | Complete serial/2-thread/4-thread diagnostic checks fit parity. Note that threads disable both fit-local caches, so the array evaluator widened the gap a worker pool has to make up. |
@@ -113,6 +113,9 @@ batching measurements, serialization validation, and cold/warm compiled-fit
 comparisons. This completes the selected bounded follow-up, not every proposal.
 
 1. Extend C01 to T2 or C02 only after a fresh profile and exact full-fit evidence.
+   The route probe and stored calibration in `_dispatch_profile.py` are route
+   selectors, not new routes; a T2 or optimized-partition batcher would plug
+   into the same choice.
 2. C05 serialization is fixed; persistent shared-memory workers still need a
    separate implementation and speed comparison against the optimized serial fit.
 3. D02 remains experimental. Production adoption needs supported-version/platform

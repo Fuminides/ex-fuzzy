@@ -1,9 +1,10 @@
 # Genetic training speedup plan
 
 **Status (2026-09-10): the earlier exact evaluator optimizations are complete.
-The follow-up adds bounded population batching for small fixed-partition T1
-fits and resolves enum serialization. An exact compiled-reduction prototype
-remains benchmark-only. See the follow-up measurements below; further compiled,
+The follow-up adds bounded population batching for fixed-partition T1 fits,
+chooses between the scalar and batched routes by measurement rather than by
+hardcoded bounds, and resolves enum serialization. An exact compiled-reduction
+prototype remains benchmark-only. See the follow-up measurements below; further compiled,
 T2 batching, optimized-partition batching and process-pool work are separate
 increments, not shipped capabilities.**
 
@@ -31,7 +32,7 @@ configuration options still require an explicit decision.
 | B02 | Implemented: scoped | Exact-genotype memoization for serial, built-in PyMoo fits only. |
 | B04 | Implemented: scoped | Fit-local firing reuse, fixed partitions only, 8 MiB of retained columns. |
 | B05 | Measured: rejected | Reusing firing across candidates with optimized partitions changed the objective of about half the candidates. |
-| C01/C02 | C01 implemented in narrow scope; C02 deferred | Serial built-in T1, fixed partitions, at most 512 samples and a 32 MiB gather estimate; unsupported contexts retain scalar evaluation. |
+| C01/C02 | C01 implemented, dispatch measured; C02 deferred | Serial built-in T1, fixed partitions. The population is chunked to the gather budget, and the route is chosen by a runtime probe or an opt-in stored calibration instead of the former 512-sample constant. Unsupported contexts retain scalar evaluation. |
 | C05 | Serialization prerequisite fixed | Stable enum definition; fresh-process and spawned-worker parity tests. Persistent/shared-memory workers are not implemented. |
 | C07 | Partial: implemented | Fit-scoped owned pools; success/error cleanup and external ownership preserved. |
 | C10 | Measured | Peak RSS of the new fit-local caches reported below. |
@@ -932,3 +933,99 @@ Final validation of the complete working tree: **671 passed, 40 skipped**,
 include actual spawned-worker evaluation; 37 population tests cover exact
 objective/search parity and fallback behavior. `git diff --check` passes when
 respecting the existing CRLF files (`core.whitespace=cr-at-eol`).
+
+## Measured route dispatch — 2026-09-10
+
+C01's dispatch bounds were hand-picked constants: at most 512 samples and a
+32 MiB gather estimate, all or nothing. Both are now replaced by measurement.
+The objective is unchanged, bit for bit, on every route.
+
+### Chunking replaces the sample ceiling
+
+Nothing in `score_population` reduces across the population axis, so a
+population can be split into chunks that fit the gather budget without changing
+any score. `chunk_size` reports how many candidates fit; the evaluator scores
+that many at a time. A trailing single candidate is merged into the previous
+chunk, since the batched route needs at least two, overshooting the budget by
+one candidate at most.
+
+The 512-sample cap is therefore gone. It also collided with the memory budget:
+at 512 samples, 20 rules and 10 features the budget already binds at exactly 40
+candidates, so the two bounds were fighting over the same boundary.
+
+### The probe
+
+Both evaluators compute the same objective, so choosing between them is purely
+a speed question and can be answered from the fit's own candidates. Each fit
+runs one unrecorded warm-up generation on the scalar route, then alternates
+whole generations in a counterbalanced order (scalar, batch, batch, scalar),
+recording seconds per candidate. A lopsided pair settles immediately; close
+results use the whole budget. The probe duplicates no work — the fit pays only
+the difference between the routes on the generations that used the slower one.
+
+Three measurement traps were found and closed:
+
+- **Half populations understate batching.** Splitting a generation between the
+  routes costs nothing extra, but batching amortizes a fixed per-call cost over
+  the population. At 400 samples a half population measured 1.14× where the
+  full population reaches 1.40×. Whole generations are measured instead.
+- **The first generation is not like the others.** It scores the entire initial
+  population rather than the offspring that survive the fitness cache, and pays
+  the caches' first touch. On one 2,400-sample fit the scalar route cost
+  1,625 µs per candidate there against 1,208 µs later — enough to misread a
+  boundary. It is now an unrecorded warm-up.
+- **Both routes get cheaper as the firing cache warms.** A counterbalanced
+  order gives each route the same mean position, so the trend cancels.
+
+### Calibration campaign and stored profile
+
+`benchmarks/calibrate_population_dispatch.py` measures the same choice offline
+across a grid and stores the answers, after which fits look the decision up and
+skip probing entirely. It verifies that both routes produce identical fits at
+every point and refuses to write a profile otherwise.
+
+The profile is opt-in, lives in `~/.cache/ex-fuzzy/dispatch_profile.json`
+(overridable with `EX_FUZZY_DISPATCH_PROFILE`), and is ignored unless its
+machine, Python and NumPy fingerprint match, so a profile copied to other
+hardware cannot mislead a fit. A workload further than a factor of two from any
+calibrated point in any dimension is left to the probe. No public option, no
+required dependency, and no effect on results.
+
+### Results
+
+Full grid, 106 workloads: samples 100–3,200, rules 10/20/40, features 5/10/20,
+population 30/50, 15 generations, median of two fresh fits per route, Python
+3.12.3, NumPy 2.3.5, pymoo 0.6.1.6. Every point compared performance, selected
+chromosome, rule scores, final population fitnesses and evaluation count
+exactly, across all three routes.
+
+| Samples | Batching wins | Best ratio | Probe vs. perfect choice (median / worst) |
+| ---: | ---: | ---: | --- |
+| 100 | 18/18 | 2.09× | 1.14× / 1.27× |
+| 200 | 18/18 | 1.92× | 1.12× / 1.25× |
+| 400 | 18/18 | 1.68× | 1.08× / 1.19× |
+| 800 | 12/18 | 1.49× | 1.03× / 1.13× |
+| 1,600 | 6/18 | 1.18× | 1.03× / 1.11× |
+| 3,200 | 0/16 | 0.96× | 1.03× / 1.14× |
+
+Batching wins 72 of 106 workloads. The old constants were conservative rather
+than wrong: they refused 26 real speedups of up to 1.49× and accepted no
+slowdowns. Chunking and measurement recover those.
+
+The probe costs a median of 1.07× against a perfectly calibrated choice over
+the whole grid. That cost is dominated by its fixed probing generations, so it
+shrinks as fits get longer — at 100–200 samples it falls from 1.12× at 15
+generations to 1.05×–1.06× at 60–120, which is the range real fits use. Its
+mistakes cluster where the routes are close: at 600 samples it settles on the
+slower route and still lands within 1.01× of the best. A stored profile removes
+the residual entirely.
+
+### Reproduction
+
+```bash
+pytest -q tests/test_route_dispatch.py tests/test_population_evaluation.py
+python benchmarks/calibrate_population_dispatch.py --dry-run --verify-probe
+python benchmarks/calibrate_population_dispatch.py --quick   # store a profile
+```
+
+Full suite after this increment: **698 passed, 40 skipped**.

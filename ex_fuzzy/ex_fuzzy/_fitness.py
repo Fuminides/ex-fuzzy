@@ -123,10 +123,14 @@ def _fitness_cache_scope(problem, enabled: bool) -> Iterator[None]:
     fixed_partitions = getattr(problem, 'lvs', None) is not None
     if fixed_partitions:
         problem._firing_cache = _FiringCache()
+    # Populated on first use by the population evaluator, which owns the class.
+    # Creating the slot here keeps the route choice fit-local, like the caches.
+    problem._route_probe = None
     try:
         yield
     finally:
         del problem._fitness_cache
+        del problem._route_probe
         if fixed_partitions:
             del problem._firing_cache
 

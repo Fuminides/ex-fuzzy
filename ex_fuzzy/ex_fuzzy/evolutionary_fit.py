@@ -27,6 +27,7 @@ Key Features:
     - Configurable complexity penalties to avoid overfitting
 """
 import os 
+import time
 from functools import wraps
 from typing import Callable, Any, Optional, Union
 
@@ -1531,10 +1532,7 @@ class FitRuleBase(Problem):
         packed = self._packed_memberships()
         if packed is None:
             return None
-        try:
-            from . import _population_fitness as popfit
-        except ImportError:
-            import _population_fitness as popfit
+        popfit = _population_module()
         values = np.asarray(X)
         if values.ndim != 2 or values.dtype.kind not in 'biuf':
             return None
@@ -1548,23 +1546,56 @@ class FitRuleBase(Problem):
             self._label_domain(), getattr(self, '_firing_cache', None))
 
 
-    def _population_shape_supported(self, population: int) -> bool:
-        """Check C01's private sample and scratch-memory bounds cheaply."""
-        try:
-            from . import _population_fitness as popfit
-        except ImportError:
-            import _population_fitness as popfit
-        return popfit.supports_shape(
-            population, len(self.X), self.nRules, self.X.shape[1])
+    def _population_chunks(self, population: int):
+        """Split a population into chunks whose intermediates fit the budget.
+
+        Candidates are scored independently, so chunking cannot change a
+        result.  A trailing single candidate is merged into the previous chunk
+        because the batched route needs at least two; that overshoots the
+        budget by one candidate at most.
+        """
+        popfit = _population_module()
+        chunk = popfit.chunk_size(len(self.X), self.nRules, self.X.shape[1])
+        if chunk < 2 or population < 2:
+            return None
+        bounds = list(range(0, population, chunk))
+        if len(bounds) > 1 and population - bounds[-1] == 1:
+            bounds.pop()
+        return [slice(start, min(start + chunk, population))
+                for start in bounds[:-1]] + [slice(bounds[-1], population)]
+
+
+    def _batched_scores(self, genes: np.ndarray, *args, **kwargs):
+        """Score candidates through the batched route, chunked, or None."""
+        chunks = self._population_chunks(len(genes))
+        if chunks is None:
+            return None
+        parts = []
+        for piece in chunks:
+            scored = self._population_scores(genes[piece], *args, **kwargs)
+            if scored is None:
+                return None
+            parts.append(scored)
+        return parts[0] if len(parts) == 1 else np.concatenate(parts)
+
+
+    def _scalar_scores(self, genes: np.ndarray) -> np.ndarray:
+        """Score candidates one at a time, exactly as the scalar route does."""
+        scored = np.empty(len(genes))
+        target = {}
+        for index, gene in enumerate(genes):
+            self._evaluate(gene, target)
+            scored[index] = target['F']
+        return scored
 
 
     def _evaluate_elementwise(self, X, out, *args, **kwargs):
-        """Use population scoring when eligible, retaining scalar fallback."""
+        """Use population scoring when it measures faster, else stay scalar."""
         values = np.asarray(X)
         cache = getattr(self, '_fitness_cache', None)
         if (cache is None or values.ndim != 2
                 or not self._can_batch_population(*args, **kwargs)
-                or not self._population_shape_supported(len(values))):
+                or self._population_chunks(len(values)) is None):
             return super()._evaluate_elementwise(X, out, *args, **kwargs)
 
         fitness = np.empty(len(values))
@@ -1585,14 +1616,72 @@ class FitRuleBase(Problem):
         if not missing:
             out['F'] = fitness
             return
-        scores = self._population_scores(values[missing], *args, **kwargs)
-        if scores is None:
+
+        fresh = values[missing]
+        scored = self._score_fresh(fresh, len(values), *args, **kwargs)
+        if scored is None:
             return super()._evaluate_elementwise(X, out, *args, **kwargs)
-        computed = 1 - scores
-        fitness[missing] = computed
-        for index, value in zip(missing, computed):
+        fitness[missing] = scored
+        for index, value in zip(missing, scored):
             cache.put(keys[index], value)
         out['F'] = fitness
+
+
+    def _score_fresh(self, fresh: np.ndarray, population: int, *args, **kwargs):
+        """Score uncached candidates on the chosen route, or None to fall back.
+
+        While the probe is undecided each generation runs wholly on the route it
+        nominates, and its cost per candidate is recorded.  ``_scalar_scores``
+        fills the fitness cache itself, so its results are re-cached harmlessly
+        by the caller with identical values.
+        """
+        popfit = _population_module()
+        probe = self._route_probe_state(population)
+        route = probe.route(len(fresh)) if probe is not None else None
+
+        if route is None:
+            if probe is not None and probe.decision == popfit._RouteProbe.SCALAR:
+                return self._scalar_scores(fresh)
+            batched = self._batched_scores(fresh, *args, **kwargs)
+            return None if batched is None else 1 - batched
+
+        start = time.perf_counter()
+        if route == popfit._RouteProbe.SCALAR:
+            scored = self._scalar_scores(fresh)
+        else:
+            batched = self._batched_scores(fresh, *args, **kwargs)
+            if batched is None:
+                return None
+            scored = 1 - batched
+        probe.record(route, time.perf_counter() - start, len(fresh))
+        return scored
+
+
+    def _route_probe_state(self, population: int):
+        """The fit-local route probe, created on first use, or None.
+
+        A stored calibration profile, if the user has run the offline campaign
+        on this machine and it covers this workload, settles the probe before it
+        measures anything.  Both routes give identical results either way, so
+        this only decides which one runs.
+        """
+        if not hasattr(self, '_route_probe'):
+            return None
+        if self._route_probe is None:
+            popfit = _population_module()
+            probe = popfit._RouteProbe()
+            try:
+                from . import _dispatch_profile
+            except ImportError:  # pragma: no cover - direct module execution
+                import _dispatch_profile
+            stored = _dispatch_profile.decision_for(
+                len(self.X), self.nRules, self.X.shape[1], population)
+            if stored is not None:
+                probe.decision = (popfit._RouteProbe.BATCH if stored == 'batch'
+                                  else popfit._RouteProbe.SCALAR)
+            self._route_probe = probe
+        return self._route_probe
+
 
     def _label_domain(self):
         '''
@@ -1734,6 +1823,15 @@ class FitRuleBase(Problem):
             score = 0.0
             
         return score
+
+
+def _population_module():
+    """Import the private population evaluator in either import mode."""
+    try:
+        from . import _population_fitness as popfit
+    except ImportError:  # pragma: no cover - direct module execution
+        import _population_fitness as popfit
+    return popfit
 
 
 # Population evaluation declines when either scalar oracle is monkeypatched.
