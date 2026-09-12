@@ -42,12 +42,12 @@ DEFAULT_VARIANTS = list(VARIANTS)
 VARIANTS.update({'compiled-cold': (), 'compiled-warm': ()})
 
 WORKER = r'''
-import json, sys, time
+import hashlib, json, sys, time
 from contextlib import ExitStack
 from unittest.mock import patch
 import numpy as np
 sys.path.insert(0, {root!r})
-from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, utils
+from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, rules, utils
 import importlib
 fitness = importlib.import_module(evf.__package__ + '._fitness')
 from sklearn.datasets import make_classification
@@ -76,7 +76,29 @@ X, y = make_classification(
     random_state=42)
 partitions = utils.construct_partitions(X, fuzzy_type) if cfg['fixed'] else None
 
+trace = []
+from pymoo.core.evaluator import Evaluator
+original_eval = Evaluator._eval
+
+def traced_eval(self, problem, pop, *args, **kwargs):
+    result = original_eval(self, problem, pop, *args, **kwargs)
+    digest = hashlib.sha256()
+    for key in ('X', 'F'):
+        array = np.ascontiguousarray(pop.get(key))
+        digest.update(str((array.shape, array.dtype.str)).encode())
+        digest.update(array.tobytes())
+    trace.append(digest.hexdigest())
+    return result
+
 with ExitStack() as stack:
+    if cfg.get('trace'):
+        stack.enter_context(patch.object(Evaluator, '_eval', traced_eval))
+    if cfg.get('reference'):
+        # Preserved full object objective, including its historical firing loop.
+        stack.enter_context(patch.object(evf.FitRuleBase, '_evaluate',
+                                         evf.FitRuleBase._evaluate_slow))
+        stack.enter_context(patch.object(evf.FitRuleBase, 'array_evaluation', False))
+        stack.enter_context(patch.object(rules, '_gather_rule_firing', lambda *a: None))
     if 'arrays' in cfg['disable']:
         stack.enter_context(patch.object(evf.FitRuleBase, 'array_evaluation', False))
     if 'dominance' in cfg['disable']:
@@ -105,14 +127,21 @@ with ExitStack() as stack:
             arrfit, '_dominance', compiled.compiled_dominance))
     model = evf.BaseFuzzyRulesClassifier(
         nRules=cfg['rules'], nAnts=cfg['antecedents'],
-        linguistic_variables=partitions, fuzzy_type=fuzzy_type)
+        linguistic_variables=partitions, fuzzy_type=fuzzy_type,
+        ds_mode=cfg.get('ds_mode', 0), tolerance=cfg.get('tolerance', 0.0),
+        allow_unknown=cfg.get('allow_unknown', False))
     start = time.perf_counter()
     model.fit(X, y, n_gen=cfg['generations'], pop_size=cfg['population'],
-              random_state=7, patience=None)
+              random_state=cfg.get('fit_seed', 7), patience=None)
     elapsed = time.perf_counter() - start
 
 print(json.dumps({{
     'seconds': elapsed,
+    'trace': trace,
+    'rule_matrices': [np.asarray(m).tolist() for m in model.rule_base.get_rulebase_matrix()],
+    'heldout_predictions': np.asarray(model.predict(
+        np.random.default_rng(123).uniform(X.min(axis=0), X.max(axis=0),
+                                          size=(101, X.shape[1])))).tolist(),
     'performance': float(model.performance),
     'population_x': np.asarray(model.optimization_result_['algorithm'].pop.get('X')).tolist(),
     'population_f': np.asarray(model.optimization_result_['algorithm'].pop.get('F')).tolist(),

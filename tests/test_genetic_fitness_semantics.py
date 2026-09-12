@@ -53,7 +53,7 @@ def test_objective_matches_decoded_classifier(fixed, ds_mode, fuzzy_type):
     original = genes.copy()
     expected = [reference(problem, x) for x in genes]
     actual = [objective(problem, x) for x in genes]
-    np.testing.assert_allclose(actual, expected, rtol=0, atol=1e-12)
+    np.testing.assert_array_equal(actual, expected)
     np.testing.assert_array_equal(genes, original)
 
 
@@ -61,11 +61,11 @@ def test_membership_search_is_independent_of_evaluation_order_and_threads():
     problem = make_problem()
     genes = population(problem, 12)
     expected = [reference(problem, x) for x in genes]
-    np.testing.assert_allclose(
+    np.testing.assert_array_equal(
         [objective(problem, x) for x in genes[::-1]], expected[::-1])
     with ThreadPool(3) as pool:
         actual = pool.map(lambda x: objective(problem, x), genes)
-    np.testing.assert_allclose(actual, expected)
+    np.testing.assert_array_equal(actual, expected)
 
 
 def test_custom_loss_receives_normalized_rulebase_and_penalties():
@@ -102,4 +102,5 @@ def test_evox_population_uses_same_objective_including_custom_loss(fixed):
     backend = object.__new__(eb.EvoXBackend)
     actual = backend._evaluate_population(
         torch.as_tensor(genes), problem, torch.device('cpu'))
+    # EvoX's custom-loss bridge returns float32; CPU evaluator parity above is exact.
     np.testing.assert_allclose(actual.numpy(), [reference(problem, x) for x in genes])

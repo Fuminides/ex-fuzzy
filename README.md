@@ -200,6 +200,40 @@ Obtain statistical confidence intervals for your metrics:
 
 ## ⚡ Performance
 
+### Ex-Fuzzy 2.0 vs Ex-Fuzzy 3.0 training speed
+
+![Ex-Fuzzy 2.0 versus Ex-Fuzzy 3.0 complete CPU fit times for T1 and T2, with fixed and optimized partitions](docs/performance/speedup.svg)
+
+The comparison uses **Ex-Fuzzy 2.0** for the preserved full object reference
+evaluator and **Ex-Fuzzy 3.0** for the current optimized evaluator, both in the
+same checkout. It is an evaluator comparison, not a benchmark of historical
+release wheels; shared correctness fixes and the optimizer are held constant.
+
+**Measured median speedups: 10.7×–31.2×** across these twelve workloads on an
+AMD Ryzen 5 5600X CPU (one worker). All 36 reference/current fit pairs passed
+exact parity checks.
+
+Bars show median **complete CPU fit time** across three matched search seeds;
+whiskers show the observed minimum and maximum. Each fit uses 20 rules, four
+antecedent slots, a population of 40 and five generations, with early stopping
+disabled. The synthetic data has 10 features and three classes. Timing includes
+route selection and finalization, but excludes imports, data generation and
+fixed-partition construction. Gains depend on the workload and hardware.
+
+Every measured pair must produce byte-identical traces of all evaluated
+chromosomes and objective values, plus identical final populations, rule
+matrices, scores and predictions on training data and additional probe points.
+The benchmark refuses to publish results if any check fails.
+
+See the [raw timings and environment](docs/performance/speedup.json) and
+[methodology, regression tests and reproduction commands](docs/performance/README.md).
+To rerun the measurements on an otherwise idle machine:
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  python benchmarks/benchmark_speedup.py
+```
+
 ### Backend Comparison
 
 Ex-Fuzzy supports two evolutionary optimization backends:
