@@ -17,6 +17,13 @@ Added
   ignorance, prediction sets, missing-feature masks, and MDLP partitioning
 - **FERL Demo and Documentation**: Runnable Iris example, user guide, and API
   reference
+- **DeepFERL**: Deep evidential rule trees grown recursively with weighted-Gini
+  learned soft splits and a leaves-only soft vote, with bounded-support
+  out-of-distribution handling, missing-feature masks, and the same evidential
+  outputs as FERL. Ports ``LearnedFuzzyTree`` (FERL-deep) from
+  ``fuzzy_greedy_tree`` and reproduces its trees and predictions
+- **FERL evidence**: The ``"mixture"`` combination rule, now shared with
+  DeepFERL through a common evidence module
 - **Fuzzy Regression**: Scikit-learn-compatible Type-1 rule learning for
   continuous targets with crisp Takagi-Sugeno and fuzzy Mamdani consequents
 - **GPU-Accelerated Regression**: EvoX/PyTorch population evaluation for both
@@ -38,6 +45,11 @@ Changed
 -------
 - **Fuzzy Tree Learning**: The experimental prototype implementations were
   replaced by the public :class:`ex_fuzzy.FERL` estimator
+- **FERL validation**: ``split_mode="learned"`` with ``target_metric="purity"``
+  now raises ``ValueError`` instead of silently ignoring the learned splits, and
+  an unknown ``target_metric`` is rejected
+- **FERL evidence**: An unknown ``rule`` in ``predict_ds`` and related methods
+  now raises ``ValueError`` instead of silently using Dempster's rule
 - **Evolutionary Optimization**: Vectorized fitness evaluation for significant speedups
 - **Memory Efficiency**: Automatic batching prevents memory overflow on large datasets
 - **GPU Utilization**: Seamless GPU/CPU switching based on hardware availability

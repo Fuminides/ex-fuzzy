@@ -139,6 +139,9 @@ Use `split_mode="learned"` for data-driven soft split locations or
 calibration-free evidential outputs; use `ConformalFuzzyClassifier` when a
 finite-sample marginal coverage guarantee is required.
 
+For higher accuracy with the same evidential outputs, `DeepFERL` grows a deep
+tree of learned, Gini-placed soft splits and votes over its leaves.
+
 ### Regression Usage
 
 `BaseFuzzyRulesRegressor` learns interpretable Type-1 rules for continuous
@@ -202,70 +205,22 @@ Obtain statistical confidence intervals for your metrics:
 
 ### Accuracy and model size on 67 KEEL datasets
 
-![Test accuracy, rules per model and training time for Ex-Fuzzy GA rules, Ex-Fuzzy FERL, a decision tree and a random forest on 67 KEEL classification datasets, with accuracy broken down by number of classes](docs/performance/keel.svg)
+![Test accuracy, rules per model, training time and accuracy by number of classes for the Ex-Fuzzy genetic learner and three FERL presets against logistic regression, a decision tree and a random forest on 67 KEEL classification datasets](docs/performance/keel.svg)
 
-Ex-Fuzzy produces models that are small enough to read. **FERL reaches 0.758 mean
-accuracy with a median of 5 rules.** For comparison, a decision tree reaches 0.796
-with 77 leaves, and a random forest reaches 0.846 with 9,918 leaves. That is
-about 90% of the forest's accuracy from a model roughly 2,000 times smaller. The
-genetic learner reaches 0.691 with a median of 9 rules.
-
-The class-count breakdown shows where the gap comes from. On the 32 binary
-datasets, FERL (0.821) edges out the decision tree (0.811) and the genetic
-learner reaches 0.791. With six or more classes the genetic learner drops to
-0.523, because its fixed budget of 30 rules leaves only a few rules per class.
-
-Every method uses the same 5-fold stratified splits of the raw KEEL columns and
-runs with library defaults. The one exception is a fixed search budget for the
-genetic learner (100 generations, population 100). These are out-of-the-box
-numbers, not tuned results. Bands span the interquartile range across datasets,
-not confidence intervals. Training times come from shared cluster nodes and are
-only comparable in order of magnitude.
-
-See the [methodology and limitations](docs/performance/KEEL.md), the
-[per-dataset results](docs/performance/keel.md) and the
-[raw aggregate](docs/performance/keel.json). The KEEL collection itself is not
-bundled; point `EX_FUZZY_KEEL_ROOT` at a local copy to rerun:
-
-```bash
-python benchmarks/benchmark_keel.py --dataset iris --method exfuzzy-ferl
-bash benchmarks/cluster/submit_keel.sh        # whole grid on a Grid Engine cluster
-python benchmarks/aggregate_keel.py            # rebuild docs/performance/keel.*
-```
+The Ex-Fuzzy genetic learner and FERL's compact, medium and deep presets against
+logistic regression, a decision tree and a random forest, on 67 KEEL classification
+datasets with 5-fold stratified cross-validation. See the
+[methodology, per-dataset results and reproduction commands](docs/performance/KEEL.md).
 
 ### Ex-Fuzzy 2.0 vs Ex-Fuzzy 3.0 training speed
 
 ![Ex-Fuzzy 2.0 versus Ex-Fuzzy 3.0 complete CPU fit times for T1 and T2, with fixed and optimized partitions](docs/performance/speedup.svg)
 
-The comparison uses **Ex-Fuzzy 2.0** for the preserved full object reference
-evaluator and **Ex-Fuzzy 3.0** for the current optimized evaluator, both in the
-same checkout. It is an evaluator comparison, not a benchmark of historical
-release wheels; shared correctness fixes and the optimizer are held constant.
-
-**Measured median speedups: 10.7×–31.2×** across these twelve workloads on an
-AMD Ryzen 5 5600X CPU (one worker). All 36 reference/current fit pairs passed
-exact parity checks.
-
-Bars show median **complete CPU fit time** across three matched search seeds;
-whiskers show the observed minimum and maximum. Each fit uses 20 rules, four
-antecedent slots, a population of 40 and five generations, with early stopping
-disabled. The synthetic data has 10 features and three classes. Timing includes
-route selection and finalization, but excludes imports, data generation and
-fixed-partition construction. Gains depend on the workload and hardware.
-
-Every measured pair must produce byte-identical traces of all evaluated
-chromosomes and objective values, plus identical final populations, rule
-matrices, scores and predictions on training data and additional probe points.
-The benchmark refuses to publish results if any check fails.
-
-See the [raw timings and environment](docs/performance/speedup.json) and
-[methodology, regression tests and reproduction commands](docs/performance/README.md).
-To rerun the measurements on an otherwise idle machine:
-
-```bash
-OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
-  python benchmarks/benchmark_speedup.py
-```
+Complete CPU fit time of the preserved Ex-Fuzzy 2.0 evaluator against the current
+Ex-Fuzzy 3.0 evaluator. The data is synthetic three-class data with 100 to 5,000
+samples, covering Type-1 and Type-2 sets with fixed and optimized partitions.
+Every pair passed exact-parity checks. See the
+[methodology, raw timings and reproduction commands](docs/performance/README.md).
 
 ### Backend Comparison
 

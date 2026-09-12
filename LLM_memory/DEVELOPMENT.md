@@ -31,7 +31,7 @@ All module paths below are relative to `ex_fuzzy/ex_fuzzy/`.
 | Statistical analysis | `bootstrapping_test.py`, `permutation_test.py`, `pattern_stability.py` |
 | Persistence | `persistence.py` |
 | Conformal prediction | `conformal.py` |
-| Other learners | `ferl.py`, `ferl_partitions.py`, `tree_learning_new/`, `cognitive_maps.py` |
+| Other learners | `ferl.py` (compact and medium FERL), `ferl_deep.py` (`DeepFERL`), `_evidence.py` (shared Dempster--Shafer combination), `ferl_partitions.py`, `tree_learning_new/`, `cognitive_maps.py` |
 
 PyMoo is the default backend and supports checkpoints. Consult
 [the EvoX documentation](../docs/source/evox_backend.rst) and implementation for
@@ -83,3 +83,9 @@ result per (dataset, method) pair, spread over CERES by
 Read [the KEEL methodology](../docs/performance/KEEL.md) before changing the
 protocol or quoting its numbers. It measures defaults plus a stated GA search
 budget, not tuned models.
+
+`DeepFERL` ports `LearnedFuzzyTree` from `../fuzzy_greedy_tree` (FERL-deep in
+that paper). `tests/test_ferl_deep.py` pins its trees and predictions against
+a golden fixture, and runs a live bit-for-bit comparison when that checkout exists.
+`tests/test_ferl_evidence.py` pins `FERL.predict_ds` to outputs recorded before
+the combination rules moved into `_evidence.py`. Keep both pins passing.

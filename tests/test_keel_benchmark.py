@@ -240,3 +240,54 @@ def test_publishing_writes_figure_table_and_json(tmp_path):
     assert 'alpha' in table and 'beta' in table
     # The winner of every row is the one marked bold in the accuracy table.
     assert f'**{0.5 + (len(methods) - 1) / 10:.4f}**' in table
+
+
+def test_ferl_presets_record_their_configuration():
+    compact = benchmark_keel.method_configuration('exfuzzy-ferl-compact')
+    deep = benchmark_keel.method_configuration('exfuzzy-ferl-deep')
+    medium = benchmark_keel.method_configuration('exfuzzy-ferl-medium')
+    # Written out explicitly: Ex-Fuzzy's FERL defaults to 15 rules, fgrt to 20.
+    assert compact['max_rules'] == 20 and compact['fit'] == {'patience': 3}
+    # Medium is the paper's learned-threshold preset (fgrt-performance).
+    assert medium['split_mode'] == 'learned' and medium['max_rules'] == 150
+    assert medium['fit'] == {'patience': 16}
+    # Deep is the separate learned-tree estimator, not a FERL configuration.
+    assert deep == {'estimator': 'DeepFERL', 'library_defaults': True}
+    assert 'exfuzzy-ferl-deep' not in benchmark_keel.FERL_PRESETS
+    assert benchmark_keel.EXFUZZY_METHODS >= set(benchmark_keel.FERL_PRESETS) | {'exfuzzy-ferl-deep'}
+
+
+def test_logistic_regression_records_parameters_not_rules(collection, tmp_path):
+    output = tmp_path / 'out'
+    assert benchmark_keel.main(['--dataset', 'toy', '--method', 'sklearn-logreg',
+                                '--root', str(collection), '--folds', '2',
+                                '--output-dir', str(output)]) == 0
+    record = json.loads((output / 'toy__sklearn-logreg.json').read_text())
+    assert record['status'] == 'ok'
+    assert record['mean_rules'] is None and record['mean_conditions'] is None
+    # Two features, binary target: two coefficients and one intercept.
+    assert record['mean_parameters'] == 3.0
+
+
+def test_rule_less_method_is_aggregated_tabled_and_plotted(tmp_path):
+    methods = list(benchmark_keel.METHODS)
+    results = tmp_path / 'results'
+    results.mkdir()
+    for name, classes in (('alpha', 2), ('beta', 3), ('gamma', 8)):
+        for index, method in enumerate(methods):
+            record = _result(name, method, 0.5 + index / 20, 10 ** (index % 4 + 1))
+            record['n_classes'] = classes
+            if method in benchmark_keel.RULELESS_METHODS:
+                record.update(mean_rules=None, mean_conditions=None, mean_parameters=9.0)
+            (results / f'{name}__{method}.json').write_text(json.dumps(record))
+    destination = tmp_path / 'keel.json'
+    assert aggregate_keel.main(['--results', str(results),
+                                '--output', str(destination)]) == 0
+    report = json.loads(destination.read_text())
+    entry = report['summary']['sklearn-logreg']
+    assert entry['median_rules'] is None and entry['rules_q1'] is None
+    assert report['summary']['sklearn-tree']['median_rules'] is not None
+    assert len(report['class_bands']) == 3
+    table = destination.with_suffix('.md').read_text()
+    assert '| Logistic regression |' in table and '—' in table
+    assert destination.with_suffix('.svg').stat().st_size > 0

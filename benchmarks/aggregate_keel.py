@@ -18,19 +18,30 @@ import statistics
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from benchmark_keel import DEFAULT_OUTPUT, LABELS, METHODS  # noqa: E402
+from benchmark_keel import (DEFAULT_OUTPUT, EXFUZZY_METHODS, LABELS, METHODS,  # noqa: E402
+                            RULELESS_METHODS)
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DESTINATION = ROOT / 'docs' / 'performance' / 'keel.json'
 
-# Categorical slots 1-4 of the validated reference palette, in its fixed order.
-# Bars are the adjacent pairlist, which these four clear in both modes.
-COLORS = {'exfuzzy-ga': '#2a78d6', 'exfuzzy-ferl': '#eb6834',
-          'sklearn-tree': '#1baf7a', 'sklearn-forest': '#eda100'}
+# Colour encodes one thing only: whether a model is Ex-Fuzzy's or a reference.
+# Each dot sits on a row named by its method, so identity never rests on colour,
+# and seven methods need no more than two hues. Values from the validated
+# reference palette: categorical slot 1 and the muted ink.
+EXFUZZY_COLOR = '#2a78d6'
+REFERENCE_COLOR = '#898781'
 INK = '#0b0b0b'
 INK_SECONDARY = '#52514e'
+INK_MUTED = '#898781'
 SURFACE = '#fcfcfb'
-GRID = '#e4e3df'
+GRID = '#e1e0d9'
+# Sequential blue ramp, steps 100-700, for the class-count heatmap.
+SEQUENTIAL = ('#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', '#3987e5',
+              '#2a78d6', '#256abf', '#1c5cab', '#184f95', '#104281', '#0d366b')
+
+
+def method_color(method: str) -> str:
+    return EXFUZZY_COLOR if method in EXFUZZY_METHODS else REFERENCE_COLOR
 
 #: Accuracy is broken out by class count because the genetic learner's rule
 #: budget is fixed, so the number of classes is what most changes the picture.
@@ -89,8 +100,10 @@ def aggregate(successes: dict, failures: list[dict], methods: list[str]) -> dict
             row['methods'][method] = dict(
                 accuracy=record['mean_accuracy'], accuracy_std=record['std_accuracy'],
                 balanced_accuracy=record['mean_balanced_accuracy'],
-                macro_f1=record['mean_macro_f1'], rules=record['mean_rules'],
-                conditions=record['mean_conditions'], fit_seconds=record['mean_fit_seconds'],
+                macro_f1=record['mean_macro_f1'], rules=record.get('mean_rules'),
+                conditions=record.get('mean_conditions'),
+                parameters=record.get('mean_parameters'),
+                fit_seconds=record['mean_fit_seconds'],
                 unclassified=record['mean_unclassified'], rank=ranks[method])
         rows.append(row)
 
@@ -100,6 +113,9 @@ def aggregate(successes: dict, failures: list[dict], methods: list[str]) -> dict
                   for key in ('accuracy', 'balanced_accuracy', 'macro_f1', 'rules',
                               'conditions', 'fit_seconds', 'rank')}
         wins = sum(1 for row in rows if row['methods'][method]['rank'] == 1.0)
+        has_rules = all(value is not None for value in values['rules'] + values['conditions'])
+        if not has_rules:  # A linear model: keep the columns, leave them empty.
+            values['rules'] = values['conditions'] = None
         summary[method] = dict(
             label=LABELS[method], datasets=len(rows), best_on=wins,
             mean_accuracy=statistics.fmean(values['accuracy']),
@@ -109,10 +125,11 @@ def aggregate(successes: dict, failures: list[dict], methods: list[str]) -> dict
             mean_balanced_accuracy=statistics.fmean(values['balanced_accuracy']),
             mean_macro_f1=statistics.fmean(values['macro_f1']),
             mean_rank=statistics.fmean(values['rank']),
-            mean_rules=statistics.fmean(values['rules']),
-            median_rules=statistics.median(values['rules']),
-            rules_q1=_quantile(values['rules'], .25), rules_q3=_quantile(values['rules'], .75),
-            median_conditions=statistics.median(values['conditions']),
+            mean_rules=_maybe(statistics.fmean, values['rules']),
+            median_rules=_maybe(statistics.median, values['rules']),
+            rules_q1=_maybe(_quantile, values['rules'], .25),
+            rules_q3=_maybe(_quantile, values['rules'], .75),
+            median_conditions=_maybe(statistics.median, values['conditions']),
             mean_fit_seconds=statistics.fmean(values['fit_seconds']),
             median_fit_seconds=statistics.median(values['fit_seconds']),
             fit_seconds_q1=_quantile(values['fit_seconds'], .25),
@@ -144,6 +161,15 @@ def aggregate(successes: dict, failures: list[dict], methods: list[str]) -> dict
                 summary=summary, class_bands=bands, per_dataset=rows)
 
 
+def _maybe(function, values, *args):
+    """Apply a statistic, or return ``None`` when the quantity is undefined."""
+    return None if values is None else function(values, *args)
+
+
+def _fmt(value, spec: str, missing: str = '—') -> str:
+    return missing if value is None else format(value, spec)
+
+
 def _quantile(values: list[float], fraction: float) -> float:
     """Linear-interpolated quantile; ``statistics.quantiles`` needs n >= 2."""
     ordered = sorted(values)
@@ -173,7 +199,8 @@ def write_table(report: dict, destination: Path) -> None:
         entry = report['summary'][method]
         lines.append(f'| {entry["label"]} | {entry["mean_accuracy"]:.4f} | '
                      f'{entry["mean_rank"]:.2f} | {entry["best_on"]}/{entry["datasets"]} | '
-                     f'{entry["median_rules"]:,.1f} | {entry["median_conditions"]:,.1f} | '
+                     f'{_fmt(entry["median_rules"], ",.1f")} | '
+                     f'{_fmt(entry["median_conditions"], ",.1f")} | '
                      f'{entry["median_fit_seconds"]:,.2f} |')
     lines += ['', '## Accuracy per dataset',
               '', 'Mean test accuracy over the cross-validation folds. '
@@ -190,12 +217,13 @@ def write_table(report: dict, destination: Path) -> None:
         lines.append(f'| {row["dataset"]} | {row["n_samples"]:,} | {row["n_features"]} | '
                      f'{row["n_classes"]} | ' + ' | '.join(cells) + ' |')
     lines += ['', '## Rules per model',
-              '', 'Mean rule count over the folds: Ex-Fuzzy rules, decision-tree leaves, '
-                  'and leaves summed over the forest.', '',
+              '', 'Mean rule count over the folds: Ex-Fuzzy rules, FERL and decision-tree '
+                  'leaves, and leaves summed over the forest. Logistic regression is not a '
+                  'rule model and has no entry.', '',
               '| Dataset | ' + ' | '.join(LABELS[method] for method in methods) + ' |',
               '| --- |' + ' ---: |' * len(methods)]
     for row in report['per_dataset']:
-        cells = [f'{row["methods"][method]["rules"]:,.1f}' for method in methods]
+        cells = [_fmt(row['methods'][method]['rules'], ',.1f') for method in methods]
         lines.append(f'| {row["dataset"]} | ' + ' | '.join(cells) + ' |')
     if report['datasets_incomplete'] or report['failures']:
         lines += ['', '## Not compared', '']
@@ -207,98 +235,121 @@ def write_table(report: dict, destination: Path) -> None:
 
 
 def plot(report: dict, destination: Path) -> None:
-    """Draw the README figure.
+    """Draw the README figure: three dot panels and a class-count heatmap.
 
-    Dots rather than bars because two of the four panels are logarithmic, where
-    a bar's length is not proportional to what it represents. The leader line is
-    a hairline guide in the grid colour, so only position carries data.
+    Dots rather than bars because two panels are logarithmic, where a bar's
+    length is not proportional to what it represents. Rows are methods in the
+    same order in every panel; colour only separates Ex-Fuzzy from reference
+    models. The heatmap uses one sequential hue with the value printed in each
+    cell, so it needs no categorical colours at all.
     """
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    from matplotlib.colors import BoundaryNorm, LinearSegmentedColormap
     from matplotlib.lines import Line2D
     import numpy as np
 
     methods = report['methods']
     labels = [LABELS[method] for method in methods]
+    summary = report['summary']
     bands = report.get('class_bands') or []
+    positions = np.arange(len(methods))[::-1]  # First method at the top.
     plt.rcParams.update({'font.size': 10, 'svg.fonttype': 'none',
                          'font.family': ['DejaVu Sans', 'sans-serif'],
                          'text.color': INK, 'axes.labelcolor': INK_SECONDARY,
                          'xtick.color': INK_SECONDARY, 'ytick.color': INK_SECONDARY})
-    figure = plt.figure(figsize=(13.2, 6.3), facecolor=SURFACE, constrained_layout=True)
-    grid = figure.add_gridspec(2, len(PANELS), height_ratios=(1, 0.92))
-    axes = [figure.add_subplot(grid[0, column]) for column in range(len(PANELS))]
-    positions = np.arange(len(methods))[::-1]  # First method at the top.
+    figure = plt.figure(figsize=(13.2, 7.4), facecolor=SURFACE, constrained_layout=True)
+    grid = figure.add_gridspec(2, 2, width_ratios=(1, 1))
+    layout = {'mean_accuracy': grid[0, 0], 'mean_rules': grid[0, 1],
+              'mean_fit_seconds': grid[1, 0]}
+    labelled = {'mean_accuracy', 'mean_fit_seconds'}  # Left column carries the names.
 
-    for axis, (key, title, subtitle, logarithmic, fmt) in zip(axes, PANELS):
+    for key, title, subtitle, logarithmic, fmt in PANELS:
+        axis = figure.add_subplot(layout[key])
+        _style(axis)
         statistic = 'mean' if key == 'mean_accuracy' else 'median'
         base = key.removeprefix('mean_')
-        values = [report['summary'][method][f'{statistic}_{base}'] for method in methods]
-        low = [report['summary'][method][f'{base}_q1'] for method in methods]
-        high = [report['summary'][method][f'{base}_q3'] for method in methods]
-        _style(axis)
+        values = [summary[method][f'{statistic}_{base}'] for method in methods]
+        low = [summary[method][f'{base}_q1'] for method in methods]
+        high = [summary[method][f'{base}_q3'] for method in methods]
+        present = [v for v in values + low + high if v is not None]
         if logarithmic:
             axis.set_xscale('log')
-            axis.set_xlim(min(min(low), min(values)) / 4, max(max(high), max(values)) * 12)
+            axis.set_xlim(min(present) / 4, max(present) * 14)
         else:
             axis.set_xlim(0, 1.12)
         floor = axis.get_xlim()[0]
         for position, method, value, left, right in zip(positions, methods, values, low, high):
+            if value is None:
+                axis.annotate('not a rule model', (floor, position), xytext=(4, 0),
+                              textcoords='offset points', va='center', fontsize=9,
+                              color=INK_MUTED, style='italic')
+                continue
+            color = method_color(method)
             axis.plot([floor, value], [position, position], color=GRID,
                       linewidth=1, solid_capstyle='butt', zorder=2)
-            axis.plot([left, right], [position, position], color=COLORS[method],
+            axis.plot([left, right], [position, position], color=color,
                       linewidth=4.5, alpha=.30, solid_capstyle='round', zorder=3)
-            axis.plot([value], [position], marker='o', markersize=9, color=COLORS[method],
+            axis.plot([value], [position], marker='o', markersize=9, color=color,
                       markeredgecolor=SURFACE, markeredgewidth=2, zorder=4)
             # Anchored past the range band so the label never sits on it.
-            axis.annotate(fmt.format(value), (max(value, right), position), xytext=(13, 0),
+            axis.annotate(fmt.format(value), (max(value, right), position), xytext=(12, 0),
                           textcoords='offset points', va='center', fontsize=9.5,
                           color=INK, fontweight='bold', zorder=5)
-        axis.set_yticks(positions, labels if axis is axes[0] else [''] * len(labels))
-        _titles(axis, title, subtitle)
+        axis.set_yticks(positions, labels if key in labelled else [''] * len(labels))
         axis.set_ylim(-0.6, len(methods) - 0.4)
-
-    axes[0].set_xlabel('Accuracy')
-    axes[1].set_xlabel('Rules (log scale)')
-    axes[2].set_xlabel('Seconds (log scale)')
+        _titles(axis, title, subtitle)
+        axis.set_xlabel({'mean_accuracy': 'Accuracy', 'mean_rules': 'Rules (log scale)',
+                         'mean_fit_seconds': 'Seconds (log scale)'}[key])
 
     if bands:
-        axis = figure.add_subplot(grid[1, :])
-        _style(axis)
-        axis.set_xlim(0, 1.0)
-        band_positions = np.arange(len(bands))[::-1]
-        offsets = np.linspace(.26, -.26, len(methods))
-        for position, band in zip(band_positions, bands):
-            for offset, method in zip(offsets, methods):
-                value = band['mean_accuracy'][method]
-                axis.plot([0, value], [position + offset] * 2, color=GRID,
-                          linewidth=1, solid_capstyle='butt', zorder=2)
-                axis.plot([value], [position + offset], marker='o', markersize=8,
-                          color=COLORS[method], markeredgecolor=SURFACE,
-                          markeredgewidth=2, zorder=4)
-        axis.set_yticks(band_positions,
+        axis = figure.add_subplot(grid[1, 1])
+        axis.set_facecolor(SURFACE)
+        matrix = np.array([[band['mean_accuracy'][method] for band in bands]
+                           for method in methods])
+        low, high = np.floor(matrix.min() * 20) / 20, np.ceil(matrix.max() * 20) / 20
+        colormap = LinearSegmentedColormap.from_list('keel_blue', SEQUENTIAL)
+        edges = np.linspace(low, high, len(SEQUENTIAL) + 1)
+        axis.pcolormesh(np.arange(len(bands) + 1), np.arange(len(methods) + 1) - 0.5,
+                        matrix[::-1], cmap=colormap,
+                        norm=BoundaryNorm(edges, colormap.N), edgecolors=SURFACE,
+                        linewidth=2)
+        midpoint = low + (high - low) * 0.55
+        for row, method in enumerate(methods):
+            for column, value in enumerate(matrix[row]):
+                axis.text(column + .5, positions[row], f'{value:.3f}', ha='center',
+                          va='center', fontsize=9.5,
+                          color=SURFACE if value >= midpoint else INK,
+                          fontweight='bold' if method in EXFUZZY_METHODS else 'normal')
+        axis.set_xticks(np.arange(len(bands)) + .5,
                         [f'{band["label"]}\n{band["datasets"]} datasets' for band in bands])
-        axis.set_ylim(-0.75, len(bands) - 0.35)
-        axis.set_xlabel('Mean accuracy over the datasets in the band')
-        _titles(axis, 'Test accuracy by number of classes',
-                "Ex-Fuzzy's rule budget is a fixed 30 rules for every problem")
-        axis.legend(handles=[Line2D([], [], marker='o', linestyle='none', markersize=8,
-                                    color=COLORS[method], markeredgecolor=SURFACE,
-                                    markeredgewidth=2, label=LABELS[method])
-                             for method in methods],
-                    loc='lower right', bbox_to_anchor=(1, 1.015), frameon=False,
-                    ncols=len(methods), handletextpad=.4, columnspacing=1.6,
-                    fontsize=9.5, labelcolor=INK_SECONDARY)
+        axis.set_yticks(positions, [''] * len(methods))
+        axis.set_xlim(0, len(bands))
+        axis.set_ylim(-0.6, len(methods) - 0.4)
+        axis.tick_params(length=0)
+        for spine in axis.spines.values():
+            spine.set_visible(False)
+        # Group labels sit below, like the neighbouring panel's axis, so the
+        # heatmap rows stay level with that panel's method rows.
+        _titles(axis, 'Accuracy by number of classes', 'Mean over the datasets in each group')
 
+    figure.legend(handles=[Line2D([], [], marker='o', linestyle='none', markersize=9,
+                                  color=color, markeredgecolor=SURFACE, markeredgewidth=2,
+                                  label=label)
+                           for color, label in ((EXFUZZY_COLOR, 'Ex-Fuzzy'),
+                                                (REFERENCE_COLOR, 'Reference model'))],
+                  loc='upper right', bbox_to_anchor=(0.995, 0.995), ncols=2, frameon=False,
+                  fontsize=10, labelcolor=INK_SECONDARY, handletextpad=.3)
     figure.suptitle(
         f'Ex-Fuzzy on {report["n_datasets_compared"]} KEEL classification datasets',
         x=0.006, ha='left', fontsize=15, fontweight='bold', color=INK)
     figure.supxlabel(
-        f'{report["folds"]}-fold stratified cross-validation, one shared seed, library '
-        'defaults except the stated Ex-Fuzzy search budget. Dots are the mean (accuracy) '
-        'or median (rules, time)\nacross datasets; the band through each dot spans the '
-        'interquartile range across datasets, not a confidence interval.',
+        f'{report["folds"]}-fold stratified cross-validation with one shared seed. FERL uses the '
+        'compact, medium and deep presets of fuzzy_greedy_tree; the GA uses a stated search '
+        'budget; baselines use library defaults.\nDots are the mean (accuracy) or median '
+        '(rules, time) across datasets. The band through each dot spans the interquartile '
+        'range across datasets, not a confidence interval.',
         x=0.006, ha='left', fontsize=8.8, color=INK_SECONDARY)
     figure.savefig(destination, dpi=160, facecolor=SURFACE)
     plt.close(figure)
@@ -315,8 +366,8 @@ def _style(axis) -> None:
     axis.tick_params(axis='x', length=3, color=GRID)
 
 
-def _titles(axis, title: str, subtitle: str) -> None:
-    axis.set_title(title, loc='left', fontsize=12, fontweight='bold', color=INK, pad=15)
+def _titles(axis, title: str, subtitle: str, pad: float = 15) -> None:
+    axis.set_title(title, loc='left', fontsize=12, fontweight='bold', color=INK, pad=pad)
     axis.annotate(subtitle, (0, 1), xytext=(0, 6), xycoords='axes fraction',
                   textcoords='offset points', fontsize=9.5, color=INK_SECONDARY)
 
@@ -357,8 +408,8 @@ def main(argv=None) -> int:
           f'{len(options.methods)} methods')
     for method in options.methods:
         entry = report['summary'][method]
-        print(f'  {entry["label"]:20s} acc={entry["mean_accuracy"]:.4f} '
-              f'rank={entry["mean_rank"]:.2f} rules={entry["median_rules"]:>10,.1f} '
+        print(f'  {entry["label"]:22s} acc={entry["mean_accuracy"]:.4f} '
+              f'rank={entry["mean_rank"]:.2f} rules={_fmt(entry["median_rules"], ">10,.1f"):>10} '
               f'fit={entry["median_fit_seconds"]:>8,.2f}s')
     print(f'wrote {options.output}, {options.output.with_suffix(".md")}, '
           f'{options.output.with_suffix(".svg")}')

@@ -13,10 +13,12 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_is_fitted
 try:
     from . import fuzzy_sets as fs
+    from . import _evidence
     from . import utils
     from .ferl_partitions import learn_partitions_mdlp
 except ImportError:
     import fuzzy_sets as fs
+    import _evidence
     import utils
     from ferl_partitions import learn_partitions_mdlp
 
@@ -609,6 +611,15 @@ class FERL(BaseEstimator, ClassifierMixin):
             raise ValueError("partition must be either 'quantile' or 'mdlp'.")
         if self.split_mode not in ("fixed", "learned"):
             raise ValueError("split_mode must be either 'fixed' or 'learned'.")
+        if self.target_metric not in ("cci", "purity"):
+            raise ValueError("target_metric must be either 'cci' or 'purity'.")
+        if self.split_mode == "learned" and self.target_metric == "purity":
+            # The purity search only scans the fixed partition; learned splits are
+            # placed on the CCI path alone, as in the reference implementation.
+            raise ValueError(
+                "split_mode='learned' supports only target_metric='cci'. For a deep "
+                "learned-split tree grown by weighted Gini, use ex_fuzzy.DeepFERL."
+            )
         if self.prediction_mode not in ("soft", "soft_gate", "hard_gate", "winner"):
             raise ValueError(
                 "prediction_mode must be 'soft', 'soft_gate', 'hard_gate', or 'winner'."
@@ -2058,8 +2069,9 @@ class FERL(BaseEstimator, ClassifierMixin):
                 as ``X``.
             leaves_only: Combine leaf rules only.
             rule: Combination rule. Supported values are ``"dempster"``,
-                ``"cautious"``, ``"hybrid"``, ``"incremental"``, and
-                ``"incremental_local"``.
+                ``"cautious"``, ``"hybrid"``, ``"incremental"``,
+                ``"incremental_local"``, and ``"mixture"``. Any other value
+                raises ``ValueError``.
             reliability_k: Support pseudo-count used to discount thin rules.
             prior_strength: Dirichlet prior strength for consequent smoothing.
             reliability_vec: Explicit per-node reliability values.
@@ -2070,6 +2082,7 @@ class FERL(BaseEstimator, ClassifierMixin):
             arrays have shape ``(n_samples, n_classes)`` and ignorance has shape
             ``(n_samples,)``.
         """
+        _evidence.check_rule(rule)
         X = self._as_array(X)
         if X.ndim == 1:
             X = X.reshape(1, -1)
@@ -2080,17 +2093,8 @@ class FERL(BaseEstimator, ClassifierMixin):
             names = [n for n, k in zip(names, keep) if k]
 
         if top_p is not None and M.shape[1] > 0:
-            # top-p (nucleus) routing: keep each node's top classes until the
-            # cumulative consequent reaches top_p, route the tail to Theta. The
-            # renormalized top-p consequent + a firing discount by the kept mass.
-            order = np.argsort(-cons, axis=1)
-            sc = np.take_along_axis(cons, order, axis=1)
-            before = np.cumsum(sc, axis=1) - sc            # cumulative strictly before each
-            kept = np.zeros_like(cons)
-            np.put_along_axis(kept, order, np.where(before < top_p, sc, 0.0), axis=1)
-            rtp = kept.sum(1)
-            cons = kept / np.clip(rtp[:, None], 1e-12, None)
-            M = M * rtp[None, :]
+            # top-p (nucleus) routing: route each node's low-probability tail to Theta.
+            M, cons = _evidence.route_top_p(M, cons, top_p)
 
         k = self.reliability_k if reliability_k is None else reliability_k
         M_raw = M.copy()                                       # firing only (pre-reliability)
@@ -2120,129 +2124,19 @@ class FERL(BaseEstimator, ClassifierMixin):
             betp = np.full((X.shape[0], C), 1.0 / C)
             return betp, np.zeros((X.shape[0], C)), np.ones((X.shape[0], C)), ign
 
-        N = M.shape[0]
-        one_minus = 1.0 - M                                    # (N, K)
-        term = M[:, :, None] * cons[None, :, :] + one_minus[:, :, None]  # (N, K, C)
-
-        def _cautious_mass(cols):
-            """Cautious-combined (m_c, m_theta) over a subset of node columns."""
-            w_nc = one_minus[:, cols, None] / np.clip(term[:, cols, :], 1e-12, None)
-            w_c = np.clip(w_nc.min(axis=1), 1e-12, 1.0)        # (N, C)
-            inv = 1.0 / w_c
-            S = (1.0 - C) + inv.sum(axis=1)                    # (N,), >= 1
-            return (inv - 1.0) / S[:, None], 1.0 / S
-
+        support = None
+        incremental_reliability = None
+        if rule in ("incremental", "incremental_local", "mixture"):
+            support = np.array([self.node_dict_access[n]['coverage'] for n in names]) * self._n_train
         if rule in ("incremental", "incremental_local"):
-            # Incremental (residual) evidence: along each root->leaf chain, keep the
-            # root's full belief and replace every descendant by its *residual* over
-            # the immediate parent, so the shared ancestor evidence is counted once
-            # (no nesting double-count) while the refinement's independent increment
-            # is preserved. Residuals are extracted from the unfired, reliability-
-            # discounted base masses; firing is applied after.
-            #
-            # Base singleton+Theta mass per node n: a_n(c) = rho_n p_n(c),
-            # t_n = 1 - rho_n; base commonality g_n(c) = a_n(c) + t_n, g_n(Theta)=t_n.
-            # Residual of child k over parent p (commonality division):
-            #   q_res(c) = g_k(c)/g_p(c),  q_res(Theta) = clip(t_k/t_p, 0, 1)
-            #   a_res(c) = q_res(c) - q_res(Theta).
-            # Specialization here *raises* ignorance (t_k >= t_p), so the Theta
-            # residual is clamped; the validity test is on the class residual:
-            # a_res(c) >= 0 for all c means the child reinforces (additive
-            # refinement). A negative entry means the child *contradicts* the parent
-            # on some class -- an exception, not an increment -- and the node keeps
-            # its own full base mass (that link degrades toward Dempster; the parent
-            # is not cancelled). So the rule interpolates: clean refinements cancel
-            # their ancestor (toward specificity), exceptions double-count (Dempster).
-            #
-            # Firing variants. 'incremental' (global): each node's mass is discounted
-            # by its own full path firing mu_n. 'incremental_local': a residual node
-            # is discounted by the *conditional* firing mu_k/mu_parent -- the
-            # membership of the newly-added condition alone -- so the parent's firing
-            # is not re-counted in the increment (path firing factorizes:
-            # mu_{A^B} = mu_A * mu_{B|A}, so the chain's firing telescopes to the
-            # leaf's instead of compounding).
-            local = (rule == "incremental_local")
-            r_inc = r_vec
-            if np.allclose(r_inc, 1.0):                         # need t_n>0 to divide
-                supp = np.array([self.node_dict_access[n]['coverage'] for n in names]) * self._n_train
-                r_inc = supp / (supp + 10.0)                   # default beta=10
-            t = np.clip(1.0 - r_inc, 1e-9, 1.0)                # (K,) Theta mass
-            a = r_inc[:, None] * cons                          # (K,C) singleton mass
-            g = a + t[:, None]                                 # (K,C) base commonality
-
-            # immediate active parent of each node (longest name that is a prefix)
-            parent = np.full(M.shape[1], -1, dtype=int)
-            for kk, nk in enumerate(names):
-                blen = -1
-                for j, nj in enumerate(names):
-                    if j != kk and nk.startswith(nj + "_") and len(nj) > blen:
-                        parent[kk], blen = j, len(nj)
-
-            a_eff = a.copy()                                   # (K,C) effective singleton mass
-            t_eff = t.copy()                                   # (K,)  effective Theta mass
-            is_residual = np.zeros(M.shape[1], dtype=bool)     # node uses a residual (valid edge)
-            n_nonroot = int((parent >= 0).sum())
-            n_invalid = 0
-            for kk in range(M.shape[1]):
-                p = parent[kk]
-                if p < 0:                                      # root component: full mass
-                    continue
-                q_res = g[kk] / np.clip(g[p], 1e-12, None)     # (C,)
-                q_res_th = float(np.clip(t[kk] / t[p], 0.0, 1.0))
-                a_res = q_res - q_res_th
-                if np.all(a_res >= -1e-9):                      # additive refinement
-                    a_eff[kk] = np.clip(a_res, 0.0, None)
-                    t_eff[kk] = q_res_th
-                    is_residual[kk] = True
-                else:                                          # exception -> keep full mass
-                    n_invalid += 1
-            self._last_incremental_diag = {
-                'n_nonroot': n_nonroot, 'n_invalid': n_invalid,
-                'residual_invalid_rate': (n_invalid / n_nonroot) if n_nonroot else 0.0,
-            }
-            # per-sample firing per node: full path firing, or (local) the conditional
-            # firing mu_k/mu_parent on residual edges.
-            mu = M_raw.copy()                                  # (N,K)
-            if local and is_residual.any():
-                pr = parent[is_residual]
-                mu[:, is_residual] = M_raw[:, is_residual] / np.clip(M_raw[:, pr], 1e-12, None)
-                mu = np.clip(mu, 0.0, 1.0)
-            f_th = 1.0 - mu * (1.0 - t_eff[None, :])           # (N,K) discounted Theta
-            f_c = mu[:, :, None] * a_eff[None, :, :] + f_th[:, :, None]  # (N,K,C) commonality
-            Qc = np.prod(f_c, axis=1)
-            Qt = np.prod(f_th, axis=1)
-            m_c_un = np.clip(Qc - Qt[:, None], 0.0, None)
-            total = np.where(m_c_un.sum(1) + Qt <= 0, 1.0, m_c_un.sum(1) + Qt)
-            m_c, m_theta = m_c_un / total[:, None], Qt / total
-        elif rule == "cautious":
-            m_c, m_theta = _cautious_mass(np.arange(M.shape[1]))
-        elif rule == "hybrid":
-            # Structure-aware: cautious within each root->leaf chain (dependent,
-            # nested rules), then Dempster across chains (independent branches).
-            leaves = [i for i, n in enumerate(names)
-                      if not any(o != n and o.startswith(n + "_") for o in names)]
-            Qc, Qt = np.ones((N, C)), np.ones(N)
-            for li in leaves:
-                ln = names[li]
-                anc = [j for j, n in enumerate(names) if ln == n or ln.startswith(n + "_")]
-                mc, mt = _cautious_mass(anc)                   # per-chain cautious mass
-                Qc *= (mc + mt[:, None])                       # Dempster across chains
-                Qt *= mt
-            m_c_un = np.clip(Qc - Qt[:, None], 0.0, None)
-            total = np.where(m_c_un.sum(1) + Qt <= 0, 1.0, m_c_un.sum(1) + Qt)
-            m_c, m_theta = m_c_un / total[:, None], Qt / total
-        else:                                                  # dempster
-            Qc = np.prod(term, axis=1)                         # (N, C)
-            Qtheta = np.prod(one_minus, axis=1)                # (N,)
-            m_c_un = np.clip(Qc - Qtheta[:, None], 0.0, None)
-            total = m_c_un.sum(axis=1) + Qtheta
-            total = np.where(total <= 0, 1.0, total)
-            m_c = m_c_un / total[:, None]
-            m_theta = Qtheta / total
-
-        bel = m_c
-        pl = m_c + m_theta[:, None]
-        betp = m_c + m_theta[:, None] / C
+            incremental_reliability = r_vec
+            if np.allclose(incremental_reliability, 1.0):      # need t_n > 0 to divide
+                incremental_reliability = support / (support + 10.0)   # default beta=10
+        betp, bel, pl, m_theta, diagnostics = _evidence.combine_evidence(
+            M, cons, names, C, rule=rule, firing=M_raw,
+            incremental_reliability=incremental_reliability, support=support)
+        if diagnostics is not None:
+            self._last_incremental_diag = diagnostics
         return betp, bel, pl, m_theta
 
     def predict_dirichlet(self, X: np.array, observed_mask: np.array = None,

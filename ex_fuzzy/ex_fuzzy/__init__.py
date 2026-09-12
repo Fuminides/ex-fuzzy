@@ -15,6 +15,7 @@ from . import pattern_stability
 from . import permutation_test
 from . import bootstrapping_test
 from . import ferl
+from . import ferl_deep
 from . import ferl_partitions
 from . import conformal
 
@@ -30,4 +31,5 @@ from .evolutionary_fit_regression import (
 )
 from .fuzzy_sets import FS, FUZZY_SETS, fuzzyVariable
 from .ferl import FERL
+from .ferl_deep import DeepFERL
 from .ferl_partitions import learn_partitions_mdlp, mdlp_cuts

@@ -5,9 +5,13 @@ cross-validation and writes a self-describing JSON result. The grid is meant to
 be spread over a cluster, one array task per pair; ``--list-tasks`` prints it.
 Aggregate the finished results with ``benchmarks/aggregate_keel.py``.
 
-Every method is fitted on the raw KEEL columns with its library defaults. This
-measures out-of-the-box behaviour, not tuned behaviour, and the figures built
-from it must say so.
+Every method sees the raw KEEL columns. Baselines use their library defaults;
+logistic regression standardizes features inside its own pipeline, fitted on the
+training folds only. The Ex-Fuzzy learners use stated, uniform configurations:
+a search budget for the genetic learner, and the three FERL operating points of
+the fuzzy_greedy_tree paper (compact and medium through FERL, deep through
+DeepFERL). Nothing is tuned per dataset, and the figures built
+from these results must say so.
 """
 from __future__ import annotations
 
@@ -30,11 +34,36 @@ from keel_datasets import available_datasets, dataset_path, load_dataset  # noqa
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT = ROOT / 'benchmarks' / 'results' / 'keel'
 #: Order is the figure's order; keep the Ex-Fuzzy learners first.
-METHODS = ('exfuzzy-ga', 'exfuzzy-ferl', 'sklearn-tree', 'sklearn-forest')
+METHODS = ('exfuzzy-ga', 'exfuzzy-ferl-compact', 'exfuzzy-ferl-medium',
+           'exfuzzy-ferl-deep', 'sklearn-logreg', 'sklearn-tree', 'sklearn-forest')
 LABELS = {'exfuzzy-ga': 'Ex-Fuzzy GA rules',
-          'exfuzzy-ferl': 'Ex-Fuzzy FERL',
+          'exfuzzy-ferl-compact': 'Ex-Fuzzy FERL compact',
+          'exfuzzy-ferl-medium': 'Ex-Fuzzy FERL medium',
+          'exfuzzy-ferl-deep': 'Ex-Fuzzy FERL deep',
+          'sklearn-logreg': 'Logistic regression',
           'sklearn-tree': 'Decision tree',
           'sklearn-forest': 'Random forest'}
+#: Methods from the Ex-Fuzzy library, as opposed to reference baselines.
+EXFUZZY_METHODS = frozenset(method for method in METHODS if method.startswith('exfuzzy-'))
+#: Methods whose model is not a rule base, so they have no rule count.
+RULELESS_METHODS = frozenset({'sklearn-logreg'})
+
+#: The FERL operating points of the fuzzy_greedy_tree paper (its AAAI tables), as
+#: ``(constructor kwargs, fit kwargs)`` for Ex-Fuzzy's native FERL. Compact mirrors
+#: that repository's ``fgrt-base`` and medium its ``fgrt-performance`` pipeline
+#: configuration, with the pipeline's own defaults (20 rules, depth 5, minimum
+#: improvement 0.01, patience 3) written out where a preset leaves them unset,
+#: because Ex-Fuzzy's FERL defaults to 15 rules. Deep is a different estimator,
+#: :class:`ex_fuzzy.DeepFERL`, and is built separately below.
+FERL_PRESETS = {
+    'exfuzzy-ferl-compact': (dict(partition='quantile', max_rules=20, max_depth=5,
+                                  min_improvement=0.01),
+                             dict(patience=3)),
+    'exfuzzy-ferl-medium': (dict(partition='quantile', split_mode='learned',
+                                 learned_width='bootstrap', max_rules=150, max_depth=12,
+                                 min_improvement=0.0),
+                            dict(patience=16)),
+}
 
 #: Structural budget for the genetic learner: the library's own defaults, so the
 #: model stays the small rule base Ex-Fuzzy advertises.
@@ -67,6 +96,19 @@ def _size_exfuzzy_ferl(model) -> dict:
     leaves = [name for name, node in model.node_dict_access.items()
               if name != 'root' and not node.get('children')]
     return dict(rules=len(leaves), conditions=sum(name.count('_F') for name in leaves))
+
+
+def _size_deep_ferl(model) -> dict:
+    """DeepFERL rules are its leaves; a leaf's depth is its condition count."""
+    stats = model.get_tree_stats()
+    return dict(rules=int(stats['leaves']), conditions=int(stats['total_leaf_depth']))
+
+
+def _size_logreg(model) -> dict:
+    """A linear model has no rules; record its fitted parameter count instead."""
+    linear = model[-1]
+    return dict(rules=None, conditions=None,
+                parameters=int(linear.coef_.size + linear.intercept_.size))
 
 
 def _size_sklearn_tree(model) -> dict:
@@ -102,17 +144,27 @@ def _leaf_depth_total(tree) -> int:
 def build_method(method: str, seed: int, n_classes: int):
     """Return ``(estimator, fit_kwargs, size_function)`` for one method.
 
-    Estimators are constructed with their library defaults; only the random
-    seed is set, so results stay reproducible without becoming tuned.
+    Baselines keep their library defaults and the Ex-Fuzzy learners take the
+    module-level configurations; only the random seed varies by fold.
     """
     if method == 'exfuzzy-ga':
         from ex_fuzzy.evolutionary_fit import BaseFuzzyRulesClassifier
         import ex_fuzzy.fuzzy_sets as fs
         model = BaseFuzzyRulesClassifier(fuzzy_type=fs.FUZZY_SETS.t1, **GA_MODEL)
         return model, dict(random_state=seed, **GA_SEARCH), _size_exfuzzy_ga
-    if method == 'exfuzzy-ferl':
+    if method in FERL_PRESETS:
         from ex_fuzzy.ferl import FERL
-        return FERL(random_state=seed), {}, _size_exfuzzy_ferl
+        init, fit = FERL_PRESETS[method]
+        return FERL(random_state=seed, **init), dict(fit), _size_exfuzzy_ferl
+    if method == 'exfuzzy-ferl-deep':
+        from ex_fuzzy.ferl_deep import DeepFERL
+        return DeepFERL(random_state=seed), {}, _size_deep_ferl
+    if method == 'sklearn-logreg':
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler
+        model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
+        return model, {}, _size_logreg
     if method == 'sklearn-tree':
         from sklearn.tree import DecisionTreeClassifier
         return DecisionTreeClassifier(random_state=seed), {}, _size_sklearn_tree
@@ -145,6 +197,13 @@ def method_configuration(method: str) -> dict:
     """The non-default settings a reader needs to reproduce one method."""
     if method == 'exfuzzy-ga':
         return dict(fuzzy_type='t1', **GA_MODEL, **GA_SEARCH)
+    if method in FERL_PRESETS:
+        init, fit = FERL_PRESETS[method]
+        return dict(**init, fit=dict(fit))
+    if method == 'exfuzzy-ferl-deep':
+        return dict(estimator='DeepFERL', library_defaults=True)
+    if method == 'sklearn-logreg':
+        return dict(pipeline='StandardScaler -> LogisticRegression', max_iter=1000)
     return dict(library_defaults=True)
 
 
@@ -167,8 +226,12 @@ def run_task(dataset: str, method: str, folds: int, seed: int, root) -> dict:
         results.append(fold)
     record['folds_detail'] = results
     for key in ('accuracy', 'balanced_accuracy', 'macro_f1', 'rules', 'conditions',
-                'fit_seconds', 'predict_seconds', 'unclassified'):
-        values = [float(fold[key]) for fold in results]
+                'parameters', 'fit_seconds', 'predict_seconds', 'unclassified'):
+        values = [fold.get(key) for fold in results]
+        if any(value is None for value in values):  # Not defined for this model.
+            record[f'mean_{key}'] = record[f'std_{key}'] = None
+            continue
+        values = [float(value) for value in values]
         record[f'mean_{key}'] = float(np.mean(values))
         record[f'std_{key}'] = float(np.std(values, ddof=1)) if len(values) > 1 else 0.0
     return record

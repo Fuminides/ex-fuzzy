@@ -1,9 +1,10 @@
 # Ex-Fuzzy on the KEEL classification collection
 
-The figure in the project README places Ex-Fuzzy's two rule learners next to two
-scikit-learn baselines on the KEEL classification datasets, under one protocol:
-same folds, same seed, same raw columns, library defaults except for the
-Ex-Fuzzy search budget recorded below. It is an illustration of out-of-the-box
+The figure in the project README places Ex-Fuzzy's rule learners, the genetic
+learner and three FERL presets, next to three scikit-learn baselines on the KEEL
+classification datasets. Everything runs under one protocol: the same folds, the
+same seed and the same raw columns. Baselines keep their library defaults. The
+Ex-Fuzzy learners use the stated, uniform configurations recorded below. It is an illustration of out-of-the-box
 behaviour across many problems, **not** a tuned comparison and not a claim that
 any method is best.
 
@@ -52,8 +53,10 @@ python benchmarks/aggregate_keel.py --plot-only
   `benchmarks/keel_datasets.py`. Nominal attributes become the integer codes of
   their declared order and are reported in a categorical mask; labels are mapped
   to `0..k-1`. Rows carrying KEEL's `?` missing marker are dropped and counted
-  in the result file. No scaling, encoding or feature selection is applied, so
-  every method sees identical columns.
+  in the result file. No encoding or feature selection is applied, so every
+  method sees identical columns. The one transformation is logistic regression's
+  standardization, which runs inside its own pipeline and is fitted on the
+  training folds only.
 - **Protocol.** 5-fold stratified cross-validation,
   `StratifiedKFold(shuffle=True, random_state=0)`, identical folds for every
   method. Each fold's estimator is seeded with `0 + fold_index`.
@@ -65,7 +68,9 @@ python benchmarks/aggregate_keel.py --plot-only
   decision-tree leaves, or leaves summed over every tree in the forest.
   "Conditions" is the total antecedent count over those rules. FERL's soft
   inference also consults interior nodes; the leaves are what `max_rules`
-  bounds.
+  bounds. For `DeepFERL` the rules are its leaves, and conditions are summed
+  leaf depths. Logistic regression is not a rule model. Its fitted parameter count is
+  recorded instead, and it has no entry in the rules panel.
 - **Timing.** Seconds inside `fit` for one fold, on shared cluster nodes with
   numerical library threads pinned to one. The published run spread over four
   Intel Xeon models (E5-2698 v4, Gold 6152, 6238 and 6238L), and other jobs
@@ -78,13 +83,32 @@ python benchmarks/aggregate_keel.py --plot-only
 | Method | Configuration |
 | --- | --- |
 | Ex-Fuzzy GA rules | `BaseFuzzyRulesClassifier(fuzzy_type=t1, nRules=30, nAnts=4)`, fitted with `n_gen=100, pop_size=100, patience=25, min_delta=1e-4` |
-| Ex-Fuzzy FERL | `FERL()` with library defaults |
+| Ex-Fuzzy FERL compact | `FERL(partition="quantile", max_rules=20, max_depth=5, min_improvement=0.01)`, fitted with `patience=3` |
+| Ex-Fuzzy FERL medium | `FERL(split_mode="learned", learned_width="bootstrap", max_rules=150, max_depth=12, min_improvement=0.0)`, fitted with `patience=16` |
+| Ex-Fuzzy FERL deep | `DeepFERL()` with library defaults: weighted-Gini learned splits, depth 12, `min_leaf_w=2.0`, 25 bootstrap replicates, bounded support |
+| Logistic regression | `make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))` |
 | Decision tree | `DecisionTreeClassifier()` with library defaults |
 | Random forest | `RandomForestClassifier(n_jobs=1)` with library defaults |
 
-The genetic learner is the only method given a non-default setting, and only for
-its **search budget**, which is uniform across every dataset rather than tuned
-per problem. Ex-Fuzzy's shipped defaults (70 generations, population 30,
+The three FERL presets are the compact, medium and deep operating points of the
+`fuzzy_greedy_tree` paper, as defined by its published tables. Compact and
+medium mirror that repository's `fgrt-base` and `fgrt-performance` pipeline
+configurations. That pipeline defaults to 20 rules, depth 5, minimum improvement
+0.01 and patience 3, and those values are written out where a preset leaves them
+unset, because Ex-Fuzzy's own `FERL` defaults to 15 rules. Deep is a different
+algorithm, the paper's standalone learned tree, available in Ex-Fuzzy as
+`DeepFERL`. It grows recursively with weighted-Gini learned splits instead of
+under a rule budget, and predicts by a soft vote over its leaves. The medium
+results were produced before the deep preset was ported, under an earlier label
+for the same configuration; their recorded configurations are unchanged. The compact preset therefore differs slightly
+from `FERL()` with no arguments. An earlier version of this figure used those
+bare defaults, and its results were removed when the presets replaced it.
+Logistic regression is standardized because its solver is sensitive to the wide
+feature ranges of some KEEL datasets; the `fuzzy_greedy_tree` benchmark ran it
+on raw features instead.
+
+For the genetic learner, only the **search budget** departs from the defaults,
+and it is uniform across every dataset rather than tuned per problem. Ex-Fuzzy's shipped defaults (70 generations, population 30,
 patience 10) stop early enough to understate it: on `vehicle` the defaults
 reached 0.42 accuracy where the budget above reached 0.62, for a tenth of the
 time. Quoting the truncated search would misrepresent the learner; quoting a
@@ -121,8 +145,8 @@ Type-1 sets, three linguistic terms per variable — stays at the library defaul
   after about an hour. That puts a full run at an estimated 6–10 hours, so it
   was stopped. `census` has 142,521 rows and 41 features, and the next largest
   dataset, `adult`, needed about 12.5 minutes per fold. The baseline results are
-  kept under `benchmarks/results/keel/`. Nothing else failed: all 268 other pairs
-  completed.
+  kept under `benchmarks/results/keel/`. Nothing else failed: all 469 pairs on the other 67 datasets
+  (seven methods each) completed.
 - Single seed, single fold assignment. The interquartile bands in the figure
   span **datasets**, not repeated runs, so they describe how much the methods
   vary across problems, not the uncertainty of any one number.
@@ -132,8 +156,10 @@ Type-1 sets, three linguistic terms per variable — stays at the library defaul
 `tests/test_keel_benchmark.py` covers the parts that turn into published
 numbers: KEEL header and data parsing, including the singular `@output` form,
 tight type specifications, nominal level ordering and missing-marker handling;
-the task grid; the size accounting; failure recording; rank averaging; and the
-aggregation's refusal to compare a dataset that is missing a method.
+the task grid; the size accounting, including logistic regression's missing
+rule count; the recorded FERL preset configurations; failure recording; rank
+averaging; and the aggregation's refusal to compare a dataset that is missing a
+method.
 
 ```bash
 python -m pytest -q tests/test_keel_benchmark.py

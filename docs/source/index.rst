@@ -201,6 +201,8 @@ Choosing a Workflow
      - :class:`ex_fuzzy.ConformalFuzzyClassifier`
    * - Learn a greedy rule tree with native evidential uncertainty
      - :class:`ex_fuzzy.FERL`
+   * - Grow a deeper, more accurate evidential rule tree
+     - :class:`ex_fuzzy.DeepFERL`
    * - Use GPU-accelerated evolutionary optimization
      - ``backend="evox"`` with either estimator and the ``ex-fuzzy[evox]`` extra
    * - Save and reload fuzzy variables
