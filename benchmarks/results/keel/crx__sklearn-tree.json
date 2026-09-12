@@ -1,0 +1,123 @@
+{
+  "dataset": "crx",
+  "method": "sklearn-tree",
+  "created_utc": "2026-09-12T18:48:18.128857+00:00",
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Linux-3.10.0-693.90.2.el7.x86_64-x86_64-with-glibc2.17",
+    "node": "compute-0-23.local",
+    "cpu": "Intel(R) Xeon(R) Gold 6152 CPU @ 2.10GHz",
+    "packages": {
+      "numpy": "2.4.6",
+      "scikit-learn": "1.9.0",
+      "pymoo": "0.6.2",
+      "ex_fuzzy": "2.1.5"
+    },
+    "threads": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "method_label": "Decision tree",
+  "folds": 5,
+  "seed": 0,
+  "configuration": {
+    "library_defaults": true
+  },
+  "n_samples": 653,
+  "n_features": 15,
+  "n_classes": 2,
+  "n_categorical": 9,
+  "dropped_rows": 0,
+  "folds_detail": [
+    {
+      "accuracy": 0.7709923664122137,
+      "balanced_accuracy": 0.7732394366197184,
+      "macro_f1": 0.770658263305322,
+      "unclassified": 0,
+      "fit_seconds": 0.003305179998278618,
+      "predict_seconds": 0.00028001517057418823,
+      "rules": 67,
+      "conditions": 554,
+      "fold_index": 0,
+      "n_train": 522,
+      "n_test": 131,
+      "wall_seconds": 0.173988102003932
+    },
+    {
+      "accuracy": 0.8702290076335878,
+      "balanced_accuracy": 0.8727636534839924,
+      "macro_f1": 0.8697432298063987,
+      "unclassified": 0,
+      "fit_seconds": 0.002813940867781639,
+      "predict_seconds": 0.00022432021796703339,
+      "rules": 63,
+      "conditions": 492,
+      "fold_index": 1,
+      "n_train": 522,
+      "n_test": 131,
+      "wall_seconds": 0.007233552634716034
+    },
+    {
+      "accuracy": 0.816793893129771,
+      "balanced_accuracy": 0.8103813559322034,
+      "macro_f1": 0.8128571428571428,
+      "unclassified": 0,
+      "fit_seconds": 0.003178432583808899,
+      "predict_seconds": 0.00021400488913059235,
+      "rules": 72,
+      "conditions": 625,
+      "fold_index": 2,
+      "n_train": 522,
+      "n_test": 131,
+      "wall_seconds": 0.0077561624348163605
+    },
+    {
+      "accuracy": 0.8076923076923077,
+      "balanced_accuracy": 0.8053234662210551,
+      "macro_f1": 0.8057498057498058,
+      "unclassified": 0,
+      "fit_seconds": 0.0030270926654338837,
+      "predict_seconds": 0.00025738589465618134,
+      "rules": 71,
+      "conditions": 544,
+      "fold_index": 3,
+      "n_train": 523,
+      "n_test": 130,
+      "wall_seconds": 0.007601046934723854
+    },
+    {
+      "accuracy": 0.8307692307692308,
+      "balanced_accuracy": 0.8264502267844354,
+      "macro_f1": 0.8281663061763999,
+      "unclassified": 0,
+      "fit_seconds": 0.0029179994016885757,
+      "predict_seconds": 0.00021941214799880981,
+      "rules": 67,
+      "conditions": 529,
+      "fold_index": 4,
+      "n_train": 523,
+      "n_test": 130,
+      "wall_seconds": 0.007147960364818573
+    }
+  ],
+  "mean_accuracy": 0.8192953611274222,
+  "std_accuracy": 0.036055351615922104,
+  "mean_balanced_accuracy": 0.817631627808281,
+  "std_balanced_accuracy": 0.036373176467919786,
+  "mean_macro_f1": 0.8174349495790139,
+  "std_macro_f1": 0.036044678782749466,
+  "mean_rules": 68.0,
+  "std_rules": 3.605551275463989,
+  "mean_conditions": 548.8,
+  "std_conditions": 48.66929216662186,
+  "mean_fit_seconds": 0.0030485291033983232,
+  "std_fit_seconds": 0.00019702395809674054,
+  "mean_predict_seconds": 0.00023902766406536102,
+  "std_predict_seconds": 2.847901432180068e-05,
+  "mean_unclassified": 0.0,
+  "std_unclassified": 0.0,
+  "status": "ok",
+  "total_seconds": 2.8317047636955976
+}

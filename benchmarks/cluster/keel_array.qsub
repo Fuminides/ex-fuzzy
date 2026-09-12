@@ -1,0 +1,61 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -S /bin/bash
+#$ -N keelbench
+#$ -o logs/keel
+#$ -q all.q
+
+# One array task = one (dataset, method) pair, read from the frozen task list
+# the submit script writes. Deliberately no `set -euo pipefail`: it misbehaves
+# under the cluster's shell wrapper.
+
+REPO_ROOT="${REPO_ROOT:-${SGE_O_WORKDIR:-$(pwd)}}"
+TASK_FILE="${TASK_FILE:-${REPO_ROOT}/benchmarks/results/keel/tasks.txt}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/benchmarks/results/keel}"
+KEEL_ENV="${KEEL_ENV:-datasci}"
+FOLDS="${FOLDS:-5}"
+SEED="${SEED:-0}"
+# Off by default so a resubmission fills the gaps instead of redoing the grid.
+FORCE="${FORCE:-0}"
+
+if [ ! -f "${TASK_FILE}" ]; then
+  echo "Task list not found: ${TASK_FILE}" >&2
+  exit 2
+fi
+
+TASK_LINE=$(sed -n "${SGE_TASK_ID}p" "${TASK_FILE}")
+if [ -z "${TASK_LINE}" ]; then
+  echo "No task at line ${SGE_TASK_ID} of ${TASK_FILE}" >&2
+  exit 2
+fi
+DATASET=$(echo "${TASK_LINE}" | awk '{print $1}')
+METHOD=$(echo "${TASK_LINE}" | awk '{print $2}')
+
+export MAMBA_EXE="${MAMBA_EXE:-$HOME/bin/micromamba}"
+export MAMBA_ROOT_PREFIX="${MAMBA_ROOT_PREFIX:-$HOME/micromamba_env}"
+eval "$("${MAMBA_EXE}" shell hook --shell bash --root-prefix "${MAMBA_ROOT_PREFIX}")"
+micromamba activate "${KEEL_ENV}"
+
+# Each task owns one core; let the scheduler provide the parallelism.
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+
+cd "${REPO_ROOT}" || exit 2
+echo "task ${SGE_TASK_ID}: ${DATASET} ${METHOD} on $(hostname) at $(date -u +%FT%TZ)"
+
+FORCE_FLAG=""
+if [ "${FORCE}" = "1" ]; then FORCE_FLAG="--force"; fi
+
+python benchmarks/benchmark_keel.py \
+  --dataset "${DATASET}" \
+  --method "${METHOD}" \
+  --folds "${FOLDS}" \
+  --seed "${SEED}" \
+  --output-dir "${OUTPUT_DIR}" \
+  ${FORCE_FLAG}
+STATUS=$?
+echo "task ${SGE_TASK_ID}: ${DATASET} ${METHOD} finished with status ${STATUS} at $(date -u +%FT%TZ)"
+exit ${STATUS}

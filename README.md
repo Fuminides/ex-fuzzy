@@ -200,6 +200,39 @@ Obtain statistical confidence intervals for your metrics:
 
 ## ⚡ Performance
 
+### Accuracy and model size on 67 KEEL datasets
+
+![Test accuracy, rules per model and training time for Ex-Fuzzy GA rules, Ex-Fuzzy FERL, a decision tree and a random forest on 67 KEEL classification datasets, with accuracy broken down by number of classes](docs/performance/keel.svg)
+
+Ex-Fuzzy produces models that are small enough to read. **FERL reaches 0.758 mean
+accuracy with a median of 5 rules.** For comparison, a decision tree reaches 0.796
+with 77 leaves, and a random forest reaches 0.846 with 9,918 leaves. That is
+about 90% of the forest's accuracy from a model roughly 2,000 times smaller. The
+genetic learner reaches 0.691 with a median of 9 rules.
+
+The class-count breakdown shows where the gap comes from. On the 32 binary
+datasets, FERL (0.821) edges out the decision tree (0.811) and the genetic
+learner reaches 0.791. With six or more classes the genetic learner drops to
+0.523, because its fixed budget of 30 rules leaves only a few rules per class.
+
+Every method uses the same 5-fold stratified splits of the raw KEEL columns and
+runs with library defaults. The one exception is a fixed search budget for the
+genetic learner (100 generations, population 100). These are out-of-the-box
+numbers, not tuned results. Bands span the interquartile range across datasets,
+not confidence intervals. Training times come from shared cluster nodes and are
+only comparable in order of magnitude.
+
+See the [methodology and limitations](docs/performance/KEEL.md), the
+[per-dataset results](docs/performance/keel.md) and the
+[raw aggregate](docs/performance/keel.json). The KEEL collection itself is not
+bundled; point `EX_FUZZY_KEEL_ROOT` at a local copy to rerun:
+
+```bash
+python benchmarks/benchmark_keel.py --dataset iris --method exfuzzy-ferl
+bash benchmarks/cluster/submit_keel.sh        # whole grid on a Grid Engine cluster
+python benchmarks/aggregate_keel.py            # rebuild docs/performance/keel.*
+```
+
 ### Ex-Fuzzy 2.0 vs Ex-Fuzzy 3.0 training speed
 
 ![Ex-Fuzzy 2.0 versus Ex-Fuzzy 3.0 complete CPU fit times for T1 and T2, with fixed and optimized partitions](docs/performance/speedup.svg)

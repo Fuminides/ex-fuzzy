@@ -1,5 +1,8 @@
 # Ex-Fuzzy speedup validation
 
+> Accuracy and model size across the KEEL collection are documented separately in
+> [KEEL.md](KEEL.md).
+
 The figure compares **Ex-Fuzzy 2.0** (the preserved full object reference
 objective) with **Ex-Fuzzy 3.0** (the current default evaluator) in the same
 checkout. These are evaluator labels, not measurements of two release wheels.

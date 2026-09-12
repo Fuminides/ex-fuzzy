@@ -75,3 +75,11 @@ Measure complete seeded fits with
 `python benchmarks/benchmark_evaluator_variants.py`; it refuses timings unless
 variants produce identical fitted models. Avoid competing workloads during timing.
 See the speedup records for workload-specific reproduction commands and limitations.
+
+The README accuracy figure comes from `benchmarks/benchmark_keel.py`, one
+result per (dataset, method) pair, spread over CERES by
+`benchmarks/cluster/submit_keel.sh` and published by
+`benchmarks/aggregate_keel.py`, which refuses to publish an incomplete grid.
+Read [the KEEL methodology](../docs/performance/KEEL.md) before changing the
+protocol or quoting its numbers. It measures defaults plus a stated GA search
+budget, not tuned models.
