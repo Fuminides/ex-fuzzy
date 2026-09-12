@@ -905,9 +905,26 @@ class fuzzyVariable():
         '''
         Validates the fuzzy variable. Checks that all the fuzzy sets have the same type and domain.
 
+        A categorical variable is valid by definition: it has one crisp fuzzy set per
+        category, so there is nothing to check. The properties below are only defined
+        for numerical Type-1 variables, over crisp memberships along a numerical
+        domain, and an interval or general Type-2 variable answers with one membership
+        interval per sample instead of a single value.
+
         :param X: np.array. Input data to validate the fuzzy variable.
         :return: bool. True if the fuzzy variable is valid, False otherwise.
+        :raises NotImplementedError: if the fuzzy variable is numerical and not Type-1.
         '''
+        if any(fset.shape() == 'categorical' for fset in self.linguistic_variables):
+            if verbose:
+                print('Fuzzy variable ' + self.name + ' is categorical: valid by definition.')
+            return True
+
+        if self.fs_type != FUZZY_SETS.t1:
+            raise NotImplementedError(
+                'Fuzzy variable validation is only implemented for Type-1 fuzzy sets, '
+                f'but {self.name} uses {self.fs_type.name}.')
+
         if len(self.linguistic_variables) == 0:
             return False
         

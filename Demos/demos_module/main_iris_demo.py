@@ -43,7 +43,7 @@ nRules = 15 # Number of maximum rules
 nAnts = 3 # Number of maximum antecedents per rule
 vl = 3 # Number of linguistic variables
 tolerance = 0.001 # Minimum dominance score to accept a rule
-fz_type_studied = fs.FUZZY_SETS.t2 # Fuzzy set type
+fz_type_studied = fs.FUZZY_SETS.t1 # Fuzzy set type
 
 
 iris = datasets.load_iris()
