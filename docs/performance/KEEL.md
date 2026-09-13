@@ -1,8 +1,9 @@
 # Ex-Fuzzy on the KEEL classification collection
 
-The figure in the project README places Ex-Fuzzy's rule learners, the genetic
-learner and three FERL presets, next to three scikit-learn baselines on the KEEL
-classification datasets. Everything runs under one protocol: the same folds, the
+The figure in the project README places Ex-Fuzzy's rule learners next to three
+scikit-learn baselines on the KEEL classification datasets. The rule learners are
+the genetic learner, the fuzzy association rule classifier in its additive and
+sufficient rule modes, and three FERL presets. Everything runs under one protocol: the same folds, the
 same seed and the same raw columns. Baselines keep their library defaults. The
 Ex-Fuzzy learners use the stated, uniform configurations recorded below. It is an illustration of out-of-the-box
 behaviour across many problems, **not** a tuned comparison and not a claim that
@@ -83,6 +84,8 @@ python benchmarks/aggregate_keel.py --plot-only
 | Method | Configuration |
 | --- | --- |
 | Ex-Fuzzy GA rules | `BaseFuzzyRulesClassifier(fuzzy_type=t1, nRules=30, nAnts=4)`, fitted with `n_gen=100, pop_size=100, patience=25, min_delta=1e-4` |
+| Ex-Fuzzy association rules, additive | `FuzzyRulesClassifier(rule_mode="additive")` with its defaults: `feature_selection="per_class"`, `max_features=8`, `n_linguistic_variables="auto"`, `nAnts=3`, `nRules=None` |
+| Ex-Fuzzy association rules, sufficient | The same, with `rule_mode="sufficient"` |
 | Ex-Fuzzy FERL compact | `FERL(partition="quantile", max_rules=20, max_depth=5, min_improvement=0.01)`, fitted with `patience=3` |
 | Ex-Fuzzy FERL medium | `FERL(split_mode="learned", learned_width="bootstrap", max_rules=150, max_depth=12, min_improvement=0.0)`, fitted with `patience=16` |
 | Ex-Fuzzy FERL deep | `DeepFERL()` with library defaults: weighted-Gini learned splits, depth 12, `min_leaf_w=2.0`, 25 bootstrap replicates, bounded support |
@@ -106,6 +109,16 @@ bare defaults, and its results were removed when the presets replaced it.
 Logistic regression is standardized because its solver is sensitive to the wide
 feature ranges of some KEEL datasets; the `fuzzy_greedy_tree` benchmark ran it
 on raw features instead.
+
+The association rule classifier's configuration was **chosen on 20 of these
+datasets**. A seeded draw took 30% of each class-count and feature-count group:
+abalone, appendicitis, automobile, bands, breast, car, cleveland, crx, heart,
+marketing, optdigits, page-blocks, phoneme, pima, sonar, splice, vowel, wdbc,
+winequality-red and yeast. Its defaults were then fixed and evaluated once on
+the other 47 datasets. Only those 47 are independent test data for this
+classifier, and its results on the 20 development datasets are optimistic.
+Both rule modes use the same configuration; the additive mode is the library
+default.
 
 For the genetic learner, only the **search budget** departs from the defaults,
 and it is uniform across every dataset rather than tuned per problem. Ex-Fuzzy's shipped defaults (70 generations, population 30,
@@ -145,8 +158,8 @@ Type-1 sets, three linguistic terms per variable — stays at the library defaul
   after about an hour. That puts a full run at an estimated 6–10 hours, so it
   was stopped. `census` has 142,521 rows and 41 features, and the next largest
   dataset, `adult`, needed about 12.5 minutes per fold. The baseline results are
-  kept under `benchmarks/results/keel/`. Nothing else failed: all 469 pairs on the other 67 datasets
-  (seven methods each) completed.
+  kept under `benchmarks/results/keel/`. Nothing else failed: all 603 pairs on the other 67 datasets
+  (nine methods each) completed.
 - Single seed, single fold assignment. The interquartile bands in the figure
   span **datasets**, not repeated runs, so they describe how much the methods
   vary across problems, not the uncertainty of any one number.

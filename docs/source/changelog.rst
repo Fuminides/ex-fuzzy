@@ -24,6 +24,15 @@ Added
   ``fuzzy_greedy_tree`` and reproduces its trees and predictions
 - **FERL evidence**: The ``"mixture"`` combination rule, now shared with
   DeepFERL through a common evidence module
+- **FuzzyRulesClassifier**: Rebuilt as a FARC-HD-style fuzzy association rule
+  classifier. It caps features by relevance, mines candidate rules on fixed
+  partitions, prescreens them by covering subgroup discovery, and selects a
+  compact certainty-factor-weighted rule base with a vectorized genetic
+  algorithm. It is a proper scikit-learn estimator; the earlier constructor
+  and ``fit`` arguments still work. Rules combine additively or
+  sufficiently (``rule_mode``), as in Ex-Fuzzy regression. Rules with four
+  or five conditions are mined with Apriori-style support pruning, which keeps
+  the same candidates as exhaustive enumeration
 - **Fuzzy Regression**: Scikit-learn-compatible Type-1 rule learning for
   continuous targets with crisp Takagi-Sugeno and fuzzy Mamdani consequents
 - **GPU-Accelerated Regression**: EvoX/PyTorch population evaluation for both
@@ -50,6 +59,12 @@ Changed
   an unknown ``target_metric`` is rejected
 - **FERL evidence**: An unknown ``rule`` in ``predict_ds`` and related methods
   now raises ``ValueError`` instead of silently using Dempster's rule
+- **Rule mining**: ``rule_mining`` accepts NumPy arrays as well as DataFrames,
+  reading columns by position, so ``RuleMineClassifier`` no longer requires a
+  DataFrame
+- **RuleFineTuneClassifier**: Builds partitions before mining when none are
+  given, and predicts with its second-stage model; both steps previously
+  failed. ``fit`` returns the estimator for all rule-mining classifiers
 - **Evolutionary Optimization**: Vectorized fitness evaluation for significant speedups
 - **Memory Efficiency**: Automatic batching prevents memory overflow on large datasets
 - **GPU Utilization**: Seamless GPU/CPU switching based on hardware availability

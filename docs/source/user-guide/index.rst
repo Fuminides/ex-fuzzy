@@ -14,6 +14,7 @@ training, and analyzing fuzzy rule-based classifiers and regressors.
    rule-mining
    regression
    ferl
+   fuzzy-association-rules
    conformal-learning
    training-performance
    troubleshooting

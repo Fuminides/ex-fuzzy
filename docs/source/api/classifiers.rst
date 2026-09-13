@@ -8,10 +8,22 @@ The :mod:`ex_fuzzy.classifiers` module provides the main classification interfac
 Overview
 --------
 
-This module contains the high-level classifier that combines rule mining and genetic optimization for fuzzy classification tasks.
+This module contains high-level classifiers built on fuzzy rule mining.
+:class:`FuzzyRulesClassifier` mines fuzzy association rules on a capped feature
+space and selects a compact rule base with a genetic algorithm (see
+:doc:`../user-guide/fuzzy-association-rules`). :class:`RuleMineClassifier` and
+:class:`RuleFineTuneClassifier` pass mined candidate rules to
+:class:`~ex_fuzzy.BaseFuzzyRulesClassifier`.
 
 Classes
 -------
+
+FuzzyRulesClassifier
+--------------------
+
+.. autoclass:: FuzzyRulesClassifier
+   :members:
+   :show-inheritance:
 
 RuleMineClassifier
 ------------------
@@ -21,6 +33,13 @@ RuleMineClassifier
    :show-inheritance:
 
    The main classifier that mines candidate rules and then optimizes them using genetic algorithms.
+
+RuleFineTuneClassifier
+----------------------
+
+.. autoclass:: RuleFineTuneClassifier
+   :members:
+   :show-inheritance:
 
 Examples
 --------

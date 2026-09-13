@@ -291,3 +291,23 @@ def test_rule_less_method_is_aggregated_tabled_and_plotted(tmp_path):
     table = destination.with_suffix('.md').read_text()
     assert '| Logistic regression |' in table and '—' in table
     assert destination.with_suffix('.svg').stat().st_size > 0
+
+
+def test_association_rule_methods_report_both_rule_modes():
+    additive = benchmark_keel.method_configuration('exfuzzy-frc-additive')
+    sufficient = benchmark_keel.method_configuration('exfuzzy-frc-sufficient')
+    assert additive['rule_mode'] == 'additive' and sufficient['rule_mode'] == 'sufficient'
+    assert {k: v for k, v in additive.items() if k != 'rule_mode'} == \
+        {k: v for k, v in sufficient.items() if k != 'rule_mode'}
+    assert {'exfuzzy-frc-additive', 'exfuzzy-frc-sufficient'} <= benchmark_keel.EXFUZZY_METHODS
+
+
+def test_association_rule_method_runs_and_counts_rules(collection, tmp_path):
+    output = tmp_path / 'out'
+    assert benchmark_keel.main(['--dataset', 'toy', '--method', 'exfuzzy-frc-sufficient',
+                                '--root', str(collection), '--folds', '2',
+                                '--output-dir', str(output)]) == 0
+    record = json.loads((output / 'toy__exfuzzy-frc-sufficient.json').read_text())
+    assert record['status'] == 'ok'
+    assert record['configuration']['rule_mode'] == 'sufficient'
+    assert record['mean_rules'] >= 0 and record['mean_conditions'] >= record['mean_rules']

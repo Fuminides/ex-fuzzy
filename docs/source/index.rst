@@ -203,6 +203,8 @@ Choosing a Workflow
      - :class:`ex_fuzzy.FERL`
    * - Grow a deeper, more accurate evidential rule tree
      - :class:`ex_fuzzy.DeepFERL`
+   * - Mine and select a compact fuzzy association rule base
+     - :class:`ex_fuzzy.FuzzyRulesClassifier`
    * - Use GPU-accelerated evolutionary optimization
      - ``backend="evox"`` with either estimator and the ``ex-fuzzy[evox]`` extra
    * - Save and reload fuzzy variables

@@ -1,7 +1,9 @@
 {
-  "created_utc": "2026-09-12T22:37:40.856017+00:00",
+  "created_utc": "2026-09-13T16:32:19.867263+00:00",
   "methods": [
     "exfuzzy-ga",
+    "exfuzzy-frc-additive",
+    "exfuzzy-frc-sufficient",
     "exfuzzy-ferl-compact",
     "exfuzzy-ferl-medium",
     "exfuzzy-ferl-deep",
@@ -11,6 +13,8 @@
   ],
   "method_labels": {
     "exfuzzy-ga": "Ex-Fuzzy GA rules",
+    "exfuzzy-frc-additive": "Ex-Fuzzy association rules, additive",
+    "exfuzzy-frc-sufficient": "Ex-Fuzzy association rules, sufficient",
     "exfuzzy-ferl-compact": "Ex-Fuzzy FERL compact",
     "exfuzzy-ferl-medium": "Ex-Fuzzy FERL medium",
     "exfuzzy-ferl-deep": "Ex-Fuzzy FERL deep",
@@ -27,6 +31,24 @@
       "pop_size": 100,
       "patience": 25,
       "min_delta": 0.0001
+    },
+    "exfuzzy-frc-additive": {
+      "estimator": "FuzzyRulesClassifier",
+      "rule_mode": "additive",
+      "max_features": 8,
+      "n_linguistic_variables": "auto",
+      "nAnts": 3,
+      "nRules": null,
+      "feature_selection": "per_class"
+    },
+    "exfuzzy-frc-sufficient": {
+      "estimator": "FuzzyRulesClassifier",
+      "rule_mode": "sufficient",
+      "max_features": 8,
+      "n_linguistic_variables": "auto",
+      "nAnts": 3,
+      "nRules": null,
+      "feature_selection": "per_class"
     },
     "exfuzzy-ferl-compact": {
       "partition": "quantile",
@@ -192,8 +214,59 @@
       }
     },
     {
+      "cpu": "Intel(R) Xeon(R) CPU E5-2698 v4 @ 2.20GHz",
+      "node": "compute-0-40.local",
+      "packages": {
+        "ex_fuzzy": "2.1.5",
+        "numpy": "2.4.6",
+        "pymoo": "0.6.2",
+        "scikit-learn": "1.9.0"
+      },
+      "platform": "Linux-3.10.0-693.90.2.el7.x86_64-x86_64-with-glibc2.17",
+      "python": "3.11.15",
+      "threads": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      }
+    },
+    {
       "cpu": "Intel(R) Xeon(R) Gold 6152 CPU @ 2.10GHz",
       "node": "compute-0-23.local",
+      "packages": {
+        "ex_fuzzy": "2.1.5",
+        "numpy": "2.4.6",
+        "pymoo": "0.6.2",
+        "scikit-learn": "1.9.0"
+      },
+      "platform": "Linux-3.10.0-693.90.2.el7.x86_64-x86_64-with-glibc2.17",
+      "python": "3.11.15",
+      "threads": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      }
+    },
+    {
+      "cpu": "Intel(R) Xeon(R) Gold 6152 CPU @ 2.10GHz",
+      "node": "compute-0-24.local",
+      "packages": {
+        "ex_fuzzy": "2.1.5",
+        "numpy": "2.4.6",
+        "pymoo": "0.6.2",
+        "scikit-learn": "1.9.0"
+      },
+      "platform": "Linux-3.10.0-693.90.2.el7.x86_64-x86_64-with-glibc2.17",
+      "python": "3.11.15",
+      "threads": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      }
+    },
+    {
+      "cpu": "Intel(R) Xeon(R) Gold 6152 CPU @ 2.10GHz",
+      "node": "compute-0-29.local",
       "packages": {
         "ex_fuzzy": "2.1.5",
         "numpy": "2.4.6",
@@ -363,6 +436,23 @@
     },
     {
       "cpu": "Intel(R) Xeon(R) Gold 6238L CPU @ 2.10GHz",
+      "node": "compute-1-37.local",
+      "packages": {
+        "ex_fuzzy": "2.1.5",
+        "numpy": "2.4.6",
+        "pymoo": "0.6.2",
+        "scikit-learn": "1.9.0"
+      },
+      "platform": "Linux-3.10.0-693.90.2.el7.x86_64-x86_64-with-glibc2.17",
+      "python": "3.11.15",
+      "threads": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      }
+    },
+    {
+      "cpu": "Intel(R) Xeon(R) Gold 6238L CPU @ 2.10GHz",
       "node": "compute-1-39.local",
       "packages": {
         "ex_fuzzy": "2.1.5",
@@ -390,7 +480,7 @@
       "accuracy_q3": 0.8262051012051013,
       "mean_balanced_accuracy": 0.6008062202221789,
       "mean_macro_f1": 0.5721894055558312,
-      "mean_rank": 5.895522388059701,
+      "mean_rank": 7.567164179104478,
       "mean_rules": 9.023880597014927,
       "median_rules": 8.6,
       "rules_q1": 6.699999999999999,
@@ -400,6 +490,48 @@
       "median_fit_seconds": 23.786825287155807,
       "fit_seconds_q1": 8.71475916048512,
       "fit_seconds_q3": 86.08236309271305
+    },
+    "exfuzzy-frc-additive": {
+      "label": "Ex-Fuzzy association rules, additive",
+      "datasets": 67,
+      "best_on": 1,
+      "mean_accuracy": 0.7871456777727835,
+      "median_accuracy": 0.8183467741935484,
+      "accuracy_q1": 0.7225981489774593,
+      "accuracy_q3": 0.9046229573825382,
+      "mean_balanced_accuracy": 0.7050056481949609,
+      "mean_macro_f1": 0.7008558395923837,
+      "mean_rank": 4.7835820895522385,
+      "mean_rules": 39.06865671641791,
+      "median_rules": 19.8,
+      "rules_q1": 10.7,
+      "rules_q3": 34.2,
+      "median_conditions": 52.0,
+      "mean_fit_seconds": 38.87302433143217,
+      "median_fit_seconds": 2.1056463032960893,
+      "fit_seconds_q1": 0.7667701930738986,
+      "fit_seconds_q3": 19.276700307801367
+    },
+    "exfuzzy-frc-sufficient": {
+      "label": "Ex-Fuzzy association rules, sufficient",
+      "datasets": 67,
+      "best_on": 0,
+      "mean_accuracy": 0.7820619644176005,
+      "median_accuracy": 0.8149090909090908,
+      "accuracy_q1": 0.7183506493506494,
+      "accuracy_q3": 0.9086572529033238,
+      "mean_balanced_accuracy": 0.7016578179798337,
+      "mean_macro_f1": 0.6967227201009843,
+      "mean_rank": 5.477611940298507,
+      "mean_rules": 32.874626865671644,
+      "median_rules": 16.4,
+      "rules_q1": 8.2,
+      "rules_q3": 26.799999999999997,
+      "median_conditions": 42.2,
+      "mean_fit_seconds": 44.055574136604065,
+      "median_fit_seconds": 3.3011480731889606,
+      "fit_seconds_q1": 0.8645616863388568,
+      "fit_seconds_q3": 21.65487335547805
     },
     "exfuzzy-ferl-compact": {
       "label": "Ex-Fuzzy FERL compact",
@@ -411,7 +543,7 @@
       "accuracy_q3": 0.8740848083214495,
       "mean_balanced_accuracy": 0.6324769878880342,
       "mean_macro_f1": 0.6178196860713568,
-      "mean_rank": 4.746268656716418,
+      "mean_rank": 6.029850746268656,
       "mean_rules": 5.343283582089552,
       "median_rules": 4.8,
       "rules_q1": 3.0,
@@ -425,14 +557,14 @@
     "exfuzzy-ferl-medium": {
       "label": "Ex-Fuzzy FERL medium",
       "datasets": 67,
-      "best_on": 1,
+      "best_on": 0,
       "mean_accuracy": 0.7736686278120158,
       "median_accuracy": 0.8035742035742036,
       "accuracy_q1": 0.7041889483065954,
       "accuracy_q3": 0.8832184622115316,
       "mean_balanced_accuracy": 0.6667846348932711,
       "mean_macro_f1": 0.66047496718022,
-      "mean_rank": 4.41044776119403,
+      "mean_rank": 5.552238805970149,
       "mean_rules": 33.21194029850746,
       "median_rules": 16.4,
       "rules_q1": 8.4,
@@ -453,7 +585,7 @@
       "accuracy_q3": 0.9356917296520064,
       "mean_balanced_accuracy": 0.7436903008147719,
       "mean_macro_f1": 0.7424837481368024,
-      "mean_rank": 3.2238805970149254,
+      "mean_rank": 3.8358208955223883,
       "mean_rules": 180.96119402985073,
       "median_rules": 66.4,
       "rules_q1": 29.9,
@@ -474,7 +606,7 @@
       "accuracy_q3": 0.9441294041308558,
       "mean_balanced_accuracy": 0.70823127177391,
       "mean_macro_f1": 0.7086214526882229,
-      "mean_rank": 3.3208955223880596,
+      "mean_rank": 4.0,
       "mean_rules": null,
       "median_rules": null,
       "rules_q1": null,
@@ -495,7 +627,7 @@
       "accuracy_q3": 0.927802422116253,
       "mean_balanced_accuracy": 0.742958221073638,
       "mean_macro_f1": 0.7371401727378873,
-      "mean_rank": 4.32089552238806,
+      "mean_rank": 5.343283582089552,
       "mean_rules": 433.89850746268655,
       "median_rules": 77.0,
       "rules_q1": 25.4,
@@ -509,14 +641,14 @@
     "sklearn-forest": {
       "label": "Random forest",
       "datasets": 67,
-      "best_on": 28,
+      "best_on": 27,
       "mean_accuracy": 0.8456517219969946,
       "median_accuracy": 0.8790017615971815,
       "accuracy_q1": 0.7665930311518547,
       "accuracy_q3": 0.9647290160652833,
       "mean_balanced_accuracy": 0.7797502503773095,
       "mean_macro_f1": 0.7824443326911439,
-      "mean_rank": 2.082089552238806,
+      "mean_rank": 2.41044776119403,
       "mean_rules": 45667.97014925373,
       "median_rules": 9918.4,
       "rules_q1": 2852.0,
@@ -536,6 +668,8 @@
       "datasets": 32,
       "mean_accuracy": {
         "exfuzzy-ga": 0.7909541122129158,
+        "exfuzzy-frc-additive": 0.8317025852491197,
+        "exfuzzy-frc-sufficient": 0.8283147980246508,
         "exfuzzy-ferl-compact": 0.8208289474611526,
         "exfuzzy-ferl-medium": 0.8246979925639039,
         "exfuzzy-ferl-deep": 0.8435482803392466,
@@ -551,6 +685,8 @@
       "datasets": 14,
       "mean_accuracy": {
         "exfuzzy-ga": 0.7143839628034495,
+        "exfuzzy-frc-additive": 0.811653287324941,
+        "exfuzzy-frc-sufficient": 0.8128045768172619,
         "exfuzzy-ferl-compact": 0.7866485216127502,
         "exfuzzy-ferl-medium": 0.8032826406055731,
         "exfuzzy-ferl-deep": 0.8359070625128614,
@@ -566,6 +702,8 @@
       "datasets": 21,
       "mean_accuracy": {
         "exfuzzy-ga": 0.5228272636236697,
+        "exfuzzy-frc-additive": 0.7029110314407381,
+        "exfuzzy-frc-sufficient": 0.6910863811308922,
         "exfuzzy-ferl-compact": 0.6450697886564877,
         "exfuzzy-ferl-medium": 0.6761669206134341,
         "exfuzzy-ferl-deep": 0.7529126579443016,
@@ -592,7 +730,31 @@
           "parameters": null,
           "fit_seconds": 59.504649226367476,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.2422145636783986,
+          "accuracy_std": 0.015008630959380915,
+          "balanced_accuracy": 0.0993308934516622,
+          "macro_f1": 0.08289297024478663,
+          "rules": 19.8,
+          "conditions": 24.8,
+          "parameters": null,
+          "fit_seconds": 49.98071820363403,
+          "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.25131951923491147,
+          "accuracy_std": 0.015843559717689405,
+          "balanced_accuracy": 0.1004624317286994,
+          "macro_f1": 0.08021586711926994,
+          "rules": 9.4,
+          "conditions": 13.6,
+          "parameters": null,
+          "fit_seconds": 60.37226885259152,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.24772096095578627,
@@ -604,7 +766,7 @@
           "parameters": null,
           "fit_seconds": 1.7229622274637222,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.2683283792127974,
@@ -628,7 +790,7 @@
           "parameters": null,
           "fit_seconds": 5.63928194232285,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "sklearn-logreg": {
           "accuracy": 0.26953057912951073,
@@ -652,7 +814,7 @@
           "parameters": null,
           "fit_seconds": 0.03354714661836624,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.24581254756673704,
@@ -664,7 +826,7 @@
           "parameters": null,
           "fit_seconds": 0.7761206496506929,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         }
       }
     },
@@ -684,7 +846,31 @@
           "parameters": null,
           "fit_seconds": 721.1548481296747,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8221219055833908,
+          "accuracy_std": 0.002726899206456809,
+          "balanced_accuracy": 0.7294199182077229,
+          "macro_f1": 0.7440767012327564,
+          "rules": 6.6,
+          "conditions": 17.0,
+          "parameters": null,
+          "fit_seconds": 107.16122085787356,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8224757142099225,
+          "accuracy_std": 0.0023308373528615205,
+          "balanced_accuracy": 0.7354867569704042,
+          "macro_f1": 0.7477962926669186,
+          "rules": 7.6,
+          "conditions": 20.2,
+          "parameters": null,
+          "fit_seconds": 87.03709783349186,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7521560314795377,
@@ -696,7 +882,7 @@
           "parameters": null,
           "fit_seconds": 2.8153120443224906,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.79793019031825,
@@ -708,7 +894,7 @@
           "parameters": null,
           "fit_seconds": 13.732833629101515,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8565300359473458,
@@ -744,7 +930,7 @@
           "parameters": null,
           "fit_seconds": 0.21168313231319189,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-forest": {
           "accuracy": 0.8535889988359837,
@@ -776,7 +962,31 @@
           "parameters": null,
           "fit_seconds": 3.680834358930588,
           "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8484848484848486,
+          "accuracy_std": 0.08592828242978011,
+          "balanced_accuracy": 0.7247058823529413,
+          "macro_f1": 0.7452614379084969,
+          "rules": 5.6,
+          "conditions": 13.0,
+          "parameters": null,
+          "fit_seconds": 0.12378013022243976,
+          "unclassified": 0.0,
           "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8580086580086579,
+          "accuracy_std": 0.07599838042815042,
+          "balanced_accuracy": 0.7688235294117648,
+          "macro_f1": 0.7774055682879212,
+          "rules": 4.8,
+          "conditions": 11.0,
+          "parameters": null,
+          "fit_seconds": 0.154457088932395,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8212121212121213,
@@ -788,7 +998,7 @@
           "parameters": null,
           "fit_seconds": 0.03853929033502936,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8484848484848484,
@@ -800,7 +1010,7 @@
           "parameters": null,
           "fit_seconds": 0.6420328708365559,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8580086580086581,
@@ -836,7 +1046,7 @@
           "parameters": null,
           "fit_seconds": 0.002259724959731102,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.8770562770562771,
@@ -868,7 +1078,31 @@
           "parameters": null,
           "fit_seconds": 8.77526614367962,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8652173913043478,
+          "accuracy_std": 0.012125507630928631,
+          "balanced_accuracy": 0.8620163395845992,
+          "macro_f1": 0.8630324620650962,
+          "rules": 13.0,
+          "conditions": 37.4,
+          "parameters": null,
+          "fit_seconds": 1.217172347381711,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8623188405797103,
+          "accuracy_std": 0.00887496283617093,
+          "balanced_accuracy": 0.8582056584902474,
+          "macro_f1": 0.8598294972862867,
+          "rules": 10.6,
+          "conditions": 30.2,
+          "parameters": null,
+          "fit_seconds": 1.9036614576354622,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.855072463768116,
@@ -880,7 +1114,7 @@
           "parameters": null,
           "fit_seconds": 0.11155338883399964,
           "unclassified": 0.0,
-          "rank": 3.5
+          "rank": 5.5
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.855072463768116,
@@ -892,7 +1126,7 @@
           "parameters": null,
           "fit_seconds": 1.0277260707691311,
           "unclassified": 0.0,
-          "rank": 3.5
+          "rank": 5.5
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8492753623188406,
@@ -904,7 +1138,7 @@
           "parameters": null,
           "fit_seconds": 0.46499065682291985,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-logreg": {
           "accuracy": 0.8681159420289856,
@@ -928,7 +1162,7 @@
           "parameters": null,
           "fit_seconds": 0.005212801694869995,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.8594202898550725,
@@ -940,7 +1174,7 @@
           "parameters": null,
           "fit_seconds": 0.22748513519763947,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 4.0
         }
       }
     },
@@ -960,7 +1194,31 @@
           "parameters": null,
           "fit_seconds": 25.575636929273607,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8183467741935484,
+          "accuracy_std": 0.0967148465540044,
+          "balanced_accuracy": 0.8194814814814816,
+          "macro_f1": 0.7972286310181047,
+          "rules": 24.4,
+          "conditions": 65.0,
+          "parameters": null,
+          "fit_seconds": 1.54387695658952,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7993951612903226,
+          "accuracy_std": 0.08050958866536057,
+          "balanced_accuracy": 0.7962962962962962,
+          "macro_f1": 0.7736126754795485,
+          "rules": 22.6,
+          "conditions": 60.2,
+          "parameters": null,
+          "fit_seconds": 2.1036623300984503,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.6487903225806452,
@@ -972,7 +1230,7 @@
           "parameters": null,
           "fit_seconds": 2.159030571579933,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.5983870967741935,
@@ -984,7 +1242,7 @@
           "parameters": null,
           "fit_seconds": 1.7675152331590653,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.6991935483870968,
@@ -996,7 +1254,7 @@
           "parameters": null,
           "fit_seconds": 0.1822296069934964,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-logreg": {
           "accuracy": 0.6415322580645161,
@@ -1008,7 +1266,7 @@
           "parameters": 156.0,
           "fit_seconds": 0.02785457968711853,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.8370967741935484,
@@ -1052,7 +1310,31 @@
           "parameters": null,
           "fit_seconds": 10.566225602850318,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8432000000000001,
+          "accuracy_std": 0.03375203697556638,
+          "balanced_accuracy": 0.6099011897559992,
+          "macro_f1": 0.58817622940171,
+          "rules": 54.0,
+          "conditions": 100.2,
+          "parameters": null,
+          "fit_seconds": 0.9760080570355057,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8400000000000001,
+          "accuracy_std": 0.01959591794226544,
+          "balanced_accuracy": 0.6075620084694495,
+          "macro_f1": 0.5859622070446472,
+          "rules": 52.0,
+          "conditions": 98.4,
+          "parameters": null,
+          "fit_seconds": 1.3916955413296819,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8480000000000001,
@@ -1076,7 +1358,7 @@
           "parameters": null,
           "fit_seconds": 1.024063802883029,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8240000000000001,
@@ -1088,7 +1370,7 @@
           "parameters": null,
           "fit_seconds": 0.4589494487270713,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.8720000000000001,
@@ -1112,7 +1394,7 @@
           "parameters": null,
           "fit_seconds": 0.002378632128238678,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.8384,
@@ -1124,7 +1406,7 @@
           "parameters": null,
           "fit_seconds": 0.2437136560678482,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         }
       }
     },
@@ -1144,6 +1426,30 @@
           "parameters": null,
           "fit_seconds": 11.40078495889902,
           "unclassified": 0.0,
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8158490566037736,
+          "accuracy_std": 0.01517372989846872,
+          "balanced_accuracy": 0.8063298069084363,
+          "macro_f1": 0.8097130840366267,
+          "rules": 7.4,
+          "conditions": 12.8,
+          "parameters": null,
+          "fit_seconds": 0.8204039018601179,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8052830188679245,
+          "accuracy_std": 0.01368087173154529,
+          "balanced_accuracy": 0.7951316406214197,
+          "macro_f1": 0.7984475918034646,
+          "rules": 6.8,
+          "conditions": 12.2,
+          "parameters": null,
+          "fit_seconds": 1.1578459987416863,
+          "unclassified": 0.0,
           "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
@@ -1156,7 +1462,7 @@
           "parameters": null,
           "fit_seconds": 0.22754280529916288,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8149056603773583,
@@ -1168,7 +1474,7 @@
           "parameters": null,
           "fit_seconds": 5.4184854388237,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8969811320754717,
@@ -1192,7 +1498,7 @@
           "parameters": 3.0,
           "fit_seconds": 0.006662961095571518,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-tree": {
           "accuracy": 0.868867924528302,
@@ -1236,6 +1542,30 @@
           "parameters": null,
           "fit_seconds": 22.30492753610015,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.6465753424657534,
+          "accuracy_std": 0.029697922450244926,
+          "balanced_accuracy": 0.6185990338164251,
+          "macro_f1": 0.618072801309655,
+          "rules": 30.0,
+          "conditions": 87.4,
+          "parameters": null,
+          "fit_seconds": 0.6226867795921862,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.6301369863013698,
+          "accuracy_std": 0.0136986301369863,
+          "balanced_accuracy": 0.5948470209339775,
+          "macro_f1": 0.5942923114209074,
+          "rules": 27.2,
+          "conditions": 79.2,
+          "parameters": null,
+          "fit_seconds": 0.7830017887987196,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -1248,7 +1578,7 @@
           "parameters": null,
           "fit_seconds": 0.31272092908620835,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.6383561643835616,
@@ -1260,7 +1590,7 @@
           "parameters": null,
           "fit_seconds": 1.6814756512641906,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.673972602739726,
@@ -1296,7 +1626,7 @@
           "parameters": null,
           "fit_seconds": 0.004640132561326027,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-forest": {
           "accuracy": 0.7534246575342466,
@@ -1329,6 +1659,30 @@
           "fit_seconds": 7.271591132879257,
           "unclassified": 0.0,
           "rank": 3.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7222077922077921,
+          "accuracy_std": 0.07858806306687506,
+          "balanced_accuracy": 0.6443815987933635,
+          "macro_f1": 0.6519766774148508,
+          "rules": 14.0,
+          "conditions": 40.4,
+          "parameters": null,
+          "fit_seconds": 0.628505724761635,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7187012987012988,
+          "accuracy_std": 0.06425356667002644,
+          "balanced_accuracy": 0.6282409502262445,
+          "macro_f1": 0.634373783782626,
+          "rules": 14.0,
+          "conditions": 40.6,
+          "parameters": null,
+          "fit_seconds": 0.383306710422039,
+          "unclassified": 0.0,
+          "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7583766233766234,
@@ -1364,7 +1718,7 @@
           "parameters": null,
           "fit_seconds": 0.24830237701535224,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-logreg": {
           "accuracy": 0.7186363636363635,
@@ -1376,7 +1730,7 @@
           "parameters": 10.0,
           "fit_seconds": 0.004469791054725647,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-tree": {
           "accuracy": 0.639090909090909,
@@ -1388,7 +1742,7 @@
           "parameters": null,
           "fit_seconds": 0.0020641624927520753,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.7076623376623375,
@@ -1400,7 +1754,7 @@
           "parameters": null,
           "fit_seconds": 0.2553133758716285,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         }
       }
     },
@@ -1420,7 +1774,31 @@
           "parameters": null,
           "fit_seconds": 6.747563676536084,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.681159420289855,
+          "accuracy_std": 0.02711345932444888,
+          "balanced_accuracy": 0.6671551724137931,
+          "macro_f1": 0.6645788440031231,
+          "rules": 22.2,
+          "conditions": 58.0,
+          "parameters": null,
+          "fit_seconds": 0.3178856309503317,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.6666666666666666,
+          "accuracy_std": 0.030743773095067303,
+          "balanced_accuracy": 0.6499137931034482,
+          "macro_f1": 0.6504923559645285,
+          "rules": 20.4,
+          "conditions": 53.6,
+          "parameters": null,
+          "fit_seconds": 0.3494906459003687,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.6289855072463768,
@@ -1432,7 +1810,7 @@
           "parameters": null,
           "fit_seconds": 0.27984551452100276,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.6985507246376812,
@@ -1480,7 +1858,7 @@
           "parameters": null,
           "fit_seconds": 0.0023474063724279403,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.7159420289855072,
@@ -1512,7 +1890,31 @@
           "parameters": null,
           "fit_seconds": 21.899662396125496,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8987199463851889,
+          "accuracy_std": 0.012360522613266346,
+          "balanced_accuracy": 0.5924908225745547,
+          "macro_f1": 0.6020926484129105,
+          "rules": 24.6,
+          "conditions": 64.2,
+          "parameters": null,
+          "fit_seconds": 7.695098968595266,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9010354360392059,
+          "accuracy_std": 0.009759505644760103,
+          "balanced_accuracy": 0.607247596900707,
+          "macro_f1": 0.6123070090455782,
+          "rules": 23.4,
+          "conditions": 60.8,
+          "parameters": null,
+          "fit_seconds": 8.499594145268201,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.798029655692385,
@@ -1524,7 +1926,7 @@
           "parameters": null,
           "fit_seconds": 0.3035475637763739,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8709474742397587,
@@ -1536,7 +1938,7 @@
           "parameters": null,
           "fit_seconds": 0.8807948127388954,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9745329647315071,
@@ -1560,7 +1962,7 @@
           "parameters": 28.0,
           "fit_seconds": 0.01915403753519058,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.9774315154561448,
@@ -1604,7 +2006,31 @@
           "parameters": null,
           "fit_seconds": 71.75950953252614,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9402445226917058,
+          "accuracy_std": 0.013655498568834759,
+          "balanced_accuracy": 0.9389127014980613,
+          "macro_f1": 0.9399406386895631,
+          "rules": 3.8,
+          "conditions": 10.2,
+          "parameters": null,
+          "fit_seconds": 6.418119042553007,
+          "unclassified": 0.0,
+          "rank": 6.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9402445226917058,
+          "accuracy_std": 0.013655498568834759,
+          "balanced_accuracy": 0.9388568376551909,
+          "macro_f1": 0.9399295260716262,
+          "rules": 3.6,
+          "conditions": 9.4,
+          "parameters": null,
+          "fit_seconds": 15.03107280433178,
+          "unclassified": 0.0,
+          "rank": 6.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9427469679186229,
@@ -1628,7 +2054,7 @@
           "parameters": null,
           "fit_seconds": 3.2329136483371257,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.991866686228482,
@@ -1696,7 +2122,31 @@
           "parameters": null,
           "fit_seconds": 14.754600228369236,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.56909604519774,
+          "accuracy_std": 0.02656689176892312,
+          "balanced_accuracy": 0.3281244588744589,
+          "macro_f1": 0.30739667888188066,
+          "rules": 43.8,
+          "conditions": 126.8,
+          "parameters": null,
+          "fit_seconds": 1.886764306947589,
+          "unclassified": 0.0,
+          "rank": 1.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.5488135593220339,
+          "accuracy_std": 0.03461426128304944,
+          "balanced_accuracy": 0.3274199134199134,
+          "macro_f1": 0.32269062724530273,
+          "rules": 39.6,
+          "conditions": 116.2,
+          "parameters": null,
+          "fit_seconds": 2.782401235308498,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.545593220338983,
@@ -1708,7 +2158,7 @@
           "parameters": null,
           "fit_seconds": 1.0024320111609994,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.5320338983050847,
@@ -1720,7 +2170,7 @@
           "parameters": null,
           "fit_seconds": 1.6197503574192524,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.5114689265536723,
@@ -1732,7 +2182,7 @@
           "parameters": null,
           "fit_seconds": 0.3133652456104755,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-logreg": {
           "accuracy": 0.5519774011299434,
@@ -1744,7 +2194,7 @@
           "parameters": 70.0,
           "fit_seconds": 0.011910243332386017,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 3.0
         },
         "sklearn-tree": {
           "accuracy": 0.5115819209039547,
@@ -1756,7 +2206,7 @@
           "parameters": null,
           "fit_seconds": 0.003211395815014839,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.5688700564971751,
@@ -1768,7 +2218,7 @@
           "parameters": null,
           "fit_seconds": 0.17112330850213767,
           "unclassified": 0.0,
-          "rank": 1.0
+          "rank": 2.0
         }
       }
     },
@@ -1788,7 +2238,31 @@
           "parameters": null,
           "fit_seconds": 686.1727850098163,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9403380440809895,
+          "accuracy_std": 0.00021781703597516675,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.48462588097297604,
+          "rules": 0.0,
+          "conditions": 0.0,
+          "parameters": null,
+          "fit_seconds": 7.157983381301165,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9403380440809895,
+          "accuracy_std": 0.00021781703597516675,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.48462588097297604,
+          "rules": 0.0,
+          "conditions": 0.0,
+          "parameters": null,
+          "fit_seconds": 8.507455243170261,
+          "unclassified": 0.0,
+          "rank": 2.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9399308157522427,
@@ -1800,7 +2274,7 @@
           "parameters": null,
           "fit_seconds": 3.167316686082631,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 4.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9403380440809895,
@@ -1812,7 +2286,7 @@
           "parameters": null,
           "fit_seconds": 12.635973696410655,
           "unclassified": 0.0,
-          "rank": 1.0
+          "rank": 2.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9359602618118499,
@@ -1824,7 +2298,7 @@
           "parameters": null,
           "fit_seconds": 4.239880587905645,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.939421598959386,
@@ -1836,7 +2310,7 @@
           "parameters": 86.0,
           "fit_seconds": 0.07480552196502685,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-tree": {
           "accuracy": 0.8982887392919885,
@@ -1848,7 +2322,7 @@
           "parameters": null,
           "fit_seconds": 0.14588237125426531,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-forest": {
           "accuracy": 0.9283244456191083,
@@ -1860,7 +2334,7 @@
           "parameters": null,
           "fit_seconds": 1.05538428761065,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         }
       }
     },
@@ -1880,7 +2354,31 @@
           "parameters": null,
           "fit_seconds": 17.148584838211537,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.5193819900841692,
+          "accuracy_std": 0.03518557364692207,
+          "balanced_accuracy": 0.47957262515919147,
+          "macro_f1": 0.47998128886778807,
+          "rules": 26.2,
+          "conditions": 72.2,
+          "parameters": null,
+          "fit_seconds": 2.0384132490493356,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.5200576501787155,
+          "accuracy_std": 0.02802512650196439,
+          "balanced_accuracy": 0.4811758544523549,
+          "macro_f1": 0.4814514311849692,
+          "rules": 24.4,
+          "conditions": 66.8,
+          "parameters": null,
+          "fit_seconds": 2.7899617040529847,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.5051354779199817,
@@ -1892,7 +2390,7 @@
           "parameters": null,
           "fit_seconds": 0.3105878938920796,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.49765017871555395,
@@ -1904,7 +2402,7 @@
           "parameters": null,
           "fit_seconds": 3.596529187075794,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.5369975786924939,
@@ -1928,7 +2426,7 @@
           "parameters": 30.0,
           "fit_seconds": 0.00914546549320221,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-tree": {
           "accuracy": 0.4616418770898189,
@@ -1940,7 +2438,7 @@
           "parameters": null,
           "fit_seconds": 0.004970155656337738,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.5220615703908681,
@@ -1972,7 +2470,31 @@
           "parameters": null,
           "fit_seconds": 7.310465953499079,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8728479154433353,
+          "accuracy_std": 0.02652975492802844,
+          "balanced_accuracy": 0.8704645102251931,
+          "macro_f1": 0.8712847993936134,
+          "rules": 10.4,
+          "conditions": 29.6,
+          "parameters": null,
+          "fit_seconds": 1.6027344286441803,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8636641221374045,
+          "accuracy_std": 0.020854761314422793,
+          "balanced_accuracy": 0.862102928304289,
+          "macro_f1": 0.8623069379543471,
+          "rules": 7.0,
+          "conditions": 19.2,
+          "parameters": null,
+          "fit_seconds": 1.8626321494579314,
+          "unclassified": 0.0,
+          "rank": 8.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8667410452143276,
@@ -1984,7 +2506,7 @@
           "parameters": null,
           "fit_seconds": 0.1726606123149395,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8636876100998239,
@@ -1996,7 +2518,7 @@
           "parameters": null,
           "fit_seconds": 0.6279503578320146,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8698179682912507,
@@ -2008,7 +2530,7 @@
           "parameters": null,
           "fit_seconds": 0.6206814493052661,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 3.0
         },
         "sklearn-logreg": {
           "accuracy": 0.8636876100998239,
@@ -2020,7 +2542,7 @@
           "parameters": 16.0,
           "fit_seconds": 0.005332353711128235,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "sklearn-tree": {
           "accuracy": 0.8192953611274222,
@@ -2032,7 +2554,7 @@
           "parameters": null,
           "fit_seconds": 0.0030485291033983232,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.8790017615971815,
@@ -2064,7 +2586,31 @@
           "parameters": null,
           "fit_seconds": 21.56794961579144,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9022691705790298,
+          "accuracy_std": 0.04633665135615322,
+          "balanced_accuracy": 0.8685834535834536,
+          "macro_f1": 0.8813478512992937,
+          "rules": 23.8,
+          "conditions": 55.2,
+          "parameters": null,
+          "fit_seconds": 2.163290316145867,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8855633802816902,
+          "accuracy_std": 0.06023927554312569,
+          "balanced_accuracy": 0.8505603655603655,
+          "macro_f1": 0.8535352632178268,
+          "rules": 21.8,
+          "conditions": 50.0,
+          "parameters": null,
+          "fit_seconds": 3.3011480731889606,
+          "unclassified": 0.0,
+          "rank": 8.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.907981220657277,
@@ -2088,7 +2634,7 @@
           "parameters": null,
           "fit_seconds": 1.3623660184442996,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9609546165884193,
@@ -2156,7 +2702,31 @@
           "parameters": null,
           "fit_seconds": 10.774764536693691,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7647936786654961,
+          "accuracy_std": 0.0362344646465766,
+          "balanced_accuracy": 0.6332143390271469,
+          "macro_f1": 0.6138941268191538,
+          "rules": 63.0,
+          "conditions": 167.0,
+          "parameters": null,
+          "fit_seconds": 2.6202491486445068,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7292361720807726,
+          "accuracy_std": 0.036414837023814935,
+          "balanced_accuracy": 0.5807418218070927,
+          "macro_f1": 0.5528544057851487,
+          "rules": 44.4,
+          "conditions": 120.2,
+          "parameters": null,
+          "fit_seconds": 3.9980576196685433,
+          "unclassified": 0.0,
+          "rank": 8.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7618964003511852,
@@ -2168,7 +2738,7 @@
           "parameters": null,
           "fit_seconds": 0.2227605520747602,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7856453028972783,
@@ -2248,7 +2818,31 @@
           "parameters": null,
           "fit_seconds": 10.112675407528878,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7382826554341626,
+          "accuracy_std": 0.017825890090516907,
+          "balanced_accuracy": 0.5885760106949226,
+          "macro_f1": 0.5834976851339035,
+          "rules": 22.4,
+          "conditions": 59.8,
+          "parameters": null,
+          "fit_seconds": 9.736490117013455,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7364047211618622,
+          "accuracy_std": 0.013254715990706252,
+          "balanced_accuracy": 0.5870068099151954,
+          "macro_f1": 0.5814106798022987,
+          "rules": 18.2,
+          "conditions": 48.8,
+          "parameters": null,
+          "fit_seconds": 11.78934200257063,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7138826729849501,
@@ -2260,7 +2854,7 @@
           "parameters": null,
           "fit_seconds": 0.9976475417613984,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7260980211486991,
@@ -2272,7 +2866,7 @@
           "parameters": null,
           "fit_seconds": 0.6782499995082617,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7354876925102014,
@@ -2284,7 +2878,7 @@
           "parameters": null,
           "fit_seconds": 0.32326728031039237,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-logreg": {
           "accuracy": 0.727050151375543,
@@ -2296,7 +2890,7 @@
           "parameters": 72.0,
           "fit_seconds": 0.03194978088140488,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-tree": {
           "accuracy": 0.7495634241586592,
@@ -2340,7 +2934,31 @@
           "parameters": null,
           "fit_seconds": 38.71864530257881,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7160000000000001,
+          "accuracy_std": 0.0366401419211225,
+          "balanced_accuracy": 0.6628571428571429,
+          "macro_f1": 0.6623585042552562,
+          "rules": 23.0,
+          "conditions": 58.0,
+          "parameters": null,
+          "fit_seconds": 1.4255246922373772,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.721,
+          "accuracy_std": 0.031503968004046715,
+          "balanced_accuracy": 0.6664285714285715,
+          "macro_f1": 0.6660663755352901,
+          "rules": 22.0,
+          "conditions": 56.2,
+          "parameters": null,
+          "fit_seconds": 2.5891874357126654,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7099999999999999,
@@ -2352,7 +2970,7 @@
           "parameters": null,
           "fit_seconds": 0.3777944430708885,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7089999999999999,
@@ -2364,7 +2982,7 @@
           "parameters": null,
           "fit_seconds": 1.946712362766266,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.732,
@@ -2400,7 +3018,7 @@
           "parameters": null,
           "fit_seconds": 0.005056563019752503,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.765,
@@ -2432,7 +3050,31 @@
           "parameters": null,
           "fit_seconds": 10.4602378744632,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.6588039867109635,
+          "accuracy_std": 0.042862293337014475,
+          "balanced_accuracy": 0.5726190476190476,
+          "macro_f1": 0.5564034348567817,
+          "rules": 38.2,
+          "conditions": 107.2,
+          "parameters": null,
+          "fit_seconds": 1.5401089721359313,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.6400885935769657,
+          "accuracy_std": 0.046180862595776376,
+          "balanced_accuracy": 0.5779563492063492,
+          "macro_f1": 0.5771817340365727,
+          "rules": 33.0,
+          "conditions": 93.0,
+          "parameters": null,
+          "fit_seconds": 1.442901572585106,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.6169435215946844,
@@ -2444,7 +3086,7 @@
           "parameters": null,
           "fit_seconds": 0.6428563925437629,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.65437430786268,
@@ -2456,7 +3098,7 @@
           "parameters": null,
           "fit_seconds": 1.0581438777036964,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7153931339977853,
@@ -2480,7 +3122,7 @@
           "parameters": 60.0,
           "fit_seconds": 0.009942877292633056,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.6638981173864895,
@@ -2524,7 +3166,31 @@
           "parameters": null,
           "fit_seconds": 2.725690799951553,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.732258064516129,
+          "accuracy_std": 0.0752026958907884,
+          "balanced_accuracy": 0.6043218954248365,
+          "macro_f1": 0.613118179618858,
+          "rules": 4.2,
+          "conditions": 11.0,
+          "parameters": null,
+          "fit_seconds": 0.07501113871112466,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7125859333685881,
+          "accuracy_std": 0.0700273267916318,
+          "balanced_accuracy": 0.5869607843137254,
+          "macro_f1": 0.5924380000979665,
+          "rules": 3.4,
+          "conditions": 9.8,
+          "parameters": null,
+          "fit_seconds": 0.07901674397289753,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7353252247488102,
@@ -2548,7 +3214,7 @@
           "parameters": null,
           "fit_seconds": 0.3756832331418991,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.6995769434161818,
@@ -2560,7 +3226,7 @@
           "parameters": null,
           "fit_seconds": 0.29975145794451236,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-logreg": {
           "accuracy": 0.7452141723955579,
@@ -2584,7 +3250,7 @@
           "parameters": null,
           "fit_seconds": 0.0019398493692278861,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.6993125330512957,
@@ -2596,7 +3262,7 @@
           "parameters": null,
           "fit_seconds": 0.1859198823571205,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         }
       }
     },
@@ -2616,6 +3282,30 @@
           "parameters": null,
           "fit_seconds": 9.0717797242105,
           "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8074074074074075,
+          "accuracy_std": 0.05335133441069605,
+          "balanced_accuracy": 0.805,
+          "macro_f1": 0.8048200336917833,
+          "rules": 16.4,
+          "conditions": 42.2,
+          "parameters": null,
+          "fit_seconds": 0.4465539602562785,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7962962962962963,
+          "accuracy_std": 0.0,
+          "balanced_accuracy": 0.7933333333333334,
+          "macro_f1": 0.7929056696165023,
+          "rules": 15.0,
+          "conditions": 40.0,
+          "parameters": null,
+          "fit_seconds": 0.4119492918252945,
+          "unclassified": 0.0,
           "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
@@ -2628,7 +3318,7 @@
           "parameters": null,
           "fit_seconds": 0.4347570907324553,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.762962962962963,
@@ -2640,7 +3330,7 @@
           "parameters": null,
           "fit_seconds": 0.847355717048049,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7703703703703704,
@@ -2652,7 +3342,7 @@
           "parameters": null,
           "fit_seconds": 0.23445644341409205,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.8333333333333334,
@@ -2676,7 +3366,7 @@
           "parameters": null,
           "fit_seconds": 0.002733613271266222,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.8296296296296297,
@@ -2708,7 +3398,31 @@
           "parameters": null,
           "fit_seconds": 5.740731775946915,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8375,
+          "accuracy_std": 0.03423265984407289,
+          "balanced_accuracy": 0.7316849816849816,
+          "macro_f1": 0.7047521367521367,
+          "rules": 6.6,
+          "conditions": 17.8,
+          "parameters": null,
+          "fit_seconds": 0.23124807924032212,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8625,
+          "accuracy_std": 0.02795084971874737,
+          "balanced_accuracy": 0.7983516483516484,
+          "macro_f1": 0.7564981684981685,
+          "rules": 6.4,
+          "conditions": 16.8,
+          "parameters": null,
+          "fit_seconds": 0.24773361198604107,
+          "unclassified": 0.0,
+          "rank": 2.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.825,
@@ -2720,7 +3434,7 @@
           "parameters": null,
           "fit_seconds": 0.17252579927444459,
           "unclassified": 0.0,
-          "rank": 4.5
+          "rank": 6.5
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.85,
@@ -2732,7 +3446,7 @@
           "parameters": null,
           "fit_seconds": 0.49069094341248276,
           "unclassified": 0.0,
-          "rank": 2.5
+          "rank": 3.5
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7875,
@@ -2744,7 +3458,7 @@
           "parameters": null,
           "fit_seconds": 0.05330602787435055,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-logreg": {
           "accuracy": 0.85,
@@ -2756,7 +3470,7 @@
           "parameters": 20.0,
           "fit_seconds": 0.006662794388830662,
           "unclassified": 0.0,
-          "rank": 2.5
+          "rank": 3.5
         },
         "sklearn-tree": {
           "accuracy": 0.825,
@@ -2768,7 +3482,7 @@
           "parameters": null,
           "fit_seconds": 0.0016792170703411103,
           "unclassified": 0.0,
-          "rank": 4.5
+          "rank": 6.5
         },
         "sklearn-forest": {
           "accuracy": 0.875,
@@ -2801,6 +3515,30 @@
           "fit_seconds": 3.9471969438716767,
           "unclassified": 0.0,
           "rank": 2.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9655874190564292,
+          "accuracy_std": 0.02462883217124003,
+          "balanced_accuracy": 0.9667424242424243,
+          "macro_f1": 0.9655054236052358,
+          "rules": 2.4,
+          "conditions": 6.0,
+          "parameters": null,
+          "fit_seconds": 0.2978181136772037,
+          "unclassified": 0.0,
+          "rank": 4.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9655874190564292,
+          "accuracy_std": 0.02462883217124003,
+          "balanced_accuracy": 0.9667424242424243,
+          "macro_f1": 0.9655054236052358,
+          "rules": 2.4,
+          "conditions": 6.0,
+          "parameters": null,
+          "fit_seconds": 0.354299206007272,
+          "unclassified": 0.0,
+          "rank": 4.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9699352451433858,
@@ -2836,7 +3574,7 @@
           "parameters": null,
           "fit_seconds": 0.037472424749284985,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-logreg": {
           "accuracy": 0.9568917668825161,
@@ -2848,7 +3586,7 @@
           "parameters": 17.0,
           "fit_seconds": 0.00727728009223938,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.9525439407955597,
@@ -2860,7 +3598,7 @@
           "parameters": null,
           "fit_seconds": 0.0017831620760262012,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-forest": {
           "accuracy": 0.9613320999074931,
@@ -2872,7 +3610,7 @@
           "parameters": null,
           "fit_seconds": 0.200465390086174,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         }
       }
     },
@@ -2892,6 +3630,30 @@
           "parameters": null,
           "fit_seconds": 28.205699640884994,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8945271629778672,
+          "accuracy_std": 0.04919885351579323,
+          "balanced_accuracy": 0.8705470085470086,
+          "macro_f1": 0.8808507949400033,
+          "rules": 20.2,
+          "conditions": 52.6,
+          "parameters": null,
+          "fit_seconds": 1.2319369595497847,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8803621730382295,
+          "accuracy_std": 0.05489356209059681,
+          "balanced_accuracy": 0.8561880341880344,
+          "macro_f1": 0.865256832311848,
+          "rules": 16.4,
+          "conditions": 42.2,
+          "parameters": null,
+          "fit_seconds": 2.540146558918059,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -2904,7 +3666,7 @@
           "parameters": null,
           "fit_seconds": 1.3380540492013098,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8946076458752514,
@@ -2928,7 +3690,7 @@
           "parameters": null,
           "fit_seconds": 0.29220451349392534,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.8890140845070423,
@@ -2940,7 +3702,7 @@
           "parameters": 34.0,
           "fit_seconds": 0.007800173759460449,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "sklearn-tree": {
           "accuracy": 0.8746076458752515,
@@ -2952,7 +3714,7 @@
           "parameters": null,
           "fit_seconds": 0.006193700805306434,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-forest": {
           "accuracy": 0.9345674044265595,
@@ -2985,6 +3747,30 @@
           "fit_seconds": 2.2981534477323295,
           "unclassified": 0.0,
           "rank": 3.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9400000000000001,
+          "accuracy_std": 0.027888667551135848,
+          "balanced_accuracy": 0.9400000000000001,
+          "macro_f1": 0.9401716412242728,
+          "rules": 9.4,
+          "conditions": 17.4,
+          "parameters": null,
+          "fit_seconds": 0.2387526087462902,
+          "unclassified": 0.0,
+          "rank": 7.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9333333333333333,
+          "accuracy_std": 0.062360956446232345,
+          "balanced_accuracy": 0.9333333333333333,
+          "macro_f1": 0.9332330827067669,
+          "rules": 8.8,
+          "conditions": 16.8,
+          "parameters": null,
+          "fit_seconds": 0.28342584501951934,
+          "unclassified": 0.0,
+          "rank": 9.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9466666666666667,
@@ -3044,7 +3830,7 @@
           "parameters": null,
           "fit_seconds": 0.002307726442813873,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 7.5
         },
         "sklearn-forest": {
           "accuracy": 0.9533333333333335,
@@ -3076,7 +3862,31 @@
           "parameters": null,
           "fit_seconds": 369.1157142480835,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.2972271209452261,
+          "accuracy_std": 0.00622515411223882,
+          "balanced_accuracy": 0.23534379807480485,
+          "macro_f1": 0.20487493826521513,
+          "rules": 33.8,
+          "conditions": 71.4,
+          "parameters": null,
+          "fit_seconds": 170.46940758936108,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.2919164549626516,
+          "accuracy_std": 0.006473638506902917,
+          "balanced_accuracy": 0.21056758065426645,
+          "macro_f1": 0.183250093741319,
+          "rules": 22.6,
+          "conditions": 53.0,
+          "parameters": null,
+          "fit_seconds": 226.59039620943366,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.27862133907875947,
@@ -3088,7 +3898,7 @@
           "parameters": null,
           "fit_seconds": 13.135669949650765,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.2922370692026011,
@@ -3100,7 +3910,7 @@
           "parameters": null,
           "fit_seconds": 47.218132618069646,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.6721556958489414,
@@ -3124,7 +3934,7 @@
           "parameters": 126.0,
           "fit_seconds": 2.394915522634983,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.8417811629813295,
@@ -3168,7 +3978,31 @@
           "parameters": null,
           "fit_seconds": 9.35093151703477,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.736,
+          "accuracy_std": 0.04393176527297763,
+          "balanced_accuracy": 0.7383304473304472,
+          "macro_f1": 0.7342859850937115,
+          "rules": 22.6,
+          "conditions": 63.8,
+          "parameters": null,
+          "fit_seconds": 2.1056463032960893,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.718,
+          "accuracy_std": 0.0476445169982864,
+          "balanced_accuracy": 0.7189112554112554,
+          "macro_f1": 0.7166401621157442,
+          "rules": 16.4,
+          "conditions": 46.4,
+          "parameters": null,
+          "fit_seconds": 5.995221328362822,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.6460000000000001,
@@ -3180,7 +4014,7 @@
           "parameters": null,
           "fit_seconds": 0.388730476424098,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.6779999999999999,
@@ -3192,7 +4026,7 @@
           "parameters": null,
           "fit_seconds": 0.4358120381832123,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.686,
@@ -3204,7 +4038,7 @@
           "parameters": null,
           "fit_seconds": 0.2359853107482195,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.746,
@@ -3228,7 +4062,7 @@
           "parameters": null,
           "fit_seconds": 0.002044584974646568,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-forest": {
           "accuracy": 0.704,
@@ -3240,7 +4074,7 @@
           "parameters": null,
           "fit_seconds": 0.19996018428355455,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 4.0
         }
       }
     },
@@ -3260,6 +4094,30 @@
           "parameters": null,
           "fit_seconds": 360.98234528452156,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.6159000000000001,
+          "accuracy_std": 0.004244849820665036,
+          "balanced_accuracy": 0.6147557720534913,
+          "macro_f1": 0.618350695751287,
+          "rules": 509.2,
+          "conditions": 1511.8,
+          "parameters": null,
+          "fit_seconds": 738.0049419641495,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.61565,
+          "accuracy_std": 0.005146600819958775,
+          "balanced_accuracy": 0.6146062385251724,
+          "macro_f1": 0.6188878927610493,
+          "rules": 472.4,
+          "conditions": 1402.8,
+          "parameters": null,
+          "fit_seconds": 703.7329219747335,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -3272,7 +4130,7 @@
           "parameters": null,
           "fit_seconds": 177.29178347811103,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.6198499999999999,
@@ -3352,7 +4210,31 @@
           "parameters": null,
           "fit_seconds": 6.788376252725721,
           "unclassified": 0.0,
-          "rank": 4.5
+          "rank": 5.5
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7229885057471265,
+          "accuracy_std": 0.10397058437420789,
+          "balanced_accuracy": 0.5852077048768226,
+          "macro_f1": 0.5356732601479202,
+          "rules": 13.6,
+          "conditions": 35.8,
+          "parameters": null,
+          "fit_seconds": 0.4432490184903145,
+          "unclassified": 0.0,
+          "rank": 8.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7708045977011494,
+          "accuracy_std": 0.10101414673794136,
+          "balanced_accuracy": 0.6837166918049271,
+          "macro_f1": 0.6177915732379085,
+          "rules": 13.2,
+          "conditions": 34.6,
+          "parameters": null,
+          "fit_seconds": 0.47571626845747234,
+          "unclassified": 0.0,
+          "rank": 4.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7912643678160919,
@@ -3376,7 +4258,7 @@
           "parameters": null,
           "fit_seconds": 0.5821956131607294,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7436781609195402,
@@ -3388,7 +4270,7 @@
           "parameters": null,
           "fit_seconds": 0.10704796537756919,
           "unclassified": 0.0,
-          "rank": 4.5
+          "rank": 5.5
         },
         "sklearn-logreg": {
           "accuracy": 0.8314942528735634,
@@ -3412,7 +4294,7 @@
           "parameters": null,
           "fit_seconds": 0.002161576226353645,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.791264367816092,
@@ -3444,6 +4326,30 @@
           "parameters": null,
           "fit_seconds": 180.9834205124527,
           "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8331756046267088,
+          "accuracy_std": 0.006510224634109905,
+          "balanced_accuracy": 0.7916636905888137,
+          "macro_f1": 0.805911552873499,
+          "rules": 15.8,
+          "conditions": 38.4,
+          "parameters": null,
+          "fit_seconds": 49.772166370227936,
+          "unclassified": 0.0,
+          "rank": 3.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8268664563617245,
+          "accuracy_std": 0.0065181810773375076,
+          "balanced_accuracy": 0.7803618574896545,
+          "macro_f1": 0.7960683991874372,
+          "rules": 11.0,
+          "conditions": 26.6,
+          "parameters": null,
+          "fit_seconds": 35.71419348604977,
+          "unclassified": 0.0,
           "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
@@ -3456,7 +4362,7 @@
           "parameters": null,
           "fit_seconds": 2.166771887987852,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8279179810725552,
@@ -3468,7 +4374,7 @@
           "parameters": null,
           "fit_seconds": 176.98548565655946,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8629863301787593,
@@ -3492,7 +4398,7 @@
           "parameters": 11.0,
           "fit_seconds": 0.034192150458693504,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-tree": {
           "accuracy": 0.8163512092534175,
@@ -3504,7 +4410,7 @@
           "parameters": null,
           "fit_seconds": 0.2736136317253113,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-forest": {
           "accuracy": 0.8801261829652998,
@@ -3536,7 +4442,31 @@
           "parameters": null,
           "fit_seconds": 4.564731649681926,
           "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8156626506024096,
+          "accuracy_std": 0.04272439331686059,
+          "balanced_accuracy": 0.8153408150512573,
+          "macro_f1": 0.815110026996253,
+          "rules": 7.6,
+          "conditions": 16.0,
+          "parameters": null,
+          "fit_seconds": 0.7131364842876792,
+          "unclassified": 0.0,
           "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8216867469879519,
+          "accuracy_std": 0.035280844492400765,
+          "balanced_accuracy": 0.8216026160679604,
+          "macro_f1": 0.8212537803236696,
+          "rules": 6.0,
+          "conditions": 14.2,
+          "parameters": null,
+          "fit_seconds": 0.7300013160333038,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8168674698795181,
@@ -3548,7 +4478,7 @@
           "parameters": null,
           "fit_seconds": 0.08416751623153687,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.827710843373494,
@@ -3572,7 +4502,7 @@
           "parameters": null,
           "fit_seconds": 0.7130504060536623,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.827710843373494,
@@ -3596,7 +4526,7 @@
           "parameters": null,
           "fit_seconds": 0.0025535115972161295,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.7867469879518072,
@@ -3608,7 +4538,7 @@
           "parameters": null,
           "fit_seconds": 0.19035713113844394,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         }
       }
     },
@@ -3628,6 +4558,30 @@
           "parameters": null,
           "fit_seconds": 101.7850506991148,
           "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.3136986257928119,
+          "accuracy_std": 0.013379711959728239,
+          "balanced_accuracy": 0.23335747628464315,
+          "macro_f1": 0.1748151183329669,
+          "rules": 12.8,
+          "conditions": 28.0,
+          "parameters": null,
+          "fit_seconds": 19.478368797525764,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.3113725158562367,
+          "accuracy_std": 0.012052188481615485,
+          "balanced_accuracy": 0.23418811033451523,
+          "macro_f1": 0.16601617074363892,
+          "rules": 11.2,
+          "conditions": 26.0,
+          "parameters": null,
+          "fit_seconds": 24.397409235686062,
+          "unclassified": 0.0,
           "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
@@ -3640,7 +4594,7 @@
           "parameters": null,
           "fit_seconds": 3.202325476706028,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.2939198731501057,
@@ -3652,7 +4606,7 @@
           "parameters": null,
           "fit_seconds": 10.452849469240755,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.3324612050739958,
@@ -3688,7 +4642,7 @@
           "parameters": null,
           "fit_seconds": 0.02538625756278634,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.3198097251585624,
@@ -3720,7 +4674,31 @@
           "parameters": null,
           "fit_seconds": 3.958106499910355,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 1.0,
+          "accuracy_std": 0.0,
+          "balanced_accuracy": 1.0,
+          "macro_f1": 1.0,
+          "rules": 3.2,
+          "conditions": 4.6,
+          "parameters": null,
+          "fit_seconds": 0.1450287920422852,
+          "unclassified": 0.0,
+          "rank": 2.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 1.0,
+          "accuracy_std": 0.0,
+          "balanced_accuracy": 1.0,
+          "macro_f1": 1.0,
+          "rules": 3.0,
+          "conditions": 4.2,
+          "parameters": null,
+          "fit_seconds": 0.19793979758396746,
+          "unclassified": 0.0,
+          "rank": 2.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9722534081796311,
@@ -3732,7 +4710,7 @@
           "parameters": null,
           "fit_seconds": 0.11694087348878383,
           "unclassified": 0.0,
-          "rank": 4.5
+          "rank": 6.5
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9722534081796311,
@@ -3744,7 +4722,7 @@
           "parameters": null,
           "fit_seconds": 0.11480692327022553,
           "unclassified": 0.0,
-          "rank": 4.5
+          "rank": 6.5
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 1.0,
@@ -3756,7 +4734,7 @@
           "parameters": null,
           "fit_seconds": 0.02527013923972845,
           "unclassified": 0.0,
-          "rank": 1.5
+          "rank": 2.5
         },
         "sklearn-logreg": {
           "accuracy": 0.7639935846030473,
@@ -3768,7 +4746,7 @@
           "parameters": 7.0,
           "fit_seconds": 0.005878177285194397,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-tree": {
           "accuracy": 1.0,
@@ -3780,7 +4758,7 @@
           "parameters": null,
           "fit_seconds": 0.0018845529295504094,
           "unclassified": 0.0,
-          "rank": 1.5
+          "rank": 2.5
         },
         "sklearn-forest": {
           "accuracy": 0.9976744186046511,
@@ -3792,7 +4770,7 @@
           "parameters": null,
           "fit_seconds": 0.19981688633561134,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         }
       }
     },
@@ -3813,6 +4791,30 @@
           "fit_seconds": 50.438087903894484,
           "unclassified": 0.0,
           "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9487967133407459,
+          "accuracy_std": 0.005773762103711402,
+          "balanced_accuracy": 0.9358132382302011,
+          "macro_f1": 0.9445760664592265,
+          "rules": 4.6,
+          "conditions": 7.8,
+          "parameters": null,
+          "fit_seconds": 10.179109673202039,
+          "unclassified": 0.0,
+          "rank": 8.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9487967133407459,
+          "accuracy_std": 0.005773762103711402,
+          "balanced_accuracy": 0.9358132382302011,
+          "macro_f1": 0.9445760664592265,
+          "rules": 4.6,
+          "conditions": 7.8,
+          "parameters": null,
+          "fit_seconds": 15.570567202568053,
+          "unclassified": 0.0,
+          "rank": 8.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9723633542518642,
@@ -3904,6 +4906,30 @@
           "parameters": null,
           "fit_seconds": 5.335920748487115,
           "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9069767441860466,
+          "accuracy_std": 0.03288868749704872,
+          "balanced_accuracy": 0.8803174603174604,
+          "macro_f1": 0.8762810819786416,
+          "rules": 15.8,
+          "conditions": 26.8,
+          "parameters": null,
+          "fit_seconds": 0.3536739457398653,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9162790697674417,
+          "accuracy_std": 0.06064374330421067,
+          "balanced_accuracy": 0.887936507936508,
+          "macro_f1": 0.8888848172913191,
+          "rules": 11.8,
+          "conditions": 21.8,
+          "parameters": null,
+          "fit_seconds": 0.3873108088970184,
+          "unclassified": 0.0,
           "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
@@ -3916,7 +4942,7 @@
           "parameters": null,
           "fit_seconds": 0.07222679257392883,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9023255813953488,
@@ -3928,7 +4954,7 @@
           "parameters": null,
           "fit_seconds": 0.22716198340058327,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9255813953488371,
@@ -3996,7 +5022,31 @@
           "parameters": null,
           "fit_seconds": 67.44858487509191,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9336419753086419,
+          "accuracy_std": 0.004101136501826637,
+          "balanced_accuracy": 0.6609469305431225,
+          "macro_f1": 0.6520423771390134,
+          "rules": 46.2,
+          "conditions": 124.2,
+          "parameters": null,
+          "fit_seconds": 56.009453017264605,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9265432098765432,
+          "accuracy_std": 0.0039963623958575705,
+          "balanced_accuracy": 0.6560373184687294,
+          "macro_f1": 0.6469552798159676,
+          "rules": 32.2,
+          "conditions": 84.6,
+          "parameters": null,
+          "fit_seconds": 46.995074059814215,
+          "unclassified": 0.0,
+          "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8501543209876543,
@@ -4008,7 +5058,7 @@
           "parameters": null,
           "fit_seconds": 5.384927760437131,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8714506172839507,
@@ -4020,7 +5070,7 @@
           "parameters": null,
           "fit_seconds": 3.8940599277615546,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9908950617283951,
@@ -4044,7 +5094,7 @@
           "parameters": 45.0,
           "fit_seconds": 0.23325793324038385,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-tree": {
           "accuracy": 0.9966820987654319,
@@ -4088,7 +5138,31 @@
           "parameters": null,
           "fit_seconds": 588.1378098077141,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8861209964412812,
+          "accuracy_std": 0.014304212803214873,
+          "balanced_accuracy": 0.8863064604421907,
+          "macro_f1": 0.8858115586153705,
+          "rules": 170.6,
+          "conditions": 491.8,
+          "parameters": null,
+          "fit_seconds": 148.2596199527383,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8665480427046264,
+          "accuracy_std": 0.01031798354514521,
+          "balanced_accuracy": 0.8666916641050012,
+          "macro_f1": 0.8653226415246168,
+          "rules": 137.2,
+          "conditions": 397.4,
+          "parameters": null,
+          "fit_seconds": 172.4197161965072,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7934163701067616,
@@ -4100,7 +5174,7 @@
           "parameters": null,
           "fit_seconds": 52.857423406932504,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7414590747330962,
@@ -4112,7 +5186,7 @@
           "parameters": null,
           "fit_seconds": 67.50398612385615,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9163701067615658,
@@ -4180,6 +5254,30 @@
           "parameters": null,
           "fit_seconds": 100.40521665289998,
           "unclassified": 0.0,
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9568724382893825,
+          "accuracy_std": 0.0039355505748212335,
+          "balanced_accuracy": 0.6891122882542351,
+          "macro_f1": 0.7236545787706088,
+          "rules": 37.4,
+          "conditions": 91.0,
+          "parameters": null,
+          "fit_seconds": 39.42183278910816,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9559596971442405,
+          "accuracy_std": 0.009245505927375526,
+          "balanced_accuracy": 0.6885783480134349,
+          "macro_f1": 0.7174687525369947,
+          "rules": 26.2,
+          "conditions": 64.0,
+          "parameters": null,
+          "fit_seconds": 63.75908586829901,
+          "unclassified": 0.0,
           "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
@@ -4192,7 +5290,7 @@
           "parameters": null,
           "fit_seconds": 0.3143698573112488,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9459073568572454,
@@ -4204,7 +5302,7 @@
           "parameters": null,
           "fit_seconds": 3.8372336383908987,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.971858622790981,
@@ -4272,7 +5370,31 @@
           "parameters": null,
           "fit_seconds": 282.88269638810306,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8969240712856079,
+          "accuracy_std": 0.00543910452865263,
+          "balanced_accuracy": 0.8966811788290551,
+          "macro_f1": 0.8959654907787199,
+          "rules": 145.0,
+          "conditions": 410.6,
+          "parameters": null,
+          "fit_seconds": 203.9429664786905,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8790938142533975,
+          "accuracy_std": 0.0029234225143446426,
+          "balanced_accuracy": 0.8786153217275358,
+          "macro_f1": 0.8778252058060098,
+          "rules": 123.6,
+          "conditions": 354.0,
+          "parameters": null,
+          "fit_seconds": 388.91670253351333,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8134987323628368,
@@ -4284,7 +5406,7 @@
           "parameters": null,
           "fit_seconds": 30.840143061988055,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8725402108080396,
@@ -4296,7 +5418,7 @@
           "parameters": null,
           "fit_seconds": 129.729680159688,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9654291532134096,
@@ -4364,6 +5486,30 @@
           "parameters": null,
           "fit_seconds": 32.76783434385434,
           "unclassified": 0.0,
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8012574091204989,
+          "accuracy_std": 0.007943644005419113,
+          "balanced_accuracy": 0.7443389906082113,
+          "macro_f1": 0.7515288627804058,
+          "rules": 11.0,
+          "conditions": 29.6,
+          "parameters": null,
+          "fit_seconds": 10.760969792306422,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7999621406790695,
+          "accuracy_std": 0.008858450366199647,
+          "balanced_accuracy": 0.7449122324617676,
+          "macro_f1": 0.7508918784410092,
+          "rules": 9.8,
+          "conditions": 26.8,
+          "parameters": null,
+          "fit_seconds": 10.099052237533034,
+          "unclassified": 0.0,
           "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
@@ -4376,7 +5522,7 @@
           "parameters": null,
           "fit_seconds": 0.3040638744831085,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8066202418885119,
@@ -4412,7 +5558,7 @@
           "parameters": 6.0,
           "fit_seconds": 0.008716229349374771,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-tree": {
           "accuracy": 0.8710191181005241,
@@ -4458,6 +5604,30 @@
           "unclassified": 0.0,
           "rank": 4.0
         },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7382225617519735,
+          "accuracy_std": 0.040963307224580324,
+          "balanced_accuracy": 0.7053927323549964,
+          "macro_f1": 0.7056632909381738,
+          "rules": 19.8,
+          "conditions": 52.0,
+          "parameters": null,
+          "fit_seconds": 0.9443570837378502,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7317375435022493,
+          "accuracy_std": 0.027422667051614495,
+          "balanced_accuracy": 0.7023060796645704,
+          "macro_f1": 0.7015260486252941,
+          "rules": 17.0,
+          "conditions": 46.2,
+          "parameters": null,
+          "fit_seconds": 1.9601687464863062,
+          "unclassified": 0.0,
+          "rank": 8.0
+        },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7538324420677363,
           "accuracy_std": 0.03675547268606567,
@@ -4480,7 +5650,7 @@
           "parameters": null,
           "fit_seconds": 2.4440353315323593,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7383244206773618,
@@ -4516,7 +5686,7 @@
           "parameters": null,
           "fit_seconds": 0.003810387849807739,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.7681860623037094,
@@ -4549,6 +5719,30 @@
           "fit_seconds": 3.064061092026532,
           "unclassified": 0.0,
           "rank": 3.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.5869281045751633,
+          "accuracy_std": 0.055919606892045594,
+          "balanced_accuracy": 0.4332051282051282,
+          "macro_f1": 0.39813186813186807,
+          "rules": 11.2,
+          "conditions": 31.2,
+          "parameters": null,
+          "fit_seconds": 0.14629913438111544,
+          "unclassified": 0.0,
+          "rank": 8.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.5869281045751633,
+          "accuracy_std": 0.055919606892045594,
+          "balanced_accuracy": 0.4332051282051282,
+          "macro_f1": 0.39813186813186807,
+          "rules": 11.2,
+          "conditions": 31.2,
+          "parameters": null,
+          "fit_seconds": 0.1684699820354581,
+          "unclassified": 0.0,
+          "rank": 8.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7013071895424837,
@@ -4642,6 +5836,30 @@
           "unclassified": 0.0,
           "rank": 6.0
         },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7727027027027027,
+          "accuracy_std": 0.013585954483963249,
+          "balanced_accuracy": 0.7725086162073774,
+          "macro_f1": 0.7724634548894842,
+          "rules": 30.8,
+          "conditions": 75.2,
+          "parameters": null,
+          "fit_seconds": 19.07503181807697,
+          "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7460810810810812,
+          "accuracy_std": 0.01124954345311752,
+          "balanced_accuracy": 0.7461478311084667,
+          "macro_f1": 0.7460591300108357,
+          "rules": 27.4,
+          "conditions": 70.0,
+          "parameters": null,
+          "fit_seconds": 13.435996906086803,
+          "unclassified": 0.0,
+          "rank": 9.0
+        },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8086486486486486,
           "accuracy_std": 0.014376180994457128,
@@ -4688,7 +5906,7 @@
           "parameters": 21.0,
           "fit_seconds": 0.011563028395175933,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 8.0
         },
         "sklearn-tree": {
           "accuracy": 0.8677027027027027,
@@ -4732,7 +5950,31 @@
           "parameters": null,
           "fit_seconds": 8.65425217729062,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.6858812529219261,
+          "accuracy_std": 0.06507420636230037,
+          "balanced_accuracy": 0.6510177595628416,
+          "macro_f1": 0.6520087702736713,
+          "rules": 20.4,
+          "conditions": 55.8,
+          "parameters": null,
+          "fit_seconds": 0.8585221348330379,
+          "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7010986442262739,
+          "accuracy_std": 0.048959318583030785,
+          "balanced_accuracy": 0.6598224043715847,
+          "macro_f1": 0.6598501667689562,
+          "rules": 17.8,
+          "conditions": 51.6,
+          "parameters": null,
+          "fit_seconds": 1.2786040922626853,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7162459093034128,
@@ -4756,7 +5998,7 @@
           "parameters": null,
           "fit_seconds": 1.7564098060131073,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.6946704067321179,
@@ -4768,7 +6010,7 @@
           "parameters": null,
           "fit_seconds": 0.4771119384095073,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.7336372136512389,
@@ -4792,7 +6034,7 @@
           "parameters": null,
           "fit_seconds": 0.003109678253531456,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.666643291257597,
@@ -4804,7 +6046,7 @@
           "parameters": null,
           "fit_seconds": 0.20140144862234594,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         }
       }
     },
@@ -4824,6 +6066,30 @@
           "parameters": null,
           "fit_seconds": 254.41174317523837,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.813986013986014,
+          "accuracy_std": 0.012750864475357225,
+          "balanced_accuracy": 0.7833497235458925,
+          "macro_f1": 0.7855357047110083,
+          "rules": 60.4,
+          "conditions": 152.8,
+          "parameters": null,
+          "fit_seconds": 88.8444016829133,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7959595959595959,
+          "accuracy_std": 0.013960089934095254,
+          "balanced_accuracy": 0.749603283755133,
+          "macro_f1": 0.7558690439854661,
+          "rules": 38.6,
+          "conditions": 98.4,
+          "parameters": null,
+          "fit_seconds": 63.587047221884134,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -4836,7 +6102,7 @@
           "parameters": null,
           "fit_seconds": 12.414525171089917,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8035742035742036,
@@ -4848,7 +6114,7 @@
           "parameters": null,
           "fit_seconds": 68.57951659113169,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8798756798756798,
@@ -4916,7 +6182,31 @@
           "parameters": null,
           "fit_seconds": 59.97122202813625,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9337662337662337,
+          "accuracy_std": 0.013395453200663042,
+          "balanced_accuracy": 0.9337662337662337,
+          "macro_f1": 0.9331928273642001,
+          "rules": 72.2,
+          "conditions": 186.0,
+          "parameters": null,
+          "fit_seconds": 28.09979939609766,
+          "unclassified": 0.0,
+          "rank": 4.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9311688311688311,
+          "accuracy_std": 0.01672419374206221,
+          "balanced_accuracy": 0.9311688311688311,
+          "macro_f1": 0.9305536523452403,
+          "rules": 43.4,
+          "conditions": 111.2,
+          "parameters": null,
+          "fit_seconds": 42.828798512741926,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7796536796536797,
@@ -4928,7 +6218,7 @@
           "parameters": null,
           "fit_seconds": 4.592576798796654,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9255411255411256,
@@ -4940,7 +6230,7 @@
           "parameters": null,
           "fit_seconds": 8.852729953359812,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9575757575757576,
@@ -4964,7 +6254,7 @@
           "parameters": 140.0,
           "fit_seconds": 0.10508613288402557,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 4.5
         },
         "sklearn-tree": {
           "accuracy": 0.9536796536796537,
@@ -5008,6 +6298,30 @@
           "parameters": null,
           "fit_seconds": 608.0548568218946,
           "unclassified": 0.0,
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9852928893989077,
+          "accuracy_std": 0.0029102137180684155,
+          "balanced_accuracy": 0.47474087769106826,
+          "macro_f1": 0.5031974804501484,
+          "rules": 19.0,
+          "conditions": 43.2,
+          "parameters": null,
+          "fit_seconds": 511.9156118884683,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9831203774998439,
+          "accuracy_std": 0.00467057526107238,
+          "balanced_accuracy": 0.4977005818067588,
+          "macro_f1": 0.5320314063011433,
+          "rules": 14.8,
+          "conditions": 37.0,
+          "parameters": null,
+          "fit_seconds": 645.9797131030821,
+          "unclassified": 0.0,
           "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
@@ -5020,7 +6334,7 @@
           "parameters": null,
           "fit_seconds": 5.562265211343766,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9962240873916004,
@@ -5056,7 +6370,7 @@
           "parameters": 70.0,
           "fit_seconds": 1.9964106151834131,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.9998448246132992,
@@ -5100,6 +6414,30 @@
           "parameters": null,
           "fit_seconds": 42.91481338776648,
           "unclassified": 0.0,
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.784088269454123,
+          "accuracy_std": 0.07628726041673725,
+          "balanced_accuracy": 0.7782067817765759,
+          "macro_f1": 0.7791545381426482,
+          "rules": 19.4,
+          "conditions": 54.0,
+          "parameters": null,
+          "fit_seconds": 1.128101447597146,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7501742160278745,
+          "accuracy_std": 0.09099941297800376,
+          "balanced_accuracy": 0.7456053671728728,
+          "macro_f1": 0.7455454520460979,
+          "rules": 17.6,
+          "conditions": 49.0,
+          "parameters": null,
+          "fit_seconds": 1.5903178260661661,
+          "unclassified": 0.0,
           "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
@@ -5112,7 +6450,7 @@
           "parameters": null,
           "fit_seconds": 3.693072606623173,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 3.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7691056910569106,
@@ -5124,7 +6462,7 @@
           "parameters": null,
           "fit_seconds": 7.120149279106409,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.7742160278745643,
@@ -5136,7 +6474,7 @@
           "parameters": null,
           "fit_seconds": 0.3248592115938663,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 4.0
         },
         "sklearn-logreg": {
           "accuracy": 0.7404181184668989,
@@ -5148,7 +6486,7 @@
           "parameters": 61.0,
           "fit_seconds": 0.007803983986377716,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.7111498257839722,
@@ -5160,7 +6498,7 @@
           "parameters": null,
           "fit_seconds": 0.005363750085234642,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.8319396051103368,
@@ -5192,6 +6530,30 @@
           "parameters": null,
           "fit_seconds": 255.42352556064725,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9003697308038037,
+          "accuracy_std": 0.00432610615417172,
+          "balanced_accuracy": 0.8869232734946669,
+          "macro_f1": 0.8936573452950796,
+          "rules": 14.2,
+          "conditions": 36.4,
+          "parameters": null,
+          "fit_seconds": 16.171914312243462,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8994989828263236,
+          "accuracy_std": 0.0035977176088261864,
+          "balanced_accuracy": 0.8863955163996102,
+          "macro_f1": 0.892802714340335,
+          "rules": 11.2,
+          "conditions": 26.8,
+          "parameters": null,
+          "fit_seconds": 13.091872136108577,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -5216,7 +6578,7 @@
           "parameters": null,
           "fit_seconds": 16.092749354429543,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9225576004163315,
@@ -5284,7 +6646,31 @@
           "parameters": null,
           "fit_seconds": 48.08566506505012,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7451432564640111,
+          "accuracy_std": 0.044071997089776674,
+          "balanced_accuracy": 0.6306402899426156,
+          "macro_f1": 0.6178159105496186,
+          "rules": 16.0,
+          "conditions": 41.2,
+          "parameters": null,
+          "fit_seconds": 1.1033548042178154,
+          "unclassified": 0.0,
           "rank": 7.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7603074772886094,
+          "accuracy_std": 0.0614174867809514,
+          "balanced_accuracy": 0.640164099466425,
+          "macro_f1": 0.6281861222730327,
+          "rules": 14.0,
+          "conditions": 36.0,
+          "parameters": null,
+          "fit_seconds": 0.946121583878994,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.790146750524109,
@@ -5344,7 +6730,7 @@
           "parameters": null,
           "fit_seconds": 0.00467158667743206,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-forest": {
           "accuracy": 0.8016072676450033,
@@ -5376,7 +6762,31 @@
           "parameters": null,
           "fit_seconds": 266.38742012679575,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9435736677115987,
+          "accuracy_std": 0.011624135559711084,
+          "balanced_accuracy": 0.943019069143114,
+          "macro_f1": 0.9372415359929007,
+          "rules": 39.4,
+          "conditions": 88.6,
+          "parameters": null,
+          "fit_seconds": 13.314890293776989,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9382445141065832,
+          "accuracy_std": 0.014894406292419572,
+          "balanced_accuracy": 0.9363400864022864,
+          "macro_f1": 0.9314287419780639,
+          "rules": 26.4,
+          "conditions": 58.0,
+          "parameters": null,
+          "fit_seconds": 22.030518791079523,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.781191222570533,
@@ -5388,7 +6798,7 @@
           "parameters": null,
           "fit_seconds": 23.92880133241415,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8965517241379312,
@@ -5400,7 +6810,7 @@
           "parameters": null,
           "fit_seconds": 8.869908370822667,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.935423197492163,
@@ -5412,7 +6822,7 @@
           "parameters": null,
           "fit_seconds": 1.0881435483694077,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-logreg": {
           "accuracy": 0.9379310344827587,
@@ -5424,7 +6834,7 @@
           "parameters": 183.0,
           "fit_seconds": 0.027206119894981385,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 4.0
         },
         "sklearn-tree": {
           "accuracy": 0.9206896551724139,
@@ -5436,7 +6846,7 @@
           "parameters": null,
           "fit_seconds": 0.02106313407421112,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "sklearn-forest": {
           "accuracy": 0.964576802507837,
@@ -5468,6 +6878,30 @@
           "parameters": null,
           "fit_seconds": 208.52426885869355,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.8298181818181817,
+          "accuracy_std": 0.01739668439959678,
+          "balanced_accuracy": 0.8298181818181817,
+          "macro_f1": 0.8244157826258667,
+          "rules": 171.4,
+          "conditions": 486.2,
+          "parameters": null,
+          "fit_seconds": 131.47863859124482,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8149090909090908,
+          "accuracy_std": 0.01021666116151732,
+          "balanced_accuracy": 0.8149090909090908,
+          "macro_f1": 0.80588426205208,
+          "rules": 113.4,
+          "conditions": 323.0,
+          "parameters": null,
+          "fit_seconds": 92.48364603947849,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -5480,7 +6914,7 @@
           "parameters": null,
           "fit_seconds": 43.35324882250279,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.8719999999999999,
@@ -5560,7 +6994,31 @@
           "parameters": null,
           "fit_seconds": 108.44787440598012,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9695833333333332,
+          "accuracy_std": 0.0030030205986721634,
+          "balanced_accuracy": 0.8266126225948135,
+          "macro_f1": 0.8267228453294919,
+          "rules": 11.4,
+          "conditions": 27.0,
+          "parameters": null,
+          "fit_seconds": 24.822417520731687,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9670833333333334,
+          "accuracy_std": 0.003315926773975911,
+          "balanced_accuracy": 0.8184141526371256,
+          "macro_f1": 0.8161702634882438,
+          "rules": 7.6,
+          "conditions": 16.8,
+          "parameters": null,
+          "fit_seconds": 16.325454307720065,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9256944444444445,
@@ -5572,7 +7030,7 @@
           "parameters": null,
           "fit_seconds": 1.0963156133890153,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9818055555555556,
@@ -5608,7 +7066,7 @@
           "parameters": 66.0,
           "fit_seconds": 0.086021888256073,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.9966666666666667,
@@ -5652,7 +7110,31 @@
           "parameters": null,
           "fit_seconds": 8.212040660902858,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9394633507853403,
+          "accuracy_std": 0.007850064849132256,
+          "balanced_accuracy": 0.9331926859210441,
+          "macro_f1": 0.9331513872644542,
+          "rules": 25.4,
+          "conditions": 73.4,
+          "parameters": null,
+          "fit_seconds": 6.682863640785217,
+          "unclassified": 0.0,
+          "rank": 2.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9384053228621291,
+          "accuracy_std": 0.01710039846321888,
+          "balanced_accuracy": 0.934476647067692,
+          "macro_f1": 0.9323482707261224,
+          "rules": 22.8,
+          "conditions": 65.6,
+          "parameters": null,
+          "fit_seconds": 4.116369964182377,
+          "unclassified": 0.0,
+          "rank": 3.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.721296902268761,
@@ -5664,7 +7146,7 @@
           "parameters": null,
           "fit_seconds": 0.21010181903839112,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7380181064572426,
@@ -5676,7 +7158,7 @@
           "parameters": null,
           "fit_seconds": 0.975128921866417,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9227203315881326,
@@ -5688,7 +7170,7 @@
           "parameters": null,
           "fit_seconds": 0.3956429881975055,
           "unclassified": 0.0,
-          "rank": 3.0
+          "rank": 5.0
         },
         "sklearn-logreg": {
           "accuracy": 0.7056609947643979,
@@ -5700,7 +7182,7 @@
           "parameters": 10.0,
           "fit_seconds": 0.004392803460359573,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-tree": {
           "accuracy": 0.9258889616055846,
@@ -5712,7 +7194,7 @@
           "parameters": null,
           "fit_seconds": 0.0029263556003570556,
           "unclassified": 0.0,
-          "rank": 2.0
+          "rank": 4.0
         },
         "sklearn-forest": {
           "accuracy": 0.9592441099476441,
@@ -5745,6 +7227,30 @@
           "fit_seconds": 4.103711455687881,
           "unclassified": 0.0,
           "rank": 2.5
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7723768295196866,
+          "accuracy_std": 0.010567297252229681,
+          "balanced_accuracy": 0.6833513683594032,
+          "macro_f1": 0.6967003465466209,
+          "rules": 1.6,
+          "conditions": 3.6,
+          "parameters": null,
+          "fit_seconds": 0.33849207535386083,
+          "unclassified": 0.0,
+          "rank": 8.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7723768295196866,
+          "accuracy_std": 0.010567297252229681,
+          "balanced_accuracy": 0.6833513683594032,
+          "macro_f1": 0.6967003465466209,
+          "rules": 1.6,
+          "conditions": 3.6,
+          "parameters": null,
+          "fit_seconds": 0.3885960303246975,
+          "unclassified": 0.0,
+          "rank": 8.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.7769202226345083,
@@ -5836,7 +7342,31 @@
           "parameters": null,
           "fit_seconds": 137.15828144215047,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.875,
+          "accuracy_std": 0.008384914625669518,
+          "balanced_accuracy": 0.8749929258749856,
+          "macro_f1": 0.8749769557499782,
+          "rules": 34.6,
+          "conditions": 72.6,
+          "parameters": null,
+          "fit_seconds": 28.75471399575472,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.8571621621621622,
+          "accuracy_std": 0.009160328286531003,
+          "balanced_accuracy": 0.8571601810320562,
+          "macro_f1": 0.857153918020018,
+          "rules": 32.2,
+          "conditions": 73.0,
+          "parameters": null,
+          "fit_seconds": 21.279227919876575,
+          "unclassified": 0.0,
+          "rank": 6.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9083783783783785,
@@ -5860,7 +7390,7 @@
           "parameters": null,
           "fit_seconds": 159.06616065967827,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8654054054054054,
@@ -5872,7 +7402,7 @@
           "parameters": null,
           "fit_seconds": 3.4894259840250017,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 5.0
         },
         "sklearn-logreg": {
           "accuracy": 0.9778378378378377,
@@ -5896,7 +7426,7 @@
           "parameters": null,
           "fit_seconds": 0.1980608657002449,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.9698648648648648,
@@ -5928,7 +7458,31 @@
           "parameters": null,
           "fit_seconds": 26.326502411067487,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.6394848590323704,
+          "accuracy_std": 0.025686368815119525,
+          "balanced_accuracy": 0.6427930790140093,
+          "macro_f1": 0.6024859932556133,
+          "rules": 31.2,
+          "conditions": 77.8,
+          "parameters": null,
+          "fit_seconds": 5.8027022678405045,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.6359276018099548,
+          "accuracy_std": 0.02248006631039644,
+          "balanced_accuracy": 0.6396974246683549,
+          "macro_f1": 0.5989190409865984,
+          "rules": 25.6,
+          "conditions": 63.6,
+          "parameters": null,
+          "fit_seconds": 7.962577082030475,
+          "unclassified": 0.0,
+          "rank": 8.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.6383083884441351,
@@ -5940,7 +7494,7 @@
           "parameters": null,
           "fit_seconds": 2.8023359432816504,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.6678245736164288,
@@ -6020,7 +7574,31 @@
           "parameters": null,
           "fit_seconds": 23.786825287155807,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.7606060606060605,
+          "accuracy_std": 0.03042903097250923,
+          "balanced_accuracy": 0.7606060606060606,
+          "macro_f1": 0.7556895589123965,
+          "rules": 283.6,
+          "conditions": 827.0,
+          "parameters": null,
+          "fit_seconds": 19.690073104947807,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.7252525252525254,
+          "accuracy_std": 0.03528131150822826,
+          "balanced_accuracy": 0.7252525252525253,
+          "macro_f1": 0.7188885487293688,
+          "rules": 271.6,
+          "conditions": 793.8,
+          "parameters": null,
+          "fit_seconds": 24.208029541932046,
+          "unclassified": 0.0,
+          "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.501010101010101,
@@ -6032,7 +7610,7 @@
           "parameters": null,
           "fit_seconds": 5.651221761107445,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.7070707070707071,
@@ -6044,7 +7622,7 @@
           "parameters": null,
           "fit_seconds": 49.42865258213133,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.8151515151515152,
@@ -6068,7 +7646,7 @@
           "parameters": 154.0,
           "fit_seconds": 0.040494219213724134,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-tree": {
           "accuracy": 0.78989898989899,
@@ -6112,7 +7690,31 @@
           "parameters": null,
           "fit_seconds": 35.030014000833035,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.935010091600683,
+          "accuracy_std": 0.025191318159928224,
+          "balanced_accuracy": 0.926021438709778,
+          "macro_f1": 0.9292960323567716,
+          "rules": 10.2,
+          "conditions": 22.6,
+          "parameters": null,
+          "fit_seconds": 1.6003798201680184,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9438130725042695,
+          "accuracy_std": 0.024427908241700852,
+          "balanced_accuracy": 0.9360203208917589,
+          "macro_f1": 0.9390127765012032,
+          "rules": 5.4,
+          "conditions": 10.8,
+          "parameters": null,
+          "fit_seconds": 1.7034897297620772,
+          "unclassified": 0.0,
+          "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9296848315478963,
@@ -6124,7 +7726,7 @@
           "parameters": null,
           "fit_seconds": 0.6255373802036047,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9490296537804689,
@@ -6172,7 +7774,7 @@
           "parameters": null,
           "fit_seconds": 0.007109449058771133,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.9648812296227295,
@@ -6204,7 +7806,31 @@
           "parameters": null,
           "fit_seconds": 11.200479641370475,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9326984126984126,
+          "accuracy_std": 0.024955238335527243,
+          "balanced_accuracy": 0.9350505050505049,
+          "macro_f1": 0.9342655444437898,
+          "rules": 11.4,
+          "conditions": 20.6,
+          "parameters": null,
+          "fit_seconds": 0.5565059109590947,
+          "unclassified": 0.0,
+          "rank": 7.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9382539682539683,
+          "accuracy_std": 0.030663076131453058,
+          "balanced_accuracy": 0.9385666185666185,
+          "macro_f1": 0.9389294134661205,
+          "rules": 11.6,
+          "conditions": 20.4,
+          "parameters": null,
+          "fit_seconds": 0.6187679182738066,
+          "unclassified": 0.0,
+          "rank": 4.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9606349206349206,
@@ -6228,7 +7854,7 @@
           "parameters": null,
           "fit_seconds": 1.4944102078676225,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 4.5
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.937936507936508,
@@ -6240,7 +7866,7 @@
           "parameters": null,
           "fit_seconds": 0.10242153629660607,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "sklearn-logreg": {
           "accuracy": 0.9887301587301588,
@@ -6264,7 +7890,7 @@
           "parameters": null,
           "fit_seconds": 0.002164662629365921,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "sklearn-forest": {
           "accuracy": 0.9833333333333332,
@@ -6296,6 +7922,30 @@
           "parameters": null,
           "fit_seconds": 29.240553306043147,
           "unclassified": 0.0,
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.5791163793103449,
+          "accuracy_std": 0.02702651944011596,
+          "balanced_accuracy": 0.29012250333650125,
+          "macro_f1": 0.28489964170996657,
+          "rules": 42.6,
+          "conditions": 102.2,
+          "parameters": null,
+          "fit_seconds": 9.658894700184465,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.5766105015673981,
+          "accuracy_std": 0.03190733343609841,
+          "balanced_accuracy": 0.2821245237606118,
+          "macro_f1": 0.2796553633454625,
+          "rules": 36.8,
+          "conditions": 87.4,
+          "parameters": null,
+          "fit_seconds": 14.667168005276471,
+          "unclassified": 0.0,
           "rank": 7.0
         },
         "exfuzzy-ferl-compact": {
@@ -6308,7 +7958,7 @@
           "parameters": null,
           "fit_seconds": 1.1978807747364044,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.5734521943573668,
@@ -6320,7 +7970,7 @@
           "parameters": null,
           "fit_seconds": 5.740953108668327,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.6272668495297806,
@@ -6388,7 +8038,31 @@
           "parameters": null,
           "fit_seconds": 70.41452324986457,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.5261309958099686,
+          "accuracy_std": 0.010314228783580777,
+          "balanced_accuracy": 0.21413100687614298,
+          "macro_f1": 0.21040470734938435,
+          "rules": 19.2,
+          "conditions": 41.6,
+          "parameters": null,
+          "fit_seconds": 18.59936806000769,
+          "unclassified": 0.0,
+          "rank": 6.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.519596214379521,
+          "accuracy_std": 0.00862729286606239,
+          "balanced_accuracy": 0.20764232295998944,
+          "macro_f1": 0.20189159973669685,
+          "rules": 19.2,
+          "conditions": 41.2,
+          "parameters": null,
+          "fit_seconds": 23.88818272165954,
+          "unclassified": 0.0,
+          "rank": 8.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.5195989243501282,
@@ -6400,7 +8074,7 @@
           "parameters": null,
           "fit_seconds": 2.5932343542575835,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 7.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.5336866023222364,
@@ -6482,6 +8156,30 @@
           "unclassified": 0.0,
           "rank": 1.0
         },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.9590060111635894,
+          "accuracy_std": 0.008316977823573874,
+          "balanced_accuracy": 0.9578552528633212,
+          "macro_f1": 0.9552237757930448,
+          "rules": 8.0,
+          "conditions": 17.8,
+          "parameters": null,
+          "fit_seconds": 1.3859254584647716,
+          "unclassified": 0.0,
+          "rank": 5.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.9619364534134822,
+          "accuracy_std": 0.011994885260589325,
+          "balanced_accuracy": 0.9600708857641681,
+          "macro_f1": 0.958327648473395,
+          "rules": 6.6,
+          "conditions": 14.8,
+          "parameters": null,
+          "fit_seconds": 1.6534367040731013,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.9546157148990984,
           "accuracy_std": 0.025517480108386944,
@@ -6492,7 +8190,7 @@
           "parameters": null,
           "fit_seconds": 0.24115506410598755,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.9501932159725204,
@@ -6504,7 +8202,7 @@
           "parameters": null,
           "fit_seconds": 1.1979390159249306,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.950203950193216,
@@ -6516,7 +8214,7 @@
           "parameters": null,
           "fit_seconds": 0.1962692391127348,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "sklearn-logreg": {
           "accuracy": 0.9663482181193646,
@@ -6540,7 +8238,7 @@
           "parameters": null,
           "fit_seconds": 0.0014815554022789001,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.9677973379132675,
@@ -6572,7 +8270,31 @@
           "parameters": null,
           "fit_seconds": 27.43398353792727,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.580880880880881,
+          "accuracy_std": 0.034531860778817355,
+          "balanced_accuracy": 0.3790827506549471,
+          "macro_f1": 0.37208338738660124,
+          "rules": 53.0,
+          "conditions": 151.8,
+          "parameters": null,
+          "fit_seconds": 12.897243341431022,
+          "unclassified": 0.0,
+          "rank": 4.0
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.5606561106561108,
+          "accuracy_std": 0.0385958691966284,
+          "balanced_accuracy": 0.36658428793381714,
+          "macro_f1": 0.3570691481637625,
+          "rules": 36.2,
+          "conditions": 102.0,
+          "parameters": null,
+          "fit_seconds": 16.979543420486152,
+          "unclassified": 0.0,
+          "rank": 5.0
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.5020406770406771,
@@ -6584,7 +8306,7 @@
           "parameters": null,
           "fit_seconds": 1.1382080346345902,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
         },
         "exfuzzy-ferl-medium": {
           "accuracy": 0.5417917917917918,
@@ -6596,7 +8318,7 @@
           "parameters": null,
           "fit_seconds": 3.017792434617877,
           "unclassified": 0.0,
-          "rank": 4.0
+          "rank": 6.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.5977340977340977,
@@ -6632,7 +8354,7 @@
           "parameters": null,
           "fit_seconds": 0.011030776984989643,
           "unclassified": 0.0,
-          "rank": 5.0
+          "rank": 7.0
         },
         "sklearn-forest": {
           "accuracy": 0.6105400855400855,
@@ -6664,7 +8386,31 @@
           "parameters": null,
           "fit_seconds": 5.036374934017658,
           "unclassified": 0.0,
-          "rank": 6.0
+          "rank": 8.0
+        },
+        "exfuzzy-frc-additive": {
+          "accuracy": 0.880952380952381,
+          "accuracy_std": 0.02832232679373888,
+          "balanced_accuracy": 0.7464285714285713,
+          "macro_f1": 0.7030293871934739,
+          "rules": 6.6,
+          "conditions": 15.2,
+          "parameters": null,
+          "fit_seconds": 0.36420067995786665,
+          "unclassified": 0.0,
+          "rank": 6.5
+        },
+        "exfuzzy-frc-sufficient": {
+          "accuracy": 0.880952380952381,
+          "accuracy_std": 0.02832232679373888,
+          "balanced_accuracy": 0.7464285714285713,
+          "macro_f1": 0.7030293871934739,
+          "rules": 6.2,
+          "conditions": 14.6,
+          "parameters": null,
+          "fit_seconds": 0.4232268512248993,
+          "unclassified": 0.0,
+          "rank": 6.5
         },
         "exfuzzy-ferl-compact": {
           "accuracy": 0.8814285714285715,
@@ -6688,7 +8434,7 @@
           "parameters": null,
           "fit_seconds": 0.2785114385187626,
           "unclassified": 0.0,
-          "rank": 7.0
+          "rank": 9.0
         },
         "exfuzzy-ferl-deep": {
           "accuracy": 0.9104761904761904,

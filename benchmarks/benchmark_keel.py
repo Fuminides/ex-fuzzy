@@ -34,9 +34,12 @@ from keel_datasets import available_datasets, dataset_path, load_dataset  # noqa
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT = ROOT / 'benchmarks' / 'results' / 'keel'
 #: Order is the figure's order; keep the Ex-Fuzzy learners first.
-METHODS = ('exfuzzy-ga', 'exfuzzy-ferl-compact', 'exfuzzy-ferl-medium',
-           'exfuzzy-ferl-deep', 'sklearn-logreg', 'sklearn-tree', 'sklearn-forest')
+METHODS = ('exfuzzy-ga', 'exfuzzy-frc-additive', 'exfuzzy-frc-sufficient',
+           'exfuzzy-ferl-compact', 'exfuzzy-ferl-medium', 'exfuzzy-ferl-deep',
+           'sklearn-logreg', 'sklearn-tree', 'sklearn-forest')
 LABELS = {'exfuzzy-ga': 'Ex-Fuzzy GA rules',
+          'exfuzzy-frc-additive': 'Ex-Fuzzy association rules, additive',
+          'exfuzzy-frc-sufficient': 'Ex-Fuzzy association rules, sufficient',
           'exfuzzy-ferl-compact': 'Ex-Fuzzy FERL compact',
           'exfuzzy-ferl-medium': 'Ex-Fuzzy FERL medium',
           'exfuzzy-ferl-deep': 'Ex-Fuzzy FERL deep',
@@ -47,6 +50,13 @@ LABELS = {'exfuzzy-ga': 'Ex-Fuzzy GA rules',
 EXFUZZY_METHODS = frozenset(method for method in METHODS if method.startswith('exfuzzy-'))
 #: Methods whose model is not a rule base, so they have no rule count.
 RULELESS_METHODS = frozenset({'sklearn-logreg'})
+
+#: FuzzyRulesClassifier configuration, chosen on the 20 development datasets of
+#: the KEEL study (see docs/performance/KEEL.md) and shared by both rule modes.
+#: Both modes are always reported; additive is the library default.
+FRC_CONFIG = dict(max_features=8, n_linguistic_variables='auto', nAnts=3, nRules=None,
+                  feature_selection='per_class')
+FRC_RULE_MODES = {'exfuzzy-frc-additive': 'additive', 'exfuzzy-frc-sufficient': 'sufficient'}
 
 #: The FERL operating points of the fuzzy_greedy_tree paper (its AAAI tables), as
 #: ``(constructor kwargs, fit kwargs)`` for Ex-Fuzzy's native FERL. Compact mirrors
@@ -96,6 +106,12 @@ def _size_exfuzzy_ferl(model) -> dict:
     leaves = [name for name, node in model.node_dict_access.items()
               if name != 'root' and not node.get('children')]
     return dict(rules=len(leaves), conditions=sum(name.count('_F') for name in leaves))
+
+
+def _size_frc(model) -> dict:
+    """Selected association rules and their total number of conditions."""
+    features = model._rules['features'] if model.n_rules_ else []
+    return dict(rules=int(model.n_rules_), conditions=int(sum(len(f) for f in features)))
 
 
 def _size_deep_ferl(model) -> dict:
@@ -156,6 +172,10 @@ def build_method(method: str, seed: int, n_classes: int):
         from ex_fuzzy.ferl import FERL
         init, fit = FERL_PRESETS[method]
         return FERL(random_state=seed, **init), dict(fit), _size_exfuzzy_ferl
+    if method in FRC_RULE_MODES:
+        from ex_fuzzy.classifiers import FuzzyRulesClassifier
+        model = FuzzyRulesClassifier(random_state=seed, rule_mode=FRC_RULE_MODES[method], **FRC_CONFIG)
+        return model, {}, _size_frc
     if method == 'exfuzzy-ferl-deep':
         from ex_fuzzy.ferl_deep import DeepFERL
         return DeepFERL(random_state=seed), {}, _size_deep_ferl
@@ -200,6 +220,8 @@ def method_configuration(method: str) -> dict:
     if method in FERL_PRESETS:
         init, fit = FERL_PRESETS[method]
         return dict(**init, fit=dict(fit))
+    if method in FRC_RULE_MODES:
+        return dict(estimator='FuzzyRulesClassifier', rule_mode=FRC_RULE_MODES[method], **FRC_CONFIG)
     if method == 'exfuzzy-ferl-deep':
         return dict(estimator='DeepFERL', library_defaults=True)
     if method == 'sklearn-logreg':
