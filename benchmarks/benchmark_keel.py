@@ -36,16 +36,19 @@ DEFAULT_OUTPUT = ROOT / 'benchmarks' / 'results' / 'keel'
 #: Order is the figure's order; keep the Ex-Fuzzy learners first.
 METHODS = ('exfuzzy-ga', 'exfuzzy-frc-additive', 'exfuzzy-frc-sufficient',
            'exfuzzy-ferl-compact', 'exfuzzy-ferl-medium', 'exfuzzy-ferl-deep',
-           'sklearn-logreg', 'sklearn-tree', 'sklearn-forest')
-LABELS = {'exfuzzy-ga': 'Ex-Fuzzy GA rules',
-          'exfuzzy-frc-additive': 'Ex-Fuzzy association rules, additive',
-          'exfuzzy-frc-sufficient': 'Ex-Fuzzy association rules, sufficient',
-          'exfuzzy-ferl-compact': 'Ex-Fuzzy FERL compact',
-          'exfuzzy-ferl-medium': 'Ex-Fuzzy FERL medium',
-          'exfuzzy-ferl-deep': 'Ex-Fuzzy FERL deep',
+           'sklearn-logreg', 'sklearn-tree', 'sklearn-forest', 'sklearn-hgb')
+#: Display names. The figure marks Ex-Fuzzy's families by colour and marker, so
+#: the names carry no library prefix.
+LABELS = {'exfuzzy-ga': 'Genetic Search Rules',
+          'exfuzzy-frc-additive': 'Mine+Search, additive',
+          'exfuzzy-frc-sufficient': 'Mine+Search, sufficient',
+          'exfuzzy-ferl-compact': 'FERL compact',
+          'exfuzzy-ferl-medium': 'FERL medium',
+          'exfuzzy-ferl-deep': 'FERL deep',
           'sklearn-logreg': 'Logistic regression',
           'sklearn-tree': 'Decision tree',
-          'sklearn-forest': 'Random forest'}
+          'sklearn-forest': 'Random forest',
+          'sklearn-hgb': 'Gradient boosting'}
 #: Methods from the Ex-Fuzzy library, as opposed to reference baselines.
 EXFUZZY_METHODS = frozenset(method for method in METHODS if method.startswith('exfuzzy-'))
 #: Methods whose model is not a rule base, so they have no rule count.
@@ -142,6 +145,21 @@ def _size_sklearn_forest(model) -> dict:
     return dict(rules=rules, conditions=conditions)
 
 
+def _size_sklearn_hgb(model) -> dict:
+    """Leaves summed over every boosted tree: one per class per iteration.
+
+    scikit-learn exposes the fitted trees only through the private
+    ``_predictors``, whose node arrays flag the leaves and record their depth.
+    """
+    rules = conditions = 0
+    for iteration in model._predictors:
+        for predictor in iteration:
+            leaves = predictor.nodes['is_leaf'].astype(bool)
+            rules += int(leaves.sum())
+            conditions += int(predictor.nodes['depth'][leaves].sum())
+    return dict(rules=rules, conditions=conditions)
+
+
 def _leaf_depth_total(tree) -> int:
     """Sum of root-to-leaf depths, i.e. the total antecedent conditions."""
     total = 0
@@ -157,11 +175,13 @@ def _leaf_depth_total(tree) -> int:
     return total
 
 
-def build_method(method: str, seed: int, n_classes: int):
+def build_method(method: str, seed: int, n_classes: int, y_train=None):
     """Return ``(estimator, fit_kwargs, size_function)`` for one method.
 
     Baselines keep their library defaults and the Ex-Fuzzy learners take the
     module-level configurations; only the random seed varies by fold.
+    ``y_train`` lets gradient boosting drop early stopping where the default
+    cannot run at all.
     """
     if method == 'exfuzzy-ga':
         from ex_fuzzy.evolutionary_fit import BaseFuzzyRulesClassifier
@@ -191,13 +211,22 @@ def build_method(method: str, seed: int, n_classes: int):
     if method == 'sklearn-forest':
         from sklearn.ensemble import RandomForestClassifier
         return RandomForestClassifier(random_state=seed, n_jobs=1), {}, _size_sklearn_forest
+    if method == 'sklearn-hgb':
+        from sklearn.ensemble import HistGradientBoostingClassifier
+        model = HistGradientBoostingClassifier(random_state=seed)
+        # The default early stopping holds out a stratified validation split on
+        # large data, which is impossible when a class has a single training
+        # member (nursery). Only then does it fall back to boosting without it.
+        if y_train is not None and np.unique(y_train, return_counts=True)[1].min() < 2:
+            model.set_params(early_stopping=False)
+        return model, {}, _size_sklearn_hgb
     raise ValueError(f'Unknown method {method!r}. Known: {", ".join(METHODS)}')
 
 
 def run_fold(method: str, seed: int, X_train, y_train, X_test, y_test, n_classes: int) -> dict:
     from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score
 
-    model, fit_kwargs, measure = build_method(method, seed, n_classes)
+    model, fit_kwargs, measure = build_method(method, seed, n_classes, y_train)
     start = time.perf_counter()
     model.fit(X_train, y_train, **fit_kwargs)
     fit_seconds = time.perf_counter() - start

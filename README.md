@@ -205,12 +205,13 @@ Obtain statistical confidence intervals for your metrics:
 
 ### Accuracy and model size on 67 KEEL datasets
 
-![Test accuracy, rules per model, training time and accuracy by number of classes for the Ex-Fuzzy genetic learner and three FERL presets against logistic regression, a decision tree and a random forest on 67 KEEL classification datasets](docs/performance/keel.svg)
+![Test accuracy, rules per model and training time for Ex-Fuzzy's Genetic Search Rules, Mine+Search and FERL learners against logistic regression, decision tree, random forest and gradient boosting baselines on 67 KEEL classification datasets](docs/performance/keel.svg)
 
-The Ex-Fuzzy genetic learner, the fuzzy association rule classifier (additive and
-sufficient rule modes) and FERL's compact, medium and deep presets against logistic
-regression, a decision tree and a random forest, on 67 KEEL classification datasets
-with 5-fold stratified cross-validation. See the
+Three families of Ex-Fuzzy rule learners against four baselines (logistic regression,
+a decision tree, a random forest and gradient boosting), on 67 KEEL classification datasets with 5-fold
+stratified cross-validation. **Genetic Search Rules** is the genetic learner.
+**Mine+Search** is the fuzzy association rule classifier, in its additive and
+sufficient rule modes. **FERL** is shown at its compact, medium and deep presets. See the
 [methodology, per-dataset results and reproduction commands](docs/performance/KEEL.md).
 
 ### Ex-Fuzzy 2.0 vs Ex-Fuzzy 3.0 training speed

@@ -1,9 +1,10 @@
 # Ex-Fuzzy on the KEEL classification collection
 
-The figure in the project README places Ex-Fuzzy's rule learners next to three
+The figure in the project README places Ex-Fuzzy's rule learners next to four
 scikit-learn baselines on the KEEL classification datasets. The rule learners are
-the genetic learner, the fuzzy association rule classifier in its additive and
-sufficient rule modes, and three FERL presets. Everything runs under one protocol: the same folds, the
+the genetic learner (**Genetic Search Rules** in the figure), the fuzzy
+association rule classifier in its additive and sufficient rule modes
+(**Mine+Search**), and three **FERL** presets. Everything runs under one protocol: the same folds, the
 same seed and the same raw columns. Baselines keep their library defaults. The
 Ex-Fuzzy learners use the stated, uniform configurations recorded below. It is an illustration of out-of-the-box
 behaviour across many problems, **not** a tuned comparison and not a claim that
@@ -65,16 +66,18 @@ python benchmarks/aggregate_keel.py --plot-only
   averaged over folds; then averaged (accuracy) or taken as the median (rules,
   time) across datasets. Ex-Fuzzy may abstain with `-1` when no rule fires; an
   abstention counts as an error and the count is recorded separately.
-- **Model size.** "Rules" means Ex-Fuzzy GA rules surviving pruning, FERL leaves,
-  decision-tree leaves, or leaves summed over every tree in the forest.
+- **Model size.** "Rules" means Genetic Search Rules' rules surviving pruning,
+  Mine+Search's selected rules, FERL leaves, decision-tree leaves, or leaves summed over every tree in the random forest or the gradient boosting
+  ensemble (which grows one tree per class per boosting iteration on multiclass
+  problems).
   "Conditions" is the total antecedent count over those rules. FERL's soft
   inference also consults interior nodes; the leaves are what `max_rules`
   bounds. For `DeepFERL` the rules are its leaves, and conditions are summed
   leaf depths. Logistic regression is not a rule model. Its fitted parameter count is
   recorded instead, and it has no entry in the rules panel.
 - **Timing.** Seconds inside `fit` for one fold, on shared cluster nodes with
-  numerical library threads pinned to one. The published run spread over four
-  Intel Xeon models (E5-2698 v4, Gold 6152, 6238 and 6238L), and other jobs
+  numerical library threads pinned to one. The published run spread over five
+  Intel Xeon models (E5-2698 v4, Gold 5115, 6152, 6238 and 6238L), and other jobs
   share those nodes, so treat the training-time panel as an order-of-magnitude
   comparison, not a benchmark of the kind in
   [the speedup record](README.md).
@@ -83,15 +86,16 @@ python benchmarks/aggregate_keel.py --plot-only
 
 | Method | Configuration |
 | --- | --- |
-| Ex-Fuzzy GA rules | `BaseFuzzyRulesClassifier(fuzzy_type=t1, nRules=30, nAnts=4)`, fitted with `n_gen=100, pop_size=100, patience=25, min_delta=1e-4` |
-| Ex-Fuzzy association rules, additive | `FuzzyRulesClassifier(rule_mode="additive")` with its defaults: `feature_selection="per_class"`, `max_features=8`, `n_linguistic_variables="auto"`, `nAnts=3`, `nRules=None` |
-| Ex-Fuzzy association rules, sufficient | The same, with `rule_mode="sufficient"` |
-| Ex-Fuzzy FERL compact | `FERL(partition="quantile", max_rules=20, max_depth=5, min_improvement=0.01)`, fitted with `patience=3` |
-| Ex-Fuzzy FERL medium | `FERL(split_mode="learned", learned_width="bootstrap", max_rules=150, max_depth=12, min_improvement=0.0)`, fitted with `patience=16` |
-| Ex-Fuzzy FERL deep | `DeepFERL()` with library defaults: weighted-Gini learned splits, depth 12, `min_leaf_w=2.0`, 25 bootstrap replicates, bounded support |
+| Genetic Search Rules | `BaseFuzzyRulesClassifier(fuzzy_type=t1, nRules=30, nAnts=4)`, fitted with `n_gen=100, pop_size=100, patience=25, min_delta=1e-4` |
+| Mine+Search, additive | `FuzzyRulesClassifier(rule_mode="additive")` with its defaults: `feature_selection="per_class"`, `max_features=8`, `n_linguistic_variables="auto"`, `nAnts=3`, `nRules=None` |
+| Mine+Search, sufficient | The same, with `rule_mode="sufficient"` |
+| FERL compact | `FERL(partition="quantile", max_rules=20, max_depth=5, min_improvement=0.01)`, fitted with `patience=3` |
+| FERL medium | `FERL(split_mode="learned", learned_width="bootstrap", max_rules=150, max_depth=12, min_improvement=0.0)`, fitted with `patience=16` |
+| FERL deep | `DeepFERL()` with library defaults: weighted-Gini learned splits, depth 12, `min_leaf_w=2.0`, 25 bootstrap replicates, bounded support |
 | Logistic regression | `make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))` |
 | Decision tree | `DecisionTreeClassifier()` with library defaults |
 | Random forest | `RandomForestClassifier(n_jobs=1)` with library defaults |
+| Gradient boosting | `HistGradientBoostingClassifier()` with library defaults, except `early_stopping=False` in a fold where a class has a single training member (only `nursery`), where the default stratified validation split cannot be drawn |
 
 The three FERL presets are the compact, medium and deep operating points of the
 `fuzzy_greedy_tree` paper, as defined by its published tables. Compact and
@@ -142,8 +146,9 @@ Type-1 sets, three linguistic terms per variable — stays at the library defaul
   scores 0.811, 0.818 and 0.758. Scaling the rule budget with the number of
   classes is the obvious experiment, and it has not been run.
 - The baselines run at their own defaults, which for a decision tree means
-  unlimited depth and for a random forest means 100 unpruned trees. Neither is
-  an interpretable model at that size; that contrast is the point of the size
+  unlimited depth, for a random forest 100 unpruned trees, and for gradient
+  boosting up to 100 iterations of 31-leaf trees, with early stopping on
+  datasets over 10,000 rows. None is an interpretable model at that size; that contrast is the point of the size
   panel, not an oversight.
 - Interval Type-2 and general Type-2 sets, the two-stage `FuzzyRulesClassifier`,
   rule mining, and the EvoX backend are all out of scope here. Type-2 costs
@@ -153,13 +158,13 @@ Type-1 sets, three linguistic terms per variable — stays at the library defaul
   or failed pairs are listed at the bottom of [the results table](keel.md), and
   `benchmarks/aggregate_keel.py` refuses to publish an incomplete grid unless
   `--allow-partial` is passed.
-- **`census` is excluded, so the figure covers 67 of the 68 datasets.** Its three
-  baselines finished, but the genetic learner had not finished its first fold
+- **`census` is excluded, so the figure covers 67 of the 68 datasets.** Its decision
+  tree, random forest and gradient boosting baselines finished, but the genetic learner had not finished its first fold
   after about an hour. That puts a full run at an estimated 6–10 hours, so it
   was stopped. `census` has 142,521 rows and 41 features, and the next largest
   dataset, `adult`, needed about 12.5 minutes per fold. The baseline results are
-  kept under `benchmarks/results/keel/`. Nothing else failed: all 603 pairs on the other 67 datasets
-  (nine methods each) completed.
+  kept under `benchmarks/results/keel/`. Nothing else failed: all 670 pairs on the other 67 datasets
+  (ten methods each) completed.
 - Single seed, single fold assignment. The interquartile bands in the figure
   span **datasets**, not repeated runs, so they describe how much the methods
   vary across problems, not the uncertainty of any one number.

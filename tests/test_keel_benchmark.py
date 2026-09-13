@@ -167,6 +167,20 @@ def test_tree_size_counts_leaves_and_their_depths():
     assert size == dict(rules=2, conditions=2)
 
 
+def test_gradient_boosting_size_sums_leaves_over_every_tree():
+    from sklearn.ensemble import HistGradientBoostingClassifier
+
+    X = np.repeat(np.arange(4.0), 10)[:, None]
+    y = np.repeat([0, 1, 2, 2], 10)
+    model = HistGradientBoostingClassifier(max_iter=3, max_depth=1, min_samples_leaf=5,
+                                           random_state=0).fit(X, y)
+    size = benchmark_keel._size_sklearn_hgb(model)
+    # Three iterations of one stump per class: two leaves, one condition each.
+    trees = model.n_iter_ * model.n_trees_per_iteration_
+    assert trees == 9
+    assert size == dict(rules=2 * trees, conditions=2 * trees)
+
+
 def test_rank_within_averages_ties():
     ranks = aggregate_keel.rank_within({'a': 0.9, 'b': 0.9, 'c': 0.5})
     assert ranks == {'a': 1.5, 'b': 1.5, 'c': 3.0}

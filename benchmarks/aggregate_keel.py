@@ -18,33 +18,42 @@ import statistics
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from benchmark_keel import (DEFAULT_OUTPUT, EXFUZZY_METHODS, LABELS, METHODS,  # noqa: E402
-                            RULELESS_METHODS)
+from benchmark_keel import DEFAULT_OUTPUT, LABELS, METHODS  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DESTINATION = ROOT / 'docs' / 'performance' / 'keel.json'
 
-# Colour encodes one thing only: whether a model is Ex-Fuzzy's or a reference.
-# Each dot sits on a row named by its method, so identity never rests on colour,
-# and seven methods need no more than two hues. Values from the validated
-# reference palette: categorical slot 1 and the muted ink.
-EXFUZZY_COLOR = '#2a78d6'
-REFERENCE_COLOR = '#898781'
 INK = '#0b0b0b'
 INK_SECONDARY = '#52514e'
 INK_MUTED = '#898781'
 SURFACE = '#fcfcfb'
 GRID = '#e1e0d9'
-# Sequential blue ramp, steps 100-700, for the class-count heatmap.
-SEQUENTIAL = ('#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', '#3987e5',
-              '#2a78d6', '#256abf', '#1c5cab', '#184f95', '#104281', '#0d366b')
+
+#: ``(label, method prefix, colour, marker)`` per family, in figure order. Colour
+#: and marker both name the family, so it never rests on colour alone, and each
+#: dot also sits on a row named by its method. The hues are categorical slots 1-3
+#: of the validated reference palette, which pass all-pairs in light and dark;
+#: the baselines take the muted ink.
+FAMILIES = (('Genetic Search Rules', 'exfuzzy-ga', '#2a78d6', 'o'),
+            ('Mine+Search', 'exfuzzy-frc-', '#eb6834', 'D'),
+            ('FERL', 'exfuzzy-ferl-', '#1baf7a', 's'),
+            ('Baselines', 'sklearn-', INK_MUTED, '^'))
+#: Extra vertical space, in rows, between one family's rows and the next.
+FAMILY_GAP = 0.6
+#: Diamonds and triangles look larger and smaller than circles at equal size.
+MARKER_SIZES = {'D': 7.5, '^': 10}
 
 
-def method_color(method: str) -> str:
-    return EXFUZZY_COLOR if method in EXFUZZY_METHODS else REFERENCE_COLOR
+def method_family(method: str) -> tuple[str, str, str]:
+    """``(family label, colour, marker)`` for one method."""
+    for label, prefix, color, marker in FAMILIES:
+        if method.startswith(prefix):
+            return label, color, marker
+    raise ValueError(f'No figure family for method {method!r}')
 
-#: Accuracy is broken out by class count because the genetic learner's rule
-#: budget is fixed, so the number of classes is what most changes the picture.
+#: Accuracy by class count stays in the aggregate, where the methodology cites it,
+#: but is not drawn: the genetic learner's rule budget is fixed, so the number of
+#: classes is what most changes its picture.
 CLASS_BANDS = ((2, 2, 'Binary'), (3, 5, '3-5 classes'), (6, 10 ** 6, '6+ classes'))
 
 PANELS = (
@@ -235,38 +244,34 @@ def write_table(report: dict, destination: Path) -> None:
 
 
 def plot(report: dict, destination: Path) -> None:
-    """Draw the README figure: three dot panels and a class-count heatmap.
+    """Draw the README figure: accuracy, size and training time as dot panels.
 
     Dots rather than bars because two panels are logarithmic, where a bar's
     length is not proportional to what it represents. Rows are methods in the
-    same order in every panel; colour only separates Ex-Fuzzy from reference
-    models. The heatmap uses one sequential hue with the value printed in each
-    cell, so it needs no categorical colours at all.
+    same order in every panel, grouped by family with a gap between groups.
     """
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    from matplotlib.colors import BoundaryNorm, LinearSegmentedColormap
     from matplotlib.lines import Line2D
     import numpy as np
 
     methods = report['methods']
     labels = [LABELS[method] for method in methods]
     summary = report['summary']
-    bands = report.get('class_bands') or []
-    positions = np.arange(len(methods))[::-1]  # First method at the top.
+    families = [method_family(method) for method in methods]
+    offsets = np.cumsum([0] + [1 + FAMILY_GAP * (above[0] != below[0])
+                               for above, below in zip(families, families[1:])])
+    positions = offsets[-1] - offsets  # First method at the top.
     plt.rcParams.update({'font.size': 10, 'svg.fonttype': 'none',
                          'font.family': ['DejaVu Sans', 'sans-serif'],
                          'text.color': INK, 'axes.labelcolor': INK_SECONDARY,
                          'xtick.color': INK_SECONDARY, 'ytick.color': INK_SECONDARY})
-    figure = plt.figure(figsize=(13.2, 7.4), facecolor=SURFACE, constrained_layout=True)
-    grid = figure.add_gridspec(2, 2, width_ratios=(1, 1))
-    layout = {'mean_accuracy': grid[0, 0], 'mean_rules': grid[0, 1],
-              'mean_fit_seconds': grid[1, 0]}
-    labelled = {'mean_accuracy', 'mean_fit_seconds'}  # Left column carries the names.
+    figure = plt.figure(figsize=(14, 6.2), facecolor=SURFACE, constrained_layout=True)
+    grid = figure.add_gridspec(1, len(PANELS))
 
-    for key, title, subtitle, logarithmic, fmt in PANELS:
-        axis = figure.add_subplot(layout[key])
+    for column, (key, title, subtitle, logarithmic, fmt) in enumerate(PANELS):
+        axis = figure.add_subplot(grid[0, column])
         _style(axis)
         statistic = 'mean' if key == 'mean_accuracy' else 'median'
         base = key.removeprefix('mean_')
@@ -280,75 +285,45 @@ def plot(report: dict, destination: Path) -> None:
         else:
             axis.set_xlim(0, 1.12)
         floor = axis.get_xlim()[0]
-        for position, method, value, left, right in zip(positions, methods, values, low, high):
+        for position, family, value, left, right in zip(positions, families, values, low, high):
             if value is None:
                 axis.annotate('not a rule model', (floor, position), xytext=(4, 0),
                               textcoords='offset points', va='center', fontsize=9,
                               color=INK_MUTED, style='italic')
                 continue
-            color = method_color(method)
+            _, color, marker = family
             axis.plot([floor, value], [position, position], color=GRID,
                       linewidth=1, solid_capstyle='butt', zorder=2)
             axis.plot([left, right], [position, position], color=color,
                       linewidth=4.5, alpha=.30, solid_capstyle='round', zorder=3)
-            axis.plot([value], [position], marker='o', markersize=9, color=color,
+            axis.plot([value], [position], marker=marker,
+                      markersize=MARKER_SIZES.get(marker, 9), color=color,
                       markeredgecolor=SURFACE, markeredgewidth=2, zorder=4)
             # Anchored past the range band so the label never sits on it.
             axis.annotate(fmt.format(value), (max(value, right), position), xytext=(12, 0),
                           textcoords='offset points', va='center', fontsize=9.5,
                           color=INK, fontweight='bold', zorder=5)
-        axis.set_yticks(positions, labels if key in labelled else [''] * len(labels))
-        axis.set_ylim(-0.6, len(methods) - 0.4)
+        axis.set_yticks(positions, labels if column == 0 else [''] * len(labels))
+        axis.set_ylim(-0.6, positions[0] + 0.6)
         _titles(axis, title, subtitle)
         axis.set_xlabel({'mean_accuracy': 'Accuracy', 'mean_rules': 'Rules (log scale)',
                          'mean_fit_seconds': 'Seconds (log scale)'}[key])
 
-    if bands:
-        axis = figure.add_subplot(grid[1, 1])
-        axis.set_facecolor(SURFACE)
-        matrix = np.array([[band['mean_accuracy'][method] for band in bands]
-                           for method in methods])
-        low, high = np.floor(matrix.min() * 20) / 20, np.ceil(matrix.max() * 20) / 20
-        colormap = LinearSegmentedColormap.from_list('keel_blue', SEQUENTIAL)
-        edges = np.linspace(low, high, len(SEQUENTIAL) + 1)
-        axis.pcolormesh(np.arange(len(bands) + 1), np.arange(len(methods) + 1) - 0.5,
-                        matrix[::-1], cmap=colormap,
-                        norm=BoundaryNorm(edges, colormap.N), edgecolors=SURFACE,
-                        linewidth=2)
-        midpoint = low + (high - low) * 0.55
-        for row, method in enumerate(methods):
-            for column, value in enumerate(matrix[row]):
-                axis.text(column + .5, positions[row], f'{value:.3f}', ha='center',
-                          va='center', fontsize=9.5,
-                          color=SURFACE if value >= midpoint else INK,
-                          fontweight='bold' if method in EXFUZZY_METHODS else 'normal')
-        axis.set_xticks(np.arange(len(bands)) + .5,
-                        [f'{band["label"]}\n{band["datasets"]} datasets' for band in bands])
-        axis.set_yticks(positions, [''] * len(methods))
-        axis.set_xlim(0, len(bands))
-        axis.set_ylim(-0.6, len(methods) - 0.4)
-        axis.tick_params(length=0)
-        for spine in axis.spines.values():
-            spine.set_visible(False)
-        # Group labels sit below, like the neighbouring panel's axis, so the
-        # heatmap rows stay level with that panel's method rows.
-        _titles(axis, 'Accuracy by number of classes', 'Mean over the datasets in each group')
-
-    figure.legend(handles=[Line2D([], [], marker='o', linestyle='none', markersize=9,
-                                  color=color, markeredgecolor=SURFACE, markeredgewidth=2,
-                                  label=label)
-                           for color, label in ((EXFUZZY_COLOR, 'Ex-Fuzzy'),
-                                                (REFERENCE_COLOR, 'Reference model'))],
-                  loc='upper right', bbox_to_anchor=(0.995, 0.995), ncols=2, frameon=False,
-                  fontsize=10, labelcolor=INK_SECONDARY, handletextpad=.3)
+    figure.legend(handles=[Line2D([], [], marker=marker, linestyle='none',
+                                  markersize=MARKER_SIZES.get(marker, 9), color=color,
+                                  markeredgecolor=SURFACE, markeredgewidth=2, label=label)
+                           for label, color, marker in dict.fromkeys(families)],
+                  loc='upper right', bbox_to_anchor=(0.995, 0.995), ncols=len(FAMILIES),
+                  frameon=False, fontsize=10, labelcolor=INK_SECONDARY, handletextpad=.3,
+                  columnspacing=1.4)
     figure.suptitle(
         f'Ex-Fuzzy on {report["n_datasets_compared"]} KEEL classification datasets',
         x=0.006, ha='left', fontsize=15, fontweight='bold', color=INK)
     figure.supxlabel(
         f'{report["folds"]}-fold stratified cross-validation with one shared seed. FERL uses the '
-        'compact, medium and deep presets of fuzzy_greedy_tree; the GA uses a stated search budget.\n'
-        'The association rule defaults were chosen on 20 of these datasets; baselines use library '
-        'defaults. Dots are the mean (accuracy) or median (rules, time) across datasets.\n'
+        'compact, medium and deep presets of fuzzy_greedy_tree; Genetic Search Rules uses a stated '
+        'search budget.\nMine+Search defaults were chosen on 20 of these datasets; baselines use '
+        'library defaults. Dots are the mean (accuracy) or median (rules, time) across datasets.\n'
         'The band through each dot spans the interquartile range across datasets, not a confidence '
         'interval.',
         x=0.006, ha='left', fontsize=8.8, color=INK_SECONDARY)
