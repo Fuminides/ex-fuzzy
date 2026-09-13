@@ -207,54 +207,14 @@ Obtain statistical confidence intervals for your metrics:
 
 ![Test accuracy, rules per model and training time for Ex-Fuzzy's Genetic Search Rules, Mine+Search and FERL learners against logistic regression, decision tree, random forest and gradient boosting baselines on 67 KEEL classification datasets](docs/performance/keel.svg)
 
-Three families of Ex-Fuzzy rule learners against four baselines (logistic regression,
-a decision tree, a random forest and gradient boosting), on 67 KEEL classification datasets with 5-fold
-stratified cross-validation. **Genetic Search Rules** is the genetic learner.
-**Mine+Search** is the fuzzy association rule classifier, in its additive and
-sufficient rule modes. **FERL** is shown at its compact, medium and deep presets. See the
-[methodology, per-dataset results and reproduction commands](docs/performance/KEEL.md).
-
 ### Ex-Fuzzy 2.0 vs Ex-Fuzzy 3.0 training speed
 
-![Ex-Fuzzy 2.0 versus Ex-Fuzzy 3.0 complete CPU fit times for T1 and T2, with fixed and optimized partitions](docs/performance/speedup.svg)
 
-Complete CPU fit time of the preserved Ex-Fuzzy 2.0 evaluator against the current
-Ex-Fuzzy 3.0 evaluator. The data is synthetic three-class data with 100 to 5,000
-samples, covering Type-1 and Type-2 sets with fixed and optimized partitions.
-Every pair passed exact-parity checks. See the
-[methodology, raw timings and reproduction commands](docs/performance/README.md).
-
-<!-- T1-SCALING:START -->
-#### Larger T1 scaling benchmark
 
 ![T1 complete-fit scaling from 1,000 to 100,000 samples and 10 to 200 features](docs/performance/t1_scaling.svg)
 
-This expanded T1-only campaign crosses **1,000 / 10,000 / 100,000 samples**
-with **10 / 50 / 200 features**, for both fixed and optimized partitions.
-All **54 reference/current pairs (108 complete fits)** passed exact parity,
-covering **10,800 evaluated candidate positions** checked pairwise.
-Measured median speedups range from **6.5× to 25.7×**
-on the recorded CPU; gains vary with both sample count and feature count.
-
-The chart uses **logarithmic axes**. Points are median complete-fit seconds;
-whiskers show the observed minimum and maximum across three matched seeds.
-The rule and search budgets stay fixed at 20 rules, four antecedent slots,
-population 40 and five generations. Each dataset has three classes and
-`features - 1` informative features, so increasing width also changes the
-learning problem. These timings do not measure predictive quality.
-
-See the [raw scaling measurements and environment](docs/performance/t1_scaling.json)
-and [full methodology and resume instructions](docs/performance/README.md#larger-t1-scaling-campaign).
-The largest reference fits can each take over an hour. Reproduce on an otherwise
-idle machine with:
-
-```bash
-OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
-  python benchmarks/benchmark_speedup.py --fuzzy-types t1 \
-  --samples 1000 10000 100000 --features 10 50 200 \
-  --output docs/performance/t1_scaling.json --resume
-```
-<!-- T1-SCALING:END -->
+Our implementation is getting more efficient! This experiment crosses **1,000 / 10,000 / 100,000 samples**
+with **10 / 50 / 200 features**, for both fixed and optimized partitions. All of them using CPU backend.
 
 ### Backend Comparison
 
