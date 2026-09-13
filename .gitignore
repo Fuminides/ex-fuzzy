@@ -27,3 +27,9 @@ ex_fuzzy/ex_fuzzy/_ferl_kernels*.so
 ex_fuzzy/ex_fuzzy/_ferl_kernels*.pyd
 # Resumable benchmark fits (raw per-fit snapshots, not published results)
 docs/performance/.runs/
+
+# Cluster job logs and per-submission task lists from the KEEL benchmark.
+# The per-pair result JSONs under benchmarks/results/keel/ are kept: they are
+# the raw evidence behind docs/performance/keel.*.
+/logs/
+benchmarks/results/keel/tasks-*.txt

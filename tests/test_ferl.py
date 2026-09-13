@@ -126,6 +126,8 @@ def test_ferl_supports_missing_feature_masks(compact_ferl, iris_split):
         ({"partition": "unknown"}, "partition"),
         ({"split_mode": "unknown"}, "split_mode"),
         ({"prediction_mode": "unknown"}, "prediction_mode"),
+        ({"target_metric": "entropy"}, "target_metric"),
+        ({"split_mode": "learned", "target_metric": "purity"}, "DeepFERL"),
     ],
 )
 def test_ferl_rejects_unknown_modes(kwargs, message):

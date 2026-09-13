@@ -106,13 +106,19 @@ such as low, medium, and high. This usually produces the most compact model.
 ``split_mode="learned"`` learns a data-driven split location and represents it
 with two soft ramps. With ``learned_width="bootstrap"``, repeated bootstrap cut
 estimates determine the ramp width: stable cuts become sharper and uncertain
-cuts remain wider.
+cuts remain wider. Learned splits are chosen by CCI; combining them with
+``target_metric="purity"`` raises ``ValueError``.
+
+The configuration below is the *medium* operating point of the FERL paper: a
+larger rule budget with learned splits, still grown greedily under that budget.
+For the paper's *deep* operating point, use :class:`ex_fuzzy.DeepFERL`
+(see `Deep rule trees`_).
 
 .. code-block:: python
 
-   deep_model = FERL(
+   medium_model = FERL(
        split_mode="learned",
-       max_rules=100,
+       max_rules=150,
        max_depth=12,
        min_improvement=0.0,
        learned_n_boot=25,
@@ -120,12 +126,50 @@ cuts remain wider.
    ).fit(X_train, y_train, patience=16)
 
    # Learned-split FERL uses leaves-only evidence by default here.
-   betp, belief, plausibility, ignorance = deep_model.predict_credal(X_test)
+   betp, belief, plausibility, ignorance = medium_model.predict_credal(X_test)
 
 ``predict_credal`` and ``predict_set`` automatically combine only leaves for a
 learned-split model, avoiding repeated evidence from strongly nested internal
 rules. Pass ``leaves_only`` explicitly to override that choice. The lower-level
 ``predict_ds`` method exposes the same evidential calculation with all options.
+
+Deep rule trees
+===============
+
+:class:`ex_fuzzy.DeepFERL` is the high-accuracy member of the family. It is a
+different algorithm from :class:`ex_fuzzy.FERL`, not a setting of it. It has no
+rule budget and grows a binary tree recursively until ``max_depth`` or until a
+node holds too little fuzzy weight (``min_leaf_w``). Each split is placed at the
+weighted-Gini optimal threshold for the samples reaching the node and drawn as
+a soft ramp whose half-width is the bootstrap spread of that threshold. Leaf
+class distributions are Laplace-smoothed, and point predictions are a soft vote
+over the leaves only.
+
+.. code-block:: python
+
+   from ex_fuzzy import DeepFERL
+
+   deep_model = DeepFERL(max_depth=12, random_state=0).fit(X_train, y_train)
+
+   labels = deep_model.predict(X_test)
+   betp, belief, plausibility, ignorance = deep_model.predict_credal(X_test)
+   prediction_sets = deep_model.predict_set(X_test)
+   deep_model.print_tree()
+
+The evidential methods have the same names and outputs as FERL's, and
+``predict_credal`` and ``predict_set`` combine leaves by default. With
+``bounded_support=True`` (the default), each split fades out beyond the node's
+training range, so far out-of-distribution samples reach no leaf: their
+probabilities become uniform and their ignorance approaches one.
+``firing_strength`` exposes the total leaf firing as a direct
+out-of-distribution signal. A sample whose split feature is marked unobserved
+in ``observed_mask`` sends half its weight down each branch.
+
+Deep trees trade compactness for accuracy; expect tens to hundreds of leaves
+where compact FERL uses a handful. ``get_tree_stats`` reports the leaf count and
+depths. ``DeepFERL`` is a port of ``LearnedFuzzyTree`` from the
+``fuzzy_greedy_tree`` repository and reproduces its trees and predictions for
+the same data and seed.
 
 Partition choices
 =================

@@ -9,6 +9,13 @@ Estimator
    :members:
    :show-inheritance:
 
+Deep rule trees
+===============
+
+.. autoclass:: ex_fuzzy.DeepFERL
+   :members:
+   :show-inheritance:
+
 Supervised partitioning
 =======================
 
