@@ -336,3 +336,19 @@ class TestIntegrationWithClassifier:
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
+
+
+def test_mining_accepts_arrays_and_dataframes_identically():
+    """Mined and pruned rules must not depend on the input container."""
+    from sklearn.datasets import load_iris
+
+    X, y = load_iris(return_X_y=True)
+    frame = pd.DataFrame(X, columns=['sl', 'sw', 'pl', 'pw'])
+    partitions = utils.construct_partitions(frame, fs.FUZZY_SETS.t1)
+
+    from_array = rm.multiclass_mine_rulebase(X, y, partitions, 0.05, max_depth=2)
+    from_frame = rm.multiclass_mine_rulebase(frame, y, partitions, 0.05, max_depth=2)
+
+    assert len(from_array.get_rules()) > 0
+    assert ([list(rule.antecedents) for rule in from_array.get_rules()]
+            == [list(rule.antecedents) for rule in from_frame.get_rules()])

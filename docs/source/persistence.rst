@@ -55,9 +55,9 @@ The rules can be loaded from a file using the ``load_rules`` method of the ``Fuz
     # Load the rules from a file
     mrule_base = persistence.load_fuzzy_rules(str_rules, precomputed_partitions)
 
-    fl_classifier = GA.FuzzyRulesClassifier(precomputed_rules=mrule_base)
+    fl_classifier = GA.BaseFuzzyRulesClassifier(precomputed_rules=mrule_base)
 
-If we already created the ``FuzzyRulesClassifier`` object, we can load the rules using the ``load_master_rule_base`` method::
+If we already created the ``BaseFuzzyRulesClassifier`` object, we can load the rules using the ``load_master_rule_base`` method::
 
     fl_classifier.load_master_rule_base(mrule_base)
 

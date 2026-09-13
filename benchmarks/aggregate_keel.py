@@ -346,10 +346,11 @@ def plot(report: dict, destination: Path) -> None:
         x=0.006, ha='left', fontsize=15, fontweight='bold', color=INK)
     figure.supxlabel(
         f'{report["folds"]}-fold stratified cross-validation with one shared seed. FERL uses the '
-        'compact, medium and deep presets of fuzzy_greedy_tree; the GA uses a stated search '
-        'budget; baselines use library defaults.\nDots are the mean (accuracy) or median '
-        '(rules, time) across datasets. The band through each dot spans the interquartile '
-        'range across datasets, not a confidence interval.',
+        'compact, medium and deep presets of fuzzy_greedy_tree; the GA uses a stated search budget.\n'
+        'The association rule defaults were chosen on 20 of these datasets; baselines use library '
+        'defaults. Dots are the mean (accuracy) or median (rules, time) across datasets.\n'
+        'The band through each dot spans the interquartile range across datasets, not a confidence '
+        'interval.',
         x=0.006, ha='left', fontsize=8.8, color=INK_SECONDARY)
     figure.savefig(destination, dpi=160, facecolor=SURFACE)
     plt.close(figure)

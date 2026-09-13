@@ -40,6 +40,11 @@ except ImportError:
     import fuzzy_sets as fs
 
 
+def _as_array(data) -> np.ndarray:
+    """Return the sample matrix of a DataFrame or array-like as a NumPy array."""
+    return data.values if hasattr(data, 'values') else np.asarray(data)
+
+
 def _generate_combinations(lists: list, k: int) -> typing.Iterator:
     '''
     Generate all the combinations between elements of different lists of length k without repeting elements of the same list.
@@ -73,7 +78,8 @@ def rule_search(data: pd.DataFrame, fuzzy_variables: dict[fs.fuzzyVariable], sup
     for ix, fuzzy_variable in enumerate(fuzzy_variables):
         list_possible_vars.append([(ix, ax) for ax in range(len(fuzzy_variable))])
 
-    memberships = [fuzzy_variables[ix](data.iloc[:, ix].values) for ix in range(data.shape[1])]
+    values = _as_array(data)
+    memberships = [fuzzy_variables[ix](values[:, ix]) for ix in range(values.shape[1])]
     freq_itemsets = []
 
     if max_depth is None:
@@ -166,17 +172,19 @@ def prune_rules_confidence_lift(x: pd.DataFrame, y:np.array, rules: rl.MasterRul
     for ix, rule_base in enumerate(rules):
         delete_list = []
         relevant_class = ix
-        relevant_class_samples = x.loc[np.equal(y, relevant_class), :]
+        x_values = _as_array(x)
+        # Fuzzy variables are aligned with the columns, so antecedent zx reads column zx.
+        relevant_class_samples = x_values[np.equal(y, relevant_class)]
 
         for jx, rule in enumerate(rule_base):
             real_nAnts = sum([ant != -1 for ant in rule])
-            global_membership_array = np.zeros((x.shape[0], real_nAnts))
+            global_membership_array = np.zeros((x_values.shape[0], real_nAnts))
             class_samples_membership_array = np.zeros((relevant_class_samples.shape[0], real_nAnts))
             ant_counter = 0
             for zx, antecedent in enumerate(rule):
                 if antecedent != -1:
-                    global_mem = fuzzy_variables[zx](x[fuzzy_variables[zx].name])[antecedent]
-                    class_mem = fuzzy_variables[zx](relevant_class_samples[fuzzy_variables[zx].name])[antecedent]
+                    global_mem = fuzzy_variables[zx](x_values[:, zx])[antecedent]
+                    class_mem = fuzzy_variables[zx](relevant_class_samples[:, zx])[antecedent]
                     # For T2/GT2 fuzzy sets, membership has shape (n_samples, 2); take mean of bounds
                     if global_mem.ndim > 1:
                         global_mem = np.mean(global_mem, axis=1)
@@ -232,7 +240,7 @@ def multiclass_mine_rulebase(x: pd.DataFrame, y: np.array, fuzzy_variables:list[
     rulebases = []
     for yclass in unique_classes:
         selected_samples = np.equal(yclass, y) 
-        selected_x = x.loc[selected_samples, :]
+        selected_x = _as_array(x)[selected_samples]
 
         rulebase = mine_rulebase_support(selected_x, fuzzy_variables, support_threshold, max_depth)
         rulebases.append(rulebase)
