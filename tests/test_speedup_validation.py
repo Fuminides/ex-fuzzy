@@ -40,3 +40,55 @@ def test_benchmark_requires_trace_and_ignores_only_time():
     compare_outcomes(dict(trace=['abc'], seconds=1), dict(trace=['abc'], seconds=9))
     with pytest.raises(AssertionError, match='Missing'):
         compare_outcomes(dict(trace=[]), dict(trace=[]))
+
+
+@pytest.mark.parametrize('features', [50, 200])
+@pytest.mark.parametrize('fixed', [False, True])
+def test_wide_t1_search_matches_full_reference(features, fixed):
+    cfg = config(100, 't1', fixed, 19, features=features, rules=8,
+                 antecedents=4, population=12, generations=4)
+    compare_outcomes(_run(dict(cfg, reference=True)), _run(cfg))
+
+
+def test_scaling_grid_includes_largest_crossed_workload():
+    from types import SimpleNamespace
+    from benchmark_speedup import workloads
+    grid = workloads(SimpleNamespace(samples=[1000, 10000, 100000],
+                                     features=[10, 50, 200], fuzzy_types=['t1']))
+    assert len(grid) == 18
+    assert {(c['samples'], c['features'], c['fixed']) for c in grid} == {
+        (n, d, f) for n in (1000, 10000, 100000) for d in (10, 50, 200)
+        for f in (False, True)}
+    assert all(c['population'] == 40 and c['generations'] == 5 for c in grid)
+
+
+def test_resume_preserves_fit_and_invalidates_changed_inputs(tmp_path, monkeypatch):
+    import benchmark_speedup as benchmark
+    calls = []
+
+    def measured(cfg):
+        calls.append(cfg.copy())
+        return dict(trace=['exact'], seconds=2.0, n_eval=200)
+
+    monkeypatch.setattr(benchmark, '_run', measured)
+    cfg = config(1000, 't1', True, 7)
+    saved = benchmark.cached_run(cfg, tmp_path, {'source': 'a'})
+    assert benchmark.cached_run(cfg, tmp_path, {'source': 'a'}, resume=True) == saved
+    assert len(calls) == 1
+    benchmark.cached_run(dict(cfg, features=200), tmp_path, {'source': 'a'}, resume=True)
+    benchmark.cached_run(cfg, tmp_path, {'source': 'b'}, resume=True)
+    assert len(calls) == 3
+    benchmark.cached_run(cfg, tmp_path, {'source': 'a'}, resume=False)
+    assert len(calls) == 4
+
+
+def test_failed_fit_is_not_saved_for_resume(tmp_path, monkeypatch):
+    import benchmark_speedup as benchmark
+
+    def failed(cfg):
+        raise RuntimeError('worker failed')
+
+    monkeypatch.setattr(benchmark, '_run', failed)
+    with pytest.raises(RuntimeError, match='worker failed'):
+        benchmark.cached_run(config(1000, 't1', True, 7), tmp_path, {}, resume=True)
+    assert not list(tmp_path.glob('*.gz'))

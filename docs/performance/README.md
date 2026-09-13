@@ -26,6 +26,56 @@ To redraw from the recorded raw measurements:
 python benchmarks/benchmark_speedup.py --plot-only
 ```
 
+## Larger T1 scaling campaign
+
+The expanded campaign crosses **1,000, 10,000 and 100,000 samples** with
+**10, 50 and 200 features**, using T1 only. Both fixed and optimized partitions
+are tested. The population, rule budget, generations and three matched seeds
+are unchanged: 18 workloads, 108 complete fits, 54 reference/current pairs.
+The synthetic generator uses `features - 1` informative features and data seed
+42 at each size; increasing feature count also changes the learning problem.
+These are complete fits, not timings extrapolated from smaller arrays.
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  python benchmarks/benchmark_speedup.py --fuzzy-types t1 \
+  --samples 1000 10000 100000 --features 10 50 200 \
+  --output docs/performance/t1_scaling.json --resume
+```
+
+The largest reference fits can take over an hour each; allow several hours
+for the complete campaign. Every completed fit
+is saved atomically under `.runs/t1_scaling/` (ignored by Git). `--resume` reuses
+only records whose configuration, evaluator/worker source hash, Python/package
+versions, CPU/platform, thread limits and dispatch profile match. Without
+`--resume`, every fit is measured again. A failed fit is never saved as a
+completed result. Keep the source and environment unchanged during a campaign.
+
+The published JSON and SVG are written only after all requested workloads pass
+exact parity and their evaluation counts and generation traces are complete.
+The scaling figure uses logarithmic sample and time axes to show the entire
+range clearly; whiskers remain observed min–max across the three seeds, not
+confidence intervals. Measurements can be redrawn without retraining:
+
+```bash
+python benchmarks/benchmark_speedup.py --plot-only \
+  --output docs/performance/t1_scaling.json
+```
+
+After the full campaign finishes, publish its validated chart and measured
+summary to the main README with:
+
+```bash
+python benchmarks/publish_scaling_report.py
+```
+
+The publisher refuses an incomplete grid, missing repeats or evaluation
+traces, failed parity, inconsistent timing summaries, or changed evaluator
+source. It also supports safely refreshing an already-published scaling
+section. Its validation and README-preservation checks are in
+`tests/test_scaling_report.py`; the expanded runner and 200-feature fit checks
+are in `tests/test_speedup_validation.py`.
+
 ## Measurement design
 
 - Synthetic three-class classification, 10 features (9 informative), data seed

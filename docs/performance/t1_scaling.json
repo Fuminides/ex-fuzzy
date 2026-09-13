@@ -1,0 +1,1320 @@
+{
+  "created_utc": "2026-09-12T15:46:35.896490+00:00",
+  "baseline": "Preserved full object evaluator in the current checkout; not a release wheel",
+  "commit": "76b1bfeca027644ac629959f645fce8f0406f02c",
+  "python": "3.12.3",
+  "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+  "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+  "packages": {
+    "numpy": "2.3.5",
+    "pymoo": "0.6.1.6",
+    "scikit-learn": "1.9.0"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "seeds": [
+    7,
+    19,
+    41
+  ],
+  "results": [
+    {
+      "samples": 1000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 1000,
+        "features": 10,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          3.44487308524549,
+          3.422648621723056,
+          3.400478843599558
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.22216032817959785,
+          0.2178586320951581,
+          0.228837750852108
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 3.422648621723056,
+        "Ex-Fuzzy 3.0": 0.22216032817959785
+      },
+      "speedup": 15.406209784476612,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "fdb9a947274b8c43f9822b4f67cd665547e96d298f0ce6bef64c193e2ca749e6",
+            "ba0f0617882bbbec726829213e7e54548fd86ee02af3f36242b46d877470aaba",
+            "0b10986909965c133adbd068037f0071527320e233176346e987c3f933a74795",
+            "bf7c8f6ad14fae8e3d4b46da328ce0f003db0484bd257253d491fa8c5ef22c27",
+            "8d16f1a5cf5066ece27fe5394103a7e977c82cfe3c4f0e72d7a9fa6dc29d0e26"
+          ],
+          "performance": 0.21388592730822342,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "a1fbe08f74f88375c34c975065e34de54346acabf80951894bd946b25d1e2576",
+            "13a265c97cbf97ad7424effcf06461aa511919bbad03a84c202580af2a23dcf3",
+            "256ab2f5160d0d371502ec1aad997b7a0f83b1de33367d3bf5c47ce5a8d6b18e",
+            "86b791a4ce1c7b8e99ad82560751b69f904f2973664731159b02da1bc19f6d60",
+            "76716f8ca26acfff28885ce50444c17343c9007c39668b11172a03f4ca8dbdda"
+          ],
+          "performance": 0.25811726873133223,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "4291096c5281247fbf94c230840185ae3cf927c4066c004f9c786e9d8ac0f568",
+            "f14939c3997e94f4b20e309ea7b920fe53a27cf366d0973fa06ac931858e4f3b",
+            "0fa02730caf9a91533ba596931fdc4f1d22c9d59d2b78f86865b8c224e84ece3",
+            "72b23ccc9d6f2898eeb0df35fbb6584b7b39f900cadc76f5eeb381fdd49776aa",
+            "16036d19f33f32f58be1aefb21e3dee0484e6a1c0b5729f0bae7b3fa0405e720"
+          ],
+          "performance": 0.14081574772759065,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 1000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 1000,
+        "features": 10,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          3.9141583954915404,
+          3.783401934430003,
+          3.8833626564592123
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.151558936573565,
+          0.15204443130642176,
+          0.16197730880230665
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 3.8833626564592123,
+        "Ex-Fuzzy 3.0": 0.15204443130642176
+      },
+      "speedup": 25.540972616306497,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "5ab7e06d25f9def062b7ca4a801e0ef795a2ad13545f448f21774589c167b323",
+            "40f14799b3236e10c2f61b2b9b9b5711614e2453780dec3443ce624ed6322bc7",
+            "539c38c2be286510f32dcdac4a7746c7c28e7408ae765aedd7fcd466e304cd93",
+            "8128972642793013fb12d84a5d925adad235f2076d91aa048e227cea8523a94f",
+            "33ac7949c8f9a3bf97d60e6b971511bca7a2a14dfb88b6c388a029b5524ec25d"
+          ],
+          "performance": 0.28391822992596105,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "eccd59d4262f0b46357c3b1e3c8240f642be1dbba57b385c0c363ac287e7efd3",
+            "b8b7fca87356e4cb9328e4916b30cba9012e5cfba05464e3d0752537feaf08ce",
+            "8744f8a42526d1b76209b5b1a524e57cb55dd34742b608c8a6bca216972563c9",
+            "35c6783042ae2622360eb3b0920c0c5a072a5dbb5d4ec4ffc7c02d266f3c7bf8",
+            "10b058673301a870dd11c31cf239de74137b13c023eca35c46e2776e7f6d1ff5"
+          ],
+          "performance": 0.21527142007559075,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "41d11d3afcb361a4afb6c249fcf36f610bcaae9182a07ede7ca889ee27eb41a5",
+            "22981d0c1f27fecc15fd1bf528f69eef51cb04efc0bfc1c4616ede8422b486f0",
+            "3644165f095e517ab53e320f68380ce2744f3f72311715de06c1aedcdb83754d",
+            "a65e8179206170e59375d48d26c03e4e7db32beea04485596666465386c421a4",
+            "fb9f8b83efd79e40dc77fff5ff382044812f5f4d6c228b43ad62596fe3606f55"
+          ],
+          "performance": 0.311705119900215,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 1000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 1000,
+        "features": 50,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          7.296864464879036,
+          7.54545512329787,
+          7.366381525993347
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.7333190161734819,
+          0.7819350836798549,
+          0.7646604338660836
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 7.366381525993347,
+        "Ex-Fuzzy 3.0": 0.7646604338660836
+      },
+      "speedup": 9.63353300333496,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "c251fe9713e7bc3dcad685bc7d8cbd9e417c9d3851eb817f14cfa684fed04133",
+            "a3c9cfb39752e1c5f3353263c32cec544915b65cc1e016039b717f00f3a8523a",
+            "fcd43c780f8ee62dcaf272fcb447d6e0216ccca96aba710a7d38b52c79bf046b",
+            "f11e78c96e2044d3482971119b5286e7912ef83427d1c2bd5738fd7c7a673cb1",
+            "bd6adc3d40efada1f9bdd00f8bd1ea6a29999ed828a262709dad1f3530da10b3"
+          ],
+          "performance": 0.12131502693321283,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "08927336a4ef7e55fadcabdfe43b1dcefde1ac9c81585aa7d6c9659114734508",
+            "3b45ed45228bed299cb1c8d03736dc4b74e357695f3c64631590c1983582c318",
+            "2e68c4b9618f3124dc1ab752e2d584af26f5b9fd2105ef0a8e7e2b76a5c4ee62",
+            "fae4c702276034fc1954f91e23d46297ebe186ea10e833de4a646d8c9fadaeea",
+            "81cb4db1a19563deb41a0ef9fa7ef8888deb1121af96e68a8cd872a10abcdd07"
+          ],
+          "performance": 0.08414071596119443,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "2c5def40934394fa3070769b3d46006446278a7ae50566e069d50fd2ad296311",
+            "b053e1b511165f143ae5e13a9da9240a3a40dd931f434cf909e82eebff217514",
+            "f6bbeb5dea11f7545863a1eb7302ce4d15832710b961ebd32189ad13a6d5b226",
+            "690186302ecd82eaa701af6092bd283f5eb5260e496a461e61985a8f83dbcf6b",
+            "ae98ca54012ae00f7164c38b78470dc237fd1e3b8cb26bd264b440ebf2045c46"
+          ],
+          "performance": 0.12661823793527427,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 1000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 1000,
+        "features": 50,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          8.139186734333634,
+          7.546997603960335,
+          7.9461609944701195
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.32159571815282106,
+          0.29935822263360023,
+          0.3088065581396222
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 7.9461609944701195,
+        "Ex-Fuzzy 3.0": 0.3088065581396222
+      },
+      "speedup": 25.73184016019952,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "1425248020c1d074f1cf7a5e57ab36c6f442fa746e4872d83da027c2d61a186d",
+            "2a42b047ab3ecf81b6f0afe044104606c32a92482520e0c83807aa13d25c2aaf",
+            "1e54037b8737d9f91150417cdb0eb0b9438b80c2d4e1f32033924e44580f52b0",
+            "9ad33a66dcfb7f8c820273486efb473b03d971ebd2494a3b32f1d3386735c731",
+            "d7330e488123c04a263c37cfc4814c1a98a82748b115a7171aea98b0e0067e32"
+          ],
+          "performance": 0.10307703576025695,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "a962167e36408475702cfa14cb5dab85d1880f644461428053727c2baa7a1a0d",
+            "a8c11c68e12e6f8975767d65b25adb1869ccce57d1de69f15ffebaada546001a",
+            "65066c8709b98f7bd3d1bbfe708e19a2bf465134a1cffd43cc309d883ffe8d4d",
+            "132d5e672b28d72149f9d6e446745a49d76986d45fa8c0ce55a57d3348f73d89",
+            "e74db6bcd1f3fbc404a613646b20d12a36c33bc5847924e528ce181e7feb049f"
+          ],
+          "performance": 0.14878181113673572,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "7bbf54b3dd80d5b4c902df8d75e1ffa4f1042be1940e3117586be0740c21dfce",
+            "d64069e9dc3f64ed7aa273d0739dc11cd2cfb66415eb8ebe5c1a27beca4a3f81",
+            "1f7452118ee2a6ff11cc45a03156fac4aa8883e30f43dcd1ccf3d8bc0e522b87",
+            "98fc6775bd0a7678c2ea1ec5ffb64431435271b5c178b23c29813c66b3fd846d",
+            "7c9269364d4e6d4633bb78aaadc6c0dc9e32eeac53c0970df666ef8bc5362496"
+          ],
+          "performance": 0.10750247124825929,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 10000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 10000,
+        "features": 10,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          18.722466892562807,
+          19.369510143995285,
+          19.477338833734393
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.9289215160533786,
+          0.9983188984915614,
+          1.0068946350365877
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 19.369510143995285,
+        "Ex-Fuzzy 3.0": 0.9983188984915614
+      },
+      "speedup": 19.40212708911171,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "450fabb9113a08953f3ee6cea6cdb326bf11b4fefe3a0aa64d1f33032c2cc3ae",
+            "55aa79aef4a3f5c7d1f4d2d4f22cbff71ce9e2fdf177698c437eb25f34e5dd51",
+            "0b2d38a1617204d561353f3e7aad9b8d82735d2ac407a37d09aaea3c8fa76528",
+            "7cce11261cb2202e6ec3d02f445b8ca5b13d824577e4456d1f970b62fc37e70c",
+            "b4286c47dc0988582a335ac472b85746371e39560ddf43334f215bef4a0bd42a"
+          ],
+          "performance": 0.22420164229555806,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "7eb2491a54d8acd3ef32f5eb0b4653886ed20fe678bab9d629835e7dd1047813",
+            "486c58088deb6e11f4c8152a0459bc308defb887f4ab5c63be3bf5710283ee7e",
+            "a53463171c76880aec32b1d737c2f811ba91febcede7c1cb7976c8ce05a9f6c3",
+            "8dbe22d54d3b4144c6156d48d0bccd0f0413df79657b0fbe33e0b7faec400b0b",
+            "f501398c7e14d31b18257a6a85192b23b3644e571ffba90d871df968e6fb5020"
+          ],
+          "performance": 0.18216245421974198,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "6275a71691a91fa7554551521d599f9ea1397d0c86b674cd5f452f975da09387",
+            "1be1fcded5bd61429f0876ab834e57c1e05422a6192a9e256679290fa74dc975",
+            "20f68a058767d64009676ae9d44b9e17e9d697998003330ebd8fc8cbdb22468b",
+            "39fe5ca7c2473f61291169a9fc5856411b9f2e708ccc71cc40669bd995bf65a1",
+            "a945277b298f61ffdf61b33e1392498c8f841c19d722aa04f1c6f273498f0682"
+          ],
+          "performance": 0.21255263117691325,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 10000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 10000,
+        "features": 10,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          22.582796671427786,
+          20.801997617818415,
+          21.733471353538334
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.9828589567914605,
+          0.9051981428638101,
+          0.9237303975969553
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 21.733471353538334,
+        "Ex-Fuzzy 3.0": 0.9237303975969553
+      },
+      "speedup": 23.5279378161388,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "4616ad384c2362bee87f407356ec0389009097b5539834d1f2c4169bcad51c7a",
+            "f5938edad55138fb792c451fcc80a1cb7960ea4e6b8737de04d3477cbc7cac9b",
+            "815c0bd4a929b459c7039df5bc29d6122db001882fa2d56b6998f7ec39673902",
+            "d3a513370c06a00f0824a8e79b57188c12b2422170eff47dcf647ad6cab627ea",
+            "1108fcdea65c62e07fb68007668a21af8fe2dce922c29455c72d6928e363c317"
+          ],
+          "performance": 0.21787246054894882,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "4e03b6d7c3fa8f06798b76367a8fe928986e923251c41282cb6eaa6087ac1156",
+            "3a7d695a2d58b1ca9b18dd17d3fc2c9514bb7152c3b48d6ab2709dcda73ffae2",
+            "793c82d1d05e98f7a7c51da2c715b4db2140c10ad35e1dd094af174c96410e58",
+            "910b63299ad9acfb25ee951a657fefd23eec597482d61f886ebd11f1ca580c4f",
+            "5c13065d22f7a13b21a8eb46f1239ba3c9ea012cec52009051d30a1473c5ae64"
+          ],
+          "performance": 0.19665470352429004,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "d57782d99e15c3353db4c431d989153250de7b59e9ce03613e4e63e1f831fb25",
+            "28503f5246e63fe9e19d5ba0ff6c0008b93e56921b6a2bcd30841d77188a0ac9",
+            "7f6025bf8f655c7a31a4fbb121646611f356421fcfdaa6cc8ab86341fabb862e",
+            "0b66f61d76d71ef662628bab185e1158812f92cfd5e458333487b9bb0d9cdbe6",
+            "3b87df25186b251500339506d8633008ba32099c0b878ca988b3094a57e420cc"
+          ],
+          "performance": 0.2328376048777432,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 1000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 1000,
+        "features": 200,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          22.645056640729308,
+          22.33934629894793,
+          21.473337220028043
+        ],
+        "Ex-Fuzzy 3.0": [
+          2.7965437062084675,
+          2.9530786043033004,
+          2.7454995308071375
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 22.33934629894793,
+        "Ex-Fuzzy 3.0": 2.7965437062084675
+      },
+      "speedup": 7.988198521393912,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "5b67a5942260ff3aebe0290edffe452032de14f02b87874e63dbbf021af23aad",
+            "03b5990d7a2f3074c3830a869ef6fcb6b18a7b10577dad28ff8e7c03c53b0b85",
+            "4347b722d84d4ed1fffeb03be05d93bfe66f81d4acf40501a30da371dc759d64",
+            "f92d3a7329776dc09ac44988693d987476be2ee42a775453723bc40deb6ac4cf",
+            "aa9ffe154346c8faf78e24f450c126bc0b7f92bb59097e7f1ea6b4964f1e442d"
+          ],
+          "performance": 0.07831795378017425,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "bf9bf6aa52f9102390e730f50d469b333c2f35c4ff19999670efb1e2738414b8",
+            "d201b4d5fa7efd28f05c4c46922fa71d8a8f8f77af4ab0bc032dc3766da25499",
+            "57e596b0d205536286492d9066ed2bac981a966290692caa250403ec2b031620",
+            "1c05def41bc8aa60f202106da548734136c259221002a3ec399bbbc14cdab04b",
+            "2d1bc52cc9f6db0d65e6ba413eca989b1ff14143ab2deed9d30d98767321df27"
+          ],
+          "performance": 0.06674175037500896,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "1d881a3907510f63e56c1f46ed0f4e5e45a82d08ab8f67fe392f6b921dd70c84",
+            "740d41f400e2678f609a783afb807a696d8f5cdccac90e77b97ef41d90a89b49",
+            "0b3c6901c178266466f289b69dde2bc85cb7eda22a19dc0a4f3259662d810540",
+            "12926eee167d3c707021f77ac0bfaff7a749126a09b3c1839ac406d030ed54f6",
+            "f034cdbd5a23fa22d3b137bfd713146b88acd4c9454252013ca69f7d278a4f09"
+          ],
+          "performance": 0.07316285713087944,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 1000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 1000,
+        "features": 200,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          22.71837737131864,
+          23.467905602417886,
+          22.710883032530546
+        ],
+        "Ex-Fuzzy 3.0": [
+          0.9020545184612274,
+          0.9651692816987634,
+          0.9133084826171398
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 22.71837737131864,
+        "Ex-Fuzzy 3.0": 0.9133084826171398
+      },
+      "speedup": 24.874812622146873,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "fdf54df2b00dbf958c10af6c319d22df3ba5b8ac7ec9999f4067808006dd5172",
+            "0c42e343eb90ae5805d4c7342821ac9a1c88245dadf19c3e856d09487c7ae09e",
+            "be61fb5b0a5acf7d590c6c901df07217ed7f6e437ed54ae1ab150a7873a68765",
+            "7ebaeb2c03d071e3f26fa0b788787a5ece13d791c3b6e0d92294299f67a0a4b1",
+            "34eb33334c4da3c668f9597945278af85107539a89a656138d3729370d768157"
+          ],
+          "performance": 0.07242745047903643,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "2413d70731bfa6cd0a7cc1b82fa2ec149adf7ca66da27e7f766aec7f832cf7bf",
+            "4d20e649cd5765abc0618e4a2a215d3b6fbbf74b3cba0eae27014e9e7f63ecfd",
+            "d17dd8ffc9cd07ebc373f459324f7f827ecde77f90dabdd8313831b88b8f5dc7",
+            "621e281d8f3d655fe0e409da24d9d5cd042f8d26e0781481a96da016adae3d09",
+            "2984183ec9b5fb2d967c9972a1ff58fb88f4f0aca1eb9a06910b7ce1ea1568c7"
+          ],
+          "performance": 0.09964722520090896,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "882d54a151fc627ed56eb32d1ad0b407822ba7da53f0a47a219345d1a5662c50",
+            "a9b68c1f6984aa2d30ba5f82555c6b0350fb8fef98ec7fb2084c85091f4500f2",
+            "45c584b78269ea4526df56e77ded8bcd9325d06d9896dd762228dd9f8cdc2a92",
+            "66eec8699479f680a448ada93ba1a9fb4b2b2716eb8271c04223862ba80c1b2a",
+            "936a4a46a14c13f1cf36c1b448d41102bb984038171e8cd0dfd42486ffd74482"
+          ],
+          "performance": 0.05577742218504078,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 10000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 10000,
+        "features": 50,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          50.12011640984565,
+          48.36939332168549,
+          46.80311581864953
+        ],
+        "Ex-Fuzzy 3.0": [
+          3.595695941708982,
+          3.7282927995547652,
+          3.524593102745712
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 48.36939332168549,
+        "Ex-Fuzzy 3.0": 3.595695941708982
+      },
+      "speedup": 13.452025450932934,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "f1e9c7f86fbc5d44c8c71269f2570587c985a72149b6aff7fdde58c3cbefd3e2",
+            "f66109a9dd28e40b79217895cca0b1fece8b754978c6e7b0cf28b430a05e70eb",
+            "39c140135481500ee47cd24727189b1183717f3a9949ad027e9b0ae014d949af",
+            "5757b24d9f967b457dfc540e2c8728978bcdd3d327a44fcb38ccd9e0d3d0f63d",
+            "ab1d0892ce549939013f8b99d6646d99e74108f0dba3c472e1ae69521b86039d"
+          ],
+          "performance": 0.10101594972934547,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "dbd6345523988e54e2b98b56cc80ae917e1cecc4d43d2edecfec3f6b8acd0c9a",
+            "f249a34e09d8196cfec421dd30b7a70ae620573dbfa91fff5e8da29f0a3f668a",
+            "0e55cb95a44ec687eacf9f2268a502268473248c2222a9bd0817614a9e46d473",
+            "caf507f5540504c6e666a55396db7896a1340771417c965e4829ec09ee4a1342",
+            "125fd8c3a286d07ea47456680dd4739928aed76b99ed0d88875dcc6c4e383a49"
+          ],
+          "performance": 0.10236988127380775,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "50dff29273dbbfa3e55d3576e40bcbfed4d8dc53f3852b3f54e8220e674a641d",
+            "0cf47dffa750b76a7ce62db58fe02ab7f12fb4039a3c1777e6ed7cb051f011df",
+            "b11e2f2434909f655e0e764ddb3b24b25d04907c1793b6f28bdec683cd9e19a4",
+            "d024193455870d035aa01aeb3e034784818629717a03f1cbd07aad5f21b29978",
+            "8963c8a701c5d3a530d83e74e80eea92b5967e7023e7f680b313e9e9afd1be76"
+          ],
+          "performance": 0.11552058482805627,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 10000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 10000,
+        "features": 50,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          52.00333387311548,
+          52.49969847779721,
+          54.251399830915034
+        ],
+        "Ex-Fuzzy 3.0": [
+          2.603218663483858,
+          2.6450566751882434,
+          2.6682614209130406
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 52.49969847779721,
+        "Ex-Fuzzy 3.0": 2.6450566751882434
+      },
+      "speedup": 19.848231975619544,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "71ddffd5de334adac88b91fac920c3c291c7992bc9a36592072a4d828ca7dc41",
+            "6385f2769af35332e8dca85f7bc2263a87bf2dd0ca8f69fd9cf219a7912e30dd",
+            "bb73138e8d9dd681aeb3bed23b4cd267cde6312dc579b5bffd830920114aaad6",
+            "9b9fcba11f93d095dbc275adeb82e78c093b86738c8115e0a476acf4f48efffe",
+            "0655f8d7ba4c44e01b258f610f7ab7889130e5c9470e44c17a276d14cad3bfe8"
+          ],
+          "performance": 0.1125491715334771,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "359ac4bb51447a4517c025d56af87b9897fa2f3f03970491f7e172414edf3ae2",
+            "4f98eb783f6b5d95b7b5696a61226952a8ea5310de5f45647178e9deae69c1cb",
+            "9d8262ed7665df60b8ab94cde38b9e7760deb75d96a8c43696aff5f89bba60f9",
+            "c9305c14dfa6dc632983f26694b056485a31b541900ad9e7d9f15da5794a7de4",
+            "7f269346bc6dfc6892c1341beee0279eb642328afe4f25b6df10fe8f45476df0"
+          ],
+          "performance": 0.09316810417074706,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "f749372b3e98390b21dc9671baee7a73f3d58dc71b812df3fb95d7b3b9ee8508",
+            "605622066574b09a85b790c45ad71b2205ab4156ceae350f0d254ea338a56581",
+            "4a05fe22068d8d932b3901f3e3bb1b790febacffe912b2547c4750b1eb886a92",
+            "1249654d202bbf4f5b665dc73c04a992b1e07db2faca9940db386de34ea06140",
+            "a3e36ee75c45e5c5ecaf5ed3f6a2a8268e6aca137d5be54490cb6379b62113b2"
+          ],
+          "performance": 0.07343347654893728,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 100000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 100000,
+        "features": 10,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          178.4700474627316,
+          183.645797775127,
+          175.61871010437608
+        ],
+        "Ex-Fuzzy 3.0": [
+          10.141889739781618,
+          10.66588381677866,
+          9.488462409004569
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 178.4700474627316,
+        "Ex-Fuzzy 3.0": 10.141889739781618
+      },
+      "speedup": 17.597316875047643,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "03b38e7b80d6b0d575a3bbf39de81266d62c0cfeb8482ee9b370f32399af3924",
+            "dfa0ae9746ff66b79f42f296fa68685590ff46b458e5dc4d8f79c871d6adaea1",
+            "3cdd28a11390233500e9e85dc3b75ecd90f56a7d7b779dd76e4ede4f8db3ed5a",
+            "5e5eb32a94a06e6215bf4e8a2a9b633ef9a7764c67517c7705f2baeb280cd3ea",
+            "3f28b333b92813b0084765032e20f367fc78db240446072edaaaf3b777687e26"
+          ],
+          "performance": 0.20556032929669754,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "5172342738441fc93793b5475e887c96c935da793f30879aa31454a4da4aa50d",
+            "d664bac650cb3fc59c11424f5ccfd0e683927e8b9b5fe55d70c874402c50ce68",
+            "2d2459b7f3c647511313e1863adffe0408cdc2affb545221f2f3f3a602e5470a",
+            "c4bb0dbcdeb5326b9a44a04813713e5ba704bde8e93c1a246dac473c7b88b9ce",
+            "d1ab78e4ac89cee73f3d3b9d72b55cf87f01562ee37e13fd5919fdb6ef1bb3b4"
+          ],
+          "performance": 0.18389589601014578,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "79c28c9adfe2e0721d18e72b369df38eb084f43cff2a062365f214463bcbee26",
+            "48271819661e2805a0861dd6461fa97c8485db35b51d0b8e6a2b30fc95357980",
+            "502d09e65c210eb009fc476eeb64212f7c20c517454894a7fb5c671c5ff5796e",
+            "9c58dd8fa83bb9adce02c49eb49d148e8ee0cf20a88231fc673cc084361c9812",
+            "29667edaef163d5b27cd80b94c1dfc79826d65148781632f7179d8dbf59b77d5"
+          ],
+          "performance": 0.19717390523587874,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 100000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 100000,
+        "features": 10,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          201.33720743563026,
+          194.0388980899006,
+          197.87709336075932
+        ],
+        "Ex-Fuzzy 3.0": [
+          9.527117387391627,
+          8.527663223445415,
+          9.644878206774592
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 197.87709336075932,
+        "Ex-Fuzzy 3.0": 9.527117387391627
+      },
+      "speedup": 20.769880889956674,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "4869da12d8d9b9e2b2b25b57dfea6a705a4e6740b81cb7a0fc000955193f9539",
+            "24abc41ebea1a7005454d006feb627a4a88b51750aba9888d95e44a909a24f11",
+            "ccb4de50a104d6c34bc5e280e4945afdcf977d4707892e602a3ed83b73637481",
+            "fed320f7a35266771cde5aaf1b77503f1b4a2012f3776663899a9856843172d8",
+            "3ad11a13910c6c8a0b17ab8cdc54ef68cccae3cf786ab3d955018af587ffa1ce"
+          ],
+          "performance": 0.2358593986537555,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "46aa2c4877dd742f38d5def1d3a0c8495f797f9a40a74074d905a9588d1844b9",
+            "180f748a894c3b14d716456308c5432e915e040dde27358e743cd2d75c3ffd44",
+            "9a9460d4a98ca13e318a3b64e5e5433c3b6c7adeb3aa88d0f995912948e85f52",
+            "b9219a76d8c21fa3ccf9ff4727304bb1234bd5a4b5e33470d243e578a7949850",
+            "7314a4c4560588997ef3bca5927a73926453f4409e5d854e8248261f5573ba09"
+          ],
+          "performance": 0.23170338256172973,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "dc81beb11b11baf68a856c2183bc5d134a9d8b04e4c7160db2f76fec5ab439ad",
+            "e8ded8eeaf218ad2ec70718ca5d4b65f5a622c93a1e372f50263184c30c39135",
+            "7249d02274c6cf821706cd1ba5c88b71c2c3bf10944be70be519d64c3ba1fc01",
+            "49dcdeb450dcff71f21004e6440ce060d633b0e40c9a309a76a8c0d5832fb8ac",
+            "89da7adcbf5b2c609d8c180b8e02dceba22daac288400c046a2eebcb978642ad"
+          ],
+          "performance": 0.28548838860121895,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 10000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 10000,
+        "features": 200,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          170.5423649167642,
+          154.94157108850777,
+          161.48993361741304
+        ],
+        "Ex-Fuzzy 3.0": [
+          26.254514548927546,
+          24.78216817509383,
+          24.81290910113603
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 161.48993361741304,
+        "Ex-Fuzzy 3.0": 24.81290910113603
+      },
+      "speedup": 6.508303115897822,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "7cb54449e38590c591059ce770c38f6f55a9a6dd0eac212f5a42aaec732a0734",
+            "d7902804ac879641065ef953469555c8ddc0ab7ef3db21f462986af31e5d4cf3",
+            "d6c7dd2bd435fce9b5ac8628b6671325c6d5f4e5e84dc7a2ed0ceeb5e42330aa",
+            "d9ea361443ddcb2286851e2b928b5fd8cd771c5b5ff62f1c1efb8cc839ae8237",
+            "9011a2a2d7e8d7860db056b088a4a5aed8e894cd6791c5d50b3ed3495c6c2cb9"
+          ],
+          "performance": 0.053625033620202545,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "2e3cd1630e9f044ad31542c27f67008d0d54bdca92d01150e3074455f1c8501b",
+            "e0607419bf9fb663ce4e8818b607d3a369dc5551a6631eb0a70d88c24ad575ea",
+            "e34a69c30cca53cdce3ee5fac520bf2340fb72c71500c52c99346c8766c4fc40",
+            "a2125ed1411b644f9a784cc9075fc0b4c5d26cc8d68eb3c391d1b7815a5e333c",
+            "28932837c13f64211b056c834d73e2161ad80edc8f49ebbee1c9622bc5e914ad"
+          ],
+          "performance": 0.05104725564680157,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "cac60695c534d067f81fb368f02759929e54a06cfd22a6cb65ddf0c2384e29fc",
+            "1ce16eed397bb742354cc536356405d71e01f2faea5d300565c1a60e69b0533b",
+            "b740a41adcb310f3790af2eef3c831be84f8c0905d8ff25b7c7e0b3ba7434c5f",
+            "979656cb5880442cb5577566b8e42907c6b9f59da665efd95a0391d6859c50b3",
+            "066634392ca70182efd305f3518d2a8059d1de80b82a94612ef36f89aeb5c977"
+          ],
+          "performance": 0.049563009691276916,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 10000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 10000,
+        "features": 200,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          170.16269087884575,
+          169.3147838851437,
+          173.25723212119192
+        ],
+        "Ex-Fuzzy 3.0": [
+          16.504093538969755,
+          16.026380146853626,
+          15.905860682949424
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 170.16269087884575,
+        "Ex-Fuzzy 3.0": 16.026380146853626
+      },
+      "speedup": 10.617662211903347,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "b763eec5fff374145a7908f7578d4d8963dbe81497ad7f8cfa97d93904b76fab",
+            "a46d3fc5da58ed3264c3273eef7ccc837a80867cd8da74bdac5ae28428d7ee0c",
+            "bf080f672d0c86649a2609eb2cf0975d5d01c8c89fc3fa325d70715a7cce836d",
+            "9676a6fec13677f99ddd834d40a46555f829400e65db3fadce640aac083caa43",
+            "a4feb83b105bb7cd0d4e8d20c451f7ae21ec5eb953325cce7f6ffb0353bb01b0"
+          ],
+          "performance": 0.06574104136558667,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "6d585eb2ec244855604dd7434ea604d13f88ff611712e423f3a5af9587c07e8b",
+            "82a7f5a15a56e2a88d395e347a6e86ad965cc1854735a474c4ea8d45867ac85d",
+            "efee8b32d0ebedd390b96515e68fa8caeacbfa64128aa12d184d68aeea34acc7",
+            "d1548c2db36ec955059db250baaeffefc5632b9fee960337765e39bcb15c21ff",
+            "4cf7a924305b3ce6e93aedbd48df723137d1a81ca898677ecb8e8b61e35d8c88"
+          ],
+          "performance": 0.04412255656716979,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "83e882cecbe2b4cdb62781b2e6b9e62fbbf730fe695b438943152731c9ee2f78",
+            "e58e4dc0c92bdd3220cbc3d25321ce5b8ff5d0c4f7550d55c41a088def1df8a0",
+            "adff8c3138eb9cbff5be001ae27f9ccf16d0ddb90c6264c551ee8726f9eabdb3",
+            "bf9d599f01d8772335b4a6a379529186e9d54418d8c332c616bcf1979a4eef3b",
+            "56b7b0d890bd5b6a17bba99f29e993013b786a6cb1875f4d71d06843e5d5b052"
+          ],
+          "performance": 0.037974897462234036,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 100000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 100000,
+        "features": 50,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          692.5483226031065,
+          693.5216200416908,
+          631.6132194232196
+        ],
+        "Ex-Fuzzy 3.0": [
+          46.218750692903996,
+          47.678741968236864,
+          42.10867047123611
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 692.5483226031065,
+        "Ex-Fuzzy 3.0": 46.218750692903996
+      },
+      "speedup": 14.984141981783035,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "2284733eca0783f51cd2c2915183c36593782a5986b119b07918784794800ac5",
+            "9b663482868f562214dec7f134483ae07b5abbf0e407ebd1f5adf152dcd3764e",
+            "db4304b793231127131762be7b55b2a946aec3ac02426d71e750f1b97c44baf1",
+            "6e82f9042e311bd8dea67ba3d5b816537f0e085f01f77f627494078e98738db3",
+            "6d64543fd10b3113a30ee25f352201d4f34fba653d8e0aec14d3f6922feaa11b"
+          ],
+          "performance": 0.10302127381563586,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "d8fe0bebda238afe6b52f4cb716c45d014b04940e4a6509ad5a0c61ffe12b013",
+            "c225a58f1029fccf0abf9d5ed299ef10cd43f66d0d881c2018808c7da58d5220",
+            "aad94d9d5964d2d3f9d1f181ab46ae70d6b7b439da2cc45dcdb042b2c9ec4de7",
+            "5933a1b9ce11b195ff1250779134c40331ac76a85b74a2a7480d18ce4f843d08",
+            "92ee62cb8b6acf9b15c2fc5cd4fa5ded5f2540a89ea2537179fc776813186556"
+          ],
+          "performance": 0.08147396277204655,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "ceaa3887ffb0c6f2d21af539f0c1b6ef0a7bb2e69664eb7101c48a4d9c37b603",
+            "27929cf92cc7a62e7cb2d2ffc46aa48578ade103be13e2f1b9903c467ac5117a",
+            "976cb51651bc7f716cd2951c65f2889cbb4d14d0edfacd770f628e52e7a2d370",
+            "a43a98d2e8200458780f584f78204864a79efd05618324172e28e1dfede95281",
+            "d1051479c2ae7315d1116548281cd9a55fa5b687bf7530775083b818576b0d3f"
+          ],
+          "performance": 0.09122841268842308,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 100000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 100000,
+        "features": 50,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          734.4915661029518,
+          728.9816651800647,
+          750.8502225484699
+        ],
+        "Ex-Fuzzy 3.0": [
+          31.9292808547616,
+          30.844602754339576,
+          31.0796221755445
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 734.4915661029518,
+        "Ex-Fuzzy 3.0": 31.0796221755445
+      },
+      "speedup": 23.632577061406437,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "6b09122ead5b768803674e2c80ab9b328a79ffaf13602d97d4e5f69057253294",
+            "a6bdaa787fabbef3f6ba62e4844d1335462ccedb6ad2cdb6ab6731bc622fb366",
+            "115b69da114176c39beb9e54932e842e3f7af0026290a3fd65440ff763b7d134",
+            "7177ba4e61c30d9197d3e389aa0e078f61b93f1cb3ba695f3d37454cab52279d",
+            "36cd210e2b938574d2064d274cae0a319838e933a08eb9f010d62e78c3de878b"
+          ],
+          "performance": 0.10726828233184449,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "343debf58272e03924c45148aa6670251ced3a5294e89a4b9257d335802cd8ea",
+            "eec829a2c1153c6413494c6b7bb726a69fea95b3091c41de51c78e48f134b475",
+            "c3eace1f3cc61a2b794b927f61842235ce60e37411048decabac965626295fa9",
+            "e90bc5dfee6a7bc7c904df8d582450d623cde4ef54d307bf328997e0276275bf",
+            "6a81c6d97152e2c6da7fd7c0c18c90e338c6a18a67afd9fa1415652eb7893156"
+          ],
+          "performance": 0.12042773202672219,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "12f668b8ce3e9290ab4964f074236274ebda757d4533f794ec3a4143aa43d4f6",
+            "2f6a7d34ed74994fbd7f74ad0401c3066e90998eefa5ed435d7b8d4b74412036",
+            "a53bbda615ec0591880a2ff92bbdc05b007b5a6cbfa5ffc2b1161ca7db2c4a38",
+            "2829aed145f04d615dc0c18d628a91da73e32c99cc558bc64ffc98cc507e825a",
+            "921a662a04545d70a1a0e88d35af3b64625a427af4e8f94b3413ad33dd14e7b9"
+          ],
+          "performance": 0.10654691497311042,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 100000,
+      "fuzzy_type": "t1",
+      "fixed": false,
+      "settings": {
+        "samples": 100000,
+        "features": 200,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": false,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          3381.3876110725105,
+          4120.909685508348,
+          2660.1029206765816
+        ],
+        "Ex-Fuzzy 3.0": [
+          253.76300455164164,
+          257.36852736212313,
+          255.6622948711738
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 3381.3876110725105,
+        "Ex-Fuzzy 3.0": 255.6622948711738
+      },
+      "speedup": 13.225992564826052,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "a9e8618f15e5b84dd8e76b107ecd9f7a4af6ed2e6b91a7e8e05c18e605e4f4eb",
+            "2bc49551def411de50e0b782f5a44f324e46737e5b49acff17f324cce1eec5d3",
+            "e90363cb8812a83149b6f8c40cbc5226923f5649aa3fe21f0efc870b7d15cc44",
+            "49bc0712444b505234ba401b19462b8cfd49b9d94353dda279eac0fc6bda7be1",
+            "482c3003290b3a203db8af7d67bb35a02571645472bc87da8f6d261ece647ae1"
+          ],
+          "performance": 0.04940529006932015,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "c2329e3ca5dd6c134674dd645bb51f8b0aa932d16b87ba80dbf07336ae620f42",
+            "0fb3a8277637c74398f2cc7fb3bc25648f0ca6548806af19400c480ec5243d64",
+            "c2db44d1cbc812833125512f346ab393d1890be2440a5b970101c2389ddc8d96",
+            "1fba9f4da5c7ba06213104c75e2627571c8c359b5785d1fcad297be6de935a82",
+            "336ebf8b8064ae787325d99772bf9f7e6c6d1178a2545c22cbc65379c4e5d2a5"
+          ],
+          "performance": 0.04890841806992785,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "511c582450871b8722f352665559bca6b97e8a2283df485bcf42b13df9f7d524",
+            "85944720018876ff273ef6d8d26e66fa98e1daa36a7f3dda21c03e884b6ca01a",
+            "368538730a2652d04215a70708fc9daad7259c7a455c51ad62a5ff10fa6ec978",
+            "2095afa86369b9a5b6b6fbb4ccbcb1856c60dba1b97a4333c8f8db87c33d8ec5",
+            "24073b8a2caa3b4111856a45b9c8a7beaf98af025a4883d8aa67df469217972c"
+          ],
+          "performance": 0.059085871587589045,
+          "n_eval": 200
+        }
+      }
+    },
+    {
+      "samples": 100000,
+      "fuzzy_type": "t1",
+      "fixed": true,
+      "settings": {
+        "samples": 100000,
+        "features": 200,
+        "rules": 20,
+        "antecedents": 4,
+        "population": 40,
+        "generations": 5,
+        "fuzzy_type": "t1",
+        "fixed": true,
+        "fit_seed": 7,
+        "trace": true,
+        "disable": []
+      },
+      "seconds": {
+        "Ex-Fuzzy 2.0": [
+          2712.0135063705966,
+          2725.7100233715028,
+          2766.6377732204273
+        ],
+        "Ex-Fuzzy 3.0": [
+          171.0004563862458,
+          159.7104717027396,
+          156.99701395630836
+        ]
+      },
+      "median_seconds": {
+        "Ex-Fuzzy 2.0": 2725.7100233715028,
+        "Ex-Fuzzy 3.0": 159.7104717027396
+      },
+      "speedup": 17.066570490410413,
+      "exact_parity": true,
+      "evidence": {
+        "7": {
+          "trace": [
+            "35b31211a2d22f5f89e94c26c0e98cf1ddad1ccdcc9b9eb4a1856a57055e8f6c",
+            "0a6b30fd60166b4823f423bed26c2f02cb664292ee5910fcffd7ca82622fce24",
+            "9031280fb79d561f93370c63bd32f4b9a78f416b4a0cf66567d9095b82cedcae",
+            "e98e02aa9699f4efe2901c852d538d5bea2f8205f363dcae298ec5b0c5f9e555",
+            "903f2034d833994960d68a293d50108e518f9839c5287f546bed8755a1db0edd"
+          ],
+          "performance": 0.04389220564666774,
+          "n_eval": 200
+        },
+        "19": {
+          "trace": [
+            "f861da0cfa03115528479f8cf33bbf07e847405652b5a01ab1585b8225b6f488",
+            "49cf1036e0cb1b21f0d38bed36220329d3026a227983506f28e1dc79ecc670ad",
+            "7616bf1714520b6db75b6145a3bb82a19a103d2e0d8179836cb4d5c2aa47dc23",
+            "a27e9c2aca88593c90d4ddec65a323d245abe1685293994a215f9083912a9f55",
+            "b3e84a84fa73264e60bbc59d004c892161f49563ddaae205841ebcaf4939b30d"
+          ],
+          "performance": 0.03737790190732393,
+          "n_eval": 200
+        },
+        "41": {
+          "trace": [
+            "d532d42fada610cebc1c745e8970f00d86649036d0c89a00f0038a0d57dda5c7",
+            "b3d6dbc381bfb16cddaa2bbdaa0157a6827b68765ffcd00645596bc2a0ae757a",
+            "83c0ff8cb947060170f3264d00b22bf4dd0d259fe0dbec83d78a65fac5dba4c7",
+            "d5be87f7130269b3d84140b3be833c572ec90b34637faa19e16565337abaa4e3",
+            "327a1997e5fb9125929b0a9340e9d87aab6b1f3f609c482929164610b24e287a"
+          ],
+          "performance": 0.053616222080654974,
+          "n_eval": 200
+        }
+      }
+    }
+  ],
+  "source_sha256": "59be1b4790fba7d35a2dc3229c88fc290fce8157a6e49d76e5a731ad4ee431d1",
+  "grid": {
+    "samples": [
+      1000,
+      10000,
+      100000
+    ],
+    "features": [
+      10,
+      50,
+      200
+    ],
+    "fuzzy_types": [
+      "t1"
+    ]
+  },
+  "dispatch_profile_sha256": null
+}
