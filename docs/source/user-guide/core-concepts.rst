@@ -431,9 +431,8 @@ Visual representation aids understanding:
 
    # Plot fuzzy partitions
    import ex_fuzzy.vis_rules as vis
-   
-   vis.plot_fuzzy_variable(temperature, "Temperature")
-   vis.plot_rules(rule_base, "Comfort Classification Rules")
+
+   vis.plot_fuzzy_variable(temperature)
 
 Common Patterns and Best Practices
 ----------------------------------

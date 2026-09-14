@@ -111,10 +111,10 @@ classifier.fit(X_train, y_train)
 # Make predictions
 predictions = classifier.predict(X_test)
 
-# Evaluate and visualize
+# Evaluate and visualize fuzzy partitions
 from ex_fuzzy.eval_tools import eval_fuzzy_model
-eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test, 
-                plot_rules=True, plot_partitions=True)
+eval_fuzzy_model(classifier, X_train, y_train, X_test, y_test,
+                plot_partitions=True)
 ```
 
 ### FERL Evidential Classification
@@ -285,16 +285,9 @@ print(f"Discovered {len(rules)} rules")
 </details>
 
 <details>
-<summary><b>📊 Custom Visualization</b></summary>
+<summary><b>📊 Fuzzy Partition Visualization</b></summary>
 
 ```python
-from ex_fuzzy.vis_rules import visualize_rulebase
-
-# Create custom rule visualization
-visualize_rulebase(classifier.rule_base, 
-                  export_path="my_rules.png",
-                  layout="spring")
-
 # Plot fuzzy variable partitions
 classifier.plot_fuzzy_variables()
 ```
@@ -376,7 +369,6 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 - **PyMOO** >= 0.6.0
 
 ### Optional Dependencies
-- **NetworkX** >= 2.6 (for rule visualization)
 - **EvoX** >= 1.3.0 (for GPU-accelerated evolutionary optimization)
 - **PyTorch** >= 2.6.0 (required by EvoX)
 - **Scikit-learn** >= 0.24.0 (for compatibility examples)

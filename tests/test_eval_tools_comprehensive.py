@@ -185,7 +185,6 @@ class TestFuzzyEvaluator:
         assert evaluator.get_metric('accuracy_score', X, labels, bogus=1) == "Invalid arguments passed for the metric 'accuracy_score'."
 
     def test_full_report(self, fitted, tmp_path, capsys):
-        pytest.importorskip('networkx')
         classifier, X, labels = fitted
         evaluator = eval_tools.FuzzyEvaluator(classifier)
 
@@ -194,8 +193,9 @@ class TestFuzzyEvaluator:
         report = capsys.readouterr().out
         assert 'ACCURACY' in report and 'MATTHEW CORRCOEF' in report
         assert rules_text in report
-        consequents_with_rules = [ix for ix, rule_base in enumerate(classifier.rule_base) if len(rule_base) > 0]
-        assert sorted(path.name for path in tmp_path.iterdir()) == [f'consequent_{ix}.gexf' for ix in consequents_with_rules]
+        # The legacy plotting/export arguments remain accepted but no longer
+        # generate NetworkX graphs.
+        assert list(tmp_path.iterdir()) == []
 
     def test_quiet_report(self, fitted, capsys):
         classifier, X, labels = fitted

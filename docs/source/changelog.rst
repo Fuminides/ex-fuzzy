@@ -10,6 +10,11 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Removed
+-------
+- The unused NetworkX rule-graph visualization and ``viz`` installation extra.
+  Text/LaTeX rule output and fuzzy-partition plotting remain available.
+
 [3.0.0] - 2026-09-14
 ====================
 

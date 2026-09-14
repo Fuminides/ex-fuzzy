@@ -2,21 +2,22 @@
 Evaluation Tools for Fuzzy Rule-Based Models
 
 This module provides comprehensive evaluation and analysis tools for fuzzy classification
-models. It includes performance metrics, statistical analysis, visualization capabilities,
-and model interpretation tools specifically designed for fuzzy rule-based systems.
+models. It includes performance metrics, statistical analysis, fuzzy-partition
+visualization, and model interpretation tools specifically designed for fuzzy
+rule-based systems.
 
 Main Components:
     - FuzzyEvaluator: Core evaluation class for fuzzy models
     - Performance metrics: Accuracy, F1-score, precision, recall, and fuzzy-specific metrics
     - Statistical analysis: Bootstrap confidence intervals and significance testing
     - Rule analysis: Rule importance, coverage, and interpretability metrics
-    - Visualization integration: Hooks for rule and partition plotting
+    - Visualization integration: Hooks for fuzzy-partition plotting
 
 Key Features:
     - Scikit-learn compatible metric evaluation
     - Fuzzy-specific evaluation measures (rule coverage, dominance scores)
     - Bootstrap statistical analysis for robust performance assessment
-    - Integration with visualization tools for rule inspection
+    - Integration with visualization tools for fuzzy partitions
     - Support for multi-class and imbalanced dataset evaluation
     - Comprehensive reporting with statistical significance
 
@@ -29,10 +30,8 @@ import sklearn.metrics as metrics
 
 try:
       from . import evolutionary_fit as evf
-      from . import vis_rules
 except ImportError:
       import evolutionary_fit as evf
-      import vis_rules
     
     
 def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train:np.array, y_train:np.array, X_test:np.array, y_test:np.array, plot_rules=False,print_rules:bool=True, plot_partitions:bool=False, return_rules:bool=True, bootstrap_results_print:bool=True) -> str:
@@ -49,7 +48,7 @@ def eval_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_train:np.arr
         y_train (np.array): Training target labels used for model fitting  
         X_test (np.array): Test feature data for evaluation
         y_test (np.array): Test target labels for evaluation
-        plot_rules (bool, optional): Whether to generate rule visualization plots. Defaults to False.
+        plot_rules (bool, optional): Deprecated compatibility argument; ignored.
         print_rules (bool, optional): Whether to print rule text representations. Defaults to True.
         plot_partitions (bool, optional): Whether to plot fuzzy variable partitions. Defaults to False.
         return_rules (bool, optional): Whether to include rule text in return string. Defaults to True.
@@ -181,7 +180,7 @@ class FuzzyEvaluator():
         Comprehensive evaluation of the fuzzy rule-based model.
         
         This method provides a complete evaluation workflow including performance metrics,
-        rule visualization, partition plotting, and statistical analysis. It combines
+        rule reporting, partition plotting, and statistical analysis. It combines
         multiple evaluation aspects into a single convenient interface.
         
         Args:
@@ -189,13 +188,13 @@ class FuzzyEvaluator():
             y_train (np.array): Training target labels
             X_test (np.array): Test feature data
             y_test (np.array): Test target labels
-            plot_rules (bool, optional): Whether to generate rule visualization plots. Defaults to True.
+            plot_rules (bool, optional): Deprecated compatibility argument; ignored.
             print_rules (bool, optional): Whether to print rule text representations. Defaults to True.
             plot_partitions (bool, optional): Whether to plot fuzzy variable partitions. Defaults to True.
             return_rules (bool, optional): Whether to return rule text in output. Defaults to False.
             print_accuracy (bool, optional): Whether to print accuracy metrics. Defaults to True.
             print_matthew (bool, optional): Whether to print Matthews correlation coefficient. Defaults to True.
-            export_path (str, optional): Path to export rule visualization plots. Defaults to None.
+            export_path (str, optional): Deprecated compatibility argument; ignored.
             bootstrap_results_print (bool, optional): Whether to perform bootstrap statistical analysis. Defaults to True.
             
         Returns:
@@ -204,7 +203,7 @@ class FuzzyEvaluator():
         Example:
             >>> evaluator = FuzzyEvaluator(classifier)
             >>> report = evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test,
-            ...                                     plot_rules=True, print_rules=True)
+            ...                                     print_rules=True)
             
         Note:
             This method handles string class labels automatically and provides
@@ -246,8 +245,5 @@ class FuzzyEvaluator():
         if plot_partitions:
             self.fl_classifier.plot_fuzzy_variables()
 
-        if plot_rules:
-            vis_rules.visualize_rulebase(self.fl_classifier.rule_base, export_path=export_path)
-            
         if return_rules:
             return res

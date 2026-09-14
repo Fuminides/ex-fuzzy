@@ -1,4 +1,4 @@
-# LLM development memory
+# LLM project context
 
 Read [DEVELOPMENT.md](DEVELOPMENT.md) first. These notes preserve repository
 conventions and evidence useful for future development. Check dated claims
@@ -6,11 +6,13 @@ against the current code. Historical plans and session approvals do not authoriz
 new work, and deferred ideas are not promised features.
 
 - [DEVELOPMENT.md](DEVELOPMENT.md): code map, conventions, and essential invariants.
-- [SPEED_UP.md](SPEED_UP.md): dated implementation history, exactness pitfalls,
+- [SPEED_UP.md](performance/SPEED_UP.md): dated implementation history, exactness pitfalls,
   benchmark results, and reproduction commands. Commands run from the repository root.
-- [SPEED_UP_REVIEW.md](SPEED_UP_REVIEW.md): decisions and evidence for the 36
+- [SPEED_UP_REVIEW.md](performance/SPEED_UP_REVIEW.md): decisions and evidence for the 36
   performance proposals, including rejected approaches.
 - [DELEGATION.md](DELEGATION.md): shared guidance for bounded parallel work.
+- [environments/](environments/): machine resources, cluster submission guidance,
+  and dataset locations used by repository automation.
 
 Keep durable decisions, evidence, and unresolved constraints here. Remove stale
 instructions and duplicated tutorials rather than accumulating session transcripts.

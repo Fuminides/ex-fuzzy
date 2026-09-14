@@ -658,14 +658,14 @@ def eval_temporal_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_tra
                      X_test: np.array, y_test: np.array, time_moments: list[int] = None, test_time_moments: list[int] = None,
                      plot_rules=True, print_rules=True, plot_partitions=True, return_rules=False, print_accuracy=True, print_matthew=True) -> None:
     '''
-    Function that evaluates a fuzzy rule based model. It also plots the rules and the fuzzy partitions.
+    Function that evaluates a fuzzy rule based model and optionally plots its fuzzy partitions.
 
     :param fl_classifier: Fuzzy rule based model.
     :param X_train: Training data.
     :param y_train: Training labels.
     :param X_test: Test data.
     :param y_test: Test labels.
-    :param plot_rules: If True, it plots the rules.
+    :param plot_rules: Deprecated compatibility argument; ignored.
     :param print_rules: If True, it prints the rules.
     :param plot_partitions: If True, it plots the fuzzy partitions.
     :return: None
@@ -707,9 +707,6 @@ def eval_temporal_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_tra
                   str(matthews_corrcoef(y_aux_test, fl_classifier.forward(X_aux_test, np.array([ix] * X_aux_test.shape[0])))))
             print('------------')
 
-    if plot_rules:
-        for time_rule_base in fl_classifier.rule_base.time_mrule_bases:
-            vis_rules.visualize_rulebase(time_rule_base)
     if plot_partitions:
         fl_classifier.plot_fuzzy_variables()
 

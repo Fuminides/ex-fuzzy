@@ -48,7 +48,6 @@ DOCS_REQUIRES = [
     "rstcheck>=6.0.0",
 ]
 OPTIONAL_REQUIRES = {
-    "viz": ["networkx"],
     "gpu": ["torch"],
     "evox": ["evox>=1.3.0", "torch>=2.6.0"],
     "docs": DOCS_REQUIRES,

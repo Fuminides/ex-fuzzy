@@ -41,8 +41,8 @@ We can extract the rules from a model using the ``ex_fuzzy.eval_tools.eval_fuzzy
                                                 n_linguist_variables=vl, fuzzy_type=fz_type_studied)
     fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=n_pop, checkpoints=1)
 
-    str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test, 
-                            plot_rules=True, print_rules=True, plot_partitions=True, return_rules=True)
+    str_rules = eval_tools.eval_fuzzy_model(fl_classifier, X_train, y_train, X_test, y_test,
+                            print_rules=True, plot_partitions=True, return_rules=True)
 
     # Save the rules as a plain text file
     with open('rules_iris_t1.txt', 'w') as f:
