@@ -1,0 +1,6 @@
+100000 200 fixed 7
+100000 200 fixed 19
+100000 200 fixed 41
+100000 200 optimized 7
+100000 200 optimized 19
+100000 200 optimized 41

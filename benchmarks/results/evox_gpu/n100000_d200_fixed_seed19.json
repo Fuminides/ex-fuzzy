@@ -26,7 +26,7 @@
     "repeats": "1",
     "routes": "['cpu', 'device']",
     "evox_source": "None",
-    "json": "/home/jf22881/Github/ex-fuzzy/benchmarks/results/evox_gpu/n100000_d200_fixed_seed19.json"
+    "json": "/home/jf22881/.cache/ex-fuzzy-bench/evox-worktree/benchmarks/results/evox_gpu/n100000_d200_fixed_seed19.json"
   },
   "workloads": [
     {
@@ -40,8 +40,50 @@
       "runs": {
         "cpu": [
           {
-            "seconds": 640.4498890340328,
+            "seconds": 521.2772226929665,
             "performance": 0.06695795059204102,
+            "phases": {
+              "problem_setup": 0.9816247075796127,
+              "scoring": 516.3537926673889,
+              "population_evaluation": 516.3562975227833,
+              "optimize": 517.1104522570968,
+              "preprocessing": 0.006443902850151062,
+              "finalization": 3.1784413531422615,
+              "optimizer_other": 0.754154734313488,
+              "evaluation_other": 0.0025048553943634033
+            },
+            "generations": [
+              {
+                "candidates": 40,
+                "on_device": false,
+                "seconds": 90.51948918402195
+              },
+              {
+                "candidates": 40,
+                "on_device": false,
+                "seconds": 91.8277804479003
+              },
+              {
+                "candidates": 38,
+                "on_device": false,
+                "seconds": 86.20679013431072
+              },
+              {
+                "candidates": 38,
+                "on_device": false,
+                "seconds": 88.0928310379386
+              },
+              {
+                "candidates": 37,
+                "on_device": false,
+                "seconds": 83.91814912110567
+              },
+              {
+                "candidates": 36,
+                "on_device": false,
+                "seconds": 75.78875274211168
+              }
+            ],
             "gpu_accelerated": false,
             "verifications": [],
             "device_generations": 0,
@@ -50,26 +92,69 @@
         ],
         "device": [
           {
-            "seconds": 222.26070225983858,
+            "seconds": 22.403842970728874,
             "performance": 0.06695795059204102,
+            "phases": {
+              "problem_setup": 0.7519527524709702,
+              "device_setup": 0.4077061489224434,
+              "scoring": 18.44161631911993,
+              "population_evaluation": 18.44328521937132,
+              "optimize": 18.475211530923843,
+              "preprocessing": 0.00658126175403595,
+              "finalization": 3.169984683394432,
+              "optimizer_other": 0.03192631155252457,
+              "evaluation_other": 0.0016689002513885498
+            },
+            "generations": [
+              {
+                "candidates": 40,
+                "on_device": true,
+                "seconds": 11.236695177853107
+              },
+              {
+                "candidates": 40,
+                "on_device": true,
+                "seconds": 1.5165472775697708
+              },
+              {
+                "candidates": 38,
+                "on_device": true,
+                "seconds": 1.4438890740275383
+              },
+              {
+                "candidates": 38,
+                "on_device": true,
+                "seconds": 1.4498738273978233
+              },
+              {
+                "candidates": 37,
+                "on_device": true,
+                "seconds": 1.4153786674141884
+              },
+              {
+                "candidates": 36,
+                "on_device": true,
+                "seconds": 1.379232294857502
+              }
+            ],
             "gpu_accelerated": true,
             "verifications": [
               {
                 "verified": true,
-                "candidates": 40,
-                "cpu_seconds": 90.79037825018167,
-                "device_seconds": 1.7925985977053642,
+                "candidates": 4,
+                "cpu_seconds": 2.2246206272393465,
+                "device_seconds": 0.04825392160564661,
                 "settled_on_device": true
               }
             ],
-            "device_generations": 5,
+            "device_generations": 6,
             "scored_generations": 6
           }
         ]
       },
       "median_seconds": {
-        "cpu": 640.4498890340328,
-        "device": 222.26070225983858
+        "cpu": 521.2772226929665,
+        "device": 22.403842970728874
       }
     }
   ]

@@ -1113,8 +1113,9 @@ mutation found fitness at 89–98% of fit CPU time and exact genotype repeats in
   were the degenerate-partition rows. `tests/test_evox_population.py` keeps a
   representative subset.
 
-GPU parity has not been measured on hardware. It rests on the same elementwise
-IEEE operations plus the runtime verification.
+Hardware parity and route timing are recorded in the two CERES campaigns below.
+Runtime verification remains the guard for devices and software combinations
+outside those measurements.
 
 ### Complete EvoX fits
 
@@ -1186,7 +1187,7 @@ therefore presents the GPU route as intended for very expensive fits. Results ar
 in `benchmarks/results/evox_gpu/`, tabulated by
 `python benchmarks/summarize_evox_gpu.py`.
 
-### GPU grid: 100,000 samples × 200 features — 2026-09-14
+### Initial GPU grid: 100,000 samples × 200 features — 2026-09-14
 
 Job 2855129, six `gpu.q` tasks with the same software as the pilot: the largest
 row of `docs/performance/t1_scaling.json`, with 20 rules, 4 antecedents,
@@ -1233,7 +1234,8 @@ instead of all of them. The whole generation is scored on the device, and it
 keeps those scores when the sample matches; otherwise the CPU scores it and the
 fit stays on the CPU. The sample runs on the scalar CPU route, so settling on
 the device during verification needs a 3× per-candidate margin
-(`DeviceRoute.SAMPLE_DECISIVE`). It has not been measured on a GPU yet.
+(`DeviceRoute.SAMPLE_DECISIVE`). The follow-up campaign below measures this
+retained route on GPUs.
 
 `benchmark_evox_routes.py` now records each scored generation's seconds,
 candidates and route, and a phase breakdown of every fit. Profiling the `cpu`
@@ -1280,8 +1282,37 @@ EvoX CPU run on `compute-0-36`: finalization took 2.44 s fixed and 4.98 s
 optimized; complete one-generation fits took 21.05 s and 28.54 s, respectively.
 The new direct tests compare T1/T2, fixed/optimized finalization against the
 former sequence at three pruning tolerances and cover invalidation and cleanup.
-The sampled device verification and new finalization path still need a complete
-GPU measurement before updating the earlier whole-fit GPU ratios.
+
+### GPU follow-up with sampled verification and finalization reuse — 2026-09-14
+
+Authorized job 2855175 repeated the six 100,000-sample × 200-feature workloads
+from the initial grid on the retained code, using the same population, generation
+budget, seeds and software environment. Five tasks ran on GTX 1080 Ti / Xeon
+Silver 4114 nodes and fixed seed 7 ran on an RTX 2080 / Xeon Silver 4110 node.
+All six tasks exited with status 0. Every four-candidate device verification
+matched the CPU bit for bit, settled on the device immediately, and all 36 of
+the device route's population evaluations ran on CUDA. CPU and device routes
+produced identical best-fitness histories, populations, final fitness and
+predictions for every seed.
+
+| Partitions | Seed | GPU | EvoX `cpu` (s) | EvoX `device` (s) | Fit ratio | Verification CPU/device (s) | Device finalization (s) |
+| --- | ---: | --- | ---: | ---: | ---: | --- | ---: |
+| Fixed | 7 | RTX 2080 | 463.7 | 22.8 | 20.34× | 2.13/0.045 | 4.63 |
+| Fixed | 19 | GTX 1080 Ti | 521.3 | 22.4 | 23.27× | 2.22/0.048 | 3.17 |
+| Fixed | 41 | GTX 1080 Ti | 537.6 | 25.5 | 21.05× | 2.44/0.053 | 4.52 |
+| Optimized | 7 | GTX 1080 Ti | 735.2 | 37.6 | 19.54× | 3.25/0.080 | 5.90 |
+| Optimized | 19 | GTX 1080 Ti | 729.2 | 38.4 | 19.00× | 3.12/0.081 | 6.94 |
+| Optimized | 41 | GTX 1080 Ti | 727.8 | 35.8 | 20.31× | 3.20/0.079 | 4.41 |
+
+Medians are 521.3 s vs 22.8 s (22.87×) for fixed partitions and
+729.2 s vs 37.6 s (19.38×) for optimized partitions. The paired scoring medians
+are 516.4 s vs 18.4 s fixed and 721.8 s vs 30.2 s optimized. Finalization is
+now 3.2–6.9 s across both routes, rather than the roughly 100 s seen before the
+A10 follow-up. Sampled verification costs only 2.1–3.2 s on the CPU and
+0.045–0.081 s on the GPU, instead of rescoring a whole 40-candidate generation
+for 87–149 s. Together, those fixed-cost reductions raise the controlled
+whole-fit speedup from the initial campaign's 2.88×/3.24× to 22.87×/19.38×.
+The raw results and frozen task list are in `benchmarks/results/evox_gpu/`.
 
 ### Reproduction
 
@@ -1291,5 +1322,5 @@ python benchmarks/benchmark_evox_routes.py --samples 150 1000 --repeats 3
 python benchmarks/benchmark_evox_routes.py --samples 1000 --population 200 --repeats 1
 ```
 
-Add `--evox-source <EvoX source tree>` when `import evox` fails. Full suite after
-this increment: **1,246 passed, 19 skipped**.
+Add `--evox-source <EvoX source tree>` when `import evox` fails. Full suite on
+the retained tree: **1,245 passed, 43 skipped**.

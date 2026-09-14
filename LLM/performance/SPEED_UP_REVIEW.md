@@ -24,7 +24,7 @@ scalar, batched or device route automatically, by measurement.
 | A07 | Measured; implemented | Evaluation-local class masks plus `_LabelDomain`, which rebuilds the MCC's label set by counting instead of sorting `2 × samples` values per candidate. |
 | A08 | Measured; implemented | Pruning masks and both complexity penalties run on arrays. The penalties are accumulated in the reference's order, one addition each: summing them first differed in the last bits. |
 | A09 | Implemented | Empty phenotypes and fully pruned candidates return `0.0` without scoring, which is what the reference produces. A general zero-firing shortcut is still not established and is not implemented. |
-| A10 | Implemented; measured and tested | The final fit computes global metrics once, reuses fixed memberships or computes the selected optimized memberships once, and retains one firing matrix in a private scope. Pruning invalidates it; cleanup precedes resampling and fit return. On the 100,000 × 200 Type-1 probe, finalization fell from about 99–100 s to 2.3–4.4 s with exact final outputs. |
+| A10 | Implemented; measured and tested | The final fit computes global metrics once, reuses fixed memberships or computes the selected optimized memberships once, and retains one firing matrix in a private scope. Pruning invalidates it; cleanup precedes resampling and fit return. On the 100,000 × 200 Type-1 probe, finalization fell from about 99–100 s to 2.3–4.4 s with exact final outputs; the six full GPU follow-up fits measured 3.2–6.9 s. |
 | A11 | Measured; partial | `setdefault` removes duplicate hash work. The array decoder reproduces the same dictionary behavior, including the `ds_mode == 2` hash/equality inconsistency, rather than correcting it: correcting it would change which rules survive. |
 | B01 | Measured; diagnostic complete | Seeded exact-genotype and decoded-fragment reuse diagnostic exists. |
 | B02 | Measured; scoped implementation | Bounded exact cache for standard serial PyMoo and EvoX fits, sized to `max(256, 4 × population)`; custom/checkpoint/worker paths bypass it. Replaying recorded EvoX populations, four populations of capacity scored within 0.1% of an unbounded cache. |
@@ -46,7 +46,7 @@ scalar, batched or device route automatically, by measurement.
 | D01 | Prototype prerequisite cleared locally; deferred | Explicit pairwise reductions now pass the tested shapes in the D02 Numba prototype. No Cython evaluator or packaging changes adopted. |
 | D02 | Exact prototype measured; not adopted | `prototype_exact_compiled_reductions.py` reproduces the tested NumPy pairwise tree, with layout/dtype fallback. Complete-fit cold/warm comparisons are in the follow-up in `SPEED_UP.md`; this is benchmark-only, with no production dependency. |
 | D03 | Defer selection | The D02 prototype establishes local exact-kernel feasibility; no separate C++/SIMD implementation or maintenance benefit established. |
-| D04 | Implemented for EvoX; CPU-tensor and GPU parity and timing measured | `_torch_fitness.TorchObjective` scores T1 `ds_mode` 0/1 populations with fixed or optimized partitions, emulating NumPy's pairwise sums and ordered products; the MCC square root runs in NumPy because CPU `torch.sqrt` is not correctly rounded. In the initial CERES GTX 1080 Ti/RTX 2080 campaign at 100,000 samples × 200 features every verification matched exactly, generations scored 40–54× faster than the node CPU, and complete 5-generation fits ran 2.88× (fixed) and 3.24× (optimized) faster. Sampled verification and finalization reuse were added afterward and need a new complete GPU measurement. See `SPEED_UP.md`. |
+| D04 | Implemented for EvoX; CPU-tensor and GPU parity and timing measured | `_torch_fitness.TorchObjective` scores T1 `ds_mode` 0/1 populations with fixed or optimized partitions, emulating NumPy's pairwise sums and ordered products; the MCC square root runs in NumPy because CPU `torch.sqrt` is not correctly rounded. In the retained CERES GTX 1080 Ti/RTX 2080 campaign at 100,000 samples × 200 features, all six sampled verifications and paired searches matched exactly, all 36 device population evaluations ran on CUDA, and complete 5-generation fits ran 22.87× (fixed) and 19.38× (optimized) faster than their same-node EvoX CPU routes. See `SPEED_UP.md`. |
 | D05 | Prototype available; pending | Opt-in `--compile` probe exists; compilation not yet exercised. Depends on a stable tensor objective and warm-up accounting. |
 | D06 | Inspect; defer | Custom kernels need evidence of bottlenecks in a validated D04/D05 first. |
 | D07 | Dependencies checked; defer selection | JAX/JAXlib and CuPy unavailable locally. No installation or alternate-backend speed claim. |
@@ -122,8 +122,8 @@ comparisons. This completes the selected bounded follow-up, not every proposal.
    parity, optional-dependency/compiled CI coverage and a startup-cost strategy.
    Numerical tolerance remains unauthorized; it is not needed merely to explore
    the explicit pairwise route now demonstrated locally.
-4. D04 was measured on CERES GPUs (see `SPEED_UP.md`). Sampled verification,
-   per-generation timing and scoped finalization reuse followed the same day.
-   The finalization bottleneck is removed in CPU measurements; sampled
-   verification and the new finalization path still need a complete GPU
-   measurement.
+4. The D04 follow-up is complete on CERES GPUs (see `SPEED_UP.md`). All six
+   sampled verifications and paired searches were exact; all 36 device
+   population evaluations used CUDA. With scoped finalization reuse, complete
+   100,000 × 200 fits measured 22.87× faster for fixed partitions and 19.38×
+   for optimized partitions than their same-node EvoX CPU routes.

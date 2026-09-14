@@ -180,6 +180,14 @@ firing-strength matrix at a time while calculating rule weights, pruning, and
 final metrics. These temporary arrays are released before optional resampling
 or before ``fit`` returns.
 
+On a controlled 100,000-sample, 200-feature Type-1 campaign with 20 rules,
+population 40 and five generations, the same-node EvoX comparison measured a
+median whole-fit speedup of 22.87× for fixed partitions and 19.38× for optimized
+partitions. Every sampled device verification and all six paired searches
+matched exactly. Five workloads used GTX 1080 Ti GPUs and one used an RTX 2080;
+the measurements describe that large synthetic workload, not a general speed
+guarantee.
+
 The GPU objective is designed for very expensive fits: tens of thousands of
 samples or more, many features, large populations, and optimized partitions,
 whose memberships must be recomputed for every candidate. On small problems the
