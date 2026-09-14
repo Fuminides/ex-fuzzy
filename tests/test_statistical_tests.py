@@ -273,6 +273,24 @@ class TestPatternStability:
         stabilizer.pie_chart_class(1, var_list=[2])
         assert len(plt.gcf().axes) == 1
 
+        # A variable can legitimately be absent from every retained rule.
+        # Matplotlib rejects an empty pie, so the charts show an empty-state
+        # message instead.
+        for class_ix in stabilizer.class_vars:
+            stabilizer.class_vars[class_ix][2] = {-1: 1}
+
+        stabilizer.pie_chart_basic(2, 0)
+        assert plt.gcf().axes[0].texts[0].get_text() == 'No variable usage'
+
+        stabilizer.pie_chart_var(2)
+        assert all(
+            axis.texts[0].get_text() == 'No variable usage'
+            for axis in plt.gcf().axes
+        )
+
+        stabilizer.pie_chart_class(0, var_list=[2])
+        assert plt.gcf().axes[0].texts[0].get_text() == 'No variable usage'
+
     def test_variable_report_stops_at_the_cutoff(self, iris, capsys):
         X, y = iris
         lvs = utils.construct_partitions(X, fs.FUZZY_SETS.t1)

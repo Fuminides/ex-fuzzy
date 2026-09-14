@@ -384,9 +384,7 @@ class pattern_stabilizer():
                 sizes.append(var[key])
 
         fig1, ax1 = plt.subplots()
-        ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
-                shadow=True, startangle=90)
-        ax1.axis('equal')
+        self._plot_usage_pie(ax1, sizes, labels, shadow=True)
         plt.show()
 
     
@@ -412,8 +410,10 @@ class pattern_stabilizer():
                     labels.append(antecedents[var_ix][key].name)
                     sizes.append(var[key])
         
-            ax1[class_ix].pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=[colors[v] for v in labels])
-            ax1[class_ix].axis('equal')
+            self._plot_usage_pie(
+                ax1[class_ix], sizes, labels,
+                colors=[colors[v] for v in labels],
+            )
 
         plt.show()
 
@@ -442,10 +442,31 @@ class pattern_stabilizer():
                     labels.append(antecedents[var_ix][key].name)
                     sizes.append(var[key])
 
-            ax1[0, plot_ix].pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=[colors[v] for v in labels])
-            ax1[0, plot_ix].axis('equal')
+            self._plot_usage_pie(
+                ax1[0, plot_ix], sizes, labels,
+                colors=[colors[v] for v in labels],
+            )
 
         plt.show()
+
+
+    @staticmethod
+    def _plot_usage_pie(axis, sizes: list, labels: list[str], colors=None,
+                        shadow: bool = False) -> None:
+        '''Plot variable usage, including the valid no-usage case.'''
+        if not sizes:
+            axis.text(
+                0.5, 0.5, 'No variable usage',
+                ha='center', va='center', transform=axis.transAxes,
+            )
+            axis.set_axis_off()
+            return
+
+        axis.pie(
+            sizes, labels=labels, autopct='%1.1f%%', shadow=shadow,
+            startangle=90, colors=colors,
+        )
+        axis.axis('equal')
 
 
     def gen_colormap(self, antecedents):
