@@ -174,6 +174,12 @@ That first generation also times both routes. A GPU that is clearly faster per
 candidate, even while paying its start-up cost, is chosen straight away,
 sparing large problems further slow CPU generations.
 
+After optimization, classification fits evaluate the selected final model on
+the CPU. This phase reuses the selected partitions' memberships and retains one
+firing-strength matrix at a time while calculating rule weights, pruning, and
+final metrics. These temporary arrays are released before optional resampling
+or before ``fit`` returns.
+
 The GPU objective is designed for very expensive fits: tens of thousands of
 samples or more, many features, large populations, and optimized partitions,
 whose memberships must be recomputed for every candidate. On small problems the

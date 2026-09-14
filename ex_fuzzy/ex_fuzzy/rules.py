@@ -21,6 +21,7 @@ for rule quality assessment.
 import abc
 import numbers
 import copy
+from contextlib import contextmanager
 from typing import Optional
 
 import numpy as np
@@ -1351,6 +1352,28 @@ class MasterRuleBase():
             return np.array([])
 
 
+    @contextmanager
+    def _firing_cache_scope(self):
+        """Reuse firing strengths while an internal evaluation is immutable.
+
+        Final model evaluation asks for the same firing matrix repeatedly while
+        computing support, confidence, rule accuracy, and global metrics.  Keep
+        only the most recent matrix; pruning changes the ordered rule identities
+        and therefore invalidates it.  The scope is private because callers may
+        otherwise mutate data or rule antecedents between inference calls.
+        """
+        missing = object()
+        previous = getattr(self, '_scoped_firing_cache', missing)
+        self._scoped_firing_cache = None
+        try:
+            yield
+        finally:
+            if previous is missing:
+                del self._scoped_firing_cache
+            else:
+                self._scoped_firing_cache = previous
+
+
     def compute_firing_strenghts(self, X, precomputed_truth=None) -> np.array:
         '''
         Computes the firing strength of each rule for each sample.
@@ -1359,22 +1382,38 @@ class MasterRuleBase():
         :param precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
         :return: array with the firing strength of each rule for each sample.
         '''
+        cache_active = hasattr(self, '_scoped_firing_cache')
+        if cache_active:
+            rule_ids = tuple(id(rule) for rule in self.get_rules())
+            cached = self._scoped_firing_cache
+            if (cached is not None and cached[0] is X
+                    and cached[1] is precomputed_truth
+                    and cached[2] == rule_ids):
+                return cached[3]
+
         gathered = _gather_rule_firing(self.rule_bases, X, precomputed_truth)
         if gathered is not None:
-            return gathered
-        aux = []
-        for ix in range(len(self.rule_bases)):
-            aux.append(self[ix].compute_rule_antecedent_memberships(X, antecedents_memberships=precomputed_truth))
+            result = gathered
+        else:
+            aux = []
+            for ix in range(len(self.rule_bases)):
+                aux.append(self[ix].compute_rule_antecedent_memberships(
+                    X, antecedents_memberships=precomputed_truth))
 
-        # Filter out empty arrays
-        aux = [x for x in aux if x.size > 0]
+            # Filter out empty arrays
+            aux = [x for x in aux if x.size > 0]
 
-        # Handle case where all rule bases are empty
-        if len(aux) == 0:
-            return np.zeros((X.shape[0], 0))
+            # Handle case where all rule bases are empty
+            if len(aux) == 0:
+                result = np.zeros((X.shape[0], 0))
+            else:
+                # Firing strengths shape: samples x rules (x 2) (last is iv dimension) or (x alpha_cuts x 2) for gt2
+                result = np.concatenate(aux, axis=1)
 
-        # Firing strengths shape: samples x rules (x 2) (last is iv dimension) or (x alpha_cuts x 2) for gt2
-        return np.concatenate(aux, axis=1)
+        if cache_active:
+            self._scoped_firing_cache = (
+                X, precomputed_truth, rule_ids, result)
+        return result
 
 
     def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unkown=True) -> np.array:

@@ -23,6 +23,10 @@ Changed
 - **EvoX classification speed**: EvoX fits use the fit-local fitness and firing
   caches and population batching, and score chromosomes repeated within a
   generation once. Results are unchanged
+- **Final model evaluation**: Classification fits reuse the selected fuzzy
+  memberships and firing strengths while calculating rule weights, pruning,
+  and final metrics. The temporary arrays are released before resampling or
+  fit return, and the final model is unchanged
 - The fitness cache holds four populations of chromosomes (at least 256)
 - **pymoo is imported only when used**: importing Ex-Fuzzy and EvoX fits no
   longer import pymoo. ``FitRuleBase``, ``FitRuleBaseRegression`` and

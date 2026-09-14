@@ -409,15 +409,31 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         best_individual, self.fuzzy_type)
         self.lvs = self.rule_base.rule_bases[0].antecedents if self.lvs is None else self.lvs
 
+        # Finalization requests the same firing strengths repeatedly while it
+        # computes rule weights, pruning accuracy, and the public metrics. Reuse
+        # fixed-partition memberships from the problem; for the one selected
+        # optimized partition, compute them once. Both temporary memberships and
+        # firing matrices are released before optional resampling or fit return.
+        finalization_truth = getattr(problem, '_precomputed_truth', None)
+        if (finalization_truth is None and type(problem) is FitRuleBase
+                and self.rule_base.get_rules()):
+            finalization_truth = rules.compute_antecedents_memberships(
+                self.rule_base.antecedents, np.asarray(X))
         self.eval_performance = evr.evalRuleBase(
-        self.rule_base, np.array(X), y)
-        # Pruning needs per-rule dominance scores and winning-rule accuracy,
-        # but not the global MCC/accuracy.  The latter is computed again after
-        # pruning below and is the public final evaluation.
-        self.eval_performance.add_rule_weights()
-        self.eval_performance.add_classification_metrics()
-        self.rule_base.purge_rules(self.tolerance)
-        self.eval_performance.add_full_evaluation() # After purging the bad rules we update the metrics.
+            self.rule_base, np.array(X), y,
+            precomputed_truth=finalization_truth)
+        try:
+            with self.rule_base._firing_cache_scope():
+                # Pruning needs per-rule dominance scores and winning-rule
+                # accuracy, but not the global MCC/accuracy. The latter is
+                # computed after pruning and is the public final evaluation.
+                self.eval_performance.add_rule_weights()
+                self.eval_performance.add_classification_metrics()
+                self.rule_base.purge_rules(self.tolerance)
+                self.eval_performance.add_full_evaluation()
+        finally:
+            self.eval_performance.precomputed_truth = None
+            finalization_truth = None
         
         if p_value_compute:
             self.p_value_validation(bootstrap_size)

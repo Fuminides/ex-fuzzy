@@ -27,7 +27,7 @@ authorize future work. Confirm the scope of new work from the current task.
 | A07 | Implemented | Evaluation-local class masks and a fit-local integer label layout replacing the per-candidate `np.unique` in the MCC. |
 | A08 | Implemented | Pruning masks and both complexity penalties computed on arrays. |
 | A09 | Implemented | Empty-phenotype and fully-pruned candidates return the reference's `0.0` without scoring. |
-| A10 | Implemented | Final fit computes the global classification metrics once, after pruning. |
+| A10 | Implemented | Final fit computes global metrics once and reuses selected memberships plus one firing matrix during finalization. |
 | A11 | Partial: implemented | Exact `dict.setdefault` lookup; the pre-existing hash/equality inconsistency is preserved deliberately. |
 | B01 | Done: diagnostic | Seeded reuse measurements and bounded offline cache simulation. |
 | B02 | Implemented: scoped | Exact-genotype memoization for serial, built-in PyMoo and EvoX fits, sized to four populations (at least 256 entries). |
@@ -1076,14 +1076,12 @@ mutation found fitness at 89–98% of fit CPU time and exact genotype repeats in
   non-finite data or a single candidate over the memory budget, and flags
   individual candidates for CPU scoring: out-of-range genes, a partition whose
   parameters coincide (normalization by zero) and NaN firing.
-  `_torch_fitness.DeviceRoute` trusts the objective only after one generation of
-  at least four fresh candidates matches the CPU exactly (CPU values are used
-  for that generation), rejects it for the rest of the fit on any difference,
-  and then chooses CPU or device with the counterbalanced `_RouteProbe` logic
-  without a warm-up generation. The verification generation times both routes
-  on the same candidates with the device paying its first-use cost, so a device
-  faster by more than `_RouteProbe.DECISIVE` (1.25×) there is chosen at once,
-  sparing large problems slow CPU probing generations. Default
+  `_torch_fitness.DeviceRoute` trusts the objective only after four fresh
+  candidates from the first eligible generation match the CPU exactly and
+  rejects it for the rest of the fit on any difference. The whole generation
+  is scored on the device; its per-candidate time is compared with the CPU
+  sample, and a 3× margin settles on the device at once. Otherwise the
+  counterbalanced `_RouteProbe` chooses the faster route. Default
   `FitRuleBase.torch_devices` is `('cuda',)`.
 
 ### Exactness
@@ -1255,6 +1253,35 @@ recomputed the memberships of all 200 features 66 times (54 s), although fixed
 partitions already hold them, and stacked the antecedent arrays for another 47 s
 of self time. This is the roughly 100 s beyond scoring in the GPU grid, and both
 routes pay it.
+
+The retained A10 follow-up makes that reuse explicit. Finalization now reuses
+the problem's fixed memberships, or computes the selected optimized partition's
+memberships once. A private `MasterRuleBase` scope retains only the most recent
+firing matrix. Its key includes the data, memberships and ordered rule
+identities, so pruning invalidates the pre-pruning matrix. Both temporary
+memberships and firing are released in `finally` before p-value/bootstrap work
+or fit return.
+
+Two 100,000-sample × 200-feature Type-1 probes used the same 20-rule candidate
+and checked rule scores, support, confidence and accuracy, MCC, predictions and
+printed rules exactly. On `compute-0-36` (Xeon E5-2698 v4), merely supplying
+the fixed memberships reduced finalization from 89.36 s to 35.70 s. Extending
+the gathered T1 object kernel took 40.20 s, so it remains rejected. A second
+paired probe measured the complete retained route:
+
+| Partitions | Previous finalization (s) | Membership + firing reuse (s) | Ratio |
+| --- | ---: | ---: | ---: |
+| Fixed | 100.33 | 2.26 | 44.4× |
+| Optimized | 99.08 | 4.44 | 22.3× |
+
+Those two tasks shared `compute-0-38`, so the absolute times are diagnostic.
+The ratios are supported by the isolated membership probe and a production-path
+EvoX CPU run on `compute-0-36`: finalization took 2.44 s fixed and 4.98 s
+optimized; complete one-generation fits took 21.05 s and 28.54 s, respectively.
+The new direct tests compare T1/T2, fixed/optimized finalization against the
+former sequence at three pruning tolerances and cover invalidation and cleanup.
+The sampled device verification and new finalization path still need a complete
+GPU measurement before updating the earlier whole-fit GPU ratios.
 
 ### Reproduction
 
