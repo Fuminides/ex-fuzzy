@@ -1216,10 +1216,9 @@ The device scores a generation 40–54× faster, but a complete 5-generation fit
 is only about 3× faster. Two costs remain on the CPU:
 
 - Verification scores the whole first generation on the CPU: 87–149 s.
-- Setup and finalization outside the scored generations. The device route had
-  roughly 50–100 s more of this than expected from the verification and device
-  timings; the benchmark does not yet record per-generation times, so this is
-  unattributed.
+- Setup and finalization outside the scored generations: about 100 s, common to
+  both routes. Later profiling attributed it to the final model evaluation (see
+  the next section).
 
 Longer searches spread both costs over more generations. Verifying on a sample
 of the first generation would remove most of the first.
@@ -1228,6 +1227,34 @@ The recorded Ryzen 5600X PyMoo 3.0 medians for this workload, 159.7 s (fixed)
 and 255.7 s (optimized), are still faster than the GPU route on these nodes. That
 comparison is context only: the GA, CPU and machine all differ. One seed ran on
 a different GPU model from the others.
+
+### Sampled verification and where the rest of a fit goes — 2026-09-14
+
+Commit 7f99e7f verifies the device on four candidates of the first generation
+instead of all of them. The whole generation is scored on the device, and it
+keeps those scores when the sample matches; otherwise the CPU scores it and the
+fit stays on the CPU. The sample runs on the scalar CPU route, so settling on
+the device during verification needs a 3× per-candidate margin
+(`DeviceRoute.SAMPLE_DECISIVE`). It has not been measured on a GPU yet.
+
+`benchmark_evox_routes.py` now records each scored generation's seconds,
+candidates and route, and a phase breakdown of every fit. Profiling the `cpu`
+route at 100,000 samples × 200 features on the loaded CERES login node (Xeon
+Gold 5115), with 1 generation to isolate the fixed costs:
+
+| Partitions | Population | Fit (s) | Finalization (s) | Scoring (s) | Problem setup (s) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Fixed | 8 | 141.9 | 121.8 | 19.1 | 1.0 |
+| Optimized | 4 | 136.2 | 113.0 | 21.9 | 0.3 |
+
+Finalization is the object evaluation that `fit` runs after the optimizer
+returns. On a 20-rule fixed-partition rule base it took 113 s:
+`add_full_evaluation` 72.1 s, `add_rule_weights` 20.4 s and
+`add_classification_metrics` 20.3 s. `compute_firing_strenghts` ran 22 times and
+recomputed the memberships of all 200 features 66 times (54 s), although fixed
+partitions already hold them, and stacked the antecedent arrays for another 47 s
+of self time. This is the roughly 100 s beyond scoring in the GPU grid, and both
+routes pay it.
 
 ### Reproduction
 

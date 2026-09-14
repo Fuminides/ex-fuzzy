@@ -122,6 +122,8 @@ comparisons. This completes the selected bounded follow-up, not every proposal.
    parity, optional-dependency/compiled CI coverage and a startup-cost strategy.
    Numerical tolerance remains unauthorized; it is not needed merely to explore
    the explicit pairwise route now demonstrated locally.
-4. D04 was measured on CERES GPUs (see `SPEED_UP.md`). Remaining work: verify
-   the device on a sample of the first generation instead of all of it, record
-   per-generation times, and attribute the device route's extra CPU overhead.
+4. D04 was measured on CERES GPUs (see `SPEED_UP.md`). Sampled verification and
+   per-generation timing followed the same day. The largest remaining fixed cost
+   is the final model evaluation in `fit`, which recomputes memberships and
+   firing strengths about twenty times. Sampled verification still needs a GPU
+   measurement.

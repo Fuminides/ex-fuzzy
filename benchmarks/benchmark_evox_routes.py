@@ -27,6 +27,12 @@ Timings are withheld unless every EvoX route produced the identical
 best-fitness history, final population, final fitness and predictions for each
 seed.  The device route's verification outcome, the CPU and device seconds it
 measured, and which generations the device scored are recorded as evidence.
+
+Every run also records where its time went: the seconds, candidates and route
+of each scored generation, and phases of the fit -- preprocessing before the
+problem exists, problem setup, the optimizer (split into population evaluation,
+scoring and the rest of the GA loop), device setup within scoring, and
+finalization after the optimizer returns.  Phase timers synchronize CUDA first.
 When the ``individual`` route runs, the fitness cache capacity is also replayed
 offline over the populations it evaluated.
 
@@ -162,20 +168,63 @@ def main() -> None:
         torch.ones(1, device="cuda").sum().item()
     device_types = ("cuda",) if cuda else ("cpu",)
 
+    import ex_fuzzy.evolutionary_backends as ev_backends
+
     recorded, verifications, generations = [], [], []
+    phases, marks = {}, {}
     original_population = evf.FitRuleBase._evaluate_gene_population
     original_route = evf.FitRuleBase._score_on_best_route
     original_verify = torchfit.DeviceRoute.verify
+    original_init = evf.FitRuleBase.__init__
+    original_build = torchfit.TorchObjective.build.__func__
+    original_optimizers = {backend: backend.optimize
+                           for backend in (ev_backends.PyMooBackend, ev_backends.EvoXBackend)}
+
+    def clock():
+        if cuda:
+            torch.cuda.synchronize()
+        return time.perf_counter()
+
+    def add_phase(name, seconds):
+        phases[name] = phases.get(name, 0.0) + seconds
+
+    def recording_init(self, *args, **kwargs):
+        start = clock()
+        marks.setdefault("setup_start", start)
+        original_init(self, *args, **kwargs)
+        add_phase("problem_setup", clock() - start)
+
+    def recording_build(cls, problem, device):
+        start = clock()
+        objective = original_build(cls, problem, device)
+        add_phase("device_setup", clock() - start)
+        return objective
+
+    def recording_optimizer(original):
+        def optimize(self, *args, **kwargs):
+            start = clock()
+            try:
+                return original(self, *args, **kwargs)
+            finally:
+                marks["optimize_end"] = clock()
+                add_phase("optimize", marks["optimize_end"] - start)
+        return optimize
 
     def recording_population(self, genes, device=None):
         recorded.append(np.array(genes))
-        return original_population(self, genes, device)
+        start = clock()
+        try:
+            return original_population(self, genes, device)
+        finally:
+            add_phase("population_evaluation", clock() - start)
 
     def recording_route(self, fresh, population, device=None):
-        start = time.perf_counter()
+        start = clock()
         fitness, on_device = original_route(self, fresh, population, device)
+        seconds = clock() - start
+        add_phase("scoring", seconds)
         generations.append({"candidates": int(len(fresh)), "on_device": bool(on_device),
-                            "seconds": time.perf_counter() - start})
+                            "seconds": seconds})
         return fitness, on_device
 
     def recording_verify(self, expected, actual, cpu_seconds=None, device_seconds=None):
@@ -201,6 +250,8 @@ def main() -> None:
         recorded.clear()
         verifications.clear()
         generations.clear()
+        phases.clear()
+        marks.clear()
         model = evf.BaseFuzzyRulesClassifier(
             nRules=args.rules, nAnts=args.ants, fuzzy_type=fs.FUZZY_SETS.t1,
             backend="pymoo" if route == "pymoo" else "evox",
@@ -208,17 +259,30 @@ def main() -> None:
         with route_context(route), \
                 patch.object(evf.FitRuleBase, "_evaluate_gene_population", recording_population), \
                 patch.object(evf.FitRuleBase, "_score_on_best_route", recording_route), \
-                patch.object(torchfit.DeviceRoute, "verify", recording_verify):
-            if cuda:
-                torch.cuda.synchronize()
-            start = time.perf_counter()
+                patch.object(torchfit.DeviceRoute, "verify", recording_verify), \
+                patch.object(evf.FitRuleBase, "__init__", recording_init), \
+                patch.object(torchfit.TorchObjective, "build", classmethod(recording_build)), \
+                patch.object(ev_backends.PyMooBackend, "optimize",
+                             recording_optimizer(original_optimizers[ev_backends.PyMooBackend])), \
+                patch.object(ev_backends.EvoXBackend, "optimize",
+                             recording_optimizer(original_optimizers[ev_backends.EvoXBackend])):
+            start = clock()
             model.fit(X, y, n_gen=args.generations, pop_size=args.population,
                       random_state=seed, patience=None)
-            if cuda:
-                torch.cuda.synchronize()
-            seconds = time.perf_counter() - start
+            end = clock()
+            seconds = end - start
         result = model.optimization_result_
-        record = {"seconds": seconds, "performance": float(model.performance)}
+        breakdown = dict(phases)
+        breakdown["preprocessing"] = marks.get("setup_start", start) - start
+        breakdown["finalization"] = end - marks.get("optimize_end", end)
+        breakdown["optimizer_other"] = breakdown.get("optimize", 0.0) - breakdown.get(
+            "population_evaluation", 0.0)
+        breakdown["evaluation_other"] = breakdown.get("population_evaluation", 0.0) - breakdown.get(
+            "scoring", 0.0)
+        record = {"seconds": seconds, "performance": float(model.performance),
+                  "phases": breakdown, "generations": list(generations)}
+        print("  phases: " + ", ".join(f"{name} {value:.2f} s" for name, value in sorted(breakdown.items())),
+              flush=True)
         outcome = None
         if route != "pymoo":
             outcome = (np.asarray(result["history"]["best_fitness"]), result["pop"],
