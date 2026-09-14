@@ -43,8 +43,8 @@ set separate from training and final evaluation data.
 ## Performance invariants
 
 Before changing `FitRuleBase`, `_fitness.py`, `_array_fitness.py`, or firing
-kernels in `rules.py`, read [SPEED_UP.md](SPEED_UP.md) and
-[SPEED_UP_REVIEW.md](SPEED_UP_REVIEW.md).
+kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
+[SPEED_UP_REVIEW.md](performance/SPEED_UP_REVIEW.md).
 
 - Preserve objective values bit for bit, including reduction and pruning order.
   Numerical closeness is insufficient: small changes can alter the entire search.
