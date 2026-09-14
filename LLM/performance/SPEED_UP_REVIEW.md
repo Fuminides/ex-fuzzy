@@ -1,4 +1,4 @@
-# Speedup catalogue review — updated 2026-09-10
+# Speedup catalogue review — updated 2026-09-14
 
 All **36 defined proposals** in `SPEED_UP.md` now have a decision backed by code,
 a measurement, or a stated blocker. "Inspect" means a code/dependency
@@ -9,7 +9,7 @@ maintain every implementation simultaneously.
 
 Implemented evaluator changes preserve the objective bit for bit. Nothing here
 changes the search or public configuration; eligible fits choose the internal
-batching route automatically, by measuring it against the scalar one.
+scalar, batched or device route automatically, by measurement.
 
 ## Coverage and decisions
 
@@ -27,8 +27,8 @@ batching route automatically, by measuring it against the scalar one.
 | A10 | Implemented; tested | The final fit computes the global classification metrics once, after pruning. `tests/test_finalization_work.py` covers it; its seeded-fit test previously could not run because of an undefined name. |
 | A11 | Measured; partial | `setdefault` removes duplicate hash work. The array decoder reproduces the same dictionary behavior, including the `ds_mode == 2` hash/equality inconsistency, rather than correcting it: correcting it would change which rules survive. |
 | B01 | Measured; diagnostic complete | Seeded exact-genotype and decoded-fragment reuse diagnostic exists. |
-| B02 | Measured; scoped implementation | Bounded exact cache for standard serial PyMoo only; custom/checkpoint/worker paths bypass it. |
-| B03 | Superseded where it would apply | Under `elementwise=True` the fitness cache already skips every repeated genotype within and across generations, so within-generation sharing has no work left to save on the path where B02 runs. On the paths where B02 is deliberately disabled (workers, custom losses, checkpoints) sharing would need the ordered scatter of C01 first. |
+| B02 | Measured; scoped implementation | Bounded exact cache for standard serial PyMoo and EvoX fits, sized to `max(256, 4 × population)`; custom/checkpoint/worker paths bypass it. Replaying recorded EvoX populations, four populations of capacity scored within 0.1% of an unbounded cache. |
+| B03 | Implemented for populations (2026-09-14) | The scalar `elementwise=True` path already skips repeats through B02, but whole-population routes filled the cache only after scoring and so scored in-population repeats more than once. `FitRuleBase._cached_population` now scores each such genotype once, for the batched PyMoo route and EvoX. Worker, custom-loss and checkpoint paths still bypass it. |
 | B04 | Measured; implemented for fixed partitions | Fit-local LRU of firing columns, 8 MiB of retained payload, installed in the same scope as B02 and only when partitions are fixed. Complete seeded fits: 1.11×–1.59× on top of the array evaluator. |
 | B05 | Measured; rejected | With optimized partitions the same antecedent indexes denote different fuzzy sets per candidate. Reusing columns changed the objective of 104 of 200 candidates. `benchmarks/prototype_firing_cache.py` reproduces it. |
 | B06 | Inspect; defer | Offspring provenance absent; one rule change can invalidate all winners/pruning. Needs a dependency design before incremental objective updates. |
@@ -46,7 +46,7 @@ batching route automatically, by measuring it against the scalar one.
 | D01 | Prototype prerequisite cleared locally; deferred | Explicit pairwise reductions now pass the tested shapes in the D02 Numba prototype. No Cython evaluator or packaging changes adopted. |
 | D02 | Exact prototype measured; not adopted | `prototype_exact_compiled_reductions.py` reproduces the tested NumPy pairwise tree, with layout/dtype fallback. Complete-fit cold/warm comparisons are in the follow-up in `SPEED_UP.md`; this is benchmark-only, with no production dependency. |
 | D03 | Defer selection | The D02 prototype establishes local exact-kernel feasibility; no separate C++/SIMD implementation or maintenance benefit established. |
-| D04 | Kernel prototype/measured; investigate | RTX 5060 Ti available. Ordered CUDA products preserve tested parity; generic products do not. The full batched classification objective remains pending and inherits the C01 padding and pruning problems. |
+| D04 | Implemented for EvoX; CPU-tensor parity measured, GPU pending | `_torch_fitness.TorchObjective` scores T1 `ds_mode` 0/1 populations with fixed or optimized partitions, emulating NumPy's pairwise sums and ordered products. On CPU tensors it matched `_array_score` in all 6,360 tested candidates once the MCC square root moved to NumPy (CPU `torch.sqrt` is not correctly rounded). Used only on CUDA, after one exact verification generation per fit and when the probe measures it faster. The GPU run needs an environment with CUDA PyTorch, pymoo ≥ 0.6.2 and EvoX operators; see `SPEED_UP.md`. |
 | D05 | Prototype available; pending | Opt-in `--compile` probe exists; compilation not yet exercised. Depends on a stable tensor objective and warm-up accounting. |
 | D06 | Inspect; defer | Custom kernels need evidence of bottlenecks in a validated D04/D05 first. |
 | D07 | Dependencies checked; defer selection | JAX/JAXlib and CuPy unavailable locally. No installation or alternate-backend speed claim. |
@@ -122,3 +122,6 @@ comparisons. This completes the selected bounded follow-up, not every proposal.
    parity, optional-dependency/compiled CI coverage and a startup-cost strategy.
    Numerical tolerance remains unauthorized; it is not needed merely to explore
    the explicit pairwise route now demonstrated locally.
+4. Measure D04 on a CUDA device with `benchmarks/benchmark_evox_routes.py`:
+   confirm the verification generation passes and record where the device
+   route wins. Until then no GPU speedup is claimed.

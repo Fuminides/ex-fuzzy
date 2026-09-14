@@ -10,6 +10,31 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Added
+-----
+- **EvoX GPU classification fitness**: On a CUDA device the EvoX backend can
+  score whole generations of the built-in Type-1 classification objective with
+  an exact PyTorch implementation, for fixed or optimized partitions. Each fit
+  checks it against the CPU on one generation and then uses it only where it
+  measures faster, so results are unchanged
+
+Changed
+-------
+- **EvoX classification speed**: EvoX fits use the fit-local fitness and firing
+  caches and population batching, and score chromosomes repeated within a
+  generation once. Results are unchanged
+- The fitness cache holds four populations of chromosomes (at least 256)
+- **pymoo is imported only when used**: importing Ex-Fuzzy and EvoX fits no
+  longer import pymoo. ``FitRuleBase``, ``FitRuleBaseRegression`` and
+  ``ExploreRuleBases`` no longer subclass pymoo's ``Problem``; the PyMoo backend
+  and the temporal classifier wrap them when they run. To pass one to pymoo
+  directly, wrap it with ``evolutionary_backends.as_pymoo_problem``
+
+Fixed
+-----
+- The batched population evaluator added the ``alpha`` size penalty when every
+  surviving rule scored exactly the tolerance; the reference adds none
+
 Removed
 -------
 - The unused NetworkX rule-graph visualization and ``viz`` installation extra.

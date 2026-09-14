@@ -59,6 +59,10 @@ On top of that, three further layers avoid repeating work:
   entire generation is decoded, fired, scored and pruned in single array
   operations. This removes per-candidate interpreter overhead, which dominates
   on small datasets.
+- **Whole-generation scoring with EvoX.** The EvoX backend hands over a whole
+  generation at once. Chromosomes repeated within it are scored once, and on a
+  CUDA device the generation can be scored by an exact PyTorch implementation
+  of the objective.
 
 Caching does not change how many evaluations the search performs. A repeated
 chromosome still counts as an evaluation; it is simply not recomputed.
@@ -80,10 +84,15 @@ as fast as another one.
      - The built-in objective (no ``custom_loss``), Type-1 or Type-2 sets, and
        ordinary — not temporal — partitions.
    * - Fit-local caches
-     - The built-in objective, the ``pymoo`` backend, no thread runner and no
-       checkpointing. The firing cache additionally needs fixed partitions.
+     - The built-in objective, the ``pymoo`` or ``evox`` backend, no thread
+       runner and no checkpointing. The firing cache additionally needs fixed
+       partitions.
    * - Population batching
      - Everything the caches need, plus Type-1 sets and fixed partitions.
+   * - Device objective
+     - Everything the caches need, plus the ``evox`` backend on a CUDA device,
+       Type-1 sets, ``ds_mode`` 0 or 1, and no categorical variables when the
+       partitions are optimized. Partitions may be fixed or optimized.
 
 Two entries in that table are worth spelling out, because they surprise people:
 
@@ -145,6 +154,30 @@ records the machine, Python and NumPy version it was measured on and is ignored
 if any of those differ, so a profile copied to another machine cannot mislead a
 fit. It affects only which route runs, never a result.
 
+How the device route is chosen
+==============================
+
+With the EvoX backend on a CUDA device, the same kind of measurement decides
+between scoring on the CPU and scoring with the PyTorch objective on the GPU.
+
+Before that, the GPU has to earn trust. The first generation is scored both
+ways and compared value for value, and the CPU values are the ones used. The
+PyTorch objective reproduces NumPy's floating-point summation order, so on a
+conforming device the two agree exactly. If a single score differs — because
+of a particular device's arithmetic or NumPy version — the fit stays on the
+CPU for the rest of its run. A GPU can therefore change how fast a fit runs,
+never what it finds.
+
+That first generation also times both routes. A GPU that is clearly faster even
+while paying its start-up cost is chosen straight away, sparing large problems
+further slow CPU generations.
+
+The GPU objective is designed for very expensive fits: tens of thousands of
+samples or more, many features, large populations, and optimized partitions,
+whose memberships must be recomputed for every candidate. On small problems the
+measurement usually keeps scoring on the CPU, and the default PyMoo backend is
+usually the faster choice altogether.
+
 When training is slower than expected
 =====================================
 
@@ -180,9 +213,10 @@ disable them and see whether your results change.
 
    evf.FitRuleBase.array_evaluation = False   # force the original object path
 
-This single switch turns off both the array evaluator and population batching,
-sending every candidate through the original rule-object implementation. Restore
-it by setting it back to ``True``.
+This single switch turns off the array evaluator, population batching and the
+device objective, sending every candidate through the original rule-object
+implementation. Restore it by setting it back to ``True``. To rule out only the
+GPU objective, set ``evf.FitRuleBase.torch_devices = ()``.
 
 To compare properly, fit twice with the same ``random_state`` and check that the
 results match:

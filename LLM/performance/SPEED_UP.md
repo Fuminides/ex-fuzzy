@@ -1,12 +1,14 @@
 # Genetic training speedup development record
 
-**Status (2026-09-10): the earlier exact evaluator optimizations are complete.
-The follow-up adds bounded population batching for fixed-partition T1 fits,
-chooses between the scalar and batched routes by measurement rather than by
+**Status (2026-09-14): the earlier exact evaluator optimizations are complete.
+The 2026-09-10 follow-up adds bounded population batching for fixed-partition T1
+fits, chooses between the scalar and batched routes by measurement rather than by
 hardcoded bounds, and resolves enum serialization. An exact compiled-reduction
-prototype remains benchmark-only. See the follow-up measurements below; further compiled,
-T2 batching, optimized-partition batching and process-pool work are separate
-increments, not shipped capabilities.**
+prototype remains benchmark-only. The 2026-09-14 increment gives EvoX
+classification the same caches and batching, deduplicates within populations,
+and adds an exact PyTorch population objective (D04) for CUDA devices whose GPU
+parity and timing are not yet measured. Further compiled, T2 batching and
+process-pool work are separate increments, not shipped capabilities.**
 
 ### Current implementation status
 
@@ -28,14 +30,16 @@ authorize future work. Confirm the scope of new work from the current task.
 | A10 | Implemented | Final fit computes the global classification metrics once, after pruning. |
 | A11 | Partial: implemented | Exact `dict.setdefault` lookup; the pre-existing hash/equality inconsistency is preserved deliberately. |
 | B01 | Done: diagnostic | Seeded reuse measurements and bounded offline cache simulation. |
-| B02 | Implemented: scoped | Exact-genotype memoization for serial, built-in PyMoo fits only. |
+| B02 | Implemented: scoped | Exact-genotype memoization for serial, built-in PyMoo and EvoX fits, sized to four populations (at least 256 entries). |
+| B03 | Implemented: populations | A genotype repeated within one population is scored once, on the batched PyMoo route and for EvoX. |
 | B04 | Implemented: scoped | Fit-local firing reuse, fixed partitions only, 8 MiB of retained columns. |
 | B05 | Measured: rejected | Reusing firing across candidates with optimized partitions changed the objective of about half the candidates. |
-| C01/C02 | C01 implemented, dispatch measured; C02 deferred | Serial built-in T1, fixed partitions. The population is chunked to the gather budget, and the route is chosen by a runtime probe or an opt-in stored calibration instead of the former 512-sample constant. Unsupported contexts retain scalar evaluation. |
+| C01/C02 | C01 implemented, dispatch measured; C02 deferred | Serial built-in T1, fixed partitions. The population is chunked to the gather budget, and the route is chosen by a runtime probe or an opt-in stored calibration instead of the former 512-sample constant. Unsupported contexts retain scalar evaluation. EvoX reaches the same routes. |
 | C05 | Serialization prerequisite fixed | Stable enum definition; fresh-process and spawned-worker parity tests. Persistent/shared-memory workers are not implemented. |
 | C07 | Partial: implemented | Fit-scoped owned pools; success/error cleanup and external ownership preserved. |
 | C10 | Measured | Peak RSS of the new fit-local caches reported below. |
 | D01/D02/D03 | Exact prototype measured; not adopted | Explicit pairwise reductions pass tested parity; optional Numba dispatch stays in benchmarks. |
+| D04 | Implemented for EvoX on CUDA; GPU unmeasured | Exact PyTorch T1 population objective for fixed or optimized partitions, `ds_mode` 0/1. Bit for bit on CPU tensors; verified once per fit and chosen by measurement. |
 | Other IDs | Reviewed, pending or deferred | See [all 36 decisions and evidence](SPEED_UP_REVIEW.md). |
 
 Scope: `BaseFuzzyRulesClassifier`, primarily its built-in classification objective
@@ -1022,3 +1026,175 @@ python benchmarks/calibrate_population_dispatch.py --quick   # store a profile
 ```
 
 Full suite after this increment: **698 passed, 40 skipped**.
+
+## EvoX population evaluation — 2026-09-14
+
+### Starting point
+
+EvoX classification got the array evaluator but nothing fit-scoped.
+`BaseFuzzyRulesClassifier.fit` opened `_fitness_cache_scope` only for
+`PyMooBackend`, so EvoX fits had no genotype cache, firing cache or route
+probe. `EvoXBackend._evaluate_population` looped over individuals, copied each
+one from the device separately and called `FitRuleBase._evaluate`, so population
+batching was unreachable. A seeded probe with EvoX's real SBX and polynomial
+mutation found fitness at 89–98% of fit CPU time and exact genotype repeats in
+54–72% of evaluations at population 40, 10–33% at population 200.
+
+### What ships
+
+- **Caches for EvoX.** The fit scope is enabled for `EvoXBackend` as well, under
+  the same built-in/serial conditions, including the EvoX checkpoint branch
+  (checkpoints are ignored there).
+- **Whole generations.** `EvoXBackend._evaluate_population` copies the
+  population to the host once and calls `FitRuleBase._evaluate_gene_population`
+  when a problem exposes it; other problems keep a per-individual loop.
+  Regression's `_evaluate_torch_population` hook is unchanged.
+- **B03 within populations.** `FitRuleBase._cached_population` scores a genotype
+  repeated within one population once and copies the value. It serves both the
+  batched PyMoo route and EvoX. Within one population the LRU recency of a
+  repeated key now follows its first occurrence; this changes only eviction
+  order.
+- **Cache capacity.** `_fitness_cache_scope(problem, enabled, population)` sizes
+  the genotype cache to `max(256, 4 × population)` entries, with the key payload
+  limit scaled to match. Offline replay of the recorded EvoX populations
+  (genotypes scored, lower is better):
+
+  | Workload (samples/population/partitions) | 256 | 1× | 2× | 4× | 8× | Unbounded |
+  | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+  | 150/40 fixed | 347 | 354 | 348 | 347 | 347 | 347 |
+  | 150/40 optimized | 440 | 450 | 443 | 440 | 440 | 440 |
+  | 1,000/40 fixed | 372 | 379 | 375 | 372 | 372 | 372 |
+  | 1,000/40 optimized | 577 | 589 | 579 | 577 | 577 | 577 |
+  | 1,000/200 fixed | 4,170 | 4,196 | 4,146 | 4,139 | 4,134 | 4,134 |
+  | 1,000/200 optimized | 5,527 | 5,546 | 5,484 | 5,458 | 5,457 | 5,457 |
+
+- **D04 device objective.** `_torch_fitness.TorchObjective` ports
+  `_population_fitness.score_population` to PyTorch for T1, `ds_mode` 0/1, fixed
+  partitions (packed table uploaded once) and optimized partitions (per-candidate
+  decoding, normalization and trapezoids on the device). It declines problems
+  with categorical variables under optimized partitions, single-term partitions,
+  non-finite data or a single candidate over the memory budget, and flags
+  individual candidates for CPU scoring: out-of-range genes, a partition whose
+  parameters coincide (normalization by zero) and NaN firing.
+  `_torch_fitness.DeviceRoute` trusts the objective only after one generation of
+  at least four fresh candidates matches the CPU exactly (CPU values are used
+  for that generation), rejects it for the rest of the fit on any difference,
+  and then chooses CPU or device with the counterbalanced `_RouteProbe` logic
+  without a warm-up generation. The verification generation times both routes
+  on the same candidates with the device paying its first-use cost, so a device
+  faster by more than `_RouteProbe.DECISIVE` (1.25×) there is chosen at once,
+  sparing large problems slow CPU probing generations. Default
+  `FitRuleBase.torch_devices` is `('cuda',)`.
+
+### Exactness
+
+- **Sums.** `_PairwisePlan` lays out NumPy's `pairwise_sum` tree for one length
+  (fewer than 8 values from 0.0; up to 128 with eight accumulators and a
+  left-to-right tail; longer runs split at half rounded down to a multiple of 8)
+  and evaluates every leaf together with -0.0 padding, the exact additive
+  identity. It matched `np.sum` in all 626 tested cases: lengths 0–299 and
+  511–262,147, 2-D and 3-D row layouts, and values scaled by 1e±12.
+- **Products.** The feature axis is multiplied left to right, as `np.prod` does.
+- **`torch.sqrt` is not correctly rounded on CPU.** Before this was found, 1 of
+  6,360 candidates differed in the last bit: the MCC denominator 180,215,968
+  gave a square root one ulp below NumPy's. The device returns exact
+  integer-valued MCC terms and complexity counts, and `_finish` computes the
+  square root, divisions and penalties in NumPy exactly as
+  `score_population` does. Pruning uses `correct_wins != 0` instead of the
+  division, an exact equivalent of `accuracy != 0.0`.
+- **Pre-existing CPU defect fixed.** `score_population` returned a size penalty
+  term of 1.0 instead of `_complexity`'s 0.0 when every survivor scored exactly
+  the tolerance (no rule clears the strict `>`), so the batched route added
+  `alpha` where the scalar oracle adds nothing. All 39 constructed
+  single-class edge candidates differed before the fix and none after.
+- **Parity after the fix.** A scratch harness (not in the repository) compared
+  `TorchObjective.score` on CPU tensors with `_array_score` over 240 problem
+  configurations: samples 1/7/150/1,000/3,000, fixed and optimized partitions,
+  `ds_mode` 0/1, `allow_unknown`, tolerances 0/0.01/0.3 and penalties. It found
+  0 value and 0 bit mismatches in 6,360 candidates; the 120 declined candidates
+  were the degenerate-partition rows. `tests/test_evox_population.py` keeps a
+  representative subset.
+
+GPU parity has not been measured on hardware. It rests on the same elementwise
+IEEE operations plus the runtime verification.
+
+### Complete EvoX fits
+
+`benchmarks/benchmark_evox_routes.py`: 10 features, 3 classes, 20 rules,
+4 antecedents, 30 generations, seed 7, early stopping disabled, T1. EvoX 1.4.0
+operators loaded from source with `--evox-source` (its package does not import
+on PyTorch 2.6), PyTorch 2.6.0+cpu, NumPy 2.4.6, pymoo 0.6.2, Python 3.11, on the
+CERES login node with a load average of about 1,500 on 40 cores, so the timings
+are indicative. Population 40: median of three in-process repeats in randomized
+route order; population 200: one run. Every workload had identical best-fitness
+histories, final populations, final fitness and predictions on all routes.
+`individual` is the previous per-individual evaluation, `cpu` the new CPU
+routes, and `device` the PyTorch objective forced onto CPU tensors (overhead
+only; not a default route).
+
+| Samples | Population | Partitions | Individual (s) | CPU routes (s) | Device on CPU tensors (s) | CPU routes speedup |
+| ---: | ---: | --- | ---: | ---: | ---: | ---: |
+| 150 | 40 | Fixed | 0.762 | 0.182 | 0.234 | 4.19× |
+| 150 | 40 | Optimized | 1.830 | 0.733 | 0.670 | 2.50× |
+| 1,000 | 40 | Fixed | 1.636 | 0.452 | 0.631 | 3.62× |
+| 1,000 | 40 | Optimized | 2.870 | 1.388 | 1.593 | 2.07× |
+| 1,000 | 200 | Fixed | 9.382 | 4.478 | 4.882 | 2.10× |
+| 1,000 | 200 | Optimized | 15.445 | 14.079 | 13.984 | 1.10× |
+
+Optimized partitions at population 200 gain little on the CPU: most offspring
+are new genotypes and optimized partitions get neither the firing cache nor
+batching. That is the workload the device objective targets.
+
+### Environment notes for a GPU measurement
+
+On CERES only `gpuenv` has CUDA PyTorch (2.6.0). EvoX 1.4.0 does not import on
+PyTorch 2.6 (a custom-op schema error in its package initialization), so
+EvoX 1.3.0 was installed there with `--no-deps` (2026-09-14); its SBX and
+polynomial mutation sources are identical to 1.4.0's. `gpuenv`'s pymoo 0.6.1.5
+cannot run the PyMoo backend of this checkout, but after the same-day refactor
+(`_problem.py`) neither importing the package nor EvoX fits import pymoo.
+`datasci` has pymoo 0.6.2 and CPU-only PyTorch, which imports on the login node
+only with its own `libstdc++.so.6` in `LD_PRELOAD`.
+
+`benchmarks/cluster/submit_evox_gpu.sh` submits the default grid, the
+100,000-sample row of `docs/performance/t1_scaling.json` (10/50/200 features,
+fixed and optimized partitions, seeds 7/19/41, population 40, 5 generations).
+Each task times the EvoX `cpu` and `device` routes on one GPU node, so the
+comparison does not mix machines; `ROUTES="pymoo cpu device"` adds the PyMoo
+reference where pymoo can run. `PILOT=1` submits a 10,000-sample check first.
+Submitting needs the author's approval for each run.
+
+### GPU pilot — 2026-09-14
+
+Job 2855125 on `gpu.q` in `gpuenv` (PyTorch 2.6.0+cu124, EvoX 1.3.0, NumPy
+2.4.6; its pymoo 0.6.1.5 was never imported): 10,000 samples, 10 features, T1,
+20 rules, 4 antecedents, population 40, 5 generations, seed 7, one fit per
+route. Both tasks exited with status 0.
+
+| Partitions | Node | EvoX `cpu` (s) | EvoX `device` (s) | Ratio | Device generations | Verification CPU/device (s) |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| Fixed | gpu-1-7: GTX 1080 Ti, Xeon Silver 4114 | 3.85 | 1.89 | 2.04× | 4 of 6 | passed; 0.48/0.57, kept probing |
+| Optimized | gpu-1-1: RTX 2080, Xeon Silver 4110 | 4.79 | 1.66 | 2.88× | 5 of 6 | passed; 0.62/0.45, settled on the device |
+
+This is the first GPU parity measurement of the D04 objective, on Pascal and
+Turing cards. Each verification matched all 40 candidates exactly, and both
+routes produced identical searches and final performance.
+
+Limitations: single runs with one seed, and the two workloads ran on different
+GPU models. The recorded Ryzen 5600X PyMoo medians for these workloads (0.92 s
+and 1.00 s) are faster than either EvoX route on these nodes; the GA and the CPU
+both differ, so this is context, not a controlled comparison. The user guide
+therefore presents the GPU route as intended for very expensive fits. Results are
+in `benchmarks/results/evox_gpu/`, tabulated by
+`python benchmarks/summarize_evox_gpu.py`.
+
+### Reproduction
+
+```bash
+pytest -q tests/test_evox_population.py tests/test_population_evaluation.py tests/test_evolutionary_backends.py
+python benchmarks/benchmark_evox_routes.py --samples 150 1000 --repeats 3
+python benchmarks/benchmark_evox_routes.py --samples 1000 --population 200 --repeats 1
+```
+
+Add `--evox-source <EvoX source tree>` when `import evox` fails. Full suite after
+this increment: **1,246 passed, 19 skipped**.

@@ -22,8 +22,8 @@ All module paths below are relative to `ex_fuzzy/ex_fuzzy/`.
 | --- | --- |
 | Fuzzy sets and linguistic variables | `fuzzy_sets.py`, `utils.py`, `temporal.py`, `centroid.py` |
 | Rule representation, inference, firing kernels | `rules.py` |
-| Genetic classification | `evolutionary_fit.py`, `evolutionary_backends.py`, `evolutionary_search.py` |
-| Exact built-in objective | `_fitness.py`, `_array_fitness.py` |
+| Genetic classification | `evolutionary_fit.py`, `evolutionary_backends.py`, `evolutionary_search.py`, `_problem.py` (optimizer-independent problem base and pymoo wrapper) |
+| Exact built-in objective | `_fitness.py`, `_array_fitness.py`, `_population_fitness.py` (CPU population batching), `_torch_fitness.py` (exact PyTorch population objective for EvoX devices) |
 | Population route selection | `_dispatch_profile.py` |
 | Regression | `evolutionary_fit_regression.py` |
 | High-level classifiers and mining | `classifiers.py`, `rule_mining.py` |
@@ -33,7 +33,14 @@ All module paths below are relative to `ex_fuzzy/ex_fuzzy/`.
 | Conformal prediction | `conformal.py` |
 | Other learners | `ferl.py` (compact and medium FERL), `ferl_deep.py` (`DeepFERL`), `_evidence.py` (shared Dempster--Shafer combination), `ferl_partitions.py`, `tree_learning_new/`, `cognitive_maps.py` |
 
-PyMoo is the default backend and supports checkpoints. Consult
+PyMoo is the default backend and supports checkpoints. The fitting problems
+subclass `_problem.Problem`, not pymoo's; pymoo is imported only when the PyMoo
+backend or the temporal classifier runs, which wrap problems with
+`as_pymoo_problem`. Keep module-level pymoo imports out of the package
+(`tests/test_optional_pymoo.py` checks it). EvoX classification scores
+whole generations through `FitRuleBase._evaluate_gene_population`, sharing the
+fit-local caches and batching, and on CUDA an exact PyTorch objective that each
+fit verifies against the CPU before use. Consult
 [the EvoX documentation](../docs/source/evox_backend.rst) and implementation for
 current device support; old JAX descriptions and blanket GPU speed claims are stale.
 Fuzzy sets include Type-1, interval Type-2, and general Type-2; fast paths support
@@ -53,6 +60,10 @@ kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
   `FitRuleBase._array_score` returns `None` for unsupported cases.
 - NumPy reduction layout and pairwise summation affect exactness. Compare new
   reductions with the reference across relevant types and array layouts.
+- The PyTorch objective reproduces NumPy's pairwise sums and left-to-right
+  products, and leaves non-integer MCC and penalty arithmetic to NumPy because
+  CPU `torch.sqrt` is not correctly rounded. Its runtime verification is a
+  safety net, not a substitute for parity tests.
 - Fit-local fitness/firing caches and packed memberships must remain bounded and
   scoped to a fit, with cleanup on success and failure. Do not make them global.
 - Respect fast-path eligibility and preserve logical evaluation counts even on
@@ -70,10 +81,12 @@ selected test files. Fixtures live in `tests/conftest.py`.
 
 For evaluator changes, relevant suites include `test_array_evaluation.py`,
 `test_genetic_fitness_semantics.py`, `test_fast_fitness.py`, cache tests,
-`test_population_evaluation.py`, and `test_route_dispatch.py`.
+`test_population_evaluation.py`, `test_route_dispatch.py` and
+`test_evox_population.py`.
 Measure complete seeded fits with
-`python benchmarks/benchmark_evaluator_variants.py`; it refuses timings unless
-variants produce identical fitted models. Avoid competing workloads during timing.
+`python benchmarks/benchmark_evaluator_variants.py`, and EvoX fits with
+`python benchmarks/benchmark_evox_routes.py`; both refuse timings unless
+variants produce identical results. Avoid competing workloads during timing.
 See the speedup records for workload-specific reproduction commands and limitations.
 
 The README accuracy figure comes from `benchmarks/benchmark_keel.py`, one
