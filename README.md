@@ -57,6 +57,7 @@
 - **Out-of-the-box Results**: Complete compatibility with scikit-learn, minimal to none fuzzy knowledge required to obtain good results.
 - **Complete Complexity Control**: Number of rules, rule length, linguistic variables, etc. can be specified by the user with strong and soft constrains.
 - **Statistical Analysis of Results**: Confidence intervals for all rule quality metrics, repeated experiments for rule robustness.
+- **Conformal Predictions Supported Out-of-the-box**: Use Rule classifiers with conformal guarantees to obtain more reliable classification/regression.
 
 ###  **Complete Rule Base Visualization and Validation**
 - **Comprehensive Plots**: Visualize fuzzy sets and rules.
@@ -240,20 +241,6 @@ Ex-Fuzzy supports two evolutionary optimization backends:
 
 Both backends automatically batch operations to fit available memory and large datasets are processed in chunks to prevent out-of-memory errors.
 
-## Conformal Learning Support
-
-Ex-Fuzzy supports conformal learning for more reliable predictions.
-
-What is supported:
-- Split conformal calibration on held-out calibration data
-- Set-valued predictions with target coverage `1 - alpha`
-- Rule-aware conformal analysis: not only classes, but rule firings are also analyzed according to the nonconformity scores.
-- Coverage and efficiency metrics.
-  
-- Demos:
-  - Notebook: `Demos/conformal_learning_demo.ipynb`
-  - Script: `Demos/demos_module/conformal_learning_demo.py`
-
 
 ## 🛠️ Examples
 
@@ -433,12 +420,6 @@ pytest tests/ --cov=ex_fuzzy --cov-report=html
 pytest tests/test_fuzzy_sets_comprehensive.py -v
 ```
 
-### 📖 Documentation
-Help improve documentation by:
-- Adding examples
-- Fixing typos
-- Improving clarity
-- Adding translations
 
 ## 📄 License
 
