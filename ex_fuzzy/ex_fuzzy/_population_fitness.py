@@ -258,7 +258,9 @@ def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
             widths == 0, n_features, widths), 0), axis=1)
         size = np.divide(effective, possible, out=np.zeros(population),
                          where=possible != 0)
-        size = np.where(complete, 1 - size, 0.0)
+        # _complexity's size is 0.0, not 1.0, when no survivor clears the strict
+        # tolerance, e.g. when every survivor scores exactly the tolerance.
+        size = np.where(complete & (possible != 0), 1 - size, 0.0)
         effective_rules = np.count_nonzero(selected & (widths != 0), axis=1)
         rulesize = np.divide(effective_rules, survivor_count,
                              out=np.zeros(population), where=survivor_count != 0)

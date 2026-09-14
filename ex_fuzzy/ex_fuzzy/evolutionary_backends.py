@@ -294,20 +294,32 @@ class EvoXBackend(EvolutionaryBackend):
         Problems can expose ``_evaluate_torch_population`` when their complete
         objective is implemented as a batched PyTorch operation.  Regression
         uses this hook so membership lookup, inference, and R-squared scoring
-        remain on the GPU.  The older classification hooks are retained for
-        backward compatibility.
+        remain on the GPU.  Problems exposing ``_evaluate_gene_population``
+        receive the whole generation as one integer array and may score it on
+        ``device`` themselves; classification uses it for its fitness caches,
+        population batching and exact device objective.  Other problems are
+        evaluated one individual at a time.  Either way the population leaves
+        the device once per generation, not once per individual.
         """
         import torch
 
+        on_device = False
         if hasattr(problem, '_evaluate_torch_population'):
             fitness = problem._evaluate_torch_population(population, device=device)
         else:
-            fitness_values = []
-            for individual in population:
-                out = {}
-                problem._evaluate(individual.detach().cpu().numpy().astype(int), out)
-                fitness_values.append(float(np.asarray(out['F']).reshape(-1)[0]))
-            fitness = torch.tensor(fitness_values, dtype=torch.float32, device=device)
+            genes = population.detach().cpu().numpy().astype(int)
+            if hasattr(problem, '_evaluate_gene_population'):
+                fitness_values, on_device = problem._evaluate_gene_population(
+                    genes, device=device)
+            else:
+                fitness_values = []
+                for gene in genes:
+                    out = {}
+                    problem._evaluate(gene, out)
+                    fitness_values.append(float(np.asarray(out['F']).reshape(-1)[0]))
+            fitness = torch.tensor(np.asarray(fitness_values, dtype=float),
+                                   dtype=torch.float32, device=device)
+        self._fitness_on_device = getattr(self, '_fitness_on_device', False) or on_device
 
         if not isinstance(fitness, torch.Tensor):
             fitness = torch.as_tensor(fitness, dtype=torch.float32, device=device)
@@ -382,6 +394,7 @@ class EvoXBackend(EvolutionaryBackend):
         population = init_pop  # Keep as integers
         
         uses_torch_fitness = hasattr(problem, '_evaluate_torch_population')
+        self._fitness_on_device = False
 
         # Initial evaluation
         fitness = self._evaluate_population(population, problem, device)
@@ -459,7 +472,8 @@ class EvoXBackend(EvolutionaryBackend):
             'n_gen_run': len(best_fitness),
             'stopped_early': len(best_fitness) < n_gen,
             'device': str(device),
-            'gpu_accelerated': device.type == 'cuda' and uses_torch_fitness
+            'gpu_accelerated': device.type == 'cuda' and (uses_torch_fitness
+                                                          or self._fitness_on_device)
         }
 
 

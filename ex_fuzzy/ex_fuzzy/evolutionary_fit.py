@@ -303,6 +303,19 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             rules_gene = problem.encode_rulebase(initial_rules, self.lvs is None)
             rules_gene = (np.ones((pop_size, len(rules_gene))) * rules_gene).astype(int)
 
+        try:
+            from ._fitness import _fitness_cache_scope
+        except ImportError:
+            from _fitness import _fitness_cache_scope
+        # Only a built-in serial search has a private, stable fit context for
+        # the fit-local caches. Keep callbacks, custom losses/backends and
+        # workers on their existing evaluation path. EvoX scores whole
+        # generations through the same cached routes, so it qualifies as well.
+        cache_enabled = (type(problem) is FitRuleBase and self.custom_loss is None
+                         and type(self.backend) in (ev_backends.PyMooBackend,
+                                                    ev_backends.EvoXBackend)
+                         and self.thread_runner is None)
+
         # Use backend for optimization
         if checkpoints > 0:
             # Checkpoint mode - delegate to backend if supported
@@ -346,36 +359,27 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 # EvoX or other backends: checkpoints not supported
                 if self.verbose:
                     print(f"Warning: Checkpoints are not yet supported with {self.backend.name()} backend. Running without checkpoints.")
-                result = self.backend.optimize(
-                    problem=problem,
-                    n_gen=n_gen,
-                    pop_size=pop_size,
-                    random_state=random_state,
-                    verbose=self.verbose,
-                    var_prob=var_prob,
-                    sbx_eta=sbx_eta,
-                    mutation_eta=mutation_eta,
-                    tournament_size=tournament_size,
-                    sampling=rules_gene,
-                    patience=patience,
-                    min_delta=min_delta
-                )
+                with _fitness_cache_scope(problem, cache_enabled, pop_size):
+                    result = self.backend.optimize(
+                        problem=problem,
+                        n_gen=n_gen,
+                        pop_size=pop_size,
+                        random_state=random_state,
+                        verbose=self.verbose,
+                        var_prob=var_prob,
+                        sbx_eta=sbx_eta,
+                        mutation_eta=mutation_eta,
+                        tournament_size=tournament_size,
+                        sampling=rules_gene,
+                        patience=patience,
+                        min_delta=min_delta
+                    )
                 
                 best_individual = result['X']
                 self.performance = 1 - result['F']
         else:
             # Normal optimization without checkpoints
-            try:
-                from ._fitness import _fitness_cache_scope
-            except ImportError:
-                from _fitness import _fitness_cache_scope
-            # Only the built-in serial PyMoo search has a private, stable fit
-            # context here. Keep callbacks, custom losses/backends and workers
-            # on their existing evaluation path.
-            cache_enabled = (type(problem) is FitRuleBase and self.custom_loss is None
-                             and type(self.backend) is ev_backends.PyMooBackend
-                             and self.thread_runner is None)
-            with _fitness_cache_scope(problem, cache_enabled):
+            with _fitness_cache_scope(problem, cache_enabled, pop_size):
                 result = self.backend.optimize(
                     problem=problem,
                     n_gen=n_gen,
@@ -1297,22 +1301,34 @@ class FitRuleBase(Problem):
     #: Set to False to force the object decoder, for benchmarks and parity tests.
     array_evaluation = True
 
-    def _can_batch_population(self, *args, **kwargs) -> bool:
-        """Whether this fit context can use the private C01 evaluator."""
-        if (type(self) is not FitRuleBase or not self.array_evaluation
-                or self.lvs is None or not hasattr(self, '_fitness_cache')
-                or args or kwargs):
+    #: Device types on which populations may be scored by the exact PyTorch
+    #: objective. Scoring CPU tensors gains nothing over the NumPy routes, so
+    #: only CUDA is enabled; parity tests add 'cpu' to run the same code.
+    torch_devices = ('cuda',)
+
+    def _standard_population_objective(self, *args, **kwargs) -> bool:
+        """Whether whole populations have an exact batched Type-1 objective.
+
+        True for the unmodified built-in objective with ``ds_mode`` 0 or 1,
+        numeric labels and no external runner, with fixed or optimized
+        partitions alike. The individual routes add their own requirements.
+        """
+        if type(self) is not FitRuleBase or not self.array_evaluation or args or kwargs:
             return False
         if (getattr(self._evaluate, '__func__', None) is not _BATCH_SCALAR_EVALUATE
                 or getattr(self._array_score, '__func__', None) is not _BATCH_ARRAY_SCORE):
             return False
         standard_loss = getattr(self.fitness_func, '__func__', None) is FitRuleBase.fitness_func
-        if (not standard_loss or np.asarray(self.y).dtype.kind not in 'biuf'
-                or self.fuzzy_type != fs.FUZZY_SETS.t1
-                or self.ds_mode not in (0, 1)
-                or self._external_elementwise_runner):
-            return False
-        return True
+        return (standard_loss and np.asarray(self.y).dtype.kind in 'biuf'
+                and self.fuzzy_type == fs.FUZZY_SETS.t1
+                and self.ds_mode in (0, 1)
+                and not self._external_elementwise_runner)
+
+
+    def _can_batch_population(self, *args, **kwargs) -> bool:
+        """Whether this fit context can use the private C01 evaluator."""
+        return (self.lvs is not None and hasattr(self, '_fitness_cache')
+                and self._standard_population_objective(*args, **kwargs))
 
 
     def _population_scores(self, X: np.ndarray, *args, **kwargs) -> Optional[np.ndarray]:
@@ -1387,34 +1403,49 @@ class FitRuleBase(Problem):
                 or not self._can_batch_population(*args, **kwargs)
                 or self._population_chunks(len(values)) is None):
             return super()._evaluate_elementwise(X, out, *args, **kwargs)
+        fitness = self._cached_population(
+            values, cache,
+            lambda fresh: self._score_fresh(fresh, len(values), *args, **kwargs))
+        if fitness is None:
+            return super()._evaluate_elementwise(X, out, *args, **kwargs)
+        out['F'] = fitness
 
+
+    def _cached_population(self, values: np.ndarray, cache, score: Callable) -> Optional[np.ndarray]:
+        """Fitness of a population, scoring each uncached genotype only once.
+
+        Genotypes in the fitness cache are not rescored, and a genotype repeated
+        within the population is scored at its first occurrence and copied to
+        the others. ``score`` receives the remaining genotypes in population
+        order; if it returns None nothing is cached and None is returned.
+        """
         fitness = np.empty(len(values))
-        missing = []
-        keys = []
+        keys, fresh, copies, first = [], [], [], {}
         for index, gene in enumerate(values):
             key = cache.key(gene)
-            cached = cache.get(key)
             keys.append(key)
-            if cached is None:
-                missing.append(index)
-            else:
+            cached = cache.get(key)
+            if cached is not None:
                 fitness[index] = cached
-        # There is no population left to score.  Calling the private evaluator
-        # with an empty input would decline its ``population >= 2`` contract and
-        # unnecessarily route the complete population through scalar pymoo
-        # evaluation again.
-        if not missing:
-            out['F'] = fitness
-            return
-
-        fresh = values[missing]
-        scored = self._score_fresh(fresh, len(values), *args, **kwargs)
-        if scored is None:
-            return super()._evaluate_elementwise(X, out, *args, **kwargs)
-        fitness[missing] = scored
-        for index, value in zip(missing, scored):
-            cache.put(keys[index], value)
-        out['F'] = fitness
+            elif key is not None and key in first:
+                copies.append((index, first[key]))
+            else:
+                if key is not None:
+                    first[key] = index
+                fresh.append(index)
+        # Calling a scorer with an empty population would decline the batched
+        # route's ``population >= 2`` contract and needlessly send the whole
+        # population through scalar evaluation again.
+        if fresh:
+            scored = score(values[fresh])
+            if scored is None:
+                return None
+            fitness[fresh] = scored
+            for index, value in zip(fresh, scored):
+                cache.put(keys[index], value)
+        for index, source in copies:
+            fitness[index] = fitness[source]
+        return fitness
 
 
     def _score_fresh(self, fresh: np.ndarray, population: int, *args, **kwargs):
@@ -1471,6 +1502,112 @@ class FitRuleBase(Problem):
                                   else popfit._RouteProbe.SCALAR)
             self._route_probe = probe
         return self._route_probe
+
+
+    def _evaluate_gene_population(self, genes: np.ndarray, device=None) -> tuple:
+        """Fitness of a whole population, for backends that evaluate populations.
+
+        EvoX hands over a generation at once. Inside a fit's cache scope, cached
+        and repeated genotypes are scored once and the rest go to the fastest
+        exact route: scalar, batched or, on ``device``, the PyTorch objective.
+        Outside that scope each candidate is evaluated in turn. Every value is
+        what ``_evaluate`` computes for that chromosome.
+
+        :param genes: integer chromosomes, one per row.
+        :param device: the backend's torch device, or None.
+        :return: ``(fitness, on_device)``, where ``on_device`` tells whether the
+            device objective scored any candidate.
+        """
+        values = np.asarray(genes)
+        cache = getattr(self, '_fitness_cache', None)
+        if cache is None or values.ndim != 2 or values.dtype.kind not in 'biu':
+            return self._scalar_scores(values), False
+        on_device = False
+
+        def score(fresh):
+            nonlocal on_device
+            fitness, used = self._score_on_best_route(fresh, len(values), device)
+            on_device = on_device or used
+            return fitness
+
+        return self._cached_population(values, cache, score), on_device
+
+
+    def _score_on_best_route(self, fresh: np.ndarray, population: int, device=None) -> tuple:
+        """Score uncached candidates on the CPU or on a verified device.
+
+        The device objective is trusted only once it has reproduced a whole
+        generation of CPU scores; until then the CPU scores are used, and a
+        single difference keeps the fit on the CPU for good. Once trusted, which
+        route runs is a speed question settled like the scalar/batched choice.
+
+        :return: ``(fitness, on_device)``.
+        """
+        route = self._device_route_state(device)
+        if route is None or route.rejected:
+            return self._score_fresh_on_cpu(fresh, population), False
+        if not route.verified:
+            start = time.perf_counter()
+            expected = self._score_fresh_on_cpu(fresh, population)
+            cpu_seconds = time.perf_counter() - start
+            if len(fresh) >= route.MIN_CANDIDATES:
+                start = time.perf_counter()
+                actual = self._device_fitness(route.objective, fresh)
+                route.verify(expected, actual, cpu_seconds, time.perf_counter() - start)
+            return expected, False
+
+        choice = route.probe.route(len(fresh))
+        use_device = (route.probe.decision if choice is None else choice) == route.DEVICE
+        start = time.perf_counter()
+        if use_device:
+            fitness = self._device_fitness(route.objective, fresh)
+        else:
+            fitness = self._score_fresh_on_cpu(fresh, population)
+        if choice is not None:
+            route.probe.record(choice, time.perf_counter() - start, len(fresh))
+        return fitness, use_device
+
+
+    def _score_fresh_on_cpu(self, fresh: np.ndarray, population: int) -> np.ndarray:
+        """Score candidates on the fastest exact CPU route."""
+        if self._can_batch_population() and self._population_chunks(population) is not None:
+            scored = self._score_fresh(fresh, population)
+            if scored is not None:
+                return scored
+        return self._scalar_scores(fresh)
+
+
+    def _device_fitness(self, objective, genes: np.ndarray) -> np.ndarray:
+        """Device objective fitness, with declined candidates scored on the CPU."""
+        scores, declined = objective.score(genes)
+        fitness = 1 - scores
+        if np.any(declined):
+            fitness[declined] = self._scalar_scores(genes[declined])
+        return fitness
+
+
+    def _device_route_state(self, device):
+        """The fit-local device route, created on first use, or None.
+
+        Like the route probe it exists only inside a fit's cache scope, and only
+        for device types in ``torch_devices`` and problems the exact PyTorch
+        objective can represent.
+        """
+        if device is None or not hasattr(self, '_torch_route'):
+            return None
+        if self._torch_route is None:
+            self._torch_route = False
+            if self._standard_population_objective():
+                try:
+                    import torch
+                    torchfit = _torch_module()
+                except ImportError:
+                    return None
+                if torch.device(device).type in self.torch_devices:
+                    objective = torchfit.TorchObjective.build(self, device)
+                    if objective is not None:
+                        self._torch_route = torchfit.DeviceRoute(objective)
+        return self._torch_route or None
 
 
     def _label_domain(self):
@@ -1622,6 +1759,15 @@ def _population_module():
     except ImportError:  # pragma: no cover - direct module execution
         import _population_fitness as popfit
     return popfit
+
+
+def _torch_module():
+    """Import the private PyTorch objective in either import mode."""
+    try:
+        from . import _torch_fitness as torchfit
+    except ImportError:  # pragma: no cover - direct module execution
+        import _torch_fitness as torchfit
+    return torchfit
 
 
 # Population evaluation declines when either scalar oracle is monkeypatched.
