@@ -26,13 +26,10 @@ sys.path.append('../ex_fuzzy/ex_fuzzy/')
 
 import numpy as np
 
-import utils
-import fuzzy_sets as t2
-import evolutionary_fit as GA
+import ex_fuzzy.utils as utils
+import ex_fuzzy.fuzzy_sets as t2
+import ex_fuzzy.temporal as temporal
 import pandas as pd
-import eval_tools
-import temporal
-from sklearn.metrics import matthews_corrcoef
 from sklearn.model_selection import train_test_split
 
 
@@ -45,11 +42,10 @@ def load_occupancy(path='./Demos/occupancy_data/', random_mixing=True):
     X_test = test_data[['date', 'Temperature', 'Humidity', 'Light', 'CO2', 'HumidityRatio']]
     y_test = np.squeeze(test_data[['Occupancy']].values)
 
+    X_total = pd.concat([X_train, X_test])
+    y_total = np.concatenate([y_train, y_test])
+
     if random_mixing:
-
-        X_total = pd.concat([X_train, X_test])
-        y_total = np.concatenate([y_train, y_test])
-
         X_train, X_test, y_train, y_test = train_test_split(X_total, y_total, test_size=0.33, random_state=0)
 
     return X_train, y_train, X_test, y_test, X_total, y_total
@@ -62,9 +58,9 @@ X_total_array = np.array(X_total.drop(columns=['date']))
 try:
     n_gen = int(sys.argv[1])
     pop_size = int(sys.argv[2])
-    nRules = int(sys.argv[2])
-    nAnts = int(sys.argv[3])
-except:
+    nRules = int(sys.argv[3])
+    nAnts = int(sys.argv[4])
+except (IndexError, ValueError):
     n_gen = 50
     pop_size = 30
     nRules = 10

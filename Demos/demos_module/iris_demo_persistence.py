@@ -42,6 +42,13 @@ X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = iris.target
 n_linguistic_labels = 3 # Low, Medium and High
 
+try:
+    n_gen = int(sys.argv[1])
+    pop_size = int(sys.argv[2])
+except (IndexError, ValueError):
+    n_gen = 20
+    pop_size = 30
+
 # Split the data into a training set and a test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
 
@@ -50,11 +57,11 @@ fz_type_studied = fs.FUZZY_SETS.t1
 # Compute the fuzzy partitions using 3 quartiles
 precomputed_partitions = utils.construct_partitions(X, fz_type_studied, n_partitions=n_linguistic_labels)
 
-fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=None, nAnts=3, 
-                                            n_linguistic_variables=n_linguistic_labels, fuzzy_type=fz_type_studied, 
-                                            verbose=True, tolerance=0.01, runner=1, ds_mode=0, fuzzy_modifiers=False)
+fl_classifier = GA.BaseFuzzyRulesClassifier(nRules=10, linguistic_variables=precomputed_partitions, nAnts=3,
+                                            n_linguistic_variables=n_linguistic_labels, fuzzy_type=fz_type_studied,
+                                            verbose=True, tolerance=0.01, runner=1, ds_mode=0)
 
-fl_classifier.fit(X_train, y_train, n_gen=20)
+fl_classifier.fit(X_train, y_train, n_gen=n_gen, pop_size=pop_size)
 
 fl_evaluator = eval_tools.FuzzyEvaluator(fl_classifier)
 str_rules = fl_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 

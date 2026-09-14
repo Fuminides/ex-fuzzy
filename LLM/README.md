@@ -11,9 +11,6 @@ new work, and deferred ideas are not promised features.
 - [SPEED_UP_REVIEW.md](performance/SPEED_UP_REVIEW.md): decisions and evidence for the 36
   performance proposals, including rejected approaches.
 - [DELEGATION.md](DELEGATION.md): shared guidance for bounded parallel work.
-- [environments/](environments/): machine resources, cluster submission guidance,
-  and dataset locations used by repository automation.
-
 Keep durable decisions, evidence, and unresolved constraints here. Remove stale
 instructions and duplicated tutorials rather than accumulating session transcripts.
 User-facing documentation belongs in `docs/source/`; the performance guide is

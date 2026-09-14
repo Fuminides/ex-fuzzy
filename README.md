@@ -257,32 +257,13 @@ Try our hands-on examples in Google Colab:
 | **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
 | **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
 | **Fuzzy Regression** | Interpretable continuous prediction | [📓 Notebook](Demos/regression_demo.ipynb) |
-| **EvoX Backend** | GPU-accelerated training with EvoX | [📓 Notebook](Demos/evox_backend_demo.ipynb) |
+| **EvoX Backend** | GPU-accelerated training with EvoX | [🐍 Script](Demos/evox_backend_demo.py) |
 | **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
 | **FERL** | Evidential fuzzy rule-tree classification | [🐍 Script](Demos/demos_module/ferl_demo.py) |
 
 #### Real Applications
   - Ex-Fuzzy in fNIRS data: https://github.com/jjcato9/ex_fuzzy_fnirs_demo
 ### 💻 Code Examples
-
-<details>
-<summary><b>🔍 Advanced Rule Mining</b></summary>
-
-```python
-from ex_fuzzy.rule_mining import mine_rulebase
-from ex_fuzzy.utils import create_fuzzy_variables
-
-# Create fuzzy variables
-variables = create_fuzzy_variables(X_train, ['low', 'medium', 'high'])
-
-# Mine rules from data
-rules = mine_rulebase(X_train, variables, 
-                     support_threshold=0.1, 
-                     max_depth=3)
-
-print(f"Discovered {len(rules)} rules")
-```
-</details>
 
 <details>
 <summary><b>📊 Fuzzy Partition Visualization</b></summary>

@@ -46,9 +46,6 @@ exclude_patterns = [
     '_build',
     'Thumbs.db',
     '.DS_Store',
-    'api.rst',
-    'api/generated/*',
-    'function_resume/*',
 ]
 
 # -- Extension configuration -------------------------------------------------
@@ -66,7 +63,7 @@ autodoc_typehints = 'description'
 autodoc_typehints_description_target = 'documented'
 
 # Autosummary
-# Generated files are already tracked under docs/source/api/generated.
+# API pages are maintained directly under docs/source/api.
 autosummary_generate = False
 autosummary_generate_overwrite = True
 
