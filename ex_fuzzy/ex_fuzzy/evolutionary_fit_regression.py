@@ -16,7 +16,6 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from pymoo.core.problem import Problem
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.metrics import r2_score
 from sklearn.utils.validation import check_is_fitted
@@ -26,11 +25,13 @@ try:
     from . import rules
     from . import utils
     from . import evolutionary_backends as ev_backends
+    from ._problem import Problem
 except ImportError:
     import fuzzy_sets as fs
     import rules
     import utils
     import evolutionary_backends as ev_backends
+    from _problem import Problem
 
 
 def _as_2d_float_array(X, *, expected_features: Optional[int] = None) -> np.ndarray:
@@ -399,7 +400,7 @@ def _mamdani_defuzzify(
 
 
 class FitRuleBaseRegression(Problem):
-    """Pymoo problem for fast optimization of a fixed Type-1 partition.
+    """Optimizer-independent problem for fast optimization of a fixed Type-1 partition.
 
     The integer chromosome always starts with ``nRules * nAnts`` feature
     indices followed by ``nRules * nAnts`` term indices (``-1`` means don't

@@ -37,12 +37,11 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.base import BaseEstimator, ClassifierMixin
 from multiprocessing.pool import ThreadPool
-from pymoo.core.problem import Problem
-from pymoo.core.variable import Integer
-from pymoo.parallelization.starmap import StarmapParallelization
 
 # Import backend abstraction
 try:
+    # Optimizer-independent problem base: importing this module imports no pymoo.
+    from ._problem import Integer, Problem, StarmapParallelization
     from . import evolutionary_backends as ev_backends
     from . import fuzzy_sets as fs
     from . import rules
@@ -51,6 +50,7 @@ try:
     from .evolutionary_search import ExploreRuleBases
     
 except ImportError:
+    from _problem import Integer, Problem, StarmapParallelization
     import evolutionary_backends as ev_backends
     import fuzzy_sets as fs
     import rules
@@ -645,7 +645,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
 class FitRuleBase(Problem):
     '''
-    Class to model as pymoo problem the fitting of a rulebase for a classification problem using Evolutionary strategies. 
+    Class to model, independently of the optimizer, the fitting of a rulebase for a classification problem using Evolutionary strategies.
     Supports type 1 and iv fs (iv-type 2)
     '''
 

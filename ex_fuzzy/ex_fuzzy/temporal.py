@@ -26,11 +26,6 @@ import enum
 import numpy as np
 
 from sklearn.metrics import matthews_corrcoef
-from pymoo.algorithms.soo.nonconvex.ga import GA
-from pymoo.optimize import minimize
-from pymoo.operators.sampling.rnd import IntegerRandomSampling
-from pymoo.operators.crossover.sbx import SBX
-from pymoo.operators.mutation.pm import PolynomialMutation
 
 try:
     from . import fuzzy_sets as fs
@@ -538,6 +533,15 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
 
         
 
+        # pymoo is imported only here. Wrapping first raises an actionable
+        # error when it is missing.
+        pymoo_problems = [evf.ev_backends.as_pymoo_problem(problem) for problem in problems]
+        from pymoo.algorithms.soo.nonconvex.ga import GA
+        from pymoo.optimize import minimize
+        from pymoo.operators.sampling.rnd import IntegerRandomSampling
+        from pymoo.operators.crossover.sbx import SBX
+        from pymoo.operators.mutation.pm import PolynomialMutation
+
         best_individuals = []
         self.performance = {}
         for time, problem in enumerate(problems):
@@ -553,7 +557,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
                     print('=================================================')
                     print('n_gen  |  n_eval  |     f_avg     |     f_min    ')
                     print('=================================================')
-                algorithm.setup(problem, seed=33, termination=('n_gen', n_gen)) # 33? Soon...
+                algorithm.setup(pymoo_problems[time], seed=33, termination=('n_gen', n_gen)) # 33? Soon...
                 for k in range(n_gen):
                     algorithm.next()
                     res = algorithm
@@ -578,7 +582,7 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
                             f.write(checkpoint_rules)     
 
             else:
-                res = minimize(problem,
+                res = minimize(pymoo_problems[time],
                             algorithm,
                             # termination,
                             ("n_gen", n_gen),

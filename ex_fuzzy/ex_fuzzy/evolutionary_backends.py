@@ -22,6 +22,11 @@ from abc import ABC, abstractmethod
 from typing import Callable, Optional, Any
 import numpy as np
 
+try:
+    from ._problem import PYMOO_INSTALL_MESSAGE, as_pymoo_problem
+except ImportError:  # pragma: no cover - direct module execution
+    from _problem import PYMOO_INSTALL_MESSAGE, as_pymoo_problem
+
 
 class EvolutionaryBackend(ABC):
     """Abstract base class for evolutionary optimization backends."""
@@ -71,11 +76,14 @@ class PyMooBackend(EvolutionaryBackend):
                             mutation_eta: float, tournament_size: int,
                             sampling: Any):
         """Create a configured pymoo GA instance."""
-        from pymoo.algorithms.soo.nonconvex.ga import GA
-        from pymoo.operators.repair.rounding import RoundingRepair
-        from pymoo.operators.sampling.rnd import IntegerRandomSampling
-        from pymoo.operators.crossover.sbx import SBX
-        from pymoo.operators.mutation.pm import PolynomialMutation
+        try:
+            from pymoo.algorithms.soo.nonconvex.ga import GA
+            from pymoo.operators.repair.rounding import RoundingRepair
+            from pymoo.operators.sampling.rnd import IntegerRandomSampling
+            from pymoo.operators.crossover.sbx import SBX
+            from pymoo.operators.mutation.pm import PolynomialMutation
+        except ImportError as error:
+            raise ImportError(PYMOO_INSTALL_MESSAGE) from error
 
         if sampling is None:
             sampling = IntegerRandomSampling()
@@ -165,7 +173,7 @@ class PyMooBackend(EvolutionaryBackend):
         Optimize using pymoo's genetic algorithm.
         
         Args:
-            problem: pymoo Problem instance
+            problem: Ex-Fuzzy problem, wrapped for pymoo here, or a pymoo Problem
             n_gen: Number of generations
             pop_size: Population size
             random_state: Random seed
@@ -190,7 +198,7 @@ class PyMooBackend(EvolutionaryBackend):
         )
 
         return self._run_ga_loop(
-            problem=problem,
+            problem=as_pymoo_problem(problem),
             algorithm=algorithm,
             n_gen=n_gen,
             random_state=random_state,
@@ -210,7 +218,7 @@ class PyMooBackend(EvolutionaryBackend):
         Optimize with checkpoint callbacks at specified intervals.
         
         Args:
-            problem: pymoo Problem instance
+            problem: Ex-Fuzzy problem, wrapped for pymoo here, or a pymoo Problem
             n_gen: Number of generations
             pop_size: Population size
             random_state: Random seed
@@ -237,7 +245,7 @@ class PyMooBackend(EvolutionaryBackend):
         )
 
         return self._run_ga_loop(
-            problem=problem,
+            problem=as_pymoo_problem(problem),
             algorithm=algorithm,
             n_gen=n_gen,
             random_state=random_state,
