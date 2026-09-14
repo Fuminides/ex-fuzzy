@@ -216,6 +216,25 @@ Obtain statistical confidence intervals for your metrics:
 Our implementation is getting more efficient! This experiment crosses **1,000 / 10,000 / 100,000 samples**
 with **10 / 50 / 200 features**, for both fixed and optimized partitions. All of them using CPU backend.
 
+### EvoX GPU acceleration
+
+A controlled three-seed benchmark compared identical EvoX CPU and CUDA
+searches on 100,000 samples and 200 features (Type-1, 20 rules, 4 antecedents,
+population 40 and 5 generations):
+
+| Partitions | EvoX CPU median | EvoX GPU median | Whole-fit speedup |
+|------------|----------------:|----------------:|------------------:|
+| **Fixed** | 521.3 s | 22.8 s | **22.87×** |
+| **Optimized** | 729.2 s | 37.6 s | **19.38×** |
+
+All six paired searches produced identical fitness histories, populations,
+final fitness and predictions. Their sampled device checks matched the CPU bit
+for bit, and all 36 device population evaluations used CUDA. Five workloads ran
+on GTX 1080 Ti nodes and one fixed-partition workload on an RTX 2080, so these
+large synthetic results are evidence for that workload rather than a general
+speed guarantee. See the [EvoX backend guide](docs/source/evox_backend.rst) and
+[raw benchmark results](benchmarks/results/evox_gpu/) for details.
+
 ### Backend Comparison
 
 Ex-Fuzzy supports two evolutionary optimization backends:
