@@ -216,10 +216,9 @@ Advanced Configuration
 Complete Demo
 -------------
 
-See the complete interactive demo in the repository:
+See the complete runnable demo in the repository:
 
 - **Python Script**: ``Demos/evox_backend_demo.py``
-- **Jupyter Notebook**: ``Demos/evox_backend_demo.ipynb``
 
 The demo includes:
 

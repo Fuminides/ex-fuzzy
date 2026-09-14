@@ -80,36 +80,24 @@ import ex_fuzzy.evolutionary_fit as GA
 import ex_fuzzy.utils as  utils
 import ex_fuzzy.eval_tools as eval_tools
 
+nRules = 4
+nAnts = 4
+vl = 3
+tolerance = 0.0001
+fz_type_studied = fs.FUZZY_SETS.t2
+
 try:
     n_gen = int(sys.argv[1])
     n_pop = int(sys.argv[2])
-except:
+except (IndexError, ValueError):
     n_gen = 50
     n_pop = 30
-    nRules = 4
-    nAnts = 4
-    vl = 3
-    tolerance = 0.0001
-    fz_type_studied = fs.FUZZY_SETS.t2
 
 
 # import some data to play with
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
 y = iris.target
-
-def load_occupancy(path='./demos/occupancy_data/'):
-    train_data = pd.read_csv(path + 'datatraining.txt', index_col=0)
-    X_train = train_data[['Temperature', 'Humidity', 'Light', 'CO2', 'HumidityRatio']]
-    y_train = np.squeeze(train_data[['Occupancy']].values)
-
-    test_data = pd.read_csv(path + 'datatest2.txt', index_col=0)
-    X_test = test_data[['Temperature', 'Humidity', 'Light', 'CO2', 'HumidityRatio']]
-    y_test = np.squeeze(test_data[['Occupancy']].values)
-
-    return X_train, y_train, X_test, y_test
-
-X_train, y_train, X_test, y_test = load_occupancy()
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 X = np.concatenate((X_train, X_test), axis=0)

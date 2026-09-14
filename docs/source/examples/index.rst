@@ -72,21 +72,20 @@ The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run 
 Local Examples
 ==============
 
-The repository also contains local Jupyter notebooks in the `Demos/` directory:
+The repository also contains local notebooks and scripts in the `Demos/` directory:
 
 - **iris_demo.ipynb**: Basic classification with the Iris dataset
 - **iris_demo_advanced_classifiers.ipynb**: Comparison of different classifier types
 - **iris_demo_persistence.ipynb**: Saving and loading trained models
-- **heart_attack.ipynb**: Medical diagnosis classification
 - **occupancy_demo_temporal.ipynb**: Time-series occupancy detection
 - **regression_demo.ipynb**: Interpretable fuzzy regression with continuous targets
 - **demos_module/regression_demo.py**: Manually constructed Type-2 regression inference
 - **demos_module/ferl_demo.py**: FERL classification with native evidential predictions
-- **pattern_analysis_demo.ipynb**: Pattern stability analysis
+- **demos_module/iris_demo_stability_report.py**: Pattern stability analysis
 - **conformal_learning_demo.ipynb**: Conformal prediction with calibration and set-valued outputs
 - **demos_module/conformal_learning_demo.py**: Conformal prediction with calibration, set-valued outputs, and coverage metrics
 
-These notebooks provide complete, working examples that demonstrate real-world applications of the ex-fuzzy library.
+These examples provide complete, working demonstrations of the library's main workflows.
 
 Interactive Notebooks
 =====================
