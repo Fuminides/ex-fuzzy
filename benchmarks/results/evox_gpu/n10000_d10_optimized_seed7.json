@@ -1,0 +1,76 @@
+{
+  "host": "gpu-1-1.local",
+  "cpu": "Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz",
+  "gpu": "NVIDIA GeForce RTX 2080",
+  "python": "3.11.15",
+  "torch": "2.6.0+cu124",
+  "packages": {
+    "numpy": "2.4.6",
+    "pymoo": "0.6.1.5",
+    "scikit-learn": "1.9.0"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "arguments": {
+    "samples": "[10000]",
+    "features": "[10]",
+    "partitions": "['optimized']",
+    "rules": "20",
+    "ants": "4",
+    "generations": "5",
+    "population": "40",
+    "seeds": "[7]",
+    "repeats": "1",
+    "routes": "['cpu', 'device']",
+    "evox_source": "None",
+    "json": "/home/jf22881/Github/ex-fuzzy/benchmarks/results/evox_gpu/n10000_d10_optimized_seed7.json"
+  },
+  "workloads": [
+    {
+      "samples": 10000,
+      "features": 10,
+      "partitions": "optimized",
+      "seed": 7,
+      "generations": 5,
+      "population": 40,
+      "evox_identical": true,
+      "runs": {
+        "cpu": [
+          {
+            "seconds": 4.7857439164072275,
+            "performance": 0.18352103233337402,
+            "gpu_accelerated": false,
+            "verifications": [],
+            "device_generations": 0,
+            "scored_generations": 6
+          }
+        ],
+        "device": [
+          {
+            "seconds": 1.6608013650402427,
+            "performance": 0.18352103233337402,
+            "gpu_accelerated": true,
+            "verifications": [
+              {
+                "verified": true,
+                "candidates": 40,
+                "cpu_seconds": 0.6245739571750164,
+                "device_seconds": 0.4514204738661647,
+                "settled_on_device": true
+              }
+            ],
+            "device_generations": 5,
+            "scored_generations": 6
+          }
+        ]
+      },
+      "median_seconds": {
+        "cpu": 4.7857439164072275,
+        "device": 1.6608013650402427
+      }
+    }
+  ]
+}
