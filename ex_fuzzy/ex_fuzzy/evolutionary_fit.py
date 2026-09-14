@@ -39,7 +39,11 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from multiprocessing.pool import ThreadPool
 from pymoo.core.problem import Problem
 from pymoo.core.variable import Integer
-from pymoo.parallelization.starmap import StarmapParallelization
+
+try:
+    from pymoo.parallelization.starmap import StarmapParallelization
+except ImportError:  # PyMoo 0.6.1.x (the newest line supporting Python 3.9)
+    from pymoo.core.problem import StarmapParallelization
 
 # Import backend abstraction
 try:

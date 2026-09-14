@@ -10,6 +10,11 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Fixed
+-----
+- Python 3.9 installation by accepting PyMoo 0.6.1.5 and using its legacy
+  ``StarmapParallelization`` import path when necessary.
+
 Removed
 -------
 - The unused NetworkX rule-graph visualization and ``viz`` installation extra.

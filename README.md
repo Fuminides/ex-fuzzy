@@ -343,11 +343,11 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 ## 🛡️ Requirements
 
 ### Core Dependencies
-- **Python** >= 3.7
+- **Python** >= 3.9
 - **NumPy** >= 1.19.0
 - **Pandas** >= 1.2.0
 - **Matplotlib** >= 3.3.0
-- **PyMOO** >= 0.6.0
+- **PyMOO** >= 0.6.1.5
 
 ### Optional Dependencies
 - **EvoX** >= 1.3.0 (for GPU-accelerated evolutionary optimization)

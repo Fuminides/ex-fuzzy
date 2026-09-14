@@ -24,7 +24,7 @@ with open(path.join(this_directory, "ex_fuzzy", "ex_fuzzy", "_version.py"), enco
     exec(f.read(), version_ns)
 
 VERSION = version_ns["__version__"]
-INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo>=0.6.2", "pandas", "scikit-learn"]
+INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo>=0.6.1.5", "pandas", "scikit-learn"]
 DOCS_REQUIRES = [
     "sphinx>=5.0.0",
     "pydata-sphinx-theme>=0.13.0",
@@ -62,7 +62,10 @@ CLASSIFIERS = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries",
@@ -101,6 +104,7 @@ setup(
     package_data={'ex_fuzzy': ['*.pyx']},
     packages=['ex_fuzzy'],
     package_dir={'ex_fuzzy': 'ex_fuzzy/ex_fuzzy'},
+    python_requires=">=3.9",
     install_requires=INSTALL_REQUIRES,
     extras_require=OPTIONAL_REQUIRES,
     long_description=long_description,

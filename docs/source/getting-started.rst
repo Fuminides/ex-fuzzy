@@ -50,7 +50,7 @@ Dependencies
 
 Ex-Fuzzy requires:
 
-- Python 3.8+
+- Python 3.9+
 - NumPy
 - Pandas
 - Scikit-learn
