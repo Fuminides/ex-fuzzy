@@ -24,7 +24,7 @@ with open(path.join(this_directory, "ex_fuzzy", "ex_fuzzy", "_version.py"), enco
     exec(f.read(), version_ns)
 
 VERSION = version_ns["__version__"]
-INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo", "pandas", "scikit-learn"]
+INSTALL_REQUIRES = ["numpy", "matplotlib", "pymoo>=0.6.2", "pandas", "scikit-learn"]
 DOCS_REQUIRES = [
     "sphinx>=5.0.0",
     "pydata-sphinx-theme>=0.13.0",

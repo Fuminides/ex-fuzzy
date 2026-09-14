@@ -230,3 +230,86 @@ def test_print_tree_names_features(fitted, capsys):
     printed = capsys.readouterr().out
     assert printed.startswith("root:")
     assert any(name in printed for name in fitted.feature_names_in_)
+
+
+def test_best_cut_without_usable_or_useful_splits():
+    import ferl_deep
+    x = np.array([0.0, 1.0, 2.0])
+
+    # Every cut leaves one side without weight.
+    unusable = ferl_deep._best_cut(x, np.eye(2)[[0, 1, 0]], np.array([1.0, 0.0, 0.0]), 0.5, 1.0)
+    assert unusable == (0.0, None)
+    # A pure node cannot gain from a cut.
+    assert ferl_deep._best_cut(x, np.eye(2)[[0, 0, 0]], np.ones(3), 0.0, 3.0) == (0.0, None)
+
+
+def test_invalid_training_data_is_rejected():
+    X, y = load_iris(return_X_y=True)
+    model = DeepFERL(max_depth=1, n_boot=2)
+
+    with pytest.raises(ValueError, match="two-dimensional"):
+        model.fit(X[:, 0], y)
+    with pytest.raises(ValueError, match="same number"):
+        model.fit(X[:10], y)
+    with pytest.raises(ValueError, match="at least one"):
+        model.fit(X[:0], y[:0])
+    with pytest.raises(ValueError, match="NaN"):
+        model.fit(np.where(X == X[0, 0], np.nan, X), y)
+
+
+def test_feature_names_follow_the_last_fit_and_labels_can_be_a_column():
+    X, y = load_iris(return_X_y=True)
+    assert not hasattr(DeepFERL(max_depth=1, n_boot=2).fit(pd.DataFrame(X), y), "feature_names_in_")
+
+    model = DeepFERL(max_depth=1, n_boot=2, random_state=0)
+    model.fit(pd.DataFrame(X, columns=list("abcd")), y.reshape(-1, 1))
+    assert model.feature_names_in_.tolist() == list("abcd")
+    model.fit(pd.DataFrame(X), y)
+    assert not hasattr(model, "feature_names_in_")
+
+
+def test_small_or_unsplittable_nodes_become_leaves():
+    # Three samples are too few to split.
+    assert DeepFERL(min_leaf_w=0.5, n_boot=2).fit(np.array([[0.0], [1.0], [2.0]]), [0, 1, 0]).n_rules() == 1
+    # A constant feature offers no cut.
+    assert DeepFERL(n_boot=2).fit(np.zeros((10, 1)), [0, 1] * 5).n_rules() == 1
+    # With seed 0 a bootstrap resample misses the only positive sample, so the split is too unstable to keep.
+    unstable = DeepFERL(n_boot=2, min_leaf_w=0.5, random_state=0)
+    assert unstable.fit(np.array([[0.0], [0.0], [0.0], [1.0]]), [0, 0, 0, 1]).n_rules() == 1
+
+
+def test_a_root_leaf_tree(capsys):
+    X, y = load_iris(return_X_y=True)
+    stump = DeepFERL(max_depth=0).fit(X, y)
+
+    M, cons, names, support = stump.node_activation_matrix(X)
+    assert M.shape == (150, 0) and cons.shape == (0, 3) and names == [] and support.shape == (0,)
+    np.testing.assert_array_equal(stump.firing_strength(X), np.ones(150))
+    betp, _, _, ignorance = stump.predict_ds(X[:2])
+    assert betp.shape == (2, 3) and ignorance.shape == (2,)
+
+    stump.print_tree()
+    assert capsys.readouterr().out.startswith("root: ")
+
+
+def test_single_samples_masks_routing_and_reliability(capsys):
+    X, y = load_iris(return_X_y=True)
+    model = DeepFERL(max_depth=3, n_boot=5, random_state=0).fit(X, y)
+
+    assert model.predict(X[0]).shape == (1,)
+    assert model.predict_proba(X[0], observed_mask=np.array([True, False, True, True])).shape == (1, 3)
+    with pytest.raises(ValueError, match="one- or two-dimensional"):
+        model.predict(X[None, :, :])
+
+    _, _, names, _ = model.node_activation_matrix(X)
+    depths = DeepFERL.node_depths(names)
+    assert depths.min() == 1 and depths.max() <= 3
+
+    assert model.predict_ds(X, top_p=0.9)[0].shape == (150, 3)
+    discounted = model.predict_ds(X, reliability_vec=np.full(len(names), 0.5))[3]
+    assert np.all(discounted >= model.predict_ds(X)[3] - 1e-12)
+
+    model.print_tree(feature_names=list("abcd"))
+    tree = capsys.readouterr().out
+    assert tree.startswith("root: ")
+    assert any(f"{name} below" in tree for name in "abcd")

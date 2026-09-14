@@ -33,3 +33,5 @@ docs/performance/.runs/
 # the raw evidence behind docs/performance/keel.*.
 /logs/
 benchmarks/results/keel/tasks-*.txt
+
+API_pypi.txt

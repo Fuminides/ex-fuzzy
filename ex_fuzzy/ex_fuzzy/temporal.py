@@ -20,32 +20,17 @@ Key Features:
     - Integration with evolutionary optimization
     - Support for both Type-1 and Type-2 temporal fuzzy sets
 """
+import copy
 import enum
 
 import numpy as np
-import pandas as pd
 
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, matthews_corrcoef
+from sklearn.metrics import matthews_corrcoef
 from pymoo.algorithms.soo.nonconvex.ga import GA
-from pymoo.core.problem import Problem
 from pymoo.optimize import minimize
 from pymoo.operators.sampling.rnd import IntegerRandomSampling
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PolynomialMutation
-from pymoo.core.variable import Integer
-from multiprocessing.pool import ThreadPool
-
-# Handle pymoo version compatibility for parallelization
-try:
-    # pymoo < 0.6.0
-    from pymoo.parallelization.starmap import StarmapParallelization
-except ImportError:
-    try:
-        # pymoo >= 0.6.0
-        from pymoo.core.problem import StarmapParallelization
-    except ImportError:
-        # Fallback if parallelization not available
-        StarmapParallelization = None
 
 try:
     from . import fuzzy_sets as fs
@@ -53,7 +38,7 @@ try:
     from . import evolutionary_fit as evf
     from . import vis_rules
     from . import eval_rules as evr
-except:
+except ImportError:
     import fuzzy_sets as fs
     import rules as rl
     import evolutionary_fit as evf
@@ -96,7 +81,7 @@ class temporalFS(fs.FS):
         elif std_fuzzy_set.type() == fs.FUZZY_SETS.t2:
             self.secondMF_upper = std_fuzzy_set.secondMF_upper
             self.secondMF_lower = std_fuzzy_set.secondMF_lower
-        elif std_fuzzy_set.type() == fs.FUZZY_SETS.gt2:
+        else:
             self.secondary_memberships = std_fuzzy_set.secondary_memberships
             self.alpha_cuts = std_fuzzy_set.alpha_cuts
 
@@ -147,15 +132,17 @@ class temporalFuzzyVariable(fs.fuzzyVariable):
     Class to implement a temporal fuzzy variable.
     '''
 
-    def __init__(self, name: str, fuzzy_sets: list[temporalFS]) -> None:
+    def __init__(self, name: str, fuzzy_sets: list[temporalFS], units: str = None) -> None:
         '''
         Creates a temporal fuzzy variable.
 
         :param str: name of the variable.
         :param fuzzy_sets: list of the fuzzy sets pre-time dependencies.
+        :param units: units of the variable, if any.
         '''
         self.linguistic_variables = []
         self.name = name
+        self.units = units
         self.time = None
         for ix, fs in enumerate(fuzzy_sets):
             self.linguistic_variables.append(fs)
@@ -264,6 +251,8 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
 
         res = [x for x in res if len(x) > 0]
 
+        if len(res) == 0:
+            return np.array([])
         return np.concatenate(res, axis=0)
 
 
@@ -271,7 +260,10 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
         '''
         Computes the firing strength of each rule for each sample.
 
+        Rules only fire for the samples of their own time moment.
+
         :param X: array with the values of the inputs.
+        :param time_moments: time moment of each sample.
         :return: array with the firing strength of each rule for each sample.
         '''
         aux = []
@@ -279,44 +271,62 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
 
         for time_moment, rule_bases in enumerate(self.time_mrule_bases):
             actual_moment = np.equal(time_moments, time_moment)
-            for ix in range(len(rule_bases)):
-                if rule_bases.fuzzy_type() == fs.FUZZY_SETS.t2:
-                    aux.append(np.mean(rule_bases[ix].compute_rule_antecedent_memberships(X), axis=2) * np.expand_dims(actual_moment, axis=1))
-                elif rule_bases.fuzzy_type() == fs.FUZZY_SETS.gt2:
-                    aux.append(np.mean(rule_bases[ix].compute_rule_antecedent_memberships(X), axis=2) * np.expand_dims(actual_moment, axis=1))
-                else:
-                    aux.append(rule_bases[ix].compute_rule_antecedent_memberships(X) * np.expand_dims(actual_moment, axis=1))
+            for rule_base in rule_bases:
+                if len(rule_base) == 0:
+                    continue
+                memberships = rule_base.compute_rule_antecedent_memberships(X)
+                mask = actual_moment.reshape((-1,) + (1,) * (memberships.ndim - 1))
+                aux.append(memberships * mask)
 
-        # Firing strengths shape: samples x rules
+        if len(aux) == 0:
+            return np.zeros((X.shape[0], 0))
+
+        # Firing strengths shape: samples x rules (x 2) (last is iv dimension)
         return np.concatenate(aux, axis=1)
 
 
-    def winning_rule_predict(self, X: np.array, time_moments: int) -> np.array:
+    def compute_association_degrees(self, X: np.array, time_moments: list[int], precomputed_truth=None) -> np.array:
         '''
-        Returns the winning rule for each sample. Takes into account dominance scores if already computed.
+        Computes the association degree of each rule for each sample, weighting the firing strengths by the dominance scores.
 
         :param X: array with the values of the inputs.
-        :return: array with the winning rule for each sample.
+        :param time_moments: time moment of each sample.
+        :return: array with the association degree of each rule for each sample.
+        '''
+        firing_strengths = self.compute_firing_strenghts(X, time_moments)
+        if firing_strengths.shape[1] == 0:
+            return firing_strengths
+
+        scores = self.get_scores()
+        while scores.ndim < firing_strengths.ndim - 1:
+            scores = scores[..., None]
+
+        association_degrees = scores * firing_strengths
+        while association_degrees.ndim > 2:
+            association_degrees = np.mean(association_degrees, axis=-1)
+
+        return association_degrees
+
+
+    def winning_rule_predict(self, X: np.array, time_moments: list[int], precomputed_truth=None, out_class_names=False) -> np.array:
+        '''
+        Returns the predicted consequent for each sample. Takes into account dominance scores if already computed.
+
+        :param X: array with the values of the inputs.
+        :param time_moments: time moment of each sample.
+        :param out_class_names: if True, returns the consequent names instead of their indexes.
+        :return: array with the consequent of the winning rule for each sample (-1 or 'Unknown' if no rule fires).
         '''
         consequents = []
-        for ix, mrb in enumerate(self.time_mrule_bases):
+        for mrb in self.time_mrule_bases:
             for jx, rb in enumerate(mrb):
-                for rule in rb:
-                    consequents.append(jx)
+                consequent = mrb.consequent_names[jx] if out_class_names else jx
+                consequents.extend([consequent] * len(rb))
 
-        # consequents = sum([[ix]*len(self[ix].get_rules())
-        #                  for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning
-        firing_strengths = self.compute_firing_strenghts(X, time_moments)
+        winning_rules, _winning_association_degrees = self._winning_rules(X, time_moments, allow_unkown=self.allow_unknown)
+        unknown = 'Unknown' if out_class_names else -1
 
-        if self.time_mrule_bases[0].fuzzy_type() == fs.FUZZY_SETS.t2 or self.time_mrule_bases[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
-            association_degrees = np.mean(self.get_scores(), axis=1) * firing_strengths
-        else:
-            association_degrees = self.get_scores() * firing_strengths
-
-
-        winning_rules = np.argmax(association_degrees, axis=1)
-
-        return np.array([consequents[ix] for ix in winning_rules])
+        return np.array([consequents[ix] if ix != -1 else unknown for ix in winning_rules])
 
 
     def add_rule_base(self, rule_base: rl.RuleBase, time: int) -> None:
@@ -328,18 +338,21 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
         self.time_mrule_bases[time].add_rule_base(rule_base)
 
 
-    def print_rules(self, return_rules=False) -> None:
+    def print_rules(self, return_rules=False, bootstrap_results=True) -> None:
         '''
         Print all the rules for all the consequents.
+
+        :param return_rules: if True, the rules are returned as a string instead of printed.
+        :param bootstrap_results: if True, the bootstrap statistics of the rules are included.
         '''
         res = ''
         for zx, time in enumerate(self.time_mrule_bases):
             res += 'Rules for time step: ' + self.time_step_names[zx] + '\n'
-            res += '----------------\n' 
+            res += '----------------\n'
             for ix, ruleBase in enumerate(time):
                 try:
                     res += 'Consequent: ' + str(time.consequent_names[ix]) + '\n'
-                    res += ruleBase.print_rules(True)
+                    res += ruleBase.print_rules(True, bootstrap_results)
                     res += '\n'
                 except IndexError:
                     pass # We did not have rules for this consequent
@@ -420,26 +433,27 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
         return rule_bases
     
 
-    def _winning_rules(self, X: np.array, temporal_moments: list[int]) -> np.array:
+    def _winning_rules(self, X: np.array, temporal_moments: list[int], precomputed_truth=None, allow_unkown=True) -> tuple[np.array, np.array]:
         '''
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
 
         :param X: array with the values of the inputs.
-        :return: array with the winning rule for each sample.
+        :param temporal_moments: time moment of each sample.
+        :param allow_unkown: if True, samples that fire no rule get -1 as winning rule.
+        :return: the index of the winning rule and its firing strength for each sample.
         '''
-        
+        association_degrees = self.compute_association_degrees(X, temporal_moments)
+        if association_degrees.shape[1] == 0:
+            return np.full(X.shape[0], -1), np.zeros(X.shape[0])
+
         firing_strengths = self.compute_firing_strenghts(X, temporal_moments)
-
-        association_degrees = self.get_scores() * firing_strengths
-
-        if (self[0].fuzzy_type() == fs.FUZZY_SETS.t2) or (self[0].fuzzy_type() == fs.FUZZY_SETS.gt2):
-            association_degrees = np.mean(association_degrees, axis=2)
-        elif self[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
-            association_degrees = np.mean(association_degrees, axis=3)
-
         winning_rules = np.argmax(association_degrees, axis=1)
+        winning_association_degrees = np.max(firing_strengths, axis=1)
 
-        return winning_rules
+        if allow_unkown:
+            winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
+
+        return winning_rules, winning_association_degrees
         
 
 #### DEFINE THE FUZZY CLASSIFIER USING TEMPORAL FUZZY SETS ####
@@ -505,25 +519,21 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
         :param time_moments: array of integers. Time moments associated to each sample (when temporal dependencies are present)
         :return: None. The classifier is fitted to the data.
         '''
+        if self.lvs is None:
+            raise ValueError('TemporalFuzzyRulesClassifier needs temporal linguistic variables. '
+                             'Build them with utils.create_tempVariables and pass them as linguistic_variables.')
+
         problems = []
         for ix in range(len(np.unique(time_moments))):
             X_problem = X[time_moments == ix]
             y_problem = y[time_moments == ix]
-            
-            if self.lvs is None:
-                # If Fuzzy variables need to be optimized.
-                problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance,
-                                    n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, 
-                                    n_classes=self.n_class, thread_runner=self.thread_runner)
-            else:
-                import copy
-                time_lvs = [copy.deepcopy(aux) for aux in self.lvs]
-                self._fix_time(time_lvs, ix)
-                # If Fuzzy variables are already precomputed.       
-                problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts,
-                                    linguistic_variables=time_lvs, domain=self.domain, tolerance=self.tolerance, 
-                                    n_classes=self.nclasses_, thread_runner=self.thread_runner)
-            
+
+            time_lvs = [copy.deepcopy(aux) for aux in self.lvs]
+            self._fix_time(time_lvs, ix)
+            problem = evf.FitRuleBase(X_problem, y_problem, nRules=self.nRules, nAnts=self.nAnts,
+                                linguistic_variables=time_lvs, domain=self.domain, tolerance=self.tolerance,
+                                n_classes=self.nclasses_, thread_runner=self.thread_runner)
+
             problems.append(problem)
 
         
@@ -626,12 +636,13 @@ class TemporalFuzzyRulesClassifier(evf.BaseFuzzyRulesClassifier):
 
     def plot_fuzzy_variables(self) -> None:
         '''
-        Plot the fuzzy partitions in each fuzzy variable.
+        Plot the fuzzy partitions in each fuzzy variable, before their time dependencies.
         '''
         fuzzy_variables = self.rule_base.rule_bases[0].antecedents
 
-        for ix, fv in enumerate(fuzzy_variables):
-            vis_rules.plot_fuzzy_variable(fv)
+        for fv in fuzzy_variables:
+            std_sets = [fuzzy_set.std_set for fuzzy_set in fv.linguistic_variables]
+            vis_rules.plot_fuzzy_variable(fs.fuzzyVariable(fv.name, std_sets, units=fv.units))
 
 
     def get_rulebase(self) -> list[np.array]:
@@ -675,18 +686,18 @@ def eval_temporal_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_tra
             str(matthews_corrcoef(y_test, fl_classifier.forward(X_test, test_time_moments))))
       print('------------')
 
+    time_moments = np.asarray(time_moments)
+    test_time_moments = np.asarray(test_time_moments)
     for ix in np.unique(time_moments):
-      try:
-            X_aux = X_train[time_moments == ix, :]
-            X_aux_test = X_test[time_moments == ix, :]
-      except pd.core.indexing.InvalidIndexError:
-            X_aux = X_train.iloc[time_moments == ix, :]
-            X_aux_test = X_test.iloc[test_time_moments == ix, :]
+        train_mask = time_moments == ix
+        test_mask = test_time_moments == ix
+        X_aux = X_train.iloc[train_mask, :] if hasattr(X_train, 'iloc') else X_train[train_mask, :]
+        X_aux_test = X_test.iloc[test_mask, :] if hasattr(X_test, 'iloc') else X_test[test_mask, :]
 
-      y_aux = y_train[time_moments == ix]
-      y_aux_test = y_test[test_time_moments == ix]
+        y_aux = np.asarray(y_train)[train_mask]
+        y_aux_test = np.asarray(y_test)[test_mask]
 
-      if print_matthew:
+        if print_matthew:
             print('MOMENT ' + str(ix))
             print('------------')
             print('MATTHEW CORRCOEF')
@@ -697,14 +708,15 @@ def eval_temporal_fuzzy_model(fl_classifier: evf.BaseFuzzyRulesClassifier, X_tra
             print('------------')
 
     if plot_rules:
-        vis_rules.visualize_rulebase(fl_classifier)
-    if print_rules or return_rules:
-        res = fl_classifier.print_rules(return_rules)
+        for time_rule_base in fl_classifier.rule_base.time_mrule_bases:
+            vis_rules.visualize_rulebase(time_rule_base)
     if plot_partitions:
         fl_classifier.plot_fuzzy_variables()
-      
-    if return_rules:
-        return res
-    else:
-        print(res)
+
+    if print_rules or return_rules:
+        res = fl_classifier.print_rules(True)
+        if print_rules:
+            print(res)
+        if return_rules:
+            return res
 

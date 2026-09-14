@@ -24,18 +24,6 @@ from typing import Optional, Any
 from pymoo.core.problem import Problem
 from pymoo.core.variable import Integer
 
-# Handle pymoo version compatibility for parallelization
-try:
-    # pymoo < 0.6.0
-    from pymoo.parallelization.starmap import StarmapParallelization
-except ImportError:
-    try:
-        # pymoo >= 0.6.0
-        from pymoo.core.problem import StarmapParallelization
-    except ImportError:
-        # Fallback if parallelization not available
-        StarmapParallelization = None
-
 # Import necessary modules
 try:
     from . import fuzzy_sets as fs
@@ -158,42 +146,25 @@ class ExploreRuleBases(Problem):
         :return: MasterRuleBase object with selected rules
         """
         x = x.astype(int)
-        # Get all rules and their consequents
-        diff_consequents = np.arange(len(self.candidate_rules))
-        
-        # Choose the selected ones in the gene
+        # Each gene position names one rule of the candidate pool, in class-major order.
         total_rules = self.candidate_rules.get_rules()
-        chosen_rules = [total_rules[ix] for ix, val in enumerate(x)]
-        rule_consequents = sum([[ix] * len(rule) for ix, rule in enumerate(self.candidate_rules)], [])
-        chosen_rules_consequents = [rule_consequents[val] for ix, val in enumerate(x)]
-        
-        # Create a rule base for each consequent with the selected rules
-        rule_list = [[] for _ in range(self.n_classes)]
+        rule_consequents = sum([[ix] * len(rule_base) for ix, rule_base in enumerate(self.candidate_rules)], [])
+        antecedents = self.candidate_rules[0].antecedents
+
+        # One rule base per consequent, empty when no selected rule belongs to it, so
+        # that every rule base stays aligned with its consequent.
         rule_bases = []
-        for ix, consequent in enumerate(diff_consequents):
-            for rx, rule in enumerate(chosen_rules):
-                if chosen_rules_consequents[rx] == consequent:
-                    rule_list[ix].append(rule)
+        for consequent in range(len(self.candidate_rules)):
+            rule_list = [total_rules[val] for val in x if rule_consequents[val] == consequent]
+            if fuzzy_type == fs.FUZZY_SETS.t1:
+                rule_bases.append(rules.RuleBaseT1(antecedents, rule_list))
+            elif fuzzy_type == fs.FUZZY_SETS.t2:
+                rule_bases.append(rules.RuleBaseT2(antecedents, rule_list))
+            else:
+                rule_bases.append(rules.RuleBaseGT2(antecedents, rule_list))
 
-            if len(rule_list[ix]) > 0:
-                if fuzzy_type == fs.FUZZY_SETS.t1:
-                    rule_base_cons = rules.RuleBaseT1(
-                        self.candidate_rules[0].antecedents, rule_list[ix])
-                elif fuzzy_type == fs.FUZZY_SETS.t2:
-                    rule_base_cons = rules.RuleBaseT2(
-                        self.candidate_rules[0].antecedents, rule_list[ix])
-                elif fuzzy_type == fs.FUZZY_SETS.gt2:
-                    rule_base_cons = rules.RuleBaseGT2(
-                        self.candidate_rules[0].antecedents, rule_list[ix])
-                    
-                rule_bases.append(rule_base_cons)
-            
-        # Create the Master Rule Base object with the individual rule bases
-        newMasterRuleBase = rules.MasterRuleBase(
-            rule_bases, diff_consequents, ds_mode=ds_mode, allow_unknown=allow_unknown
-        )    
-
-        return newMasterRuleBase
+        return rules.MasterRuleBase(rule_bases, list(range(len(self.candidate_rules))),
+                                    ds_mode=ds_mode, allow_unknown=allow_unknown)
 
 
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):
@@ -203,15 +174,12 @@ class ExploreRuleBases(Problem):
         :param x: Gene representing selected rule indices
         :param out: dict where the F field is the fitness (to be minimized)
         """
-        try:
-            ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
-            score = self.fitness_func(
-                ruleBase, self.X, self.y, self.tolerance, 
-                precomputed_truth=self._precomputed_truth
-            )
-            out["F"] = 1 - score
-        except rules.RuleError:
-            out["F"] = 1
+        ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
+        score = self.fitness_func(
+            ruleBase, self.X, self.y, self.tolerance,
+            precomputed_truth=self._precomputed_truth
+        )
+        out["F"] = 1 - score
     
     
     def fitness_func(self, ruleBase: rules.RuleBase, X:np.array, y:np.array, 

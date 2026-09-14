@@ -2,6 +2,7 @@
 
 import os
 import sys
+import builtins
 
 import numpy as np
 import pandas as pd
@@ -486,6 +487,9 @@ class TestRuleModes:
 
         np.testing.assert_allclose(result, [[0.0, 0.0], [0.4, 0.0]])
 
+        empty = np.empty((2, 0))
+        assert evr._apply_rule_mode(empty, "sufficient", 0.1) is empty
+
     def test_crisp_sufficient_predictions_come_from_a_single_consequent(self):
         rng = np.random.default_rng(8)
         X = rng.uniform(0.0, 1.0, size=(40, 2))
@@ -538,3 +542,243 @@ class TestRuleModes:
             evr.BaseFuzzyRulesRegressor(rule_mode="winner").fit(X, y, n_gen=1, pop_size=4)
         with pytest.raises(ValueError, match="tolerance must be non-negative"):
             evr.BaseFuzzyRulesRegressor(tolerance=-0.1).fit(X, y, n_gen=1, pop_size=4)
+
+
+class TestRegressionValidationAndHelperEdges:
+    @pytest.mark.parametrize(
+        "value, message",
+        [
+            (np.array([1.0]), "two-dimensional"),
+            (np.empty((0, 1)), "at least one sample"),
+            (np.empty((1, 0)), "at least one sample"),
+            (np.array([[np.nan]]), "finite numeric"),
+        ],
+    )
+    def test_input_array_validation(self, value, message):
+        with pytest.raises(ValueError, match=message):
+            evr._as_2d_float_array(value)
+
+    def test_target_array_validation_and_column_flattening(self):
+        np.testing.assert_array_equal(
+            evr._as_1d_float_array(np.array([[1.0], [2.0]])), [1.0, 2.0]
+        )
+        invalid = [
+            (np.array([[1.0, 2.0]]), None, "one-dimensional"),
+            (np.array([]), None, "at least one target"),
+            (np.array([1.0]), 2, "inconsistent sample counts"),
+            (np.array([np.inf]), None, "finite numeric"),
+        ]
+        for target, expected_samples, message in invalid:
+            with pytest.raises(ValueError, match=message):
+                evr._as_1d_float_array(target, expected_samples=expected_samples)
+
+    def test_linguistic_variable_validation(self):
+        class Variable:
+            def __init__(self, names, fuzzy_type):
+                self._names = names
+                self._fuzzy_type = fuzzy_type
+
+            def linguistic_variable_names(self):
+                return self._names
+
+            def fuzzy_type(self):
+                return self._fuzzy_type
+
+        with pytest.raises(ValueError, match="At least one"):
+            evr._validate_linguistic_variables([], 0)
+        with pytest.raises(ValueError, match="got 0"):
+            evr._validate_linguistic_variables(None, 1)
+        with pytest.raises(ValueError, match="contains no fuzzy sets"):
+            evr._validate_linguistic_variables([Variable([], fs.FUZZY_SETS.t1)], 1)
+        with pytest.raises(ValueError, match="only Type-1"):
+            evr._validate_linguistic_variables([Variable(["set"], fs.FUZZY_SETS.t2)], 1)
+
+    def test_rulebase_protocol_validation_modifiers_and_printing(self, capsys):
+        X = np.array([[0.1, 0.2], [0.4, 0.8]])
+        partitions = _partitions(X)
+        with pytest.raises(ValueError, match="antecedents; expected"):
+            evr.RuleBaseT1Regression(
+                partitions, [rules.RuleSimple([0])], np.array([1.0])
+            )
+        with pytest.raises(ValueError, match="invalid term index"):
+            evr.RuleBaseT1Regression(
+                partitions, [rules.RuleSimple([99, -1])], np.array([1.0])
+            )
+        with pytest.raises(ValueError, match="one-dimensional"):
+            evr.RuleBaseT1Regression(partitions, [], np.empty((0, 1)))
+        with pytest.raises(ValueError, match="finite values"):
+            evr.RuleBaseT1Regression(
+                partitions, [rules.RuleSimple([0, -1])], np.array([np.nan])
+            )
+
+        inactive = rules.RuleSimple([-1, -1])
+        modified = rules.RuleSimple([0, -1], modifiers=np.array([2.0, -1.0]))
+        rulebase = evr.RuleBaseT1Regression(
+            partitions, [inactive, modified], np.array([1.0, 2.0])
+        )
+        cached = rulebase.compute_antecedents_memberships(X)
+        firing = rulebase.compute_rule_antecedent_memberships(X, cached)
+        assert np.all(firing[:, 0] == 0.0)
+        np.testing.assert_allclose(firing[:, 1], cached[0][0] ** 2)
+        with pytest.raises(ValueError, match="one entry per feature"):
+            rulebase.compute_rule_antecedent_memberships(X, cached[:1])
+        assert rulebase.get_rules() == [inactive, modified]
+        assert rulebase[1] is modified
+        assert list(rulebase) == [inactive, modified]
+
+        assert rulebase.print_rules() is None
+        assert "THEN output" in capsys.readouterr().out
+
+    def test_mamdani_constructor_universe_and_print_edges(self, capsys):
+        X = np.array([[0.1, 0.2], [0.4, 0.8]])
+        partitions = _partitions(X)
+        with pytest.raises(ValueError, match="At least one output"):
+            evr.RuleBaseT1MamdaniRegression(partitions, [], [])
+
+        output_set = fs.FS("same", [1.0, 1.0, 1.0, 1.0], [1.0, 1.0])
+        with pytest.raises(ValueError, match="at least two"):
+            evr.RuleBaseT1MamdaniRegression(
+                partitions, [], [output_set], n_universe_points=1
+            )
+        constant = evr.RuleBaseT1MamdaniRegression(
+            partitions,
+            [rules.RuleSimple([0, -1], consequent=0)],
+            [output_set],
+        )
+        np.testing.assert_array_equal(constant.universe, [1.0])
+        assert constant.print_rules() is None
+        assert "THEN output IS same" in capsys.readouterr().out
+
+    def test_problem_parameter_membership_and_chromosome_validation(self):
+        X = np.array([[0.0, 0.2], [0.5, 0.7], [1.0, 0.9]])
+        y = np.array([0.0, 1.0, 2.0])
+        partitions = _partitions(X)
+        invalid = [
+            ({"nRules": 0, "nAnts": 1}, "nRules"),
+            ({"nRules": 1, "nAnts": 0}, "nAnts must"),
+            ({"nRules": 1, "nAnts": 3}, "cannot exceed"),
+            ({"nRules": 1, "nAnts": 1, "consequent_type": "other"}, "consequent_type"),
+            ({"nRules": 1, "nAnts": 1, "consequent_type": "fuzzy", "n_output_lvs": 1}, "n_output_lvs"),
+            ({"nRules": 1, "nAnts": 1, "consequent_type": "fuzzy", "n_universe_points": 1}, "n_universe_points"),
+            ({"nRules": 1, "nAnts": 1, "y_min": 2.0, "y_max": 1.0}, "y_min"),
+        ]
+        for kwargs, message in invalid:
+            with pytest.raises(ValueError, match=message):
+                evr.FitRuleBaseRegression(X, y, linguistic_variables=partitions, **kwargs)
+
+        class BadMembershipVariable:
+            def __init__(self, memberships):
+                self.memberships = memberships
+
+            def linguistic_variable_names(self):
+                return ["only"]
+
+            def fuzzy_type(self):
+                return fs.FUZZY_SETS.t1
+
+            def compute_memberships(self, values):
+                return self.memberships
+
+        for memberships, message in [
+            (np.zeros((1, 2)), "have shape"),
+            (np.array([[0.0, np.nan, 1.0]]), "non-finite"),
+        ]:
+            bad = [BadMembershipVariable(memberships), partitions[1]]
+            with pytest.raises(ValueError, match=message):
+                evr.FitRuleBaseRegression(X, y, 1, 1, bad)
+
+        problem = evr.FitRuleBaseRegression(X, y, 1, 1, partitions)
+        with pytest.raises(ValueError, match="chromosome must have shape"):
+            problem._rule_term_matrix(np.zeros(2))
+        output = {}
+        problem._evaluate(np.zeros(problem.n_var), output)
+        assert output["F"].shape == (1, 1)
+
+    def test_torch_error_shape_cache_and_constant_target_paths(self, monkeypatch):
+        torch = pytest.importorskip("torch")
+        X = np.array([[0.0, 0.2], [0.5, 0.7], [1.0, 0.9]])
+        y = np.array([0.0, 1.0, 2.0])
+        problem = evr.FitRuleBaseRegression(X, y, 2, 1, _partitions(X))
+
+        chromosome = np.zeros(problem.n_var)
+        chromosome[2:4] = -1
+        terms = problem._torch_rule_terms(torch.tensor(chromosome)[None, :], torch)
+        assert torch.all(terms == problem._dont_care)
+
+        first = problem._torch_tensors(torch.device("cpu"), torch)
+        assert problem._torch_tensors(torch.device("cpu"), torch) is first
+        assert problem._evaluate_torch_population(
+            torch.tensor(chromosome), device="cpu"
+        ).shape == (1,)
+        with pytest.raises(ValueError, match="population must have shape"):
+            problem._evaluate_torch_population(
+                torch.zeros((2, problem.n_var - 1)), device="cpu"
+            )
+
+        monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+        monkeypatch.setattr(torch.cuda, "mem_get_info", lambda device: (10_000_000, 20_000_000))
+        assert all(size >= 1 for size in problem._torch_chunk_sizes(3, "cuda"))
+
+        def no_memory_info(device):
+            raise RuntimeError("unavailable")
+
+        monkeypatch.setattr(torch.cuda, "mem_get_info", no_memory_info)
+        assert all(size >= 1 for size in problem._torch_chunk_sizes(3, "cuda"))
+
+        constant = evr.FitRuleBaseRegression(
+            X, np.full(3, 4.0), 1, 1, _partitions(X)
+        )
+        constant_gene = np.zeros(constant.n_var)
+        constant._evaluate_torch_population(constant_gene, device="cpu")
+        assert constant._fitness(np.zeros(3)) == 0.0
+
+        original_import = builtins.__import__
+
+        def without_torch(name, *args, **kwargs):
+            if name == "torch":
+                raise ImportError("missing torch")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", without_torch)
+        with pytest.raises(ImportError, match="PyTorch is required"):
+            problem._evaluate_torch_population(chromosome)
+
+    @pytest.mark.parametrize(
+        "kwargs, message",
+        [
+            ({"nRules": 0}, "nRules"),
+            ({"nAnts": 0}, "nAnts"),
+            ({"n_linguistic_variables": 0}, "n_linguistic_variables"),
+            ({"consequent_type": "fuzzy", "n_universe_points": 1}, "n_universe_points"),
+        ],
+    )
+    def test_estimator_parameter_validation(self, kwargs, message):
+        X = np.arange(12.0).reshape(6, 2)
+        y = np.arange(6.0)
+        with pytest.raises(ValueError, match=message):
+            evr.BaseFuzzyRulesRegressor(**kwargs).fit(X, y, n_gen=1, pop_size=4)
+
+        valid = evr.BaseFuzzyRulesRegressor(nRules=2, nAnts=1)
+        with pytest.raises(ValueError, match="n_gen"):
+            valid.fit(X, y, n_gen=0, pop_size=4)
+        with pytest.raises(ValueError, match="pop_size"):
+            valid.fit(X, y, n_gen=1, pop_size=1)
+
+    def test_verbose_fit_and_invalid_optimizer_result(self, monkeypatch, capsys):
+        X = np.linspace(0.0, 1.0, 8)[:, None]
+        y = 2.0 * X[:, 0]
+        verbose = evr.BaseFuzzyRulesRegressor(nRules=2, nAnts=3, verbose=True)
+        verbose.fit(X, y, n_gen=1, pop_size=4, random_state=0)
+        output = capsys.readouterr().out
+        assert "nAnts exceeds" in output
+        assert "Final:" in output
+
+        class InvalidBackend:
+            def optimize(self, **kwargs):
+                return {"X": None, "F": None}
+
+        monkeypatch.setattr(evr.ev_backends, "get_backend", lambda name: InvalidBackend())
+        with pytest.raises(RuntimeError, match="did not return a valid solution"):
+            evr.BaseFuzzyRulesRegressor(nRules=2, nAnts=1).fit(
+                X, y, n_gen=1, pop_size=4
+            )

@@ -1605,7 +1605,7 @@ class FERL(BaseEstimator, ClassifierMixin):
             if baseline_prediction is None:
                 skeleton_prediction, skeleton_memberships, paths = self.predict_with_path(X)
                 baseline_prediction = skeleton_prediction.copy()
-            else:
+            else:  # pragma: no cover - every completed split invalidates this cache
                 skeleton_prediction = baseline_prediction.copy()
 
             # print('Accuracy:', np.mean(skeleton_prediction == y), 'Rules:', self.tree_rules, 'Best achievable coverage:', best_coverage_achievable)
@@ -1788,9 +1788,6 @@ class FERL(BaseEstimator, ClassifierMixin):
                 node_y = y[node_samples_mask]
                 node_weights = sample_weight[node_samples_mask]
 
-                if len(node_X) == 0:
-                    continue
-
                 # Check all possible splits for this node
                 for feature_idx in range(len(self.fuzzy_partitions_)):
                     fuzzy_sets = self.fuzzy_partitions_[feature_idx]
@@ -1908,8 +1905,6 @@ class FERL(BaseEstimator, ClassifierMixin):
             Predicted class for each sample.
         """
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
 
         if observed_mask is None:
             observed_mask = np.ones_like(X, dtype=bool)
@@ -1944,8 +1939,6 @@ class FERL(BaseEstimator, ClassifierMixin):
             Predicted classes, membership values, and paths for each sample.
         """
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
 
         if observed_mask is None:
             observed_mask = np.ones_like(X, dtype=bool)
@@ -1979,8 +1972,6 @@ class FERL(BaseEstimator, ClassifierMixin):
             Probabilities sum to 1.0 for each sample.
         """
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
 
         if observed_mask is None:
             observed_mask = np.ones_like(X, dtype=bool)
@@ -2002,8 +1993,6 @@ class FERL(BaseEstimator, ClassifierMixin):
             Per-sample total firing strength, shape (n_samples,).
         """
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
         if observed_mask is None:
             observed_mask = np.ones_like(X, dtype=bool)
         _, total_memberships = self._predict_proba_all_nodes(X, observed_mask, return_votes=True)
@@ -2027,8 +2016,6 @@ class FERL(BaseEstimator, ClassifierMixin):
         firing and fall back to the prior.
         """
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
         if observed_mask is None:
             observed_mask = np.ones_like(X, dtype=bool)
         if not hasattr(self, '_cached_all_nodes'):
@@ -2084,8 +2071,6 @@ class FERL(BaseEstimator, ClassifierMixin):
         """
         _evidence.check_rule(rule)
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
         M, cons, names = self.node_activation_matrix(X, observed_mask)
         if leaves_only and M.shape[1] > 0:
             keep = np.array([not self._node_has_children(n) for n in names])
@@ -2299,8 +2284,6 @@ class FERL(BaseEstimator, ClassifierMixin):
             - predictions_dict: {leaf_name: prediction_class}
         """
         X = self._as_array(X)
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
 
         if observed_mask is None:
             observed_mask = np.ones_like(X, dtype=bool)

@@ -25,39 +25,22 @@ The module is essential for validating the reliability of fuzzy rule-based class
 and ensuring that discovered patterns are consistent and meaningful rather than artifacts
 of random initialization or data sampling.
 """
-import numpy as np
-from multiprocessing.pool import ThreadPool
-from sklearn.model_selection import train_test_split
-
-# Handle pymoo version compatibility for parallelization
-try:
-    # pymoo < 0.6.0
-    from pymoo.parallelization.starmap import StarmapParallelization
-except ImportError:
-    try:
-        # pymoo >= 0.6.0
-        from pymoo.core.problem import StarmapParallelization
-    except ImportError:
-        # Fallback if parallelization not available
-        StarmapParallelization = None
 import numbers
+import random
+
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
-import random
+from sklearn.model_selection import train_test_split
 
 try:
     from . import fuzzy_sets as fs
     from . import rules as rl
     from . import evolutionary_fit as evf
-    from . import vis_rules
-    from . import eval_rules as evr
-    
-except:
+except ImportError:
     import fuzzy_sets as fs
     import rules as rl
     import evolutionary_fit as evf
-    import vis_rules
-    import eval_rules as evr
 
 
 def add_dicts(dict1: dict, dict2: dict):
@@ -169,7 +152,7 @@ class pattern_stabilizer():
         strat = self.stratify_by
 
         for ix in range(n):
-            fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=self.nRules, linguistic_variables=self.lvs, nAnts=self.nAnts, n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=self.tolerance, runner=self.runner, ds_mode=self.ds_mode, fuzzy_modifiers=self.fuzzy_modifiers, allow_unknown=self.allow_unknown)
+            fl_classifier = evf.BaseFuzzyRulesClassifier(nRules=self.nRules, linguistic_variables=self.lvs, nAnts=self.nAnts, n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, verbose=False, tolerance=self.tolerance, runner=self.runner, ds_mode=self.ds_mode, allow_unknown=self.allow_unknown)
             
             if strat:
                 strat_column = self.stratify_by
@@ -254,8 +237,8 @@ class pattern_stabilizer():
             class_vars = {}
             for key in range(len(mrule_base)):
                 class_vars[key] = {}
-                for jx in range(len(mrule_base.n_linguistic_variables())):
-                    class_vars[key][jx] = {zx: 0 for zx in np.arange(-1, mrule_base.n_linguistic_variables()[key])}
+                for jx, n_labels in enumerate(mrule_base.n_linguistic_variables()):
+                    class_vars[key][jx] = {zx: 0 for zx in np.arange(-1, n_labels)}
 
             patterns_dss = {ix: {} for ix in range(len(mrule_base))}
 
@@ -263,8 +246,8 @@ class pattern_stabilizer():
             if len(rule_base) != 0:
                 unique_patterns, patterns_ds, var_used = self.count_unique_patterns(rule_base)
                 class_patterns[ix] = add_dicts(class_patterns[ix], unique_patterns)
-                for key, value in class_vars.items():
-                    class_vars[ix][key] = add_dicts(class_vars[ix][key], var_used[key])
+                for var_ix, usage in var_used.items():
+                    class_vars[ix][var_ix] = add_dicts(class_vars[ix][var_ix], usage)
 
                 patterns_dss[ix] = concatenate_dicts(patterns_dss[ix], patterns_ds)
             
@@ -287,16 +270,17 @@ class pattern_stabilizer():
         rule_bases, accuracies = self.generate_solutions(n, n_gen=n_gen, pop_size=pop_size,test_size=test_size)
         self.n = n
         faults = 0
+        class_patterns, patterns_dss, class_vars = None, None, None
         for ix, mrule_base in enumerate(rule_bases):
-            if len(mrule_base) != 0:
-                if ix == 0:
-                    class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base)
-                else:
-                    class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base, class_patterns, patterns_dss, class_vars)
+            if len(mrule_base.get_rules()) != 0:
+                class_patterns, patterns_dss, class_vars = self.count_unique_patterns_all_classes(mrule_base, class_patterns, patterns_dss, class_vars)
             else:
                 faults += 1
                 print(f'No rules were generated for solution {ix}. Percentage of faulty solutions: {faults / n * 100}%')
-            
+
+        if class_patterns is None:
+            raise ValueError('No rules were generated in any of the solutions.')
+
         # Sort the patterns by the number of appearances
         for ix in range(len(class_patterns)):
             class_patterns[ix] = dict(sorted(class_patterns[ix].items(), key=lambda item: item[1], reverse=True))
@@ -356,7 +340,7 @@ class pattern_stabilizer():
             print(f'Number of unique patterns: {len(class_pattern_ix)}')
             for jx, rule in enumerate(class_pattern_ix.keys()):
                 if jx < rule_cutoff:
-                    rule_print_format = rl.generate_rule_string(rules_array_format[jx], rule_bases[ix].antecedents)
+                    rule_print_format = rl.generate_rule_string(rules_array_format[jx], rule_bases[0].antecedents)
                     print(f'Pattern {rule_print_format} appears in %.2f percent of the trials with a Dominance Score of {patterns_dss_ix[str(rule)]}' % float(class_pattern_ix[str(rule)] / self.n))
                 else:
                     break
@@ -396,7 +380,7 @@ class pattern_stabilizer():
 
         for key in var.keys():
             if key != -1 and var[key] > 0:
-                labels.append(antecedents[key].name)
+                labels.append(antecedents[var_ix][key].name)
                 sizes.append(var[key])
 
         fig1, ax1 = plt.subplots()
@@ -444,43 +428,45 @@ class pattern_stabilizer():
         antecedents = self.rule_bases[0][0].antecedents
         colors = self.gen_colormap(antecedents)
         
-        fig1, ax1 = plt.subplots(ncols=len(self.rule_bases[0]), nrows=1, figsize=(20, 10))
+        var_indexes = [var_ix for var_ix in range(len(antecedents)) if var_list is None or var_ix in var_list]
+        fig1, ax1 = plt.subplots(ncols=len(var_indexes), nrows=1, figsize=(20, 10), squeeze=False)
         fig1.suptitle(f'Class {self.classes_names[class_ix]} variable usage in the rulebases')
 
-        for var_ix in range(len(self.rule_bases[0])):
-            if (var_list is not None and var_ix in var_list) or var_list is None:
-                labels = []
-                sizes = []
-                var = self.class_vars[class_ix][var_ix]
-                ax1[var_ix].set_title(f'Variable {antecedents[var_ix].name}')
-                for key in var.keys():
-                    if key != -1 and var[key] > 0:
-                        labels.append(antecedents[var_ix][key].name)
-                        sizes.append(var[key])
-            
-                ax1[var_ix].pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=[colors[v] for v in labels])
-                ax1[var_ix].axis('equal')
+        for plot_ix, var_ix in enumerate(var_indexes):
+            labels = []
+            sizes = []
+            var = self.class_vars[class_ix][var_ix]
+            ax1[0, plot_ix].set_title(f'Variable {antecedents[var_ix].name}')
+            for key in var.keys():
+                if key != -1 and var[key] > 0:
+                    labels.append(antecedents[var_ix][key].name)
+                    sizes.append(var[key])
+
+            ax1[0, plot_ix].pie(sizes, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=[colors[v] for v in labels])
+            ax1[0, plot_ix].axis('equal')
 
         plt.show()
 
 
     def gen_colormap(self, antecedents):
         '''
-        Generates a colormap for the special cases of 2 and 3 linguistic variables.
+        Generates a colormap for the linguistic labels, with fixed colors for the special cases of 2 and 3 linguistic variables.
 
         :param antecedents: list. The list of antecedents.
+        :return: dict mapping each linguistic label name to its color.
         '''
-        largest_vl_ix = np.argmax(self.n_linguist_variables)
-        largest_vl_n = self.n_linguist_variables[largest_vl_ix]
+        n_linguistic_variables = [len(antecedent) for antecedent in antecedents]
+        largest_vl_ix = int(np.argmax(n_linguistic_variables))
+        largest_vl_n = n_linguistic_variables[largest_vl_ix]
+        label_names = [fuzzy_set.name for fuzzy_set in antecedents[largest_vl_ix]]
 
         # Note: red and yellow has been softened to avoid eye strain, that's why there are colors specified with hexadecimals
         if largest_vl_n == 2: # There is the special case of low/high
-            colors = { label: color  for label, color in zip([antecedent.name for antecedent in antecedents[largest_vl_ix]], ['#FA8072', 'Green'])} 
+            palette = ['#FA8072', 'Green']
         elif largest_vl_n == 3: # There is the special case of low/medium/high
-            colors = { label: color  for label, color in zip([antecedent.name for antecedent in antecedents[largest_vl_ix]], ['#FA8072', '#EEE8AA', 'Green'])}
+            palette = ['#FA8072', '#EEE8AA', 'Green']
         else:
-            colormap_custom = list(set([colormaps['coolwarm'](a) for a in len(largest_vl_n)]))
-            
-            colors = { label: color  for label, color in zip([antecedent.name for antecedent in antecedents], colormap_custom)}
-        return colors
+            palette = [colormaps['coolwarm'](a) for a in np.linspace(0, 1, largest_vl_n)]
+
+        return dict(zip(label_names, palette))
             

@@ -37,17 +37,8 @@ def _term_name(k: int, K: int) -> str:
     return f"term_{k}"
 
 
-def _entropy(y: np.ndarray) -> float:
-    if len(y) == 0:
-        return 0.0
-    _, counts = np.unique(y, return_counts=True)
-    p = counts / counts.sum()
-    return float(-np.sum(p * np.log2(p)))
-
-
 def _entropy_from_counts(counts: np.ndarray, total: int) -> float:
-    if total == 0:
-        return 0.0
+    """Entropy of a non-empty segment from its class counts."""
     nz = counts[counts > 0]
     p = nz / total
     return float(-np.sum(p * np.log2(p)))

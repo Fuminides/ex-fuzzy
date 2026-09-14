@@ -337,8 +337,12 @@ class Rule():
             consequent_memberships = self.consequent.membership(
                 domain_linspace)
 
-            self.centroid_consequent = centroid.compute_centroid_fs(
-                domain_linspace, consequent_memberships)
+            if consequent_memberships.ndim == 1:
+                self.centroid_consequent = centroid.center_of_masses(
+                    domain_linspace, consequent_memberships)
+            else:
+                self.centroid_consequent = centroid.compute_centroid_iv(
+                    domain_linspace, consequent_memberships)
 
             return self.centroid_consequent
 
@@ -543,24 +547,6 @@ class RuleBase():
         self.consequent = consequent
         self.tnorm = tnorm
 
-        if consequent is not None:
-            self.consequent_centroids = np.zeros(
-                (len(consequent.linguistic_variable_names()), 2))
-            for ix, vl_consequent in enumerate(consequent.linguistic_variables):
-                consequent_domain = vl_consequent.domain
-                domain_linspace = np.arange(
-                    consequent_domain[0], consequent_domain[1], 0.05)
-                consequent_memberships = vl_consequent.membership(domain_linspace)
-
-                self.consequent_centroids[ix, :] = centroid.compute_centroid_iv(
-                    domain_linspace, consequent_memberships)
-
-            self.consequent_centroids_rules = np.zeros((len(self.rules), 2))
-            for ix, rule in enumerate(self.rules):
-                consequent_ix = rule.consequent
-                self.consequent_centroids_rules[ix] = self.consequent_centroids[consequent_ix]
-
-        self.delete_duplicates()
 
 
     def get_rules(self) -> list[RuleSimple]:
@@ -682,7 +668,7 @@ class RuleBase():
                 return [np.zeros((x.shape[0], 1))]
             elif self.fuzzy_type() == fs.FUZZY_SETS.t2:
                 return [np.zeros((x.shape[0], 1, 2))]
-            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:  # pragma: no branch - fuzzy types are exhaustive
                 return [np.zeros((x.shape[0], len(self.alpha_cuts), 2))]
 
 
@@ -700,7 +686,7 @@ class RuleBase():
             res = np.zeros((x.shape[0], len(self.rules), 2))
         elif self.fuzzy_type() == fs.FUZZY_SETS.t1:
             res = np.zeros((x.shape[0], len(self.rules), ))
-        elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:
+        elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:  # pragma: no branch - fuzzy types are exhaustive
             res = np.zeros(
                 (x.shape[0], len(self.rules), len(self.alpha_cuts), 2))
 
@@ -728,7 +714,7 @@ class RuleBase():
                 membership = np.zeros((x.shape[0], len(rule_antecedents)))
             elif self.fuzzy_type() == fs.FUZZY_SETS.t2:
                 membership = np.zeros((x.shape[0], len(rule_antecedents), 2))
-            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:  # pragma: no branch - fuzzy types are exhaustive
                 membership = np.zeros(
                     (x.shape[0], len(rule_antecedents), len(self.alpha_cuts), 2))
 
@@ -755,10 +741,7 @@ class RuleBase():
                 membership[:, ix] = 0.0
 
             membership = self.tnorm(membership, axis=1)
-            try:
-                res[:, jx] = membership
-            except UnboundLocalError:
-                pass  # All the antecedents are dont care.
+            res[:, jx] = membership
 
         if scaled:
             if self.fuzzy_type() == fs.FUZZY_SETS.t1:
@@ -774,7 +757,7 @@ class RuleBase():
                 res[non_zero_rows, :, 1] = res[non_zero_rows, :, 1] / \
                     np.sum(res[non_zero_rows, :, 1], axis=1, keepdims=True)
             
-            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:
+            elif self.fuzzy_type() == fs.FUZZY_SETS.gt2:  # pragma: no branch - fuzzy types are exhaustive
 
                 for ix, alpha in enumerate(self.alpha_cuts):
                     relevant_res = res[:, :, ix, :]
@@ -867,12 +850,8 @@ class RuleBase():
                 if (self.fuzzy_type() == fs.FUZZY_SETS.t2) or (self.fuzzy_type() == fs.FUZZY_SETS.gt2):
                     score = np.mean(score)
 
-                try:
-                    if score < tolerance or rule.accuracy == 0.0:
-                        delete_list.append(ix)
-                except AttributeError:
-                    if score < tolerance:
-                        delete_list.append(ix)
+                if score < tolerance or getattr(rule, 'accuracy', None) == 0.0:
+                    delete_list.append(ix)
                         
         except AttributeError:
             assert False, 'Dominance scores not computed for this rulebase'
@@ -948,7 +927,7 @@ class RuleBase():
         '''
         Adds two rule bases.
         '''
-        return RuleBase(self.antecedents, self.rules + other.rules, self.consequent, self.tnorm)
+        return type(self)(self.antecedents, self.rules + other.rules, self.consequent, self.tnorm)
     
 
     def n_linguistic_variables(self) -> int:
@@ -1034,7 +1013,7 @@ class RuleBaseT2(RuleBase):
 
             self.consequent_centroids_rules = np.zeros((len(self.rules), 2))
             # If 0, we are classifying and we do not need the consequent centroids.
-            if len(self.consequent_centroids) > 0:
+            if len(self.consequent_centroids) > 0:  # pragma: no branch - fuzzy variables are non-empty
                 for ix, rule in enumerate(self.rules):
                     consequent_ix = rule.consequent
                     self.consequent_centroids_rules[ix] = self.consequent_centroids[consequent_ix]
@@ -1068,7 +1047,7 @@ class RuleBaseT2(RuleBase):
         :param x: array with the values of the inputs.
         :return: array with the deffuzified output for each sample.
         '''
-        return np.mean(self.inference(x))
+        return np.mean(self.inference(x), axis=1)
 
 
     def fuzzy_type(self) -> fs.FUZZY_SETS:
@@ -1104,30 +1083,15 @@ class RuleBaseGT2(RuleBase):
         self.tnorm = tnorm
         self.alpha_cuts = antecedents[0][0].alpha_cuts
 
-        try:
-            # We try to get the modifiers from the rules, else, we will use the ones given in the constructor.
-            self.fuzzy_modifiers = np.array([rule.modifiers for rule in rules])
-        except AttributeError:
-            self.fuzzy_modifier = fuzzy_modifiers
-
 
     def inference(self, x: np.array) -> np.array:
         '''
-        Computes the output of the gt2 inference system.
-
-        Return an array in shape samples x alpha_cuts
+        General type 2 rule bases only support classification, so they have no fuzzy output.
 
         :param x: array with the values of the inputs.
-        :return: array with the memberships of the consequents for each sample.
+        :raises NotImplementedError: always.
         '''
-        res = np.zeros((x.shape[0], 2))
-
-        antecedent_memberships = self.compute_rule_antecedent_memberships(x)
-        for sample in range(antecedent_memberships.shape[0]):
-            res[sample, :] = centroid.consequent_centroid(
-                antecedent_memberships[sample], self.consequent_centroids_rules)
-
-        return res
+        raise NotImplementedError('General type 2 rule bases only support classification.')
 
 
     def _alpha_reduction(self, x) -> np.array:
@@ -1144,14 +1108,12 @@ class RuleBaseGT2(RuleBase):
 
     def forward(self, x: np.array) -> np.array:
         '''
-        Computes the deffuzified output of the t2 inference system.
-
-        Return a vector of size (samples, )
+        General type 2 rule bases only support classification, so they have no deffuzified output.
 
         :param x: array with the values of the inputs.
-        :return: array with the deffuzified output for each sample.
+        :raises NotImplementedError: always.
         '''
-        return np.sum(np.array(self.alpha_cuts) * (self.inference(x)), axis=1) / np.sum(self.alpha_cuts)
+        raise NotImplementedError('General type 2 rule bases only support classification.')
 
 
     def fuzzy_type(self) -> fs.FUZZY_SETS:
@@ -1449,13 +1411,13 @@ class MasterRuleBase():
 
         if self.ds_mode == 0:
             rulesw = self.get_scores()
-            if self.fuzzy_type() == fs.FUZZY_SETS.t2 and len(rulesw.shape) == 1:
+            if firing_strengths.ndim == 3 and len(rulesw.shape) == 1:
                 rulesw = rulesw[None, :, None]
                 
             association_degrees = rulesw * firing_strengths
         elif self.ds_mode == 1:
             association_degrees = firing_strengths
-        elif self.ds_mode == 2:
+        elif self.ds_mode == 2:  # pragma: no branch - supported modes are 0, 1, and 2
             rulesw = self.get_weights()
             if self.fuzzy_type() == fs.FUZZY_SETS.t2:
                 rulesw = rulesw[None, :, None] 
@@ -1464,9 +1426,6 @@ class MasterRuleBase():
 
         if (self[0].fuzzy_type() == fs.FUZZY_SETS.t2) or (self[0].fuzzy_type() == fs.FUZZY_SETS.gt2):
             association_degrees = np.mean(association_degrees, axis=2)
-        elif self[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
-            association_degrees = np.mean(association_degrees, axis=3)
-            
         return association_degrees
     
     
@@ -1733,7 +1692,7 @@ class MasterRuleBase():
         '''
         if deep:
             # Deep copy all rule bases and other attributes
-            copied_rule_bases = [rb.copy(deep=True) for rb in self.rule_bases]
+            copied_rule_bases = [rb.copy() for rb in self.rule_bases]
             copied_consequent_names = copy.deepcopy(self.consequent_names)
         else:
             # Shallow copy - copy the list but not the rule bases themselves
@@ -1773,7 +1732,7 @@ def construct_rule_base(rule_matrix: np.array, nclasses:int, consequents: np.arr
             rule_base = RuleBaseT1(antecedents, rule_lists[ix])
         elif fs_studied == fs.FUZZY_SETS.t2:
             rule_base = RuleBaseT2(antecedents, rule_lists[ix])
-        elif fs_studied == fs.FUZZY_SETS.gt2:
+        elif fs_studied == fs.FUZZY_SETS.gt2:  # pragma: no branch - fuzzy types are exhaustive
             rule_base = RuleBaseGT2(antecedents, rule_lists[ix])
         
         if ix == 0:

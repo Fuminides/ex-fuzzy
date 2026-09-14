@@ -439,9 +439,8 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
         if class_idx not in self._calibration_scores:
             return 0.0
 
+        # Only classes present in the calibration set are stored, so they have scores.
         cal_scores = self._calibration_scores[class_idx]
-        if len(cal_scores) == 0:
-            return 0.0
 
         # P-value = proportion of calibration scores >= test score
         # Adding +1 to numerator and denominator for finite sample correction
@@ -465,9 +464,8 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
         """Get confidence for a rule firing at given strength."""
         if self._rule_calibration is None or rule_idx not in self._rule_calibration:
             return 0.0
+        # Only rules whose class appears in the calibration set are stored.
         cal_scores = self._rule_calibration[rule_idx]
-        if len(cal_scores) == 0:
-            return 0.0
         # Confidence = proportion of calibration scores <= current score
         return float(np.sum(cal_scores <= score) / len(cal_scores))
 

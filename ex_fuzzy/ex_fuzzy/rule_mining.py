@@ -92,15 +92,10 @@ def rule_search(data: pd.DataFrame, fuzzy_variables: dict[fs.fuzzyVariable], sup
         # Iterate through the possible itemsets
         for itemsets in all_r_combs:
             for ix, itemset in enumerate(itemsets):
-                relevant_memberships = []
-                for item in itemset:
-                    item_var, item_vl = item
-                    relevant_memberships.append([memberships[item_var][item_vl]])
-                
-                array_membership = np.array(relevant_memberships).T[:,0,:]
-                support = np.mean(np.min(array_membership, axis=1))
-                if fuzzy_variables[0].fuzzy_type == fs.FUZZY_SETS.t2 or fuzzy_variables[0].fuzzy_type == fs.FUZZY_SETS.gt2:
-                    support = np.mean(support, axis=1)
+                # Minimum t-norm per sample, then the mean over the samples and any
+                # interval or alpha-cut axes of Type-2 memberships.
+                item_memberships = np.stack([np.asarray(memberships[item_var][item_vl]) for item_var, item_vl in itemset])
+                support = np.mean(np.min(item_memberships, axis=0))
 
                 if support > support_threshold:
                     freq_itemsets.append(itemset) 
@@ -148,9 +143,9 @@ def mine_rulebase_support(x: pd.DataFrame, fuzzy_variables:list[fs.fuzzyVariable
         rule_base = rl.RuleBaseT1(fuzzy_variables, rule_list)
     elif fuzzy_type == fs.FUZZY_SETS.t2:
         rule_base = rl.RuleBaseT2(fuzzy_variables, rule_list)
-    elif fuzzy_type == fs.FUZZY_SETS.gt2:
+    else:
         rule_base = rl.RuleBaseGT2(fuzzy_variables, rule_list)
-    
+
     return rule_base
 
 

@@ -301,6 +301,120 @@ class TestCategoricalVariables:
         assert 'float' in result
 
 
+class TestRuleRoundTrip:
+    """Rules printed by a rule base load back with their antecedents, statistics and modifiers."""
+
+    @pytest.fixture
+    def variables(self):
+        low = fs.FS('Low', [0, 0, 0.5, 0.5], [0, 1])
+        high = fs.FS('High', [0.5, 0.5, 1, 1], [0, 1])
+        return [fs.fuzzyVariable('Var1', [low, high]), fs.fuzzyVariable('Var2', [low, high])]
+
+    def test_modifiers_round_trip(self, variables):
+        rule = rl.RuleSimple([0, 1], modifiers=np.array([2.0, 1.5]))
+        rule.score = 0.5
+        rule.accuracy = 0.75
+        text = 'Rules for consequent: yes\n' + rl.generate_rule_string(rule, variables) + '\n'
+        assert '(MOD Very)' in text and '(MOD 1.5)' in text
+
+        loaded = pers.load_fuzzy_rules(text, variables)
+        loaded_rule = loaded.get_rules()[0]
+        np.testing.assert_array_equal(loaded_rule.antecedents, [0, 1])
+        np.testing.assert_array_equal(loaded_rule.modifiers, [2.0, 1.5])
+        assert loaded_rule.score == 0.5 and loaded_rule.accuracy == 0.75
+        assert loaded.get_consequents_names() == ['yes']
+        assert loaded.ds_mode == 0
+
+    def test_rules_without_accuracy_and_classes_without_rules(self, variables):
+        text = """Rules for consequent: empty
+----------------
+
+Rules for consequent: weighted
+----------------
+IF Var1 IS High WITH DS 0.25, WGHT 0.5
+
+Rules for consequent: last
+----------------
+IF Var2 IS Low WITH DS 0.125
+"""
+        loaded = pers.load_fuzzy_rules(text, variables)
+
+        assert [len(rule_base) for rule_base in loaded] == [0, 1, 1]
+        weighted = loaded[1].rules[0]
+        assert weighted.weight == 0.5
+        assert not hasattr(weighted, 'accuracy')
+        assert loaded[2].rules[0].score == 0.125
+        assert loaded.ds_mode == 2
+        assert loaded.get_consequents_names() == ['empty', 'weighted', 'last']
+
+    @pytest.mark.parametrize('fuzzy_type, rule_base_class', [(fs.FUZZY_SETS.t2, rl.RuleBaseT2), (fs.FUZZY_SETS.gt2, rl.RuleBaseGT2)])
+    def test_type_2_rule_bases(self, fuzzy_type, rule_base_class):
+        import utils
+        variables = utils.construct_partitions(np.linspace(0, 1, 40).reshape(-1, 2), fuzzy_type)
+        text = """Rules for consequent: a
+IF 0 IS Low WITH DS 0.5, ACC 0.5
+Rules for consequent: b
+IF 1 IS High WITH DS 0.5, ACC 0.5
+Rules for consequent: c
+IF 0 IS Medium AND 1 IS Medium WITH DS 0.5, ACC 0.5
+"""
+        loaded = pers.load_fuzzy_rules(text, variables)
+        assert all(isinstance(rule_base, rule_base_class) for rule_base in loaded)
+        np.testing.assert_array_equal(loaded[2].rules[0].antecedents, [1, 1])
+
+
+class TestVariableFormats:
+    """Tests for the categorical, custom and Type-2 variable formats."""
+
+    def test_categorical_variables_round_trip_with_units_and_types(self):
+        variables = [fs.fuzzyVariable('colour', [fs.categoricalFS('red', 'red'), fs.categoricalFS('blue', 'blue')], units='paint'),
+                     fs.fuzzyVariable('flag', [fs.categoricalFS('0', np.int64(0)), fs.categoricalFS('1', np.int64(1))])]
+        text = pers.save_fuzzy_variables(variables)
+        assert '$Categorical variable: colour : paint' in text
+        assert 'Categorical str;red,blue,' in text
+        assert 'Categorical float;0,1,' in text
+
+        colour, flag = pers.load_fuzzy_variables(text)
+        assert colour.units == 'paint' and flag.units is None
+        np.testing.assert_array_equal(colour.compute_memberships(np.array(['blue'])), [[0.0], [1.0]])
+        np.testing.assert_array_equal(flag.compute_memberships(np.array([1, 0])), [[0.0, 1.0], [1.0, 0.0]])
+
+        other = pers.load_fuzzy_variables('$Categorical variable: size\nCategorical other;S,M,\n')[0]
+        assert [fuzzy_set.category for fuzzy_set in other] == ['S', 'M']
+
+    def test_custom_categorical_lines(self):
+        text = """$$$ Linguistic variable: grade : points
+A;4
+F;fail
+"""
+        grade = pers.load_fuzzy_variables(text)[0]
+        assert grade.units == 'points'
+        assert isinstance(grade[0], fs.categoricalFS)
+        assert grade[0].category == 4.0 and grade[1].category == 'fail'
+
+    def test_type_2_variables_round_trip(self):
+        gaussian = fs.fuzzyVariable('g', [fs.gaussianIVFS('bell', [0.5, 0.1], [0.5, 0.2], [0, 1], lower_height=0.9)])
+        categorical = fs.fuzzyVariable('c', [fs.categoricalIVFS('x', 'x'), fs.categoricalIVFS('y', 'y')])
+        text = pers.save_fuzzy_variables([gaussian, categorical])
+
+        loaded_gaussian, loaded_categorical = pers.load_fuzzy_variables(text)
+        grid = np.linspace(0, 1, 11)
+        np.testing.assert_allclose(loaded_gaussian[0].membership(grid), gaussian[0].membership(grid))
+        assert isinstance(loaded_categorical[0], fs.categoricalIVFS)
+        np.testing.assert_array_equal(loaded_categorical[1].membership(np.array(['y'])), [[1.0, 1.0]])
+
+        # Once a Type-2 set has been read, custom categorical lines are Type-2 as well.
+        custom = pers.load_fuzzy_variables(text + '$$$ Linguistic variable: k\nk1;3\n')[2]
+        assert isinstance(custom[0], fs.categoricalIVFS)
+
+    def test_empty_text_has_no_variables(self):
+        assert pers.load_fuzzy_variables('') == []
+
+    def test_triangular_sets_are_saved_as_trapezoids(self):
+        variable = fs.fuzzyVariable('t', [fs.triangularFS('peak', [0, 0.5, 0.5, 1], [0, 1])])
+        assert 'peak;0,1;trap;0,0.5,0.5,1' in pers.print_fuzzy_variable(variable)
+
+
 class TestEdgeCases:
     """Tests for edge cases in persistence."""
 

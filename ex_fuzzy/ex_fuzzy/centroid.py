@@ -21,28 +21,25 @@ def compute_centroid_t2_l(z: np.array, memberships: np.array) -> float:
     '''
     Computes the Karnik and Mendel algorithm to find the centroid of an IV fuzzy set.
 
-    :param z: Vector of the referencial values.
+    :param z: Vector of the referencial values, in increasing order.
     :param memberships: vector of the fuzzy memberships.
-    :return: The centroid.
+    :return: The centroid. NaN if every membership is zero.
     '''
     centros = np.mean(memberships, axis=1)
     w = centros
+    if np.sum(w) == 0:
+        return np.nan
 
     yhat = center_of_masses(z, w)
 
     yhat_2 = None
 
     while(yhat != yhat_2):
-        try:
-            k = np.argwhere((z - yhat) >= 0)[-1][0]
-            k = min(len(centros)-1, k)
-        except IndexError:
-            k = 0
+        # Switch point: the last referencial value not above the current centroid.
+        k = max(np.sum(z <= yhat) - 1, 0)
 
-        # k_vector = np.argwhere((z - yhat) > 0)
-        # k = k_vector[0][0] + 1
-        w[0:k] = memberships[:, 1][:k]
-        w[k:] = memberships[:, 0][k:]
+        w[0:k+1] = memberships[:, 1][:k+1]
+        w[k+1:] = memberships[:, 0][k+1:]
 
         yhat_2 = yhat
         yhat = center_of_masses(z, w)
@@ -54,23 +51,22 @@ def compute_centroid_t2_r(z: np.array, memberships: np.array) -> float:
     '''
     Computes the Karnik and Mendel algorithm to find the right component of a centroid of an IV fuzzy set.
 
-    :param z: Vector of the referencial values.
+    :param z: Vector of the referencial values, in increasing order.
     :param memberships: vector of the fuzzy memberships.
-    :return: The lowest membership of the centroid.
+    :return: The right component of the centroid. NaN if every membership is zero.
     '''
     centros = np.mean(memberships, axis=1)
     w = centros
+    if np.sum(w) == 0:
+        return np.nan
 
     yhat = center_of_masses(z, w)
 
     yhat_2 = None
 
     while(yhat != yhat_2):
-        try:
-            k = np.argwhere((z - yhat) >= 0)[-1][0]
-            k = min(len(centros)-1, k)
-        except IndexError:
-            k = 0
+        # Switch point: the last referencial value not above the current centroid.
+        k = max(np.sum(z <= yhat) - 1, 0)
 
         w[0:k+1] = memberships[:, 0][:k+1]
         w[k+1:] = memberships[:, 1][k+1:]

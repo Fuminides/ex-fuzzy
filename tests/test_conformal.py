@@ -384,5 +384,52 @@ class TestEdgeCases:
         assert len(rules_str) > 0
 
 
+class TestConformalRefusalsAndGaps:
+    """Tests for uncalibrated use and for classes or rules without calibration data."""
+
+    @pytest.fixture(scope='class')
+    def fitted(self):
+        X, y = load_iris(return_X_y=True)
+        clf = evf.BaseFuzzyRulesClassifier(nRules=10, nAnts=3, verbose=False)
+        clf.fit(X, y, n_gen=5, pop_size=10, random_state=0)
+        return clf, X, y
+
+    def test_a_wrapped_classifier_is_only_calibrated(self, fitted):
+        clf, X, y = fitted
+        rule_base = clf.rule_base
+        conformal = ConformalFuzzyClassifier(clf)
+
+        conformal.fit(X, y, cal_size=0.3)
+        assert clf.rule_base is rule_base
+        assert conformal._calibrated
+
+    def test_uncalibrated_and_unknown_requests(self, fitted):
+        clf, X, y = fitted
+        conformal = ConformalFuzzyClassifier(clf)
+        with pytest.raises(ValueError, match='not calibrated'):
+            conformal.predict_set_with_rules(X[:2])
+
+        # Calibrate without virginica: neither the class nor its rules get calibration scores.
+        conformal.calibrate(X[y != 2], y[y != 2])
+        assert conformal._compute_p_value(0.5, 2) == 0.0
+        consequents = clf.rule_base.get_consequents()
+        assert all(ix not in conformal._rule_calibration for ix, consequent in enumerate(consequents) if consequent == 2)
+        assert conformal._get_rule_confidence(len(consequents) + 5, 0.5) == 0.0
+
+        conformal.score_type = 'unknown'
+        with pytest.raises(ValueError, match='Unknown score_type'):
+            conformal._compute_nonconformity_scores(X[:3], y[:3])
+
+    def test_association_score_of_a_class_without_rules(self, fitted):
+        import copy
+        clf, X, y = fitted
+        without_versicolor = copy.deepcopy(clf)
+        without_versicolor.rule_base.rule_bases[1].rules = []
+
+        conformal = ConformalFuzzyClassifier(without_versicolor, score_type='association')
+        scores = conformal._compute_nonconformity_scores(X[:5], np.ones(5))
+        np.testing.assert_array_equal(scores, np.ones(5))
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

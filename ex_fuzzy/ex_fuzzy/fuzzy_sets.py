@@ -22,11 +22,6 @@ from typing import Generator
 import numpy as np
 import pandas as pd
 
-try:
-    pass  # Removed deprecated maintenance module
-except:
-    pass
-
 # You dont require torch to use this module, however, we need to import it to give support in case you feed these methods with torch tensors.
 # Torch is imported lazily only when needed to avoid expensive imports
 
@@ -117,6 +112,9 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
         Special case: if a == d (singleton), returns 1.0 for exact matches, 0.0 otherwise.
         This handles degenerate trapezoids that collapse to single points.
     """
+    if isinstance(x, list):
+        return list(trapezoidal_membership(np.array(x, dtype=float), params, epsilon))
+
     a, b, c, d = params
 
     # Special case: a singleton trapezoid
@@ -142,9 +140,7 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
         return torch.clamp(torch.min(aux1, aux2), 0.0, 1.0)
 
     if isinstance(x, np.ndarray):
-        return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)        
-    elif isinstance(x, list):
-        return [np.clip(min(aux1, aux2), 0.0, 1.0) for elem in x]
+        return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)
     elif isinstance(x, pd.Series):
         return np.clip(np.minimum(aux1, aux2), 0.0, 1.0)
     else: # Single value
@@ -308,11 +304,11 @@ class categoricalFS(FS):
             res = torch.eq(x, self.category).float()
         elif isinstance(x, list):
             res = [1.0 if elem == self.category else 0.0 for elem in x]
-        elif isinstance(x, float) or isinstance(x, int):
-            res = 1.0 if x == self.category else 0.0
         elif isinstance(x, pd.Series):
             res = x.apply(lambda elem: 1.0 if elem == self.category else 0.0)
-            
+        else:  # Single value
+            res = 1.0 if x == self.category else 0.0
+
         return res
 
 
@@ -413,11 +409,6 @@ class IVFS(FS):
             x, self.secondMF_lower) * self.lower_height
         upper = trapezoidal_membership(x, self.secondMF_upper)
 
-        try:
-            assert np.all(lower <= upper)
-        except AssertionError:
-            np.argwhere(lower > upper)
-
         return np.stack([lower, upper], axis=-1)
 
 
@@ -472,13 +463,13 @@ class categoricalIVFS(IVFS):
         elif isinstance(x, list):
             res = [1.0 if elem == self.category else 0.0 for elem in x]
             res = np.stack([res, res], axis=-1)
-        elif isinstance(x, float) or isinstance(x, int):
-            res = 1.0 if x == self.category else 0.0
-            res = np.array([res, res])
         elif isinstance(x, pd.Series):
             res = x.apply(lambda elem: 1.0 if elem == self.category else 0.0)
             res = np.stack([res, res], axis=-1)
-        
+        else:  # Single value
+            res = 1.0 if x == self.category else 0.0
+            res = np.array([res, res])
+
         return res
 
 
@@ -655,6 +646,25 @@ class gaussianIVFS(IVFS):
         bounds for each input, enabling Type-2 fuzzy reasoning.
     """
 
+    def __init__(self, name: str, secondMF_lower: list[float], secondMF_upper: list[float],
+                 domain: list[float], lower_height=1.0) -> None:
+        """
+        Initialize a Gaussian interval-valued fuzzy set.
+
+        Args:
+            name (str): Linguistic name for the fuzzy set
+            secondMF_lower (list[float]): [mean, std] of the lower membership function
+            secondMF_upper (list[float]): [mean, std] of the upper membership function
+            domain (list[float]): Two-element list [min, max] defining universe of discourse
+            lower_height (float, optional): Maximum height of lower membership function.
+                Defaults to 1.0.
+        """
+        self.name = name
+        self.domain = domain
+        self.secondMF_lower = secondMF_lower
+        self.secondMF_upper = secondMF_upper
+        self.lower_height = lower_height
+
     def membership(self, input: np.array) -> np.array:
         """
         Computes the Gaussian interval-valued membership values for input points.
@@ -673,10 +683,10 @@ class gaussianIVFS(IVFS):
             >>> values = iv_gauss.membership(np.array([0.0, 1.0]))
             >>> print(values.shape)  # (2, 2) - 2 inputs, 2 bounds each
         """
-        lower = _gaussian2(input, self.secondMF_lower)
+        lower = _gaussian2(input, self.secondMF_lower) * self.lower_height
         upper = _gaussian2(input, self.secondMF_upper)
 
-        return np.array(np.concatenate([lower, upper])).T
+        return np.stack([lower, upper], axis=-1)
 
     def type(self) -> FUZZY_SETS:
         """
@@ -949,15 +959,9 @@ class fuzzyVariable():
         if not cond3 and verbose:
             print('Property 3 violated: At least one fuzzy set must be non-zero in every point of the domain.')
 
-        # Property 4: Given any two points of the domain, if a < b, the membership f_n+1(b)>f_n+1(a) can only hold if f_n(a)>f_n(b). So, a fuzzy set can only grow if the previous fuzzy set is decreasing.
-        cond4 = True
-        for i in range(len(self.linguistic_variables) - 1):
-            if np.any(memberships[i, :] < memberships[i + 1, :]) and np.any(memberships[i, :] > memberships[i + 1, :]):
-                valid = False
-                break
-        
-        if not cond4 and verbose:
-            print('Property 4 violated: Fuzzy sets must be non-decreasing in the domain. If a fuzzy set grows, the previous fuzzy set must be decreasing.')
+        # Property 4 (a fuzzy set can only grow where the previous one decreases) is not checked:
+        # between two samples that straddle a peak, a set looks like it is still growing, so the
+        # sampled memberships flag well ordered partitions as violations.
 
         
         # Property 5: The smallest fuzzy set must be the first one and the biggest fuzzy set must be the last one. The smallest should start at the left of the domain and the biggest should end at the right of the domain.
@@ -976,7 +980,7 @@ class fuzzyVariable():
         if not cond6 and verbose:
             print('Property 6 violated: The fuzzy sets must be statistically different from each other. Used permutation test to check this. (' + str(i) + ',' + str(i+1) + ')')
 
-        valid = cond1 and cond2 and cond3 and cond4 and cond5 and cond6
+        valid = cond1 and cond2 and cond3 and cond5 and cond6
 
         if verbose and valid:
             print('Fuzzy variable ' + self.name + ' is valid.')

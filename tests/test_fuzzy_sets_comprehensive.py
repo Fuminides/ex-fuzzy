@@ -178,20 +178,18 @@ class TestGaussianFS:
 class TestGaussianIVFS:
     """Test the gaussianIVFS class."""
 
-    @pytest.mark.skip(reason="gaussianIVFS constructor needs to be fixed - inherits IVFS but needs Gaussian-specific __init__")
     def test_gaussian_ivfs_creation(self):
         """Test creation of Gaussian interval-valued fuzzy set."""
-        # Note: gaussianIVFS inherits IVFS.__init__ which expects trapezoidal params
-        # This needs to be fixed in the library
         gauss_ivfs = fs.gaussianIVFS('gaussian_t2_test', [0.5, 0.15], [0.5, 0.25], [0, 1])
         assert gauss_ivfs.name == 'gaussian_t2_test'
+        assert gauss_ivfs.domain == [0, 1]
+        assert gauss_ivfs.lower_height == 1.0
         assert gauss_ivfs.type() == fs.FUZZY_SETS.t2
         assert gauss_ivfs.shape() == 'gaussian'
 
-    @pytest.mark.skip(reason="gaussianIVFS constructor needs to be fixed - inherits IVFS but needs Gaussian-specific __init__")
     def test_gaussian_ivfs_membership_interval(self):
         """Test that Gaussian IVFS returns interval values."""
-        gauss_ivfs = fs.gaussianIVFS('gaussian_t2_test', [0.5, 0.15], [0.5, 0.25], [0, 1])
+        gauss_ivfs = fs.gaussianIVFS('gaussian_t2_test', [0.5, 0.15], [0.5, 0.25], [0, 1], lower_height=0.8)
 
         input_values = np.array([0.3, 0.5, 0.7])
         result = gauss_ivfs.membership(input_values)
@@ -201,6 +199,8 @@ class TestGaussianIVFS:
 
         # Lower bound should be <= upper bound
         assert np.all(result[:, 0] <= result[:, 1])
+        assert result[1] == pytest.approx([0.8, 1.0])
+        assert gauss_ivfs(0.5) == pytest.approx([0.8, 1.0])
 
 
 class TestFuzzyVariable:
@@ -269,23 +269,165 @@ class TestMembershipFunctions:
         assert result[4] == 0.0  # At right base
 
 
-class TestUtilityFunctions:
-    """Test utility functions in the fuzzy_sets module."""
-    
-    def test_create_fuzzy_variables_function(self):
-        """Test the create_fuzzy_variables utility function if available."""
-        # This test depends on the actual implementation
-        # Create sample data
-        X = np.random.random((100, 3))
-        try:
-            # Try to create fuzzy variables
-            variables = fs.create_fuzzy_variables(X, ['low', 'high'])
-            assert len(variables) == X.shape[1]
-            for var in variables:
-                assert isinstance(var, fs.fuzzyVariable)
-        except (AttributeError, NameError):
-            # Function might not be in this module
-            pytest.skip("create_fuzzy_variables function not found in fuzzy_sets module")
+class TestTorchHelpers:
+    """Test the lazy torch helpers."""
+
+    def test_torch_is_optional(self, monkeypatch):
+        monkeypatch.setitem(sys.modules, 'torch', None)
+        assert fs._get_torch() is None
+
+        class Tensor:
+            pass
+
+        assert not fs._is_torch_tensor(Tensor())
+        assert not fs._is_torch_tensor(np.zeros(2))
+
+    def test_torch_tensors_are_recognised(self):
+        torch = pytest.importorskip('torch')
+
+        class Tensor:
+            pass
+
+        assert fs._is_torch_tensor(torch.zeros(2))
+        assert not fs._is_torch_tensor(Tensor())
+
+    def test_torch_memberships(self):
+        torch = pytest.importorskip('torch')
+        x = torch.tensor([0.0, 0.5, 2.0])
+
+        assert torch.equal(fs.trapezoidal_membership(x, [0.5, 0.5, 0.5, 0.5]), torch.tensor([0.0, 1.0, 0.0]))
+        np.testing.assert_allclose(fs.trapezoidal_membership(x, [0, 0.5, 1, 1.5]).numpy(), [0.0, 1.0, 0.0])
+        assert torch.equal(fs.categoricalFS('a', 0.5).membership(x), torch.tensor([0.0, 1.0, 0.0]))
+        assert fs.categoricalIVFS('a', 0.5).membership(x).shape == (3, 2)
+
+
+class TestInputTypesAndDescriptions:
+    """Test memberships for every supported input type and the string descriptions."""
+
+    def test_enum_compares_by_value(self):
+        assert fs.FUZZY_SETS.t1 != 'Type 1'
+        assert hash(fs.FUZZY_SETS.t1) == hash('Type 1')
+
+    def test_trapezoid_accepts_lists_series_and_scalars(self):
+        import pandas as pd
+        params = [0, 0.25, 0.75, 1.0]
+
+        assert fs.trapezoidal_membership([0.0, 0.5, 0.875], params) == pytest.approx([0.0, 1.0, 0.5])
+        series = fs.trapezoidal_membership(pd.Series([0.125, 0.5]), params)
+        assert isinstance(series, pd.Series)
+        assert list(series) == pytest.approx([0.5, 1.0])
+        assert fs.trapezoidal_membership(0.125, params) == pytest.approx(0.5)
+
+    def test_singleton_trapezoid(self):
+        np.testing.assert_array_equal(fs.trapezoidal_membership(np.array([0.4, 0.5]), [0.5] * 4), [0.0, 1.0])
+        assert fs.trapezoidal_membership(0.5, [0.5] * 4) == pytest.approx(1.0)
+        assert fs.trapezoidal_membership(0.6, [0.5] * 4) == pytest.approx(0.0)
+
+    @pytest.mark.parametrize('fuzzy_set_class, width', [(fs.categoricalFS, None), (fs.categoricalIVFS, 2)])
+    def test_categorical_membership_for_every_input_type(self, fuzzy_set_class, width):
+        import pandas as pd
+        categorical = fuzzy_set_class('red', 'red')
+
+        def expected(values):
+            values = np.array(values, dtype=float)
+            return values if width is None else np.stack([values, values], axis=-1)
+
+        np.testing.assert_array_equal(categorical.membership(np.array(['red', 'blue'])), expected([1, 0]))
+        np.testing.assert_array_equal(np.asarray(categorical.membership(['blue', 'red'])), expected([0, 1]))
+        np.testing.assert_array_equal(np.asarray(categorical.membership(pd.Series(['red']))), expected([1]))
+
+        numeric = fuzzy_set_class('three', 3)
+        np.testing.assert_array_equal(numeric.membership(3), expected(1))
+        np.testing.assert_array_equal(numeric.membership(2.0), expected(0))
+        np.testing.assert_array_equal(numeric.membership(np.int64(3)), expected(1))
+        assert categorical.shape() == 'categorical'
+
+    def test_variable_without_domain_does_not_clip(self):
+        variable = fs.fuzzyVariable('x', [fs.FS('wide', [0, 1, 2, 3])])
+        np.testing.assert_array_equal(variable.compute_memberships(np.array([1.5, 10.0])), [[1.0, 0.0]])
+
+    def test_string_descriptions(self):
+        assert str(fs.FS('low', [0, 0, 1, 2], [0, 5])) == 'low (t1) - [0, 0, 1, 2]'
+        assert str(fs.IVFS('low', [0, 0, 1, 2], [0, 0, 1, 3], [0, 5])) == 'low (t2) - [0, 0, 1, 2] - [0, 0, 1, 3]'
+        assert str(fs.categoricalFS('red', 'red')) == 'Categorical set: red, type 1 output'
+        assert str(fs.categoricalIVFS('red', 'red')) == 'Categorical set: red, type 2 output'
+        assert fs.categoricalIVFS('red', 'red').type() == fs.FUZZY_SETS.t2
+
+
+class TestGT2AlphaReduction:
+    """Test the type reduction of general type 2 memberships."""
+
+    def test_alpha_reduction_weights_every_alpha_cut(self):
+        import utils
+        gt2_set = utils.construct_partitions(np.linspace(0, 1, 30).reshape(-1, 1), fs.FUZZY_SETS.gt2)[0][0]
+        alphas = np.array(gt2_set.alpha_cuts)
+
+        per_sample = gt2_set.alpha_reduction(np.ones((4, len(alphas))) * np.arange(4)[:, None])
+        np.testing.assert_allclose(per_sample, np.arange(4))
+
+        intervals = gt2_set.alpha_reduction(np.ones((4, len(alphas), 2)))
+        assert intervals.shape == (4, len(alphas))
+        np.testing.assert_allclose(intervals[0], 2 * alphas / alphas.sum())
+
+
+class TestFuzzyVariableAccessorsAndValidation:
+    """Test fuzzy variable helpers and the validation report."""
+
+    def test_accessors(self, sample_fuzzy_sets):
+        low, medium, high = sample_fuzzy_sets['t1_sets']
+        variable = fs.fuzzyVariable('temperature', [low, medium])
+        variable.append(high)
+
+        assert variable.domain() == [0, 1]
+        assert str(variable) == "temperature (t1) - ['Low', 'Medium', 'High']"
+        assert [fuzzy_set.name for fuzzy_set in variable] == ['Low', 'Medium', 'High']
+        assert variable.get_linguistic_variables() is variable.linguistic_variables
+        variable[1] = fs.FS('Warm', [0.3, 0.5, 0.5, 0.7], [0, 1])
+        assert variable[1].name == 'Warm'
+        np.testing.assert_array_equal(variable(np.array([0.0, 1.0])), variable.compute_memberships(np.array([0.0, 1.0])))
+
+    def test_a_proper_partition_is_valid(self, capsys):
+        variable = fs.fuzzyVariable('x', [fs.FS('Low', [0, 0, 0.2, 0.5], [0, 1]),
+                                          fs.FS('Medium', [0.2, 0.5, 0.5, 0.8], [0, 1]),
+                                          fs.FS('High', [0.5, 0.8, 1, 1], [0, 1])])
+        assert variable.validate(np.linspace(0, 1, 200), verbose=True)
+        assert 'Fuzzy variable x is valid.' in capsys.readouterr().out
+
+    def test_categorical_variables_report_why_they_are_valid(self, capsys):
+        variable = fs.fuzzyVariable('colour', [fs.categoricalFS('red', 'red')])
+        assert variable.validate(np.array(['red']), verbose=True)
+        assert 'categorical: valid by definition' in capsys.readouterr().out
+
+    def test_an_empty_variable_is_not_valid(self, sample_fuzzy_sets):
+        variable = fs.fuzzyVariable('x', sample_fuzzy_sets['t1_sets'])
+        variable.linguistic_variables = []
+        assert variable.validate(np.linspace(0, 1, 10)) is False
+
+    def test_violated_properties_are_reported(self, capsys):
+        class Blob(fs.FS):
+            def shape(self):
+                return 'blob'
+
+        # Both sets are fully on at 0.5, neither covers 0.9 and the last does not reach the end of
+        # the domain. Property 4 is not checked.
+        variable = fs.fuzzyVariable('x', [Blob('first', [0.0, 0.4, 0.6, 0.7], [0, 1]),
+                                          fs.FS('second', [0.0, 0.4, 0.6, 0.7], [0, 1])])
+        assert not variable.validate(np.linspace(0, 1, 50), verbose=True)
+
+        report = capsys.readouterr().out
+        for property_number in [1, 2, 3, 5]:
+            assert f'Property {property_number} violated' in report
+        assert 'is valid' not in report
+
+    def test_indistinguishable_sets_are_reported(self, capsys):
+        # Two sets that are always fully on induce the same memberships.
+        variable = fs.fuzzyVariable('x', [fs.FS('first', [-1, -1, 2, 2], [0, 1]), fs.FS('second', [-1, -1, 2, 2], [0, 1])])
+        assert not variable.validate(np.linspace(0, 1, 50), verbose=True)
+        assert 'Property 6 violated' in capsys.readouterr().out
+
+    def test_a_single_set_needs_no_comparison(self):
+        variable = fs.fuzzyVariable('x', [fs.FS('all', [-1, -1, 2, 2], [0, 1])])
+        assert variable.validate(np.linspace(0, 1, 50))
 
 
 class TestFuzzySetValidation:

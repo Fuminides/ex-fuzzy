@@ -20,6 +20,23 @@ import rule_mining as rm
 import utils
 
 
+def test_rule_search_without_depth_limit_and_general_type_2_mining():
+    X = pd.DataFrame(load_iris().data[:, 2:], columns=['petal_length', 'petal_width'])
+
+    t1_variables = utils.construct_partitions(X, fs.FUZZY_SETS.t1)
+    itemsets = rm.rule_search(X, t1_variables, support_threshold=0.1)
+    # Without a depth limit, itemsets can use every variable.
+    assert max(len(itemset) for itemset in itemsets) == 2
+
+    # Interval memberships count both bounds, so every single-term itemset keeps a sensible support.
+    for fuzzy_type, rule_base_class in [(fs.FUZZY_SETS.t2, rl.RuleBaseT2), (fs.FUZZY_SETS.gt2, rl.RuleBaseGT2)]:
+        variables = utils.construct_partitions(X, fuzzy_type)
+        assert len(rm.rule_search(X, variables, support_threshold=0.1, max_depth=1)) == 6
+        rule_base = rm.mine_rulebase_support(X, variables, support_threshold=0.1, max_depth=1)
+        assert isinstance(rule_base, rule_base_class)
+        assert len(rule_base) == 6
+
+
 class TestRuleSearch:
     """Tests for the rule_search function."""
 

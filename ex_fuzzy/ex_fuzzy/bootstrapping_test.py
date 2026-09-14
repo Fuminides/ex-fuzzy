@@ -143,7 +143,7 @@ def quality_metric_rule(rule, X: np.array, y: np.array, fuzzy_variables: list[fs
         membership_class = np.mean(membership[class_samples])
     elif fuzzy_variables[0].fuzzy_type() == fs.FUZZY_SETS.t2:
         membership_class = np.mean(membership[class_samples], axis=0).mean()
-    elif fuzzy_variables[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
+    else:
         membership_class = fuzzy_variables[0][0].alpha_reduction(membership[class_samples])
         membership_class = membership_class.mean(axis=1).mean()
 
@@ -152,7 +152,7 @@ def quality_metric_rule(rule, X: np.array, y: np.array, fuzzy_variables: list[fs
         membership_non_class = np.mean(membership[non_class_samples])
     elif fuzzy_variables[0].fuzzy_type() == fs.FUZZY_SETS.t2:
         membership_non_class = np.mean(membership[non_class_samples], axis=0).mean()
-    elif fuzzy_variables[0].fuzzy_type() == fs.FUZZY_SETS.gt2:
+    else:
         membership_non_class = fuzzy_variables[0][0].alpha_reduction(membership[non_class_samples])
         membership_non_class = membership_non_class.mean(axis=1).mean()
 

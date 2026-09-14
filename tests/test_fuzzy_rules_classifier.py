@@ -260,3 +260,72 @@ def test_five_condition_rules_are_supported():
     assert model.n_rules_ >= 1
     assert max(len(features) for features in model._rules["features"]) <= 5
     assert model.score(X, y) > 0.5
+
+
+@pytest.mark.parametrize('params, message', [
+    (dict(fuzzy_type=fs.FUZZY_SETS.t2), 'Type-1'),
+    (dict(rule_mode='voting'), 'rule_mode'),
+    (dict(nAnts=0), 'nAnts'),
+    (dict(nRules=0), 'nRules'),
+    (dict(max_features='all'), 'max_features'),
+    (dict(n_linguistic_variables=1), 'n_linguistic_variables'),
+    (dict(rules_per_class=0), 'rules_per_class'),
+    (dict(candidates_per_class=0), 'candidates_per_class'),
+    (dict(feature_selection='both'), 'feature_selection'),
+    (dict(feature_selector='chi2'), 'feature_selector'),
+    (dict(pop_size=1), 'pop_size'),
+])
+def test_invalid_parameters_are_rejected(iris, params, message):
+    frame, labels = iris
+    with pytest.raises(ValueError, match=message):
+        FuzzyRulesClassifier(**params).fit(frame, labels)
+
+
+def test_invalid_training_data_is_rejected(iris):
+    frame, labels = iris
+    X = frame.to_numpy()
+    model = FuzzyRulesClassifier(n_gen=1, pop_size=4)
+
+    with pytest.raises(ValueError, match='two-dimensional'):
+        model.fit(X[:, 0], labels)
+    with pytest.raises(ValueError, match='same, non-zero'):
+        model.fit(X[:10], labels)
+    with pytest.raises(ValueError, match='NaN'):
+        model.fit(np.where(X == X[0, 0], np.nan, X), labels)
+    with pytest.raises(ValueError, match='two classes'):
+        model.fit(X, np.zeros(len(X)))
+
+
+def test_feature_selectors_term_count_and_label_shape(iris, capsys):
+    frame, labels = iris
+    X = frame.to_numpy()
+
+    by_f_score = FuzzyRulesClassifier(max_features=2, feature_selector='f_classif', feature_selection='global',
+                                      n_linguistic_variables=4, n_gen=3, pop_size=10, verbose=True, random_state=0)
+    by_f_score.fit(X, labels.reshape(-1, 1))
+    assert len(by_f_score.selected_features_) == 2
+    assert len(by_f_score.linguistic_variables_[0]) == 4
+    assert 'rules selected' in capsys.readouterr().out
+    assert by_f_score.predict(X[0]).shape == (1,)
+
+    # A callable scores the features; per class it sees the same variances, so one feature is kept.
+    by_variance = FuzzyRulesClassifier(max_features=1, feature_selector=lambda values, target: values.var(0),
+                                       n_gen=3, pop_size=10, random_state=0)
+    by_variance.fit(X, labels)
+    assert by_variance.selected_features_.tolist() == [int(np.argmax(X.var(0)))]
+
+
+def test_partitions_that_never_fire_select_no_rules(iris, capsys):
+    frame, labels = iris
+    far_away = [fs.fuzzyVariable(name, [fs.FS('far', [100, 101, 102, 103], [100, 103])]) for name in frame.columns]
+    model = FuzzyRulesClassifier(linguistic_variables=far_away, max_features=2, n_gen=3, pop_size=10, random_state=0)
+    model.fit(frame, labels)
+
+    assert model.n_rules_ == 0 and model.rule_base_ is None
+    assert set(model.predict(frame)) == {model.classes_[model.majority_class_]}
+    np.testing.assert_allclose(model.predict_proba(frame), 1 / 3)
+    assert model.print_rules(return_rules=True).startswith('No rules were selected')
+    assert model.print_rules() is None
+    assert 'No rules were selected' in capsys.readouterr().out
+    with pytest.raises(ValueError, match='No rules were selected'):
+        model.internal_classifier()

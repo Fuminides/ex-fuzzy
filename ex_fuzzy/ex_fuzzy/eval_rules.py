@@ -71,13 +71,13 @@ class evalRuleBase():
             res = np.zeros((len(patterns), ))
         elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2:
             res = np.zeros((len(patterns), 2))
-        elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+        else:
             res = np.zeros((len(patterns), 2))
 
         for ix, pattern in enumerate(patterns):
             pattern_firing_strength = antecedent_memberships[:, ix]
-            res[ix] = np.mean(pattern_firing_strength)
-        
+            res[ix] = np.mean(pattern_firing_strength, axis=0)
+
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
             res = np.mean(res, axis=1)
 
@@ -109,17 +109,13 @@ class evalRuleBase():
             res = np.zeros((len(patterns), ))
         elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2:
             res = np.zeros((len(patterns), 2))
-        elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+        else:
             res = np.zeros((len(patterns), 2))
 
         consequents = self.mrule_base.get_consequents()
         fuzzy_type = self.mrule_base.fuzzy_type()
         for ix, pattern in enumerate(patterns):
-            consequent_match = np.equal(data_y, consequents[ix])
-            try:
-                consequent_match = np.array(consequent_match, dtype=int)
-            except:
-                pass
+            consequent_match = np.array(np.equal(data_y, consequents[ix]), dtype=int)
             pattern_firing_strength = antecedent_memberships[:, ix]
 
             # Handle T2/GT2 fuzzy sets which have interval-valued memberships
@@ -160,19 +156,20 @@ class evalRuleBase():
             res = np.zeros((len(patterns), n_classes, ))
         elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2:
             res = np.zeros((len(patterns), n_classes, 2))
-        elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+        else:
             res = np.zeros((len(patterns), n_classes, 2))
 
         for con_ix in range(n_classes):
             for ix, pattern in enumerate(patterns):
                 consequent_match = np.equal(self.y, con_ix)
                 pattern_firing_strength = antecedent_memberships[:, ix]
+                consequent_match = consequent_match.reshape((-1,) + (1,) * (pattern_firing_strength.ndim - 1))
 
-                res[ix, con_ix] = np.mean(pattern_firing_strength * consequent_match)
+                res[ix, con_ix] = np.mean(pattern_firing_strength * consequent_match, axis=0)
 
 
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
-            res = np.mean(res, axis=1)
+            res = np.mean(res, axis=2)
 
         return res
 
@@ -216,7 +213,7 @@ class evalRuleBase():
             res = np.zeros((len(patterns), ))
         elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2:
             res = np.zeros((len(patterns), 2))
-        elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+        else:
             res = np.zeros((len(patterns), 2))
         consequents = self.mrule_base.get_consequents()
         for ix, pattern in enumerate(patterns):
@@ -257,22 +254,19 @@ class evalRuleBase():
             res = np.zeros((len(patterns), n_classes, ))
         elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2:
             res = np.zeros((len(patterns), n_classes, 2))
-        elif self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
+        else:
             res = np.zeros((len(patterns), n_classes, 2))
 
         for consequent in range(n_classes):
             for ix, pattern in enumerate(patterns):
                 antecedent_consequent_match = self.y == consequent
                 pattern_firing_strength = antecedent_memberships[:, ix]
-                dem = np.sum(pattern_firing_strength)
-                if dem == 0:
-                    res[ix, consequent] = 0
-                else:
-                    res[ix, consequent] = np.sum(
-                        pattern_firing_strength[antecedent_consequent_match]) / dem
-                    
+                dem = np.sum(pattern_firing_strength, axis=0)
+                matched = np.sum(pattern_firing_strength[antecedent_consequent_match], axis=0)
+                res[ix, consequent] = np.divide(matched, dem, out=np.zeros_like(dem, dtype=float), where=dem != 0)
+
         if self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.t2 or self.mrule_base.fuzzy_type() == fs.FUZZY_SETS.gt2:
-            res = np.mean(res, axis=1)
+            res = np.mean(res, axis=2)
 
         return res
 
@@ -293,8 +287,14 @@ class evalRuleBase():
 
         :return: vector of shape rules
         '''
-        firing_strengths = self.mrule_base.compute_firing_strenghts(self.X)
-        res = self.dominance_scores() * firing_strengths
+        if self.time_moments is None:
+            firing_strengths = self.mrule_base.compute_firing_strenghts(self.X)
+        else:
+            firing_strengths = self.mrule_base.compute_firing_strenghts(self.X, self.time_moments)
+        dominance_scores = self.dominance_scores()
+        if firing_strengths.ndim == 3:
+            dominance_scores = dominance_scores[:, None]
+        res = dominance_scores * firing_strengths
 
         if (self.mrule_base[0].fuzzy_type() == fs.FUZZY_SETS.t2) or (self.mrule_base[0].fuzzy_type() == fs.FUZZY_SETS.gt2):
             res = np.mean(res, axis=2)
@@ -387,14 +387,11 @@ class evalRuleBase():
             preds = self.mrule_base.winning_rule_predict(actual_X, self.time_moments)
 
 
-        # If preds and labels are not instances of the same type, we convert them to the same type
+        # Predictions are consequent indexes, so they are named when the labels are names.
         consequents_names = self.mrule_base.get_consequents_names()
-        if type(preds[0]) != type(actual_y[0]):
-            if isinstance(actual_y[0], str):
-                preds = np.array([consequents_names[p].index(str(p)) for p in preds])
-            elif isinstance(preds[0], str):
-                preds = np.array([consequents_names.index(str(p)) for p in preds])
-                
+        if isinstance(actual_y[0], str):
+            preds = np.array([str(consequents_names[int(p)]) if p != -1 else 'Unknown' for p in preds])
+
 
         rules = self.mrule_base.get_rules()
         for jx in range(len(rules)):
@@ -423,7 +420,10 @@ class evalRuleBase():
 
         from sklearn.metrics import matthews_corrcoef
         self.add_rule_weights()
-        preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
+        if self.time_moments is None:
+            preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
+        else:
+            preds = self.mrule_base.winning_rule_predict(self.X, self.time_moments)
 
         self.mcc = matthews_corrcoef(self.y, preds)
         self.acc = accuracy_score(self.y, preds)
@@ -493,12 +493,8 @@ class evalRuleBase():
             else:
                 return 0.0  # If one consequent does not have rules, then we return 0.0
 
-        try:
-            rule_density =  effective_rules / possible_rules
-        except ZeroDivisionError:
-            rule_density = 0.0
-
-        return rule_density
+        # Every consequent has at least one rule at this point.
+        return effective_rules / possible_rules
 
 
     def p_permutation_classifier_validation(self, n=100, r=10) -> float:
