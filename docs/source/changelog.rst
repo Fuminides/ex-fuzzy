@@ -15,8 +15,8 @@ Added
 - **EvoX GPU classification fitness**: On a CUDA device the EvoX backend can
   score whole generations of the built-in Type-1 classification objective with
   an exact PyTorch implementation, for fixed or optimized partitions. Each fit
-  checks it against the CPU on one generation and then uses it only where it
-  measures faster, so results are unchanged
+  checks it against the CPU on a few candidates of its first generation and
+  then uses it only where it measures faster, so results are unchanged
 
 Changed
 -------

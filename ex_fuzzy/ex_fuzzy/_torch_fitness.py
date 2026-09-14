@@ -549,8 +549,8 @@ class TorchObjective:
 class _DeviceProbe(_RouteProbe):
     """Choose between CPU and device scoring by measurement.
 
-    The verification generation scores on both routes and already warms the
-    device, so no further unrecorded warm-up generation is needed.
+    The verification generation already runs the device on a whole generation,
+    so no further unrecorded warm-up generation is needed.
     """
 
     WARMUP = ()
@@ -559,10 +559,15 @@ class _DeviceProbe(_RouteProbe):
 class DeviceRoute:
     """Fit-local trust and speed decision for one :class:`TorchObjective`.
 
-    The device objective is used only after it reproduces a whole generation of
-    CPU scores exactly.  A single difference rejects it for the rest of the fit.
-    Once verified, which route runs is purely a speed question, settled by a
-    counterbalanced probe like the scalar/batched choice.
+    The device objective is trusted only after it reproduces the CPU scores of a
+    sample of the first generation exactly; a single difference rejects it for
+    the rest of the fit.  Scoring a whole generation on the CPU just to verify
+    the device was the dominant fixed cost of expensive fits, while the failures
+    verification guards against -- another NumPy summation order, a device's
+    arithmetic -- are systematic, so a few candidates reveal them.  Exactness
+    itself rests on the parity tests.  Once verified, which route runs is a
+    speed question, settled by a counterbalanced probe like the scalar/batched
+    choice.
     """
 
     CPU = _RouteProbe.SCALAR
@@ -570,6 +575,15 @@ class DeviceRoute:
 
     #: Fresh candidates a generation needs before it can verify or time a route.
     MIN_CANDIDATES = 4
+
+    #: Candidates of the verification generation that are also scored on the CPU.
+    VERIFY_CANDIDATES = 4
+
+    #: Per-candidate speed ratio that settles on the device during verification.
+    #: The sample is timed on the scalar CPU route, which the batched route beat
+    #: by up to 2.09x in the C01 calibration, so the 1.25x margin of matched
+    #: whole generations is widened accordingly.
+    SAMPLE_DECISIVE = 3.0
 
     def __init__(self, objective: TorchObjective) -> None:
         self.objective = objective
@@ -582,14 +596,15 @@ class DeviceRoute:
                device_seconds: Optional[float] = None) -> bool:
         """Trust the device if ``actual`` equals the CPU's ``expected`` exactly.
 
-        The verification generation times both routes on identical candidates,
-        with the device paying its first-use cost.  A device that is still
-        decisively faster is chosen at once, which spares large problems the
-        slow CPU generations of further probing.
+        ``cpu_seconds`` and ``device_seconds`` are per-candidate costs: the CPU
+        scored the sample on its scalar route, the device the whole generation
+        while paying its first-use cost.  A device faster than that by more
+        than ``SAMPLE_DECISIVE`` is chosen at once, which spares large problems
+        the slow CPU generations of further probing.
         """
         self.verified = bool(np.array_equal(expected, actual, equal_nan=True))
         self.rejected = not self.verified
         if (self.verified and cpu_seconds is not None and device_seconds is not None
-                and cpu_seconds > device_seconds * self.probe.DECISIVE):
+                and cpu_seconds > device_seconds * self.SAMPLE_DECISIVE):
             self.probe.decision = self.DEVICE
         return self.verified

@@ -257,8 +257,8 @@ def test_device_route_is_verified_before_use_and_stays_exact(torchfit):
         route = problem._torch_route
         assert route.verified and not route.rejected
         assert route.probe.decision is not None
-    # The verification generation itself is always scored on the CPU.
-    assert used[0] is False and any(used[1:])
+    # Once its CPU sample matches, the verification generation keeps the device scores.
+    assert used[0] is True
 
 
 def test_device_route_is_rejected_after_one_difference(torchfit):
@@ -295,14 +295,45 @@ def test_decisive_verification_timing_settles_on_the_device(torchfit):
     objective = torchfit.TorchObjective.build(_problem(), 'cpu')
     values = np.arange(4.0)
     fast = torchfit.DeviceRoute(objective)
-    assert fast.verify(values, values.copy(), cpu_seconds=2.0, device_seconds=1.0)
+    assert fast.verify(values, values.copy(), cpu_seconds=4.0, device_seconds=1.0)
     assert fast.probe.decision == fast.DEVICE
     close = torchfit.DeviceRoute(objective)
-    assert close.verify(values, values.copy(), cpu_seconds=1.1, device_seconds=1.0)
+    assert close.verify(values, values.copy(), cpu_seconds=2.5, device_seconds=1.0)
     assert close.probe.decision is None
     wrong = torchfit.DeviceRoute(objective)
     assert not wrong.verify(values, values + 1, cpu_seconds=9.0, device_seconds=1.0)
     assert wrong.rejected and wrong.probe.decision is None
+
+
+def test_verification_scores_only_a_sample_on_the_cpu(torchfit):
+    problem = _problem()
+    genes = _population(problem, 24, seed=300)
+    expected = _fitness_values(problem, genes)
+    rows = []
+    original = evf.FitRuleBase._scalar_scores
+
+    def counting(self, genes):
+        rows.append(len(genes))
+        return original(self, genes)
+
+    with patch.object(evf.FitRuleBase, 'torch_devices', ('cpu',)), \
+            patch.object(evf.FitRuleBase, '_scalar_scores', counting), \
+            _fitness_cache_scope(problem, True, population=len(genes)):
+        fitness, on_device = problem._evaluate_gene_population(genes, device='cpu')
+        assert problem._torch_route.verified
+    np.testing.assert_array_equal(fitness, expected)
+    assert on_device and rows == [torchfit.DeviceRoute.VERIFY_CANDIDATES]
+
+
+def test_generations_too_small_to_verify_stay_on_the_cpu(torchfit):
+    problem = _problem()
+    genes = _population(problem, 24, seed=301)[:torchfit.DeviceRoute.MIN_CANDIDATES - 1]
+    with patch.object(evf.FitRuleBase, 'torch_devices', ('cpu',)), \
+            _fitness_cache_scope(problem, True, population=len(genes)):
+        fitness, on_device = problem._evaluate_gene_population(genes, device='cpu')
+        assert not problem._torch_route.verified
+    assert not on_device
+    np.testing.assert_array_equal(fitness, _fitness_values(problem, genes))
 
 
 # ---------------------------------------------------------------------------

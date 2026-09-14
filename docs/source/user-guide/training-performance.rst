@@ -160,17 +160,19 @@ How the device route is chosen
 With the EvoX backend on a CUDA device, the same kind of measurement decides
 between scoring on the CPU and scoring with the PyTorch objective on the GPU.
 
-Before that, the GPU has to earn trust. The first generation is scored both
-ways and compared value for value, and the CPU values are the ones used. The
-PyTorch objective reproduces NumPy's floating-point summation order, so on a
-conforming device the two agree exactly. If a single score differs — because
-of a particular device's arithmetic or NumPy version — the fit stays on the
-CPU for the rest of its run. A GPU can therefore change how fast a fit runs,
-never what it finds.
+Before that, the GPU has to earn trust. The first generation is scored on the
+GPU while a few of its candidates are also scored on the CPU, and the two are
+compared value for value. The PyTorch objective reproduces NumPy's
+floating-point summation order, so on a conforming device they agree exactly.
+If a single score differs — because of a particular device's arithmetic or
+NumPy version — that generation uses the CPU's scores and the fit stays on the
+CPU for the rest of its run. Such differences are systematic, so a few
+candidates reveal them; the objective's exactness itself is established by the
+parity tests.
 
-That first generation also times both routes. A GPU that is clearly faster even
-while paying its start-up cost is chosen straight away, sparing large problems
-further slow CPU generations.
+That first generation also times both routes. A GPU that is clearly faster per
+candidate, even while paying its start-up cost, is chosen straight away,
+sparing large problems further slow CPU generations.
 
 The GPU objective is designed for very expensive fits: tens of thousands of
 samples or more, many features, large populations, and optimized partitions,

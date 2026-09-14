@@ -19,9 +19,10 @@ once, so chromosomes repeated within a generation are also scored only once.
 On a CUDA device, classification can additionally score whole generations with
 an exact PyTorch implementation of the built-in Type-1 objective, for fixed or
 optimized partitions. It reproduces the CPU objective bit for bit, so a GPU
-changes how fast a fit runs, never what it finds. Each fit first checks this on
-one generation and stays on the CPU if any score differs; afterwards, whether
-the GPU or the CPU scores a generation is decided by measurement. Custom
+changes how fast a fit runs, not what it finds. Each fit first checks a few
+candidates of its first generation against the CPU and stays on the CPU if any
+score differs; afterwards, whether the GPU or the CPU scores a generation is
+decided by measurement. Custom
 losses, Type-2 sets, ``ds_mode=2`` and categorical variables with optimized
 partitions keep scoring on the CPU. No extra option is required;
 :doc:`user-guide/training-performance` describes every fast path.
@@ -151,10 +152,10 @@ on a GTX 1080 Ti against 3.85 s on the same node's CPU with fixed partitions,
 and 1.66 s on an RTX 2080 against 4.79 s with optimized partitions, with
 identical results. On the largest recorded workload, 100,000 samples and 200
 features, the GPU scored a generation 40–54× faster than the node's CPU, and
-complete fits ran 2.9× (fixed) and 3.2× (optimized partitions) faster. The
-remaining time is mostly CPU work: the first generation, which is also scored
-on the CPU to verify the GPU, plus setup and finalization. Longer searches
-spread that fixed cost over more generations.
+complete fits ran 2.9× (fixed) and 3.2× (optimized partitions) faster. Most of
+the remaining time was CPU work: those fits scored their whole first generation
+on the CPU to verify the GPU, which now covers only a few candidates, plus setup
+and finalization. Longer searches spread the fixed cost over more generations.
 
 The GPU objective splits each generation into chunks
 that use at most about a third of the free GPU memory. Each candidate needs

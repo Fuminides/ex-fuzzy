@@ -1536,10 +1536,12 @@ class FitRuleBase(Problem):
     def _score_on_best_route(self, fresh: np.ndarray, population: int, device=None) -> tuple:
         """Score uncached candidates on the CPU or on a verified device.
 
-        The device objective is trusted only once it has reproduced a whole
-        generation of CPU scores; until then the CPU scores are used, and a
-        single difference keeps the fit on the CPU for good. Once trusted, which
-        route runs is a speed question settled like the scalar/batched choice.
+        The device objective is trusted only once it has reproduced the CPU
+        scores of a sample of candidates. The first generation large enough is
+        scored on the device while that sample is also scored on the CPU; a
+        single difference gives the generation the CPU's scores and keeps the
+        fit on the CPU for good. Once trusted, which route runs is a speed
+        question settled like the scalar/batched choice.
 
         :return: ``(fitness, on_device)``.
         """
@@ -1547,14 +1549,23 @@ class FitRuleBase(Problem):
         if route is None or route.rejected:
             return self._score_fresh_on_cpu(fresh, population), False
         if not route.verified:
+            if len(fresh) < route.MIN_CANDIDATES:
+                return self._score_fresh_on_cpu(fresh, population), False
+            sample = fresh[:route.VERIFY_CANDIDATES]
+            # The scalar route keeps this short sample out of the scalar/batched
+            # probe; every CPU route computes identical values.
             start = time.perf_counter()
-            expected = self._score_fresh_on_cpu(fresh, population)
-            cpu_seconds = time.perf_counter() - start
-            if len(fresh) >= route.MIN_CANDIDATES:
-                start = time.perf_counter()
-                actual = self._device_fitness(route.objective, fresh)
-                route.verify(expected, actual, cpu_seconds, time.perf_counter() - start)
-            return expected, False
+            expected = self._scalar_scores(sample)
+            cpu_seconds = (time.perf_counter() - start) / len(sample)
+            start = time.perf_counter()
+            fitness = self._device_fitness(route.objective, fresh)
+            device_seconds = (time.perf_counter() - start) / len(fresh)
+            if route.verify(expected, fitness[:len(sample)], cpu_seconds, device_seconds):
+                return fitness, True
+            fitness[:len(sample)] = expected
+            if len(fresh) > len(sample):
+                fitness[len(sample):] = self._score_fresh_on_cpu(fresh[len(sample):], population)
+            return fitness, False
 
         choice = route.probe.route(len(fresh))
         use_device = (route.probe.decision if choice is None else choice) == route.DEVICE
