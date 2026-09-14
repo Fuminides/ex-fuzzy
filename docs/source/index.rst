@@ -133,7 +133,7 @@ Here's a simple example to get you started:
     evaluator = eval_tools.FuzzyEvaluator(classifier)
     evaluator.eval_fuzzy_model(
         X_train, y_train, X_test, y_test,
-        plot_rules=True, print_rules=True, plot_partitions=True
+        print_rules=True, plot_partitions=True
     )
 
 Regression Example

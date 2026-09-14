@@ -58,7 +58,6 @@ Basic Model Evaluation
        y_train=y_train,
        X_test=X_test,
        y_test=y_test,
-       plot_rules=True,
        plot_partitions=True,
        bootstrap_results_print=True
    )
@@ -86,7 +85,6 @@ Using FuzzyEvaluator Class
    # Detailed evaluation
    evaluator.eval_fuzzy_model(
        X_train, y_train, X_test, y_test,
-       plot_rules=True,
        print_rules=True,
        plot_partitions=True
    )
@@ -95,5 +93,5 @@ See Also
 --------
 
 * :mod:`ex_fuzzy.classifiers` : Fuzzy classification algorithms
-* :mod:`ex_fuzzy.vis_rules` : Rule visualization utilities
+* :mod:`ex_fuzzy.vis_rules` : Fuzzy-partition visualization and rule formatting utilities
 * :mod:`sklearn.metrics` : Standard classification metrics

@@ -111,7 +111,6 @@ Using the comprehensive evaluation function:
    # Use the comprehensive evaluation function
    evaluation_report = eval_tools.eval_fuzzy_model(
        classifier, X_train, y_train, X_test, y_test,
-       plot_rules=True,           # Generate rule plots
        print_rules=True,          # Print rule text
        plot_partitions=True,      # Plot fuzzy partitions
        return_rules=True,         # Return rule text
@@ -431,7 +430,6 @@ Understanding what the model learned:
        y_train=y_train,
        X_test=X_test,
        y_test=y_test,
-       plot_rules=True,
        print_rules=True,
        plot_partitions=True,
        bootstrap_results_print=True

@@ -6,7 +6,6 @@ matplotlib.use('Agg')  # Use non-interactive backend for testing
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
-import evolutionary_fit as evf
 import fuzzy_sets as fs
 import rules as rl
 import utils
@@ -46,80 +45,6 @@ def master_rule_base(partitions):
 
 def _legend_labels():
     return [text.get_text() for text in plt.gcf().axes[0].get_legend().get_texts()]
-
-
-def test_histograms_ignore_dont_care_values():
-    matrix = np.array([[0, -1], [0, 1], [2, 1]])
-
-    assert vis_rules._column_histogram(matrix[:, 0]) == {0: 2, 2: 1}
-    assert vis_rules._histogram(matrix) == [{0: 2, 2: 1}, {1: 2}]
-    # Ties keep the first antecedent found.
-    assert vis_rules._max_values(vis_rules._histogram(matrix)) == (0, 0)
-    assert vis_rules._max_values([{}, {}]) == (None, None)
-    np.testing.assert_array_equal(vis_rules.choose_popular_rules(matrix), [True, True, False])
-
-
-def test_graph_connection_counts_co_occurrences():
-    graph = vis_rules.create_graph_connection(np.array([[0, 1], [0, -1]]), 3)
-
-    assert graph.shape == (6, 6)
-    assert graph[0, 0] == 1.0
-    assert graph[0, 4] == graph[4, 0] == graph[4, 4] == 0.5
-    assert graph.sum() == 2.5
-
-
-def test_connect_rule_bases(master_rule_base, partitions, capsys):
-    graphs = vis_rules.connect_rulebase(master_rule_base[0])
-
-    # The two rules sharing the most popular antecedent form the first graph, the remaining rule the second.
-    assert len(graphs) == 2
-    assert graphs[0].shape == (12, 12)
-    first_label = partitions[0].name + ' ' + partitions[0].linguistic_variable_names()[0]
-    assert graphs[0].loc[first_label, first_label] == 1.0
-    assert graphs[1].loc[first_label, first_label] == 0.0
-
-    assert [len(graphs) for graphs in vis_rules.connect_master_rulebase(master_rule_base)] == [2, 1]
-    assert capsys.readouterr().out == ''
-
-
-def test_connect_rule_bases_reports_unplottable_rules(partitions, capsys):
-    with_empty_rule = rl.RuleBaseT1(partitions, [_rule([0, -1, -1, -1]), _rule([-1, -1, -1, -1])])
-    assert len(vis_rules.connect_rulebase(with_empty_rule)) == 1
-    assert 'too small' in capsys.readouterr().out
-
-    mrule_base = rl.MasterRuleBase([rl.RuleBaseT1(partitions, []), with_empty_rule], consequent_names=['no', 'yes'])
-    assert [len(graphs) for graphs in vis_rules.connect_master_rulebase(mrule_base)] == [0, 1]
-    assert '"no", probably because there are no rules' in capsys.readouterr().out
-
-
-def test_visualize_rulebase_exports_one_graph_per_consequent(master_rule_base, tmp_path):
-    pytest.importorskip('networkx')
-    classifier = evf.BaseFuzzyRulesClassifier()
-    classifier.rule_base = master_rule_base
-
-    vis_rules.visualize_rulebase(classifier, export_path=str(tmp_path))
-
-    assert sorted(path.name for path in tmp_path.iterdir()) == ['consequent_0.gexf', 'consequent_1.gexf']
-    assert 'Medium' in (tmp_path / 'consequent_0.gexf').read_text() or ' M' in (tmp_path / 'consequent_0.gexf').read_text()
-    assert len(plt.get_fignums()) == 2
-
-
-def test_visualize_rulebase_without_export(master_rule_base, tmp_path, monkeypatch):
-    pytest.importorskip('networkx')
-    monkeypatch.chdir(tmp_path)
-    vis_rules.visualize_rulebase(master_rule_base)
-    assert list(tmp_path.iterdir()) == []
-
-
-def test_visualize_rulebase_names_graphs_after_their_consequent(master_rule_base, partitions, tmp_path, capsys):
-    pytest.importorskip('networkx')
-    with_empty_class = rl.MasterRuleBase([rl.RuleBaseT1(partitions, []), master_rule_base[1]])
-
-    vis_rules.visualize_rulebase(with_empty_class, export_path=str(tmp_path))
-
-    assert [path.name for path in tmp_path.iterdir()] == ['consequent_1.gexf']
-    assert plt.gcf().axes[0].get_title() == 'Consequent: 1'
-    assert 'no rules in the rule base' in capsys.readouterr().out
 
 
 @pytest.mark.parametrize('fuzzy_type', [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2])

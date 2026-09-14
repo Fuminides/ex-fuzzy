@@ -149,7 +149,6 @@ After training, you can examine the fuzzy rules that were learned:
     # Use comprehensive evaluation
     evaluation_report = eval_tools.eval_fuzzy_model(
         classifier, X_train, y_train, X_test, y_test,
-        plot_rules=True,      # Show rule structure  
         print_rules=True,     # Print rules in readable format
         plot_partitions=True, # Show fuzzy partitions
         return_rules=True     # Return rule text

@@ -26,10 +26,11 @@ A brief piece of code that does this case of use is the following::
     fl_classifier.fit(X_train, y_train, n_gen=50, pop_size=30)
 
     fuzzy_evaluator = eval_tools.FuzzyEvaluator(fl_classifier)
-    fuzzy_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test, 
-                        plot_rules=True, print_rules=True, plot_partitions=True)
+    fuzzy_evaluator.eval_fuzzy_model(X_train, y_train, X_test, y_test,
+                        print_rules=True, plot_partitions=True)
 
-This code trains the classifier and also plots the rules, prints them on screen and show the linguistic variables optimized in the process.
+This code trains the classifier, prints its rules, and shows the linguistic
+variables optimized in the process.
 
 For continuous targets, use ``ex_fuzzy.BaseFuzzyRulesRegressor``. It supports
 crisp Takagi-Sugeno and fuzzy Mamdani consequents, with either the default

@@ -23,7 +23,6 @@ Install extras only when you need the corresponding feature:
 
 .. code-block:: bash
 
-    python -m pip install "ex-fuzzy[viz]"   # NetworkX-based rule visualization
     python -m pip install "ex-fuzzy[gpu]"   # PyTorch support for GPU tensors
     python -m pip install "ex-fuzzy[evox]"  # EvoX/PyTorch evolutionary backend
     python -m pip install "ex-fuzzy[docs]"  # Documentation build dependencies
