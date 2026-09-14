@@ -11,7 +11,6 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-from pymoo.core.problem import Problem
 from sklearn.datasets import load_iris
 
 import evolutionary_fit as evf
@@ -223,7 +222,7 @@ def _fitted(route, samples=None, profile=None):
 
     if route == 'scalar':
         context = patch.object(evf.FitRuleBase, '_evaluate_elementwise',
-                               Problem._evaluate_elementwise)
+                               evf.Problem._evaluate_elementwise)
     elif route == 'batch':
         def always_batch(self, population):
             probe = _RouteProbe()

@@ -112,13 +112,30 @@ class _FiringCache:
             self.bytes -= removed.nbytes
 
 
+#: Populations of genotypes the fitness cache holds when the fit's size is known.
+_FITNESS_CACHE_POPULATIONS = 4
+
+
 @contextmanager
-def _fitness_cache_scope(problem, enabled: bool) -> Iterator[None]:
-    """Discard all memoized fitness on optimizer return or exception."""
+def _fitness_cache_scope(problem, enabled: bool,
+                         population: Optional[int] = None) -> Iterator[None]:
+    """Discard all memoized fitness on optimizer return or exception.
+
+    ``population`` sizes the genotype cache to span several generations: the
+    default 256 entries hold less than one large EvoX population. The key
+    payload limit grows with it, so retained keys stay proportional to the
+    chromosomes the optimizer itself keeps.
+    """
     if not enabled:
         yield
         return
-    problem._fitness_cache = _FitnessCache()
+    capacity, key_bytes = 256, 1024 * 1024
+    if population is not None:
+        capacity = max(capacity, _FITNESS_CACHE_POPULATIONS * int(population))
+        n_var = getattr(problem, 'n_var', None)
+        if n_var:
+            key_bytes = max(key_bytes, capacity * (8 * int(n_var) + 8))
+    problem._fitness_cache = _FitnessCache(capacity, key_bytes)
     # Firing reuse needs memberships that do not change between candidates.
     fixed_partitions = getattr(problem, 'lvs', None) is not None
     if fixed_partitions:
@@ -126,11 +143,15 @@ def _fitness_cache_scope(problem, enabled: bool) -> Iterator[None]:
     # Populated on first use by the population evaluator, which owns the class.
     # Creating the slot here keeps the route choice fit-local, like the caches.
     problem._route_probe = None
+    # Likewise the exact device objective and its verification state, which
+    # also releases the device copies of the training data with the fit.
+    problem._torch_route = None
     try:
         yield
     finally:
         del problem._fitness_cache
         del problem._route_probe
+        del problem._torch_route
         if fixed_partitions:
             del problem._firing_cache
 

@@ -11,16 +11,31 @@ Ex-Fuzzy supports evolutionary optimization through the EvoX backend, using
 PyTorch for its population operations. The amount of GPU acceleration depends
 on the optimization problem and its fitness evaluator.
 
-Classification uses the same CPU objective as PyMoo. For the built-in T1/T2
-objective, both backends automatically use a reduced-work evaluator that
-computes firing strengths once per chromosome and retains reference pruning,
-weights and winner-rule prediction. Custom losses and other fuzzy types keep
-the full reference path. No extra option or dependency is required.
+Classification uses the same exact objective as PyMoo, and EvoX reaches it
+through the same fast paths: the array evaluator, the fit-local fitness and
+firing caches, and population batching. EvoX hands over a whole generation at
+once, so chromosomes repeated within a generation are also scored only once.
 
-EvoX still performs classification fitness on the CPU; moving population
-operations to a GPU does not imply GPU fitness evaluation or a training speedup.
-Regression retains its separate batched Torch evaluator. See the
-:mod:`ex_fuzzy.evolutionary_fit` documentation for the parity benchmark.
+On a CUDA device, classification can additionally score whole generations with
+an exact PyTorch implementation of the built-in Type-1 objective, for fixed or
+optimized partitions. It reproduces the CPU objective bit for bit, so a GPU
+changes how fast a fit runs, not what it finds. Each fit first checks a few
+candidates of its first generation against the CPU and stays on the CPU if any
+score differs; afterwards, whether the GPU or the CPU scores a generation is
+decided by measurement. Custom
+losses, Type-2 sets, ``ds_mode=2`` and categorical variables with optimized
+partitions keep scoring on the CPU. No extra option is required;
+:doc:`user-guide/training-performance` describes every fast path.
+
+**When to use it.** The GPU objective is designed for very expensive fits:
+datasets with tens of thousands of samples or more, many features, optimized
+partitions, and large populations or long searches. For smaller problems the
+default PyMoo backend on a CPU is usually the faster choice. In a pilot with
+10,000 samples and 10 features, the GPU made EvoX fits 2–3× faster than EvoX on
+the same node's CPU, yet they still took longer than the recorded PyMoo fit of
+that workload on a desktop CPU.
+
+Regression retains its separate batched Torch evaluator.
 
 Installation
 ============
@@ -40,6 +55,9 @@ With EvoX Support
    pip install "ex-fuzzy[evox]"
 
 For GPU support, ensure you have CUDA-compatible hardware and drivers installed.
+
+EvoX fits do not import pymoo, so they also run in environments where pymoo is
+missing or too old for the PyMoo backend.
 
 Backend Selection
 =================
@@ -115,15 +133,41 @@ Checking Available Backends
 Performance and memory
 ======================
 
-Keep PyMoo as the baseline for classification. Benchmark the same dataset,
-population size, generation budget and stopping settings before switching
-backends. GPU population operations alone may not offset the cost of transferring
-chromosomes to the CPU reference fitness evaluator.
+Benchmark the same dataset, population size, generation budget and stopping
+settings when comparing backends. EvoX and PyMoo run different genetic
+algorithms, so their searches differ even with the same seed.
 
-The regression evaluator can batch Torch fitness operations; the classification
-reference evaluator evaluates one chromosome at a time. It does not provide the
-sample or population memory-budget guarantees of the removed classification
-shortcuts. Larger datasets and rule bases require correspondingly more memory.
+On the CPU, EvoX classification shares PyMoo's fit-local caches and batching.
+On synthetic data (10 features, 20 rules, 30 generations, population 40) this
+made complete EvoX fits 2.1–4.2× faster than scoring one chromosome at a time,
+with identical results. With a population of 200 and 1,000 samples the gain was
+2.1× for fixed and 1.1× for optimized partitions, where most offspring are new
+chromosomes. These were measured on one shared machine and are not a promise
+for your workload; ``benchmarks/benchmark_evox_routes.py`` reproduces them.
+
+The GPU objective is meant for very expensive fits: many samples, many features,
+large populations and optimized partitions. In a pilot on 10,000 samples and 10
+features (20 rules, population 40, 5 generations), the complete fit took 1.89 s
+on a GTX 1080 Ti against 3.85 s on the same node's CPU with fixed partitions,
+and 1.66 s on an RTX 2080 against 4.79 s with optimized partitions, with
+identical results. In a three-seed campaign on 100,000 samples and 200 features,
+the retained route completed five-generation fits in a median 22.8 s on the GPU
+against 521.3 s on the same nodes' CPU routes with fixed partitions (22.87×),
+and 37.6 s against 729.2 s with optimized partitions (19.38×). All six sampled
+device verifications matched bit for bit, all paired searches were identical,
+and every device population evaluation used CUDA. Five workloads ran on GTX
+1080 Ti nodes and one fixed-partition workload on an RTX 2080. These are large,
+synthetic workloads on specific hardware, not a promise for other fits.
+
+The GPU objective splits each generation into chunks
+that use at most about a third of the free GPU memory. Each candidate needs
+roughly ``8 × samples × (16 × rules + 6 × fuzzy sets)`` bytes with optimized
+partitions and less with fixed ones; a problem whose single candidate does not
+fit keeps scoring on the CPU.
+
+The regression evaluator batches its Torch fitness operations in the same
+memory-aware way. Larger datasets and rule bases need correspondingly more
+memory.
 
 Reduce ``pop_size`` and ``nRules`` for smaller trial runs. Increasing the search
 budget changes the optimization task and should not be presented as a pure
@@ -285,7 +329,7 @@ If you encounter out-of-memory errors:
 
    classifier.fit(X_train, y_train, pop_size=30)  # Instead of 100
 
-2. **Reduce rule count**: Classification evaluates each decoded rule base on the CPU; fewer rules reduce its intermediate arrays.
+2. **Reduce rule count**: Population and GPU scoring hold arrays of ``samples × rules`` values per candidate; fewer rules shrink them.
 
 3. **Use CPU mode for debugging**:
 

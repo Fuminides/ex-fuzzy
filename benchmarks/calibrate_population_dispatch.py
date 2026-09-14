@@ -27,7 +27,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
-from pymoo.core.problem import Problem
 from sklearn.datasets import make_classification
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,7 +52,7 @@ def _forced_route(route):
     """Force every eligible generation onto one route for the whole fit."""
     if route == 'scalar':
         return patch.object(evf.FitRuleBase, '_evaluate_elementwise',
-                            Problem._evaluate_elementwise)
+                            evf.Problem._evaluate_elementwise)
 
     def always_batch(self, population):
         probe = _population_fitness._RouteProbe()

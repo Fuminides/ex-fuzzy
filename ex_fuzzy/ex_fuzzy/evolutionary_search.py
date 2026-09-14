@@ -21,15 +21,15 @@ Use Cases:
 import numpy as np
 import pandas as pd
 from typing import Optional, Any
-from pymoo.core.problem import Problem
-from pymoo.core.variable import Integer
 
 # Import necessary modules
 try:
+    from ._problem import Integer, Problem
     from . import fuzzy_sets as fs
     from . import rules
     from . import eval_rules as evr
 except ImportError:
+    from _problem import Integer, Problem
     import fuzzy_sets as fs
     import rules
     import eval_rules as evr
@@ -64,8 +64,9 @@ class ExploreRuleBases(Problem):
         >>> # Use with pymoo optimizer
         >>> from pymoo.algorithms.soo.nonconvex.ga import GA
         >>> from pymoo.optimize import minimize
+        >>> from ex_fuzzy.evolutionary_backends import as_pymoo_problem
         >>> algorithm = GA(pop_size=50)
-        >>> res = minimize(problem, algorithm, ('n_gen', 100))
+        >>> res = minimize(as_pymoo_problem(problem), algorithm, ('n_gen', 100))
     """
 
     def __init__(self, X: np.array, y: np.array, nRules: int, n_classes: int,
@@ -79,7 +80,7 @@ class ExploreRuleBases(Problem):
         :param nRules: number of rules to select from the candidate pool
         :param n_classes: number of classes in the problem.
         :param candidate_rules: MasterRuleBase object containing candidate rules.
-        :param thread_runner: Optional parallel evaluation runner for pymoo
+        :param thread_runner: Optional elementwise runner, such as ``StarmapParallelization``
         :param tolerance: float. Tolerance for the size evaluation.
         """
         try:

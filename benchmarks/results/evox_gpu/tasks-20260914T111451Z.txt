@@ -1,0 +1,2 @@
+10000 10 fixed 7
+10000 10 optimized 7

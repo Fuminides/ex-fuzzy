@@ -1,0 +1,161 @@
+{
+  "host": "gpu-1-1.local",
+  "cpu": "Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz",
+  "gpu": "NVIDIA GeForce RTX 2080",
+  "python": "3.11.15",
+  "torch": "2.6.0+cu124",
+  "packages": {
+    "numpy": "2.4.6",
+    "pymoo": "0.6.1.5",
+    "scikit-learn": "1.9.0"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "arguments": {
+    "samples": "[100000]",
+    "features": "[200]",
+    "partitions": "['fixed']",
+    "rules": "20",
+    "ants": "4",
+    "generations": "5",
+    "population": "40",
+    "seeds": "[7]",
+    "repeats": "1",
+    "routes": "['cpu', 'device']",
+    "evox_source": "None",
+    "json": "/home/jf22881/.cache/ex-fuzzy-bench/evox-worktree/benchmarks/results/evox_gpu/n100000_d200_fixed_seed7.json"
+  },
+  "workloads": [
+    {
+      "samples": 100000,
+      "features": 200,
+      "partitions": "fixed",
+      "seed": 7,
+      "generations": 5,
+      "population": 40,
+      "evox_identical": true,
+      "runs": {
+        "cpu": [
+          {
+            "seconds": 463.6521116727963,
+            "performance": 0.06807267665863037,
+            "phases": {
+              "problem_setup": 1.0043765138834715,
+              "scoring": 457.1946994829923,
+              "population_evaluation": 457.19724477734417,
+              "optimize": 457.98384317662567,
+              "preprocessing": 0.0067686233669519424,
+              "finalization": 4.656753536313772,
+              "optimizer_other": 0.7865983992815018,
+              "evaluation_other": 0.002545294351875782
+            },
+            "generations": [
+              {
+                "candidates": 40,
+                "on_device": false,
+                "seconds": 86.91989289224148
+              },
+              {
+                "candidates": 38,
+                "on_device": false,
+                "seconds": 81.04507372435182
+              },
+              {
+                "candidates": 36,
+                "on_device": false,
+                "seconds": 79.01611570082605
+              },
+              {
+                "candidates": 38,
+                "on_device": false,
+                "seconds": 79.36753179412335
+              },
+              {
+                "candidates": 36,
+                "on_device": false,
+                "seconds": 66.92491136025637
+              },
+              {
+                "candidates": 38,
+                "on_device": false,
+                "seconds": 63.921174011193216
+              }
+            ],
+            "gpu_accelerated": false,
+            "verifications": [],
+            "device_generations": 0,
+            "scored_generations": 6
+          }
+        ],
+        "device": [
+          {
+            "seconds": 22.792113035917282,
+            "performance": 0.06807267665863037,
+            "phases": {
+              "problem_setup": 0.8003334468230605,
+              "device_setup": 0.35781814623624086,
+              "scoring": 17.327294263988733,
+              "population_evaluation": 17.328839736059308,
+              "optimize": 17.356155353598297,
+              "preprocessing": 0.006411089561879635,
+              "finalization": 4.629058258607984,
+              "optimizer_other": 0.02731561753898859,
+              "evaluation_other": 0.0015454720705747604
+            },
+            "generations": [
+              {
+                "candidates": 40,
+                "on_device": true,
+                "seconds": 10.684225206263363
+              },
+              {
+                "candidates": 38,
+                "on_device": true,
+                "seconds": 1.3528946079313755
+              },
+              {
+                "candidates": 36,
+                "on_device": true,
+                "seconds": 1.2898241840302944
+              },
+              {
+                "candidates": 38,
+                "on_device": true,
+                "seconds": 1.357889580540359
+              },
+              {
+                "candidates": 36,
+                "on_device": true,
+                "seconds": 1.2889119321480393
+              },
+              {
+                "candidates": 38,
+                "on_device": true,
+                "seconds": 1.3535487530753016
+              }
+            ],
+            "gpu_accelerated": true,
+            "verifications": [
+              {
+                "verified": true,
+                "candidates": 4,
+                "cpu_seconds": 2.134540097322315,
+                "device_seconds": 0.04469501979183406,
+                "settled_on_device": true
+              }
+            ],
+            "device_generations": 6,
+            "scored_generations": 6
+          }
+        ]
+      },
+      "median_seconds": {
+        "cpu": 463.6521116727963,
+        "device": 22.792113035917282
+      }
+    }
+  ]
+}

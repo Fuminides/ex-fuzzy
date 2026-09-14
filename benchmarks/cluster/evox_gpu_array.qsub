@@ -1,0 +1,79 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -S /bin/bash
+#$ -N evoxgpu
+#$ -o logs/evox_gpu
+#$ -q gpu.q
+#$ -l gpu=1
+
+# One array task = one (samples, features, partitions, seed) workload, timed on
+# the EvoX CPU routes and the EvoX GPU objective on the same node (and on the
+# PyMoo CPU reference when ROUTES includes pymoo). Reads its line from the
+# frozen task list the submit script writes. Deliberately no
+# `set -euo pipefail`: it misbehaves under the cluster's shell wrapper.
+
+REPO_ROOT="${REPO_ROOT:-${SGE_O_WORKDIR:-$(pwd)}}"
+TASK_FILE="${TASK_FILE:-${REPO_ROOT}/benchmarks/results/evox_gpu/tasks.txt}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/benchmarks/results/evox_gpu}"
+GPU_ENV="${GPU_ENV:-gpuenv}"
+GENERATIONS="${GENERATIONS:-5}"
+POPULATION="${POPULATION:-40}"
+ROUTES="${ROUTES:-cpu device}"
+# Off by default so a resubmission fills the gaps instead of redoing the grid.
+FORCE="${FORCE:-0}"
+
+if [ ! -f "${TASK_FILE}" ]; then
+  echo "Task list not found: ${TASK_FILE}" >&2
+  exit 2
+fi
+TASK_LINE=$(sed -n "${SGE_TASK_ID}p" "${TASK_FILE}")
+if [ -z "${TASK_LINE}" ]; then
+  echo "No task at line ${SGE_TASK_ID} of ${TASK_FILE}" >&2
+  exit 2
+fi
+read -r SAMPLES FEATURES PARTITIONS SEED <<< "${TASK_LINE}"
+NAME="n${SAMPLES}_d${FEATURES}_${PARTITIONS}_seed${SEED}"
+RESULT="${OUTPUT_DIR}/${NAME}.json"
+if [ -f "${RESULT}" ] && [ "${FORCE}" != "1" ]; then
+  echo "task ${SGE_TASK_ID}: ${NAME} already has ${RESULT}; skipping"
+  exit 0
+fi
+
+source /usr/local/gpuallocation.sh
+export MAMBA_EXE="${MAMBA_EXE:-$HOME/bin/micromamba}"
+export MAMBA_ROOT_PREFIX="${MAMBA_ROOT_PREFIX:-$HOME/micromamba_env}"
+eval "$("${MAMBA_EXE}" shell hook --shell bash --root-prefix "${MAMBA_ROOT_PREFIX}")"
+micromamba activate "${GPU_ENV}"
+
+# CPU routes run single-threaded, like the recorded CPU scaling campaign.
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+
+cd "${REPO_ROOT}" || exit 2
+mkdir -p "${OUTPUT_DIR}"
+rm -f "${OUTPUT_DIR}/${NAME}.failed"
+echo "task ${SGE_TASK_ID}: ${NAME} on $(hostname) at $(date -u +%FT%TZ)"
+nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader 2>/dev/null
+
+python benchmarks/benchmark_evox_routes.py \
+  --samples "${SAMPLES}" \
+  --features "${FEATURES}" \
+  --partitions "${PARTITIONS}" \
+  --seeds "${SEED}" \
+  --generations "${GENERATIONS}" \
+  --population "${POPULATION}" \
+  --routes ${ROUTES} \
+  --json "${RESULT}"
+STATUS=$?
+if [ "${STATUS}" -ne 0 ]; then
+  # Record the failure instead of letting the workload silently vanish.
+  printf '{"workload": "%s", "host": "%s", "status": %d, "log": "%s"}\n' \
+    "${NAME}" "$(hostname)" "${STATUS}" "logs/evox_gpu/evoxgpu.o${JOB_ID}.${SGE_TASK_ID}" \
+    > "${OUTPUT_DIR}/${NAME}.failed"
+  rm -f "${RESULT}"
+fi
+echo "task ${SGE_TASK_ID}: ${NAME} finished with status ${STATUS} at $(date -u +%FT%TZ)"
+exit ${STATUS}
