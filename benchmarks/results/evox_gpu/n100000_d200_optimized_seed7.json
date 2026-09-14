@@ -1,0 +1,76 @@
+{
+  "host": "gpu-1-103.local",
+  "cpu": "Intel(R) Xeon(R) Silver 4114 CPU @ 2.20GHz",
+  "gpu": "NVIDIA GeForce GTX 1080 Ti",
+  "python": "3.11.15",
+  "torch": "2.6.0+cu124",
+  "packages": {
+    "numpy": "2.4.6",
+    "pymoo": "0.6.1.5",
+    "scikit-learn": "1.9.0"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "arguments": {
+    "samples": "[100000]",
+    "features": "[200]",
+    "partitions": "['optimized']",
+    "rules": "20",
+    "ants": "4",
+    "generations": "5",
+    "population": "40",
+    "seeds": "[7]",
+    "repeats": "1",
+    "routes": "['cpu', 'device']",
+    "evox_source": "None",
+    "json": "/home/jf22881/Github/ex-fuzzy/benchmarks/results/evox_gpu/n100000_d200_optimized_seed7.json"
+  },
+  "workloads": [
+    {
+      "samples": 100000,
+      "features": 200,
+      "partitions": "optimized",
+      "seed": 7,
+      "generations": 5,
+      "population": 40,
+      "evox_identical": true,
+      "runs": {
+        "cpu": [
+          {
+            "seconds": 951.7464970126748,
+            "performance": 0.07774299383163452,
+            "gpu_accelerated": false,
+            "verifications": [],
+            "device_generations": 0,
+            "scored_generations": 6
+          }
+        ],
+        "device": [
+          {
+            "seconds": 312.75867253541946,
+            "performance": 0.07774299383163452,
+            "gpu_accelerated": true,
+            "verifications": [
+              {
+                "verified": true,
+                "candidates": 40,
+                "cpu_seconds": 146.98793050646782,
+                "device_seconds": 3.3190053775906563,
+                "settled_on_device": true
+              }
+            ],
+            "device_generations": 5,
+            "scored_generations": 6
+          }
+        ]
+      },
+      "median_seconds": {
+        "cpu": 951.7464970126748,
+        "device": 312.75867253541946
+      }
+    }
+  ]
+}

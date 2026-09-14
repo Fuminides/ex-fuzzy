@@ -149,7 +149,14 @@ large populations and optimized partitions. In a pilot on 10,000 samples and 10
 features (20 rules, population 40, 5 generations), the complete fit took 1.89 s
 on a GTX 1080 Ti against 3.85 s on the same node's CPU with fixed partitions,
 and 1.66 s on an RTX 2080 against 4.79 s with optimized partitions, with
-identical results. It splits each generation into chunks
+identical results. On the largest recorded workload, 100,000 samples and 200
+features, the GPU scored a generation 40–54× faster than the node's CPU, and
+complete fits ran 2.9× (fixed) and 3.2× (optimized partitions) faster. The
+remaining time is mostly CPU work: the first generation, which is also scored
+on the CPU to verify the GPU, plus setup and finalization. Longer searches
+spread that fixed cost over more generations.
+
+The GPU objective splits each generation into chunks
 that use at most about a third of the free GPU memory. Each candidate needs
 roughly ``8 × samples × (16 × rules + 6 × fuzzy sets)`` bytes with optimized
 partitions and less with fixed ones; a problem whose single candidate does not

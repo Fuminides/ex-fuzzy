@@ -6,8 +6,8 @@ fits, chooses between the scalar and batched routes by measurement rather than b
 hardcoded bounds, and resolves enum serialization. An exact compiled-reduction
 prototype remains benchmark-only. The 2026-09-14 increment gives EvoX
 classification the same caches and batching, deduplicates within populations,
-and adds an exact PyTorch population objective (D04) for CUDA devices whose GPU
-parity and timing are not yet measured. Further compiled, T2 batching and
+and adds an exact PyTorch population objective (D04) for CUDA devices, measured
+on CERES GTX 1080 Ti and RTX 2080 GPUs. Further compiled, T2 batching and
 process-pool work are separate increments, not shipped capabilities.**
 
 ### Current implementation status
@@ -39,7 +39,7 @@ authorize future work. Confirm the scope of new work from the current task.
 | C07 | Partial: implemented | Fit-scoped owned pools; success/error cleanup and external ownership preserved. |
 | C10 | Measured | Peak RSS of the new fit-local caches reported below. |
 | D01/D02/D03 | Exact prototype measured; not adopted | Explicit pairwise reductions pass tested parity; optional Numba dispatch stays in benchmarks. |
-| D04 | Implemented for EvoX on CUDA; GPU unmeasured | Exact PyTorch T1 population objective for fixed or optimized partitions, `ds_mode` 0/1. Bit for bit on CPU tensors; verified once per fit and chosen by measurement. |
+| D04 | Implemented for EvoX on CUDA; GPU parity and timing measured | Exact PyTorch T1 population objective for fixed or optimized partitions, `ds_mode` 0/1. Bit for bit on CPU tensors; verified once per fit and chosen by measurement. |
 | Other IDs | Reviewed, pending or deferred | See [all 36 decisions and evidence](SPEED_UP_REVIEW.md). |
 
 Scope: `BaseFuzzyRulesClassifier`, primarily its built-in classification objective
@@ -1187,6 +1187,47 @@ both differ, so this is context, not a controlled comparison. The user guide
 therefore presents the GPU route as intended for very expensive fits. Results are
 in `benchmarks/results/evox_gpu/`, tabulated by
 `python benchmarks/summarize_evox_gpu.py`.
+
+### GPU grid: 100,000 samples × 200 features — 2026-09-14
+
+Job 2855129, six `gpu.q` tasks with the same software as the pilot: the largest
+row of `docs/performance/t1_scaling.json`, with 20 rules, 4 antecedents,
+population 40, 5 generations and seeds 7/19/41. Each task ran the EvoX `cpu`
+and `device` routes once on its node. All six exited with status 0. Every seed
+produced identical searches and performance on both routes, and every device
+verification matched all 40 candidates exactly. The device was decisively faster
+in the verification generation, so it was chosen at once and scored 5 of the 6
+generations.
+
+| Partitions | Seed | GPU | EvoX `cpu` (s) | EvoX `device` (s) | Fit ratio | Verification CPU/device (s) | Generation ratio |
+| --- | ---: | --- | ---: | ---: | ---: | --- | ---: |
+| Fixed | 7 | RTX 2080 | 574.8 | 205.0 | 2.80× | 86.9/1.62 | 54× |
+| Fixed | 19 | GTX 1080 Ti | 640.4 | 222.3 | 2.88× | 90.8/1.79 | 51× |
+| Fixed | 41 | GTX 1080 Ti | 645.2 | 256.0 | 2.52× | 88.1/1.92 | 46× |
+| Optimized | 7 | GTX 1080 Ti | 951.7 | 312.8 | 3.04× | 147.0/3.32 | 44× |
+| Optimized | 19 | GTX 1080 Ti | 833.5 | 246.6 | 3.38× | 126.9/3.17 | 40× |
+| Optimized | 41 | GTX 1080 Ti | 963.7 | 293.9 | 3.28× | 148.5/3.38 | 44× |
+
+Medians across seeds are 640.4 s vs 222.3 s (2.88×) for fixed partitions and
+951.7 s vs 293.9 s (3.24×) for optimized partitions. The node CPUs were Xeon
+Silver 4110/4114.
+
+The device scores a generation 40–54× faster, but a complete 5-generation fit
+is only about 3× faster. Two costs remain on the CPU:
+
+- Verification scores the whole first generation on the CPU: 87–149 s.
+- Setup and finalization outside the scored generations. The device route had
+  roughly 50–100 s more of this than expected from the verification and device
+  timings; the benchmark does not yet record per-generation times, so this is
+  unattributed.
+
+Longer searches spread both costs over more generations. Verifying on a sample
+of the first generation would remove most of the first.
+
+The recorded Ryzen 5600X PyMoo 3.0 medians for this workload, 159.7 s (fixed)
+and 255.7 s (optimized), are still faster than the GPU route on these nodes. That
+comparison is context only: the GA, CPU and machine all differ. One seed ran on
+a different GPU model from the others.
 
 ### Reproduction
 
