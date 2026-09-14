@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: ex_fuzzy
-Version: 2.1.5
+Version: 3.0.0
 Summary: Library to perform explainable AI using fuzzy logic.
 Home-page: https://github.com/Fuminides/ex-fuzzy
 Download-URL: https://pypi.org/project/ex-fuzzy/
@@ -20,7 +20,7 @@ Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: numpy
 Requires-Dist: matplotlib
-Requires-Dist: pymoo
+Requires-Dist: pymoo>=0.6.2
 Requires-Dist: pandas
 Requires-Dist: scikit-learn
 Provides-Extra: viz
@@ -258,6 +258,9 @@ Use `split_mode="learned"` for data-driven soft split locations or
 calibration-free evidential outputs; use `ConformalFuzzyClassifier` when a
 finite-sample marginal coverage guarantee is required.
 
+For higher accuracy with the same evidential outputs, `DeepFERL` grows a deep
+tree of learned, Gini-placed soft splits and votes over its leaves.
+
 ### Regression Usage
 
 `BaseFuzzyRulesRegressor` learns interpretable Type-1 rules for continuous
@@ -318,6 +321,19 @@ Obtain statistical confidence intervals for your metrics:
 </p>
 
 ## ⚡ Performance
+
+### Accuracy and model size on 67 KEEL datasets
+
+![Test accuracy, rules per model and training time for Ex-Fuzzy's Genetic Search Rules, Mine+Search and FERL learners against logistic regression, decision tree, random forest and gradient boosting baselines on 67 KEEL classification datasets](docs/performance/keel.svg)
+
+### Ex-Fuzzy 2.0 vs Ex-Fuzzy 3.0 training speed
+
+
+
+![T1 complete-fit scaling from 1,000 to 100,000 samples and 10 to 200 features](docs/performance/t1_scaling.svg)
+
+Our implementation is getting more efficient! This experiment crosses **1,000 / 10,000 / 100,000 samples**
+with **10 / 50 / 200 features**, for both fixed and optimized partitions. All of them using CPU backend.
 
 ### Backend Comparison
 

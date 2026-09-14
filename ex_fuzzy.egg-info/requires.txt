@@ -1,6 +1,6 @@
 numpy
 matplotlib
-pymoo
+pymoo>=0.6.2
 pandas
 scikit-learn
 

@@ -10,6 +10,9 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[3.0.0] - 2026-09-14
+====================
+
 Added
 -----
 - **FERL**: Native Fast Evidential Rule Learning with compact or learned fuzzy
@@ -43,7 +46,7 @@ Added
 - **Automatic Memory Management**: Batch processing for large datasets to prevent out-of-memory errors
 - **Performance Improvements**: 2-10x speedup for large datasets with GPU acceleration
 - **Backend Selection**: Easy switching between PyMoo (CPU) and EvoX (GPU) backends
-- New comprehensive test suite with >90% code coverage
+- Comprehensive test suite with 100% statement and branch coverage
 - Modern documentation website with PyData theme
 - Interactive examples with Jupyter notebooks
 - GitHub Actions CI/CD pipeline
