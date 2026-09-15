@@ -10,6 +10,9 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[3.1.0] - 2026-09-15
+====================
+
 Added
 -----
 - **EvoX GPU classification fitness**: On a CUDA device the EvoX backend can
@@ -38,6 +41,8 @@ Fixed
 -----
 - The batched population evaluator added the ``alpha`` size penalty when every
   surviving rule scored exactly the tolerance; the reference adds none
+- Pattern stability usage charts show "No variable usage" instead of failing
+  when no variable is used
 
 Removed
 -------
