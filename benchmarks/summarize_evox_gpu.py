@@ -12,6 +12,7 @@ and prints one row per (samples, features, partitions) workload:
 
     python benchmarks/summarize_evox_gpu.py
     python benchmarks/summarize_evox_gpu.py --json benchmarks/results/evox_gpu/summary.json
+    python benchmarks/summarize_evox_gpu.py --plot docs/performance/evox_gpu.svg
 """
 from __future__ import annotations
 
@@ -34,11 +35,47 @@ def _recorded_cpu(path: Path) -> dict:
             for row in report.get("results", []) if row.get("fuzzy_type") == "t1"}
 
 
+def plot(rows: list, groups: dict, destination: Path) -> None:
+    """Draw EvoX CPU and GPU fit times for the largest workload, one bar pair per partitioning."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    size = max((row["samples"], row["features"]) for row in rows)
+    rows = [row for row in rows if (row["samples"], row["features"]) == size and row.get("gpu_speedup")]
+    plt.rcParams.update({"font.size": 10, "svg.fonttype": "none"})
+    fig, ax = plt.subplots(figsize=(7, 4.5), constrained_layout=True)
+    for index, (route, label, color) in enumerate((("cpu", "EvoX CPU", "#536878"),
+                                                   ("device", "EvoX GPU", "#007d73"))):
+        values = [row[f"{route}_seconds"] for row in rows]
+        seeds = [[w["median_seconds"][route] for w in groups[(row["samples"], row["features"], row["partitions"])]]
+                 for row in rows]
+        low = [value - min(times) for value, times in zip(values, seeds)]
+        high = [max(times) - value for value, times in zip(values, seeds)]
+        x = [i + (index - .5) * .36 for i in range(len(rows))]
+        ax.bar(x, values, .36, label=label, color=color, yerr=[low, high], capsize=3)
+        for position, value, times in zip(x, values, seeds):
+            ax.text(position, max(times) + 10, f"{value:.1f} s", ha="center", va="bottom", fontsize=9)
+    for i, row in enumerate(rows):
+        top = max(w["median_seconds"]["cpu"] for w in groups[(row["samples"], row["features"], row["partitions"])])
+        ax.text(i, top * 1.12, f"{row['gpu_speedup']:.2f}× faster", ha="center", weight="bold")
+    ax.set_xticks(range(len(rows)), [f"{row['partitions'].capitalize()} partitions" for row in rows])
+    ax.set_ylabel("Complete fit (seconds)")
+    ax.set_ylim(0, ax.get_ylim()[1] * 1.2)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.legend(loc="upper left")
+    ax.set_title(f"EvoX CPU vs GPU · T1 · {size[0]:,} samples · {size[1]} features\n"
+                 f"Median complete fit over {len(rows[0]['seeds'])} seeds; whiskers show min–max")
+    fig.savefig(destination, dpi=160)
+    plt.close(fig)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--results", type=Path, default=ROOT / "benchmarks/results/evox_gpu")
     parser.add_argument("--cpu", type=Path, default=ROOT / "docs/performance/t1_scaling.json")
     parser.add_argument("--json", type=Path, help="also write the summary to this file")
+    parser.add_argument("--plot", type=Path, help="also draw the CPU/GPU figure to this file")
     args = parser.parse_args()
 
     groups = defaultdict(list)
@@ -94,6 +131,8 @@ def main() -> None:
     if args.json is not None:
         args.json.write_text(json.dumps({"nodes": sorted(map(list, hosts), key=str),
                                          "rows": rows, "failures": failures}, indent=2))
+    if args.plot is not None:
+        plot(rows, groups, args.plot)
 
 
 if __name__ == "__main__":
