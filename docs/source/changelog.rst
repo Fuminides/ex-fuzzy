@@ -26,6 +26,7 @@ Changed
   submodule; submodules and the top-level classes load on first access, which
   takes the import from about two seconds to a few milliseconds
 - **Docstrings** follow the Google style throughout, with triple double quotes
+- **Demos** import through the package without path tricks; every notebook and script was executed against this release
 - **Search settings are constructor parameters**: ``n_gen``, ``pop_size``,
   ``patience``, ``min_delta``, ``random_state``, ``var_prob``, ``sbx_eta``,
   ``mutation_eta`` and ``tournament_size`` can be given to
