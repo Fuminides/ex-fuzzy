@@ -6,10 +6,10 @@ population route and the scalar route on the cases they do support.
 """
 import numpy as np
 
-import _array_fitness as af
-import _population_fitness as pf
-import rules
-from _fitness import _FiringCache, _LabelDomain
+from ex_fuzzy import _array_fitness as af
+from ex_fuzzy import _population_fitness as pf
+from ex_fuzzy import rules
+from ex_fuzzy._fitness import _FiringCache, _LabelDomain
 
 
 TERM_COUNTS = np.array([3, 3])

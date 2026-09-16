@@ -8,12 +8,12 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 
-import _fitness
-import evolutionary_backends as eb
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
-from _fitness import _dominance, _fitness_cache_scope
+from ex_fuzzy import _fitness
+from ex_fuzzy import evolutionary_backends as eb
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
+from ex_fuzzy._fitness import _dominance, _fitness_cache_scope
 
 
 def _data(samples=150, classes=3):
@@ -116,7 +116,7 @@ def test_batched_complexity_penalty_when_survivors_score_exactly_the_tolerance()
 
 
 def _problem_at_best_score(probe, gene, X, y, partitions):
-    import _array_fitness as arrfit
+    from ex_fuzzy import _array_fitness as arrfit
     decoded = arrfit.decode_rule_arrays(
         gene, probe.nRules, probe.nAnts, X.shape[1], 1,
         np.asarray([len(variable) for variable in partitions]), 0,
@@ -139,7 +139,7 @@ def _problem_at_best_score(probe, gene, X, y, partitions):
 @pytest.fixture
 def torchfit():
     pytest.importorskip('torch')
-    import _torch_fitness
+    from ex_fuzzy import _torch_fitness
     return _torch_fitness
 
 

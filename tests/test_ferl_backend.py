@@ -4,8 +4,8 @@ import pytest
 from sklearn.base import clone
 from sklearn.datasets import load_iris, load_wine
 
-from ferl import FERL
-import _ferl_backend
+from ex_fuzzy.ferl import FERL
+from ex_fuzzy import _ferl_backend
 
 
 def require_native():

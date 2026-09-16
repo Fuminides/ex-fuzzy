@@ -3,20 +3,30 @@
 ## Repository and conventions
 
 Ex-Fuzzy is an AGPL v3 Python library for interpretable fuzzy rule learning.
-The Python package is `ex_fuzzy/ex_fuzzy/`; tests are in `tests/`, opt-in
+The Python package is `ex_fuzzy/`; tests are in `tests/`, opt-in
 benchmarks in `benchmarks/`, examples in `Demos/`, and Sphinx sources in
 `docs/source/`. Check packaging metadata for current versions and dependencies.
 
 Use PascalCase classes, snake_case functions, UPPER_CASE constants, leading
 underscores for private helpers, type hints, and Google-style docstrings.
-Preserve relative imports and existing direct-execution fallbacks where needed.
+Modules import each other with relative imports only. Tests, benchmarks and
+demos import through the `ex_fuzzy` package, never the module files directly,
+so every class and enum exists once per process. `ex_fuzzy/__init__.py` imports
+lazily: register new submodules in `_SUBMODULES` and new top-level names in
+`_EXPORTS`.
 Load optional dependencies lazily and provide actionable installation errors.
-Classifiers follow the scikit-learn `fit`/`predict` API.
+Reject invalid input with `ValueError`, report recoverable problems with
+`warnings.warn`, and keep `print` for verbose progress and reports.
+Classifiers follow the scikit-learn `fit`/`predict` API: constructor arguments
+are stored verbatim under their own names (derived state may be kept beside
+them), `fit` returns the estimator, and `BaseFuzzyRulesClassifier` encodes
+labels as consequent indexes for the search (`classes_`) and decodes them in
+`predict`. Rule bases and `evalRuleBase` work on consequent indexes.
 Never use interactive Git commands.
 
 ## Code map
 
-All module paths below are relative to `ex_fuzzy/ex_fuzzy/`.
+All module paths below are relative to `ex_fuzzy/`.
 
 | Area | Modules |
 | --- | --- |
@@ -68,8 +78,10 @@ kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
   scoped to a fit, with cleanup on success and failure. Do not make them global.
 - Respect fast-path eligibility and preserve logical evaluation counts even on
   cache hits. Keep custom-loss, checkpoint, and worker fallbacks intact.
-- Preserve reference duplicate-rule behavior, including known hash/equality
-  quirks, unless a separately scoped semantic change explicitly addresses it.
+- A rule is identified by its antecedents, consequent and modifiers, never by
+  its score, weight or accuracy. `RuleSimple` equality and hashing, rule-base
+  duplicate removal and the array decoder's per-class dedup must agree, and the
+  first occurrence keeps its weight.
 - Do not present kernel timings as complete-fit gains or benchmark prototypes
   as shipped capabilities.
 

@@ -11,7 +11,7 @@ import pytest
 from sklearn.base import clone
 from sklearn.datasets import load_iris
 
-from ferl_deep import DeepFERL
+from ex_fuzzy.ferl_deep import DeepFERL
 
 GOLDEN = json.loads((Path(__file__).parent / "data" / "deep_ferl_golden.json").read_text())
 TIGHT = dict(rtol=1e-10, atol=1e-12)
@@ -233,7 +233,7 @@ def test_print_tree_names_features(fitted, capsys):
 
 
 def test_best_cut_without_usable_or_useful_splits():
-    import ferl_deep
+    from ex_fuzzy import ferl_deep
     x = np.array([0.0, 1.0, 2.0])
 
     # Every cut leaves one side without weight.

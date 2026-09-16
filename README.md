@@ -343,24 +343,24 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 
 ## 📚 Documentation
 
-- **📖 [User Guide](https://github.com/Fuminides/ex-fuzzy/wiki)**: Comprehensive tutorials and examples
-- **🔧 [API Reference](https://github.com/Fuminides/ex-fuzzy/wiki/API)**: Detailed function and class documentation
-- **🚀 [Quick Start Guide](https://github.com/Fuminides/ex-fuzzy/wiki/Quick-Start)**: Get up and running fast
+- **📖 [User Guide](https://fuminides.github.io/ex-fuzzy/user-guide/index.html)**: Comprehensive tutorials and examples
+- **🔧 [API Reference](https://fuminides.github.io/ex-fuzzy/api/index.html)**: Detailed function and class documentation
+- **🚀 [Quick Start Guide](https://fuminides.github.io/ex-fuzzy/getting-started.html)**: Get up and running fast
 - **📊 [Examples Gallery](https://github.com/Fuminides/ex-fuzzy/tree/main/Demos)**: Real-world use cases
 
 ## 🛡️ Requirements
 
 ### Core Dependencies
-- **Python** >= 3.7
-- **NumPy** >= 1.19.0
-- **Pandas** >= 1.2.0
-- **Matplotlib** >= 3.3.0
-- **PyMOO** >= 0.6.0
+- **Python** >= 3.9
+- **NumPy**
+- **Pandas**
+- **Matplotlib**
+- **Scikit-learn**
+- **PyMOO** >= 0.6.2
 
 ### Optional Dependencies
-- **EvoX** >= 1.3.0 (for GPU-accelerated evolutionary optimization)
+- **EvoX** >= 1.3.0 (for GPU-accelerated evolutionary optimization): `pip install "ex-fuzzy[evox]"`
 - **PyTorch** >= 2.6.0 (required by EvoX)
-- **Scikit-learn** >= 0.24.0 (for compatibility examples)
 
 ## 🤝 Contributing
 

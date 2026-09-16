@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import ferl as ferl_module
-from ferl import FERL, LearnedRampSet
+from ex_fuzzy import ferl as ferl_module
+from ex_fuzzy.ferl import FERL, LearnedRampSet
 
 
 X_SMALL = np.array([[0.0], [0.2], [0.8], [1.0]])

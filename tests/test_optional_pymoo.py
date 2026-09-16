@@ -10,13 +10,13 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import _problem as problem_module
-import evolutionary_backends as eb
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import _problem as problem_module
+from ex_fuzzy import evolutionary_backends as eb
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
-PACKAGE_PARENT = os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy')
+PACKAGE_PARENT = os.path.join(os.path.dirname(__file__), '..')
 
 
 def _run_isolated(code: str) -> subprocess.CompletedProcess:

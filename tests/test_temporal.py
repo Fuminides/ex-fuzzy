@@ -8,10 +8,10 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
-import fuzzy_sets as fs
-import rules as rl
-import temporal
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import temporal
+from ex_fuzzy import utils
 
 
 CONDITIONAL = np.array([1.0, 0.25])
@@ -60,7 +60,7 @@ def test_temporal_fuzzy_set_scales_memberships_by_time():
     assert temporal_set.membership_parameters == base.membership_parameters
     np.testing.assert_allclose(temporal_set.membership(x, 1), base.membership(x) * 0.25)
 
-    with pytest.raises(AssertionError, match='no fixed time'):
+    with pytest.raises(ValueError, match='no fixed time'):
         temporal_set.membership(x)
     temporal_set.fix_time(0)
     np.testing.assert_allclose(temporal_set.membership(x), base.membership(x))
@@ -88,7 +88,7 @@ def test_temporal_fuzzy_variable():
 
     assert variable.fs_type == fs.FUZZY_SETS.temporal
     assert variable.n_time_moments() == 2
-    with pytest.raises(AssertionError, match='no fixed time'):
+    with pytest.raises(ValueError, match='no fixed time'):
         variable.compute_memberships(x)
 
     at_time_1 = variable.compute_memberships(x, 1)
@@ -136,7 +136,7 @@ def test_fitted_classifier_predicts_per_time_moment(iris, fitted):
     assert fitted.eval_performance.association_degree().shape == (len(y), len(rule_base.get_rules()))
 
     # A rule only fires for the samples of its own time moment.
-    firing = rule_base.compute_firing_strenghts(X, time_moments)
+    firing = rule_base.compute_firing_strengths(X, time_moments)
     rules_at_time_0 = sum(len(rb) for rb in rule_base[0])
     assert np.all(firing[time_moments == 1, :rules_at_time_0] == 0)
     assert np.all(firing[time_moments == 0, rules_at_time_0:] == 0)
@@ -167,7 +167,7 @@ def test_temporal_master_rule_base_editing(iris):
 
     rule_base = temporal.temporalMasterRuleBase([master([[], []]), master([[], []])], time_step_names=['morning', 'evening'])
     assert rule_base.time_step_names == ['morning', 'evening']
-    assert rule_base.compute_firing_strenghts(X, time_moments).shape == (len(y), 0)
+    assert rule_base.compute_firing_strengths(X, time_moments).shape == (len(y), 0)
     assert len(rule_base.get_scores()) == 0
     winners, degrees = rule_base._winning_rules(X, time_moments)
     assert np.all(winners == -1) and np.all(degrees == 0)

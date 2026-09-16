@@ -8,10 +8,10 @@ import os
 from datetime import datetime
 
 # -- Path setup --------------------------------------------------------------
-sys.path.insert(0, os.path.abspath('../../ex_fuzzy/'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 version_ns = {}
-with open(os.path.abspath('../../ex_fuzzy/ex_fuzzy/_version.py'), encoding='utf-8') as f:
+with open(os.path.abspath('../../ex_fuzzy/_version.py'), encoding='utf-8') as f:
     exec(f.read(), version_ns)
 
 # -- Project information -----------------------------------------------------

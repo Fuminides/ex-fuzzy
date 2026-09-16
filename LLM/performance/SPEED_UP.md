@@ -798,12 +798,12 @@ categorical variables, phenotype identity and seeded fits),
 
 Current implementation and test entry points:
 
-- `ex_fuzzy/ex_fuzzy/evolutionary_fit.py`
-- `ex_fuzzy/ex_fuzzy/_fitness.py`
-- `ex_fuzzy/ex_fuzzy/_array_fitness.py`
-- `ex_fuzzy/ex_fuzzy/rules.py`
-- `ex_fuzzy/ex_fuzzy/evolutionary_backends.py`
-- `ex_fuzzy/ex_fuzzy/evolutionary_search.py`
+- `ex_fuzzy/evolutionary_fit.py`
+- `ex_fuzzy/_fitness.py`
+- `ex_fuzzy/_array_fitness.py`
+- `ex_fuzzy/rules.py`
+- `ex_fuzzy/evolutionary_backends.py`
+- `ex_fuzzy/evolutionary_search.py`
 - `tests/test_array_evaluation.py`
 - `tests/test_dominance_grouped.py`
 - `tests/test_firing_cache.py`
@@ -1250,7 +1250,7 @@ Gold 5115), with 1 generation to isolate the fixed costs:
 Finalization is the object evaluation that `fit` runs after the optimizer
 returns. On a 20-rule fixed-partition rule base it took 113 s:
 `add_full_evaluation` 72.1 s, `add_rule_weights` 20.4 s and
-`add_classification_metrics` 20.3 s. `compute_firing_strenghts` ran 22 times and
+`add_classification_metrics` 20.3 s. `compute_firing_strengths` ran 22 times and
 recomputed the memberships of all 200 features 66 times (54 s), although fixed
 partitions already hold them, and stacked the antecedent arrays for another 47 s
 of self time. This is the roughly 100 s beyond scoring in the GPU grid, and both

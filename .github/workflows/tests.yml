@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
-      if: matrix.python-version == '3.11'
+      if: matrix.python-version == '3.12'
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
@@ -48,10 +48,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
+    - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: "3.12"
 
     - name: Install minimal dependencies
       run: |
@@ -66,3 +66,25 @@ jobs:
     - name: Run core tests
       run: |
         pytest tests/test_fuzzy_sets_comprehensive.py tests/test_rules_comprehensive.py -v --tb=short
+
+  test-evox:
+    runs-on: ubuntu-latest
+    name: Test (EvoX backend, CPU)
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install the EvoX backend with CPU-only PyTorch
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        pip install torch --index-url https://download.pytorch.org/whl/cpu
+        pip install -e ".[evox]"
+
+    - name: Run the backend tests
+      run: |
+        pytest tests/test_evox_population.py tests/test_evolutionary_backends.py tests/test_optional_pymoo.py tests/test_evolutionary_fit_regression.py -v --tb=short

@@ -6,10 +6,10 @@ matplotlib.use('Agg')  # Use non-interactive backend for testing
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
-import fuzzy_sets as fs
-import rules as rl
-import utils
-import vis_rules
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import utils
+from ex_fuzzy import vis_rules
 
 
 @pytest.fixture(autouse=True)

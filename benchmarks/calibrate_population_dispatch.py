@@ -30,7 +30,7 @@ import numpy as np
 from sklearn.datasets import make_classification
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'ex_fuzzy'))
+sys.path.insert(0, str(ROOT))
 
 import ex_fuzzy.evolutionary_fit as evf          # noqa: E402
 import ex_fuzzy.fuzzy_sets as fs                 # noqa: E402

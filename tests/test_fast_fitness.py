@@ -6,10 +6,10 @@ import pytest
 from sklearn.datasets import load_iris, make_classification
 from sklearn.metrics import matthews_corrcoef
 
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
-from _fitness import _mcc, score_rulebase
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
+from ex_fuzzy._fitness import _mcc, score_rulebase
 
 
 @pytest.mark.parametrize('labels', [[0], [0, 1], [-1, 0, 1, 2], [10, 30, 90]])
@@ -51,7 +51,7 @@ def test_pruning_and_penalties_at_exact_dominance_threshold(ds_mode):
     rng = np.random.default_rng(21)
     gene = rng.integers(problem.xl.astype(int), problem.xu.astype(int) + 1)
     base = problem._construct_ruleBase(gene, problem.fuzzy_type)
-    import eval_rules
+    from ex_fuzzy import eval_rules
     evaluator = eval_rules.evalRuleBase(copy.deepcopy(base), X, y)
     evaluator.add_full_evaluation()
     thresholds = [r.score for r in evaluator.mrule_base.get_rules()]
@@ -93,13 +93,13 @@ def test_fast_path_evaluates_firing_once(monkeypatch):
     rng = np.random.default_rng(42)
     gene = rng.integers(problem.xl.astype(int), problem.xu.astype(int) + 1)
     base = problem._construct_ruleBase(gene, problem.fuzzy_type)
-    original = base.compute_firing_strenghts
+    original = base.compute_firing_strengths
     calls = []
 
     def counted(*args, **kwargs):
         calls.append(1)
         return original(*args, **kwargs)
 
-    monkeypatch.setattr(base, 'compute_firing_strenghts', counted)
+    monkeypatch.setattr(base, 'compute_firing_strengths', counted)
     score_rulebase(base, X, y, 0.0, 0.0, 0.0)
     assert len(calls) == 1

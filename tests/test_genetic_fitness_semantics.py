@@ -5,10 +5,10 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import evolutionary_fit as evf
-import evolutionary_backends as eb
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import evolutionary_backends as eb
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 def make_problem(fixed=False, ds_mode=0, fuzzy_type=fs.FUZZY_SETS.t1):

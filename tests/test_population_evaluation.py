@@ -7,11 +7,11 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris, make_classification
 
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
-from _fitness import _fitness_cache_scope
-from _population_fitness import supports_shape
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
+from ex_fuzzy._fitness import _fitness_cache_scope
+from ex_fuzzy._population_fitness import supports_shape
 
 
 def _problem(samples=150, **kwargs):

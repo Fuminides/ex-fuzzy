@@ -674,7 +674,7 @@ After mastering basic classification:
 
 Related Examples:
 
-- :doc:`../usage` - Legacy end-to-end classification walkthrough
+- :doc:`../getting-started` - Legacy end-to-end classification walkthrough
 - :doc:`../optimize` - Legacy optimization guide
 - :doc:`../tmpfs` - Legacy temporal fuzzy sets notes
 

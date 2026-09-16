@@ -7,10 +7,10 @@ from sklearn.base import clone
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
-from ferl import FERL
-from ferl_partitions import learn_partitions_mdlp
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy.ferl import FERL
+from ex_fuzzy.ferl_partitions import learn_partitions_mdlp
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 @pytest.fixture(scope="module")

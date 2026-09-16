@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 from sklearn.metrics import matthews_corrcoef
 
-import _fitness
-from _fitness import _LabelDomain, _mcc, _mcc_encoded
+from ex_fuzzy import _fitness
+from ex_fuzzy._fitness import _LabelDomain, _mcc, _mcc_encoded
 
 
 def _check(y, prediction, n_classes):
@@ -53,9 +53,9 @@ def test_label_domain_declines_unsupported_labels():
 
 
 def test_problem_caches_one_label_domain_per_fit():
-    import evolutionary_fit as evf
-    import utils
-    import fuzzy_sets as fs
+    from ex_fuzzy import evolutionary_fit as evf
+    from ex_fuzzy import utils
+    from ex_fuzzy import fuzzy_sets as fs
     from sklearn.datasets import load_iris
     X, y = load_iris(return_X_y=True)
     problem = evf.FitRuleBase(X, y, 6, 2, 3,

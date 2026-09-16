@@ -6,14 +6,11 @@ RuleSimple, RuleBase, and MasterRuleBase classes.
 """
 import pytest
 import numpy as np
-import sys
-import os
 
 # Add the library path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import rules as rl
-import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import fuzzy_sets as fs
 from conftest import FLOAT_TOLERANCE
 
 
@@ -412,18 +409,11 @@ class TestRuleModifiers:
 class TestRuleValidation:
     """Test rule validation and error handling."""
     
-    def test_invalid_rule_antecedents(self):
-        """Test validation of rule antecedents."""
-        # Test with invalid antecedent values
-        try:
-            # Some invalid cases that might be caught
-            invalid_antecedents = [-2, -3, -4]  # All invalid indices
-            rule = rl.RuleSimple(invalid_antecedents, 0)
-            # If this passes, the validation might be lenient or handled elsewhere
-            assert rule.antecedents == invalid_antecedents
-        except (ValueError, AssertionError):
-            # This is expected if validation is strict
-            pass
+    def test_rule_antecedents_are_stored_as_given(self):
+        """RuleSimple stores its antecedents as integers; rule bases validate them on evaluation."""
+        rule = rl.RuleSimple([-2, -3, -4], 0)
+        assert rule.antecedents == [-2, -3, -4]
+        assert all(isinstance(antecedent, int) for antecedent in rl.RuleSimple(np.array([0.0, 1.0]), 0).antecedents)
     
     def test_rule_consistency_check(self):
         """Test rule consistency checking."""

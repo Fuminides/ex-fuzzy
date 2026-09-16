@@ -11,14 +11,11 @@ from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import accuracy_score
 from sklearn.base import is_classifier
-import sys
-import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
-import classifiers as clf
-import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import classifiers as clf
+from ex_fuzzy import evolutionary_fit as evf
 
 
 class TestRuleMineClassifier:
@@ -243,6 +240,22 @@ class TestClassifierWithDifferentFuzzyTypes:
 
         predictions = classifier.predict(X_test)
         assert len(predictions) == len(y_test)
+
+    def test_rule_mine_uses_given_linguistic_variables(self, dataset):
+        """Candidate rules are mined on the partitions the classifier predicts with."""
+        from ex_fuzzy import utils
+        X_train, X_test, y_train, y_test = dataset
+        partitions = utils.construct_partitions(X_train, fs.FUZZY_SETS.t1, n_partitions=5)
+        for partition in partitions:
+            partition.name = 'given ' + partition.name
+
+        classifier = clf.RuleMineClassifier(nRules=10, nAnts=2, linguistic_variables=partitions, verbose=False)
+        classifier.fit(X_train, y_train, n_gen=2, pop_size=10)
+
+        antecedents = classifier.internal_classifier().rule_base.antecedents
+        assert antecedents is partitions
+        assert [len(antecedent) for antecedent in antecedents] == [5] * X_train.shape[1]
+        assert len(classifier.predict(X_test)) == len(y_test)
 
 
 class TestClassifierParameters:

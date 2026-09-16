@@ -14,8 +14,8 @@ Following the temperature example. Suppose we have these fuzzy sets as consequen
 the use of air conditioner::
  
     activate_small = fs.FS('Small', [0.0, 0.0, 0.1, 0.2],  [0,1])
-    activate_medium = fs.FS('Small', [0.1, 0.4, 0.4, 0.5],  [0,1])
-    activate_large = fs.FS('Small', [0.5, 0.8, 1.0, 1.0],  [0,1])
+    activate_medium = fs.FS('Medium', [0.1, 0.4, 0.4, 0.5],  [0,1])
+    activate_large = fs.FS('Large', [0.5, 0.8, 1.0, 1.0],  [0,1])
 
     activate = fs.fuzzyVariable('Activate', [activate_small, activate_medium, activate_large])
 

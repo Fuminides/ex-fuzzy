@@ -12,13 +12,9 @@ from sklearn.model_selection import train_test_split
 import sys
 from pathlib import Path
 
-# Resolve repository paths and prioritize local source over site-packages.
+# Prefer this checkout when the demo is run without an editable installation.
 ROOT_DIR = Path(__file__).resolve().parents[2]
-PKG_DIR = ROOT_DIR / "ex_fuzzy"
-INNER_PKG_DIR = PKG_DIR / "ex_fuzzy"
 sys.path.insert(0, str(ROOT_DIR))
-sys.path.insert(0, str(PKG_DIR))
-sys.path.insert(0, str(INNER_PKG_DIR))
 
 import ex_fuzzy.fuzzy_sets as fs
 import ex_fuzzy.utils as utils

@@ -19,9 +19,8 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
-INNER = ROOT / "ex_fuzzy" / "ex_fuzzy"
-if str(INNER) not in sys.path:
-    sys.path.insert(0, str(INNER))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 
 @dataclass(frozen=True)
@@ -78,11 +77,10 @@ def decode_fixed_partitions(x: np.ndarray, *, n_rules: int, n_ants: int,
     for klass in range(n_classes):
         seen = set()
         for source in np.flatnonzero(active & (raw_consequents == klass)):
-            # The generated RuleSimple objects have consequent=0.  In mode 2
-            # their weight is assigned before RuleBase duplicate lookup and is
-            # included by RuleSimple.__str__/__hash__, despite __eq__ ignoring
-            # it.  Preserve that observable, hash-inconsistent behavior.
-            key = (tuple(effective[source].tolist()), float(raw_weights[source])) if ds_mode == 2 else tuple(effective[source].tolist())
+            # The generated RuleSimple objects have consequent=0, so within a
+            # class a rule is identified by its antecedents alone; the first
+            # occurrence keeps its weight, as RuleBase duplicate removal does.
+            key = tuple(effective[source].tolist())
             if key in seen:
                 continue
             seen.add(key)

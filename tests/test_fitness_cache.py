@@ -5,10 +5,10 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import _fitness
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import _fitness
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 def test_lru_eviction_and_byte_limit():

@@ -10,21 +10,18 @@ import pandas as pd
 from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import accuracy_score
-import sys
-import os
 import tempfile
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
-import rules as rl
-import evolutionary_fit as evf
-import classifiers as clf
-import rule_mining as rm
-import utils
-import persistence as pers
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import classifiers as clf
+from ex_fuzzy import rule_mining as rm
+from ex_fuzzy import utils
+from ex_fuzzy import persistence as pers
 try:
-    from conformal import ConformalFuzzyClassifier, evaluate_conformal_coverage
+    from ex_fuzzy.conformal import ConformalFuzzyClassifier, evaluate_conformal_coverage
     HAS_CONFORMAL = True
 except ImportError:
     HAS_CONFORMAL = False

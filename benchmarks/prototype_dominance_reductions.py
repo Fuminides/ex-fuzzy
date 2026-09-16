@@ -15,10 +15,9 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
-INNER = ROOT / "ex_fuzzy" / "ex_fuzzy"
-if str(INNER) not in sys.path:
-    sys.path.insert(0, str(INNER))
-import _fitness
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from ex_fuzzy import _fitness
 
 
 def naive_axis_vectorized(firing, y, consequents):

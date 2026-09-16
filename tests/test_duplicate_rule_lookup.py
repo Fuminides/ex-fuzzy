@@ -1,6 +1,6 @@
 import numpy as np
 
-import rules
+from ex_fuzzy import rules
 
 
 def _original_delete(list_rules):

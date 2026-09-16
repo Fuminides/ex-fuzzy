@@ -7,7 +7,7 @@ One of the most typical ways to compute fuzzy partitions is to use quantiles of 
 to generate fuzzy partitions for all the supported kinds of fuzzy sets.
 The easiest way to compute these partitions is with the ``utils.construct_partitions`` function, specifying the fuzzy set desired::
 
-    import utils
+    from ex_fuzzy import utils
 
     fz_type_studied = fs.FUZZY_SETS.t2
     precomputed_partitions = utils.construct_partitions(X, fz_type_studied)

@@ -5,17 +5,13 @@ import subprocess
 import sys
 import textwrap
 
-import pytest
-
-
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_ROOT = ROOT / "ex_fuzzy"
-MODULE_ROOT = PACKAGE_ROOT / "ex_fuzzy"
+IMPORTS = "from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, rules, temporal, utils"
 
 
-def _run_python(source, python_path, cwd):
+def _run_python(source, cwd):
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(python_path)
+    env["PYTHONPATH"] = str(ROOT)
     return subprocess.run(
         [sys.executable, "-c", textwrap.dedent(source)],
         cwd=cwd,
@@ -26,27 +22,13 @@ def _run_python(source, python_path, cwd):
     )
 
 
-@pytest.mark.parametrize(
-    ("python_path", "imports"),
-    [
-        (
-            PACKAGE_ROOT,
-            "from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, rules, temporal, utils",
-        ),
-        (
-            MODULE_ROOT,
-            "import evolutionary_fit as evf; import fuzzy_sets as fs; import rules; import temporal; import utils",
-        ),
-    ],
-    ids=["package", "direct-modules"],
-)
-def test_fuzzy_objects_round_trip_in_fresh_process(tmp_path, python_path, imports):
-    """The stable enum makes problems and rule models portable to a new process."""
+def test_fuzzy_objects_round_trip_in_fresh_process(tmp_path):
+    """Problems and rule models are portable to a new process."""
     payload = tmp_path / "objects.pkl"
     writer = f"""
         import pickle
         import numpy as np
-        {imports}
+        {IMPORTS}
 
         original_enum = fs.FUZZY_SETS
         assert temporal.NEW_FUZZY_SETS is original_enum
@@ -71,7 +53,7 @@ def test_fuzzy_objects_round_trip_in_fresh_process(tmp_path, python_path, import
     """
     reader = f"""
         import pickle
-        {imports}
+        {IMPORTS}
 
         with open({str(payload)!r}, "rb") as stream:
             members, temporal_members, problem, rule_base, model = pickle.load(stream)
@@ -83,53 +65,33 @@ def test_fuzzy_objects_round_trip_in_fresh_process(tmp_path, python_path, import
         assert model.fuzzy_type is fs.FUZZY_SETS.t1
     """
 
-    _run_python(writer, python_path, tmp_path)
-    _run_python(reader, python_path, tmp_path)
+    _run_python(writer, tmp_path)
+    _run_python(reader, tmp_path)
 
 
-def test_package_and_direct_enum_members_compare_and_hash_equally(tmp_path):
-    """Dual import support retains the library's value-based enum comparisons."""
-    source = f"""
+def test_package_is_imported_once_from_any_directory(tmp_path):
+    """The package resolves to one module set from the checkout and from elsewhere."""
+    source = """
         import sys
-        sys.path.insert(0, {str(MODULE_ROOT)!r})
-        import fuzzy_sets as direct
-        sys.path.insert(0, {str(ROOT)!r})
-        from ex_fuzzy import fuzzy_sets as packaged
-
-        for name in ("t1", "t2", "gt2", "temporal", "temporal_t2", "temporal_gt2"):
-            left = direct.FUZZY_SETS[name]
-            right = packaged.FUZZY_SETS[name]
-            assert left == right
-            assert right == left
-            assert hash(left) == hash(right)
+        import ex_fuzzy
+        from ex_fuzzy import fuzzy_sets
+        assert ex_fuzzy.FUZZY_SETS is fuzzy_sets.FUZZY_SETS
+        assert 'ex_fuzzy.ex_fuzzy' not in sys.modules
+        assert all(name == 'ex_fuzzy' or name.startswith('ex_fuzzy.') or not name.endswith('fuzzy_sets')
+                   for name in sys.modules)
     """
-    _run_python(source, "", tmp_path)
+    _run_python(source, ROOT)
+    _run_python(source, tmp_path)
 
 
-@pytest.mark.parametrize(
-    ("python_path", "imports"),
-    [
-        (
-            PACKAGE_ROOT,
-            "from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, utils",
-        ),
-        (
-            MODULE_ROOT,
-            "import evolutionary_fit as evf; import fuzzy_sets as fs; import utils",
-        ),
-    ],
-    ids=["package", "direct-modules"],
-)
-def test_spawned_worker_matches_parent_evaluation(
-    tmp_path, python_path, imports
-):
+def test_spawned_worker_matches_parent_evaluation(tmp_path):
     """A spawned optimizer worker receives the problem and evaluates identically."""
     driver = tmp_path / "spawn_evaluation.py"
     driver.write_text(textwrap.dedent(f"""
         from concurrent.futures import ProcessPoolExecutor
         import multiprocessing
         import numpy as np
-        {imports}
+        {IMPORTS}
 
         def evaluate(problem, gene):
             out = {{}}
@@ -163,7 +125,7 @@ def test_spawned_worker_matches_parent_evaluation(
     """))
 
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(python_path)
+    env["PYTHONPATH"] = str(ROOT)
     subprocess.run(
         [sys.executable, str(driver)], cwd=tmp_path, env=env,
         check=True, capture_output=True, text=True,

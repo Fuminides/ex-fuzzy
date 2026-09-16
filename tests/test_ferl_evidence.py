@@ -11,8 +11,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import _evidence
-from ferl import FERL
+from ex_fuzzy import _evidence
+from ex_fuzzy.ferl import FERL
 
 GOLDEN = json.loads((Path(__file__).parent / "data" / "ferl_predict_ds_golden.json").read_text())
 TIGHT = dict(rtol=1e-10, atol=1e-12)

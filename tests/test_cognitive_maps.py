@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import cognitive_maps as cm
+from ex_fuzzy import cognitive_maps as cm
 
 
 # Concept 0 excites 1, 1 excites 2, 2 excites 0: a three-step limit cycle.

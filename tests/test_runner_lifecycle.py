@@ -4,8 +4,8 @@ from multiprocessing.pool import ThreadPool
 import pytest
 from sklearn.datasets import load_iris
 
-import _fitness
-import evolutionary_fit as evf
+from ex_fuzzy import _fitness
+from ex_fuzzy import evolutionary_fit as evf
 
 
 pytestmark = pytest.mark.skipif(

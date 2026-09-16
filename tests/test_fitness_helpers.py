@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from sklearn.metrics import matthews_corrcoef
 
-import _ferl_backend
-import _fitness
+from ex_fuzzy import _ferl_backend
+from ex_fuzzy import _fitness
 
 
 def test_mcc_falls_back_to_sklearn_for_non_integer_labels():
@@ -19,7 +19,7 @@ def test_mcc_falls_back_to_sklearn_for_non_integer_labels():
 
 
 def test_kernels_load_from_the_package_or_explain_how_to_build_them(monkeypatch):
-    package_backend = importlib.import_module('ex_fuzzy.ex_fuzzy._ferl_backend')
+    package_backend = importlib.import_module('ex_fuzzy._ferl_backend')
     try:
         kernels = package_backend.load_kernels()
     except ImportError as error:

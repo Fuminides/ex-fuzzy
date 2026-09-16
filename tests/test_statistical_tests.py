@@ -13,13 +13,13 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split
 
-import fuzzy_sets as fs
-import evolutionary_fit as evf
-import rules as rl
-import utils
-import bootstrapping_test as bt
-import permutation_test as pt
-import pattern_stability as ps
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import rules as rl
+from ex_fuzzy import utils
+from ex_fuzzy import bootstrapping_test as bt
+from ex_fuzzy import permutation_test as pt
+from ex_fuzzy import pattern_stability as ps
 
 
 @pytest.fixture(scope='module')

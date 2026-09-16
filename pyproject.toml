@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ex_fuzzy"
+dynamic = ["version"]
+description = "Library to perform explainable AI using fuzzy logic."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "AGPL-3.0-or-later"}
+authors = [
+    {name = "Javier Fumanal Idocin", email = "javierfumanalidocin@gmail.com"},
+]
+maintainers = [
+    {name = "Javier Fumanal Idocin", email = "javierfumanalidocin@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "pymoo>=0.6.2",
+    "pandas",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+gpu = ["torch"]
+evox = ["evox>=1.3.0", "torch>=2.6.0"]
+test = ["pytest", "pytest-cov"]
+docs = [
+    "sphinx>=5.0.0",
+    "pydata-sphinx-theme>=0.13.0",
+    "sphinx-design>=0.4.0",
+    "myst-parser>=0.18.0",
+    "sphinx-copybutton>=0.5.0",
+    "sphinx-autobuild>=2021.3.14",
+    "nbsphinx>=0.8.0",
+    "sphinxcontrib-bibtex>=2.5.0",
+    "sphinx-gallery>=0.11.0",
+    "sphinx-autodoc-typehints>=1.19.0",
+    "sphinx-autoapi>=2.1.0",
+    "pygments>=2.12.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+    "sphinx-math-dollar>=1.2.0",
+    "seaborn>=0.11.0",
+    "sphinxext-opengraph>=0.7.0",
+    "sphinx-external-toc>=0.3.0",
+    "doc8>=0.11.0",
+    "rstcheck>=6.0.0",
+]
+dev = ["ex_fuzzy[test,docs]"]
+all = ["ex_fuzzy[gpu,evox,test,docs]"]
+
+[project.urls]
+Homepage = "https://github.com/Fuminides/ex-fuzzy"
+Documentation = "https://fuminides.github.io/ex-fuzzy/"
+Repository = "https://github.com/Fuminides/ex-fuzzy"
+Download = "https://pypi.org/project/ex-fuzzy/"
+Paper = "https://www.sciencedirect.com/science/article/pii/S0925231224008191"
+
+[tool.setuptools]
+packages = ["ex_fuzzy"]
+
+[tool.setuptools.package-data]
+ex_fuzzy = ["*.pyx"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ex_fuzzy._version.__version__"}

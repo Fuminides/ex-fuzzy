@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-import fuzzy_sets as fs
-import rules as rl
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import utils
 
 
 def _data():
@@ -114,7 +114,7 @@ def test_direct_rulebase_protocol_mutation_scaling_and_failures(capsys):
     assert len(pruned) == 0
 
     unscored = rl.RuleBaseT1(t1, [rl.RuleSimple([0])])
-    with pytest.raises(AssertionError, match='Dominance scores'):
+    with pytest.raises(ValueError, match='Dominance scores'):
         unscored.prune_bad_rules()
 
 
@@ -201,7 +201,7 @@ def test_master_rulebase_empty_predictions_mutation_and_accessors(capsys):
     partitions = _partitions()
     master = rl.MasterRuleBase([rl.RuleBaseT1(partitions, []), rl.RuleBaseT1(partitions, [])])
     X = _data()
-    np.testing.assert_array_equal(master.compute_firing_strenghts(X), np.empty((3, 0)))
+    np.testing.assert_array_equal(master.compute_firing_strengths(X), np.empty((3, 0)))
     np.testing.assert_array_equal(master.compute_association_degrees(X), np.empty((3, 0)))
     winners, strengths = master._winning_rules(X)
     np.testing.assert_array_equal(winners, [-1, -1, -1])

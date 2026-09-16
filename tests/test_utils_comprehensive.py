@@ -7,13 +7,10 @@ and other helper functions.
 import pytest
 import numpy as np
 import pandas as pd
-import sys
-import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 class TestConstructPartitions:

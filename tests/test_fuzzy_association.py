@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import _fuzzy_association as association
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import _fuzzy_association as association
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 @pytest.fixture(scope='module')

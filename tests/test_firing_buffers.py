@@ -2,9 +2,9 @@
 import numpy as np
 import pytest
 
-import fuzzy_sets as fs
-import rules
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules
+from ex_fuzzy import utils
 
 
 def reference_firing(base, X, truth):

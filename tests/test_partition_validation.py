@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 @pytest.fixture(scope='module')

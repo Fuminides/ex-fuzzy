@@ -2,7 +2,7 @@
 
 import json
 
-import _dispatch_profile as profile
+from ex_fuzzy import _dispatch_profile as profile
 
 
 def _entry(samples, decision, rules=10, features=4, population=20):

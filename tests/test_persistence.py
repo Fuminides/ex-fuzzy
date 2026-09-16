@@ -6,14 +6,11 @@ ensuring round-trip consistency for all fuzzy set types.
 """
 import pytest
 import numpy as np
-import sys
-import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
-import rules as rl
-import persistence as pers
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import persistence as pers
 
 
 class TestSaveFuzzyVariables:
@@ -349,7 +346,7 @@ IF Var2 IS Low WITH DS 0.125
 
     @pytest.mark.parametrize('fuzzy_type, rule_base_class', [(fs.FUZZY_SETS.t2, rl.RuleBaseT2), (fs.FUZZY_SETS.gt2, rl.RuleBaseGT2)])
     def test_type_2_rule_bases(self, fuzzy_type, rule_base_class):
-        import utils
+        from ex_fuzzy import utils
         variables = utils.construct_partitions(np.linspace(0, 1, 40).reshape(-1, 2), fuzzy_type)
         text = """Rules for consequent: a
 IF 0 IS Low WITH DS 0.5, ACC 0.5

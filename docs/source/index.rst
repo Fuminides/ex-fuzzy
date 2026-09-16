@@ -248,13 +248,17 @@ Documentation Contents
 
 .. toctree::
     :maxdepth: 1
-    :caption: Topic Reference
+    :caption: Tutorial
 
-    usage
     step1
     step2
     step3
     step4
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Topic Reference
+
     precom
     optimize
     gt2

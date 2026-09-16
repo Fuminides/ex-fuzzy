@@ -5,11 +5,11 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import evolutionary_fit as evf
-import eval_rules
-import fuzzy_sets as fs
-import rules
-import utils
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import eval_rules
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules
+from ex_fuzzy import utils
 
 
 def _old_finalization(rule_base, X, y, tolerance):
@@ -107,18 +107,18 @@ def test_firing_cache_scope_reuses_and_invalidates(kind, monkeypatch):
 
     monkeypatch.setattr(rules, '_gather_rule_firing', counted)
     with rule_base._firing_cache_scope():
-        first = rule_base.compute_firing_strenghts(
+        first = rule_base.compute_firing_strengths(
             X, precomputed_truth=problem._precomputed_truth)
-        second = rule_base.compute_firing_strenghts(
+        second = rule_base.compute_firing_strengths(
             X, precomputed_truth=problem._precomputed_truth)
         np.testing.assert_array_equal(second, first)
         assert len(calls) == 1
 
         populated = next(base for base in rule_base if base.rules)
         populated.rules.pop()
-        changed = rule_base.compute_firing_strenghts(
+        changed = rule_base.compute_firing_strengths(
             X, precomputed_truth=problem._precomputed_truth)
-        repeated = rule_base.compute_firing_strenghts(
+        repeated = rule_base.compute_firing_strengths(
             X, precomputed_truth=problem._precomputed_truth)
         np.testing.assert_array_equal(repeated, changed)
         assert len(calls) == 2
@@ -126,7 +126,7 @@ def test_firing_cache_scope_reuses_and_invalidates(kind, monkeypatch):
     assert not hasattr(rule_base, '_scoped_firing_cache')
     np.testing.assert_array_equal(
         changed,
-        rule_base.compute_firing_strenghts(
+        rule_base.compute_firing_strengths(
             X, precomputed_truth=problem._precomputed_truth),
     )
 
@@ -141,7 +141,7 @@ def test_firing_cache_scope_cleans_up_after_error():
     rule_base = problem._construct_ruleBase(gene, fs.FUZZY_SETS.t1)
     with pytest.raises(RuntimeError, match='stop'):
         with rule_base._firing_cache_scope():
-            rule_base.compute_firing_strenghts(
+            rule_base.compute_firing_strengths(
                 X, precomputed_truth=problem._precomputed_truth)
             raise RuntimeError('stop')
     assert not hasattr(rule_base, '_scoped_firing_cache')

@@ -7,12 +7,10 @@ fuzzy sets, fuzzy variables, and membership functions.
 import pytest
 import numpy as np
 import sys
-import os
 
 # Add the library path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
+from ex_fuzzy import fuzzy_sets as fs
 from conftest import assert_fuzzy_set_properties, FLOAT_TOLERANCE
 
 
@@ -304,9 +302,13 @@ class TestTorchHelpers:
 class TestInputTypesAndDescriptions:
     """Test memberships for every supported input type and the string descriptions."""
 
-    def test_enum_compares_by_value(self):
+    def test_enum_members_are_plain_enum_members(self):
+        # The package exists once per process, so the default identity-based
+        # enum equality and hashing are enough.
         assert fs.FUZZY_SETS.t1 != 'Type 1'
-        assert hash(fs.FUZZY_SETS.t1) == hash('Type 1')
+        assert fs.FUZZY_SETS('Type 1') is fs.FUZZY_SETS.t1
+        assert fs.FUZZY_SETS.t1 == fs.FUZZY_SETS.t1 and fs.FUZZY_SETS.t1 != fs.FUZZY_SETS.t2
+        assert {fs.FUZZY_SETS.t1: 'a'}[fs.FUZZY_SETS['t1']] == 'a'
 
     def test_trapezoid_accepts_lists_series_and_scalars(self):
         import pandas as pd
@@ -358,7 +360,7 @@ class TestGT2AlphaReduction:
     """Test the type reduction of general type 2 memberships."""
 
     def test_alpha_reduction_weights_every_alpha_cut(self):
-        import utils
+        from ex_fuzzy import utils
         gt2_set = utils.construct_partitions(np.linspace(0, 1, 30).reshape(-1, 1), fs.FUZZY_SETS.gt2)[0][0]
         alphas = np.array(gt2_set.alpha_cuts)
 
@@ -433,17 +435,20 @@ class TestFuzzyVariableAccessorsAndValidation:
 class TestFuzzySetValidation:
     """Test validation and error handling for fuzzy sets."""
 
-    def test_invalid_parameters(self):
-        """Test that invalid parameters are handled (may not raise in all implementations)."""
-        try:
-            # Invalid trapezoidal parameters (not in ascending order)
-            invalid_fs = fs.FS('invalid', [0.8, 0.6, 0.4, 0.2], [0, 1])
-            # If no error is raised, the class doesn't validate parameter order
-            # This is acceptable - test passes
-            assert invalid_fs is not None
-        except (ValueError, AssertionError):
-            # Validation is implemented - test passes
-            pass
+    def test_type1_parameters_are_not_validated(self):
+        """A Type-1 set accepts any four parameters; only interval sets check coherence."""
+        unordered = fs.FS('unordered', [0.8, 0.6, 0.4, 0.2], [0, 1])
+        assert unordered.membership_parameters == [0.8, 0.6, 0.4, 0.2]
+
+    def test_incoherent_interval_parameters_raise_value_error(self):
+        with pytest.raises(ValueError, match='First term membership incoherent'):
+            fs.IVFS('x', [0.0, 0.2, 0.4, 0.6], [0.1, 0.2, 0.4, 0.6], [0, 1])
+        with pytest.raises(ValueError, match='Lower memberships incoherent'):
+            fs.IVFS('x', [0.3, 0.2, 0.4, 0.6], [0.1, 0.2, 0.4, 0.8], [0, 1])
+        with pytest.raises(ValueError, match='Upper memberships incoherent'):
+            fs.IVFS('x', [0.2, 0.3, 0.4, 0.6], [0.1, 0.5, 0.4, 0.8], [0, 1])
+        with pytest.raises(ValueError, match='Final term memberships incoherent'):
+            fs.IVFS('x', [0.2, 0.3, 0.4, 0.9], [0.1, 0.2, 0.4, 0.8], [0, 1])
 
     def test_empty_parameters(self):
         """Test behavior with empty or None parameters (may not raise in all implementations)."""

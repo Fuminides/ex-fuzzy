@@ -13,11 +13,11 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
-import _dispatch_profile
-from _population_fitness import _RouteProbe, chunk_size, supports_shape
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
+from ex_fuzzy import _dispatch_profile
+from ex_fuzzy._population_fitness import _RouteProbe, chunk_size, supports_shape
 
 
 # --------------------------------------------------------------------------

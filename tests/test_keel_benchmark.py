@@ -6,7 +6,6 @@ opt-in and are not run here; what is checked is the parsing, the task grid, the
 size accounting and the aggregation that turn into published numbers.
 """
 import json
-import os
 from pathlib import Path
 import sys
 

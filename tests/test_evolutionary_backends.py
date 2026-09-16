@@ -12,9 +12,9 @@ import pytest
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 
-import evolutionary_backends as eb
-import evolutionary_fit as evf
-import fuzzy_sets as fs
+from ex_fuzzy import evolutionary_backends as eb
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
 
 # EvoX may fail to import for reasons other than a missing package, so catch everything.
 try:
@@ -79,10 +79,10 @@ class TestBackendSelection:
             eb.get_backend('evox')
         assert eb.list_available_backends() == ['pymoo']
 
-    def test_classifier_falls_back_to_pymoo(self, capsys):
-        clf = evf.BaseFuzzyRulesClassifier(nRules=4, nAnts=2, backend='quantum', verbose=True)
+    def test_classifier_falls_back_to_pymoo(self):
+        with pytest.warns(UserWarning, match='Falling back to the pymoo backend'):
+            clf = evf.BaseFuzzyRulesClassifier(nRules=4, nAnts=2, backend='quantum', verbose=True)
         assert clf.backend.name() == 'pymoo'
-        assert 'Falling back to pymoo backend' in capsys.readouterr().out
 
     def test_default_backend_is_pymoo(self, capsys):
         assert evf.BaseFuzzyRulesClassifier(nRules=10, nAnts=3, verbose=True).backend.name() == 'pymoo'

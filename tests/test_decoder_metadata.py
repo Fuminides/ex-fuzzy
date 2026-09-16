@@ -3,9 +3,9 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 @pytest.mark.parametrize('kind', [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2])

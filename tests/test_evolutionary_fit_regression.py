@@ -1,7 +1,5 @@
 """Tests for the vectorized Type-1 fuzzy regression optimizer."""
 
-import os
-import sys
 import builtins
 
 import numpy as np
@@ -12,12 +10,11 @@ from sklearn.datasets import make_regression
 from sklearn.exceptions import NotFittedError
 from sklearn.metrics import r2_score
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "ex_fuzzy", "ex_fuzzy"))
 
-import evolutionary_fit_regression as evr
-import fuzzy_sets as fs
-import rules
-import utils
+from ex_fuzzy import evolutionary_fit_regression as evr
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules
+from ex_fuzzy import utils
 
 
 def _partitions(X):

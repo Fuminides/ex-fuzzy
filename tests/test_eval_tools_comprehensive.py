@@ -11,12 +11,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
-import fuzzy_sets as fs
-import rules as rl
-import evolutionary_fit as evf
-import utils
-import eval_tools
-import eval_rules
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import utils
+from ex_fuzzy import eval_tools
+from ex_fuzzy import eval_rules
 
 
 CLASS_NAMES = np.array(['setosa', 'versicolor', 'virginica'])
@@ -92,7 +92,7 @@ def test_temporal_moments_are_used_by_all_support_helpers():
             self.rule = rl.RuleSimple([0])
             self.calls = []
 
-        def compute_firing_strenghts(self, X, time_moments, **kwargs):
+        def compute_firing_strengths(self, X, time_moments, **kwargs):
             self.calls.append((X, time_moments))
             return np.array([[0.2], [0.4], [0.6], [0.8]])
 
@@ -180,9 +180,11 @@ class TestFuzzyEvaluator:
         evaluator = eval_tools.FuzzyEvaluator(classifier)
 
         accuracy = evaluator.get_metric('accuracy_score', X, labels)
-        assert accuracy == pytest.approx(np.mean(classifier.predict(X) == np.searchsorted(classifier.classes_names, labels)))
-        assert evaluator.get_metric('not_a_metric', X, labels) == "Metric 'not_a_metric' not found in sklearn.metrics."
-        assert evaluator.get_metric('accuracy_score', X, labels, bogus=1) == "Invalid arguments passed for the metric 'accuracy_score'."
+        assert accuracy == pytest.approx(np.mean(classifier.predict(X) == labels))
+        with pytest.raises(ValueError, match="not found in sklearn.metrics"):
+            evaluator.get_metric('not_a_metric', X, labels)
+        with pytest.raises(TypeError):
+            evaluator.get_metric('accuracy_score', X, labels, bogus=1)
 
     def test_full_report(self, fitted, tmp_path, capsys):
         classifier, X, labels = fitted

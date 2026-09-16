@@ -7,11 +7,11 @@ import pandas as pd
 import pytest
 from sklearn.datasets import load_iris
 
-import evolutionary_fit as evf
-import evolutionary_search as es
-import fuzzy_sets as fs
-import rules as rl
-import utils
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import evolutionary_search as es
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import utils
 
 
 @pytest.fixture(scope='module')

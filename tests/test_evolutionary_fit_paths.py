@@ -4,13 +4,13 @@ import pandas as pd
 import pytest
 from sklearn.datasets import load_iris
 
-import _population_fitness as popfit
-import evolutionary_backends as backends
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import rules
-import utils
-from _fitness import _fitness_cache_scope
+from ex_fuzzy import _population_fitness as popfit
+from ex_fuzzy import evolutionary_backends as backends
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules
+from ex_fuzzy import utils
+from ex_fuzzy._fitness import _fitness_cache_scope
 
 
 @pytest.fixture(scope='module')
@@ -31,16 +31,18 @@ def test_constructor_options(iris, capsys):
     assert evf.BaseFuzzyRulesClassifier(class_names=['a', 'b']).classes_names == ['a', 'b']
 
     partitions = utils.construct_partitions(X, fs.FUZZY_SETS.t1)
-    model = evf.BaseFuzzyRulesClassifier(nAnts=6, linguistic_variables=partitions, verbose=True)
+    with pytest.warns(UserWarning, match=r'Setting nAnts to the number of linguistic variables. \(4\)'):
+        model = evf.BaseFuzzyRulesClassifier(nAnts=6, linguistic_variables=partitions, verbose=True)
     assert model.nAnts == 4
-    assert 'Setting nAnts to the number of linguistic variables. (4)' in capsys.readouterr().out
 
-    quiet = evf.BaseFuzzyRulesClassifier(
-        nAnts=6, linguistic_variables=partitions, verbose=False
-    )
+    with pytest.warns(UserWarning):
+        quiet = evf.BaseFuzzyRulesClassifier(
+            nAnts=6, linguistic_variables=partitions, verbose=False
+        )
     assert quiet.nAnts == 4
 
-    fallback = evf.BaseFuzzyRulesClassifier(backend='missing', verbose=False)
+    with pytest.warns(UserWarning, match='Falling back to the pymoo backend'):
+        fallback = evf.BaseFuzzyRulesClassifier(backend='missing', verbose=False)
     assert fallback.backend.name() == 'pymoo'
 
 
@@ -49,11 +51,11 @@ def test_fit_reports_categorical_variables_and_trims_antecedents(capsys):
     y = (frame['size'] > 0.5).astype(int).to_numpy()
     model = evf.BaseFuzzyRulesClassifier(nRules=4, nAnts=5, verbose=True)
 
-    model.fit(frame, y, n_gen=2, pop_size=6, patience=0)
+    with pytest.warns(UserWarning, match=r'Setting nAnts to the number of variables. \(2\)'):
+        model.fit(frame, y, n_gen=2, pop_size=6, patience=0)
 
     output = capsys.readouterr().out
     assert 'Detected categorical variables: [1]' in output
-    assert 'Setting nAnts to the number of variables. (2)' in output
     # A non-positive patience runs every generation.
     assert model.n_generations_run_ == 2
     assert model.var_names == ['size', 'colour']
@@ -133,9 +135,9 @@ def test_checkpoints_are_skipped_with_non_pymoo_backends(iris, capsys):
     model = evf.BaseFuzzyRulesClassifier(nRules=4, nAnts=2, verbose=True)
     model.backend = BackendWithoutCheckpoints()
 
-    model.fit(X, y, n_gen=2, pop_size=6, checkpoints=1, random_state=0)
+    with pytest.warns(UserWarning, match='Checkpoints are not yet supported with test-backend backend'):
+        model.fit(X, y, n_gen=2, pop_size=6, checkpoints=1, random_state=0)
 
-    assert 'Checkpoints are not yet supported with test-backend backend' in capsys.readouterr().out
     assert model.n_generations_run_ == 2
 
     quiet = evf.BaseFuzzyRulesClassifier(nRules=4, nAnts=2, verbose=False)

@@ -25,7 +25,7 @@ scalar, batched or device route automatically, by measurement.
 | A08 | Measured; implemented | Pruning masks and both complexity penalties run on arrays. The penalties are accumulated in the reference's order, one addition each: summing them first differed in the last bits. |
 | A09 | Implemented | Empty phenotypes and fully pruned candidates return `0.0` without scoring, which is what the reference produces. A general zero-firing shortcut is still not established and is not implemented. |
 | A10 | Implemented; measured and tested | The final fit computes global metrics once, reuses fixed memberships or computes the selected optimized memberships once, and retains one firing matrix in a private scope. Pruning invalidates it; cleanup precedes resampling and fit return. On the 100,000 × 200 Type-1 probe, finalization fell from about 99–100 s to 2.3–4.4 s with exact final outputs; the six full GPU follow-up fits measured 3.2–6.9 s. |
-| A11 | Measured; partial | `setdefault` removes duplicate hash work. The array decoder reproduces the same dictionary behavior, including the `ds_mode == 2` hash/equality inconsistency, rather than correcting it: correcting it would change which rules survive. |
+| A11 | Measured; implemented, semantics settled 2026-09-16 | `setdefault` removes duplicate hash work. The `ds_mode == 2` hash/equality inconsistency was corrected as a scoped semantic change: rules are identified by antecedents, consequent and modifiers, the first occurrence keeps its weight, and the array decoder keys its per-class dedup on the antecedents alone. `ds_mode == 2` searches with weighted duplicate antecedents changed accordingly; the batched and device routes never scored that mode. |
 | B01 | Measured; diagnostic complete | Seeded exact-genotype and decoded-fragment reuse diagnostic exists. |
 | B02 | Measured; scoped implementation | Bounded exact cache for standard serial PyMoo and EvoX fits, sized to `max(256, 4 × population)`; custom/checkpoint/worker paths bypass it. Replaying recorded EvoX populations, four populations of capacity scored within 0.1% of an unbounded cache. |
 | B03 | Implemented for populations (2026-09-14) | The scalar `elementwise=True` path already skips repeats through B02, but whole-population routes filled the cache only after scoring and so scored in-population repeats more than once. `FitRuleBase._cached_population` now scores each such genotype once, for the batched PyMoo route and EvoX. Worker, custom-loss and checkpoint paths still bypass it. |
@@ -102,7 +102,7 @@ consequent-run form that avoids the fancy-index copies the probe still paid.
 `pytest -q tests/test_array_decoder_prototype.py`
 
 The original object-oracle prototype. The production decoder in
-`ex_fuzzy/ex_fuzzy/_array_fitness.py` supersedes it and is covered by
+`ex_fuzzy/_array_fitness.py` supersedes it and is covered by
 `tests/test_array_evaluation.py`, which compares complete objective values
 against the object decoder rather than only the decoded phenotype.
 

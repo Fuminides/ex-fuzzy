@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-import _fitness
+from ex_fuzzy import _fitness
 
 
 def _random_case(rng, samples, rules, classes, interval, layout):

@@ -3,10 +3,10 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris, make_classification
 
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
-from _fitness import score_rulebase
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
+from ex_fuzzy._fitness import score_rulebase
 
 
 def _reference(problem, gene):
@@ -94,7 +94,7 @@ def test_array_objective_handles_degenerate_candidates(kind):
 @pytest.mark.parametrize('kind', [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2])
 def test_array_decoder_reproduces_the_object_phenotype(kind):
     """Rule order, antecedents, consequents and weights must all match."""
-    import _array_fitness as arrfit
+    from ex_fuzzy import _array_fitness as arrfit
     X, y = load_iris(return_X_y=True)
     for ds_mode in (0, 1, 2):
         problem = _problem(X, y, kind, True, ds_mode=ds_mode)

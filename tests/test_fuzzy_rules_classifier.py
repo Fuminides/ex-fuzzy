@@ -6,10 +6,10 @@ import pytest
 from sklearn.base import clone
 from sklearn.datasets import load_iris, make_classification
 
-import _fuzzy_association as association
-import fuzzy_sets as fs
-import utils
-from classifiers import FuzzyRulesClassifier
+from ex_fuzzy import _fuzzy_association as association
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
+from ex_fuzzy.classifiers import FuzzyRulesClassifier
 
 
 @pytest.fixture(scope="module")

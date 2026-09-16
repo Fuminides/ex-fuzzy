@@ -3,10 +3,10 @@
 import numpy as np
 from sklearn.datasets import load_iris
 
-import classifiers
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import utils
+from ex_fuzzy import classifiers
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import utils
 
 
 def test_fine_tuning_with_its_own_partitions():

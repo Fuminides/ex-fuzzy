@@ -11,15 +11,12 @@ import inspect
 from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import sys
-import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
-import evolutionary_fit as evf
-import utils
-import rules as rl
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import utils
+from ex_fuzzy import rules as rl
 
 
 class TestBaseFuzzyRulesClassifierBasic:
@@ -54,10 +51,13 @@ class TestBaseFuzzyRulesClassifierBasic:
         assert clf.verbose == False
 
     def test_fit_defaults_include_early_stopping(self):
-        """Test fit exposes the expected default early stopping parameters."""
+        """The constructor holds the early stopping defaults; fit defers to them."""
+        constructor = inspect.signature(evf.BaseFuzzyRulesClassifier.__init__)
+        assert constructor.parameters['patience'].default == 10
+        assert constructor.parameters['min_delta'].default == 1e-4
         signature = inspect.signature(evf.BaseFuzzyRulesClassifier.fit)
-        assert signature.parameters['patience'].default == 10
-        assert signature.parameters['min_delta'].default == 1e-4
+        assert signature.parameters['patience'].default is evf.CONSTRUCTOR
+        assert signature.parameters['min_delta'].default is evf.CONSTRUCTOR
 
     def test_classifier_creation_custom(self):
         """Test classifier creation with custom parameters."""
@@ -550,13 +550,16 @@ class TestClassifierCustomLoss:
         predictions = clf.predict(X)
         assert len(predictions) == len(y)
 
-    def test_reparametrice_loss(self):
-        """Test loss function reparametrization."""
+    def test_reparametrize_loss(self):
+        """Test loss function reparametrization, including the deprecated spelling."""
         clf = evf.BaseFuzzyRulesClassifier(nRules=10, nAnts=3, verbose=False)
-        clf.reparametrice_loss(alpha=0.1, beta=0.2)
+        clf.reparametrize_loss(alpha=0.1, beta=0.2)
 
         assert clf.alpha_ == 0.1
         assert clf.beta_ == 0.2
+        with pytest.warns(DeprecationWarning, match='reparametrize_loss'):
+            clf.reparametrice_loss(alpha=0.3, beta=0.4)
+        assert clf.alpha_ == 0.3
 
 
 class TestClassifierCallable:

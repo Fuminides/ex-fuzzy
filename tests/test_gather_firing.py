@@ -2,9 +2,9 @@
 import numpy as np
 import pytest
 
-import fuzzy_sets as fs
-import rules
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules
+from ex_fuzzy import utils
 
 
 @pytest.mark.parametrize('samples', [1, 180, 4097])
@@ -31,10 +31,10 @@ def test_gather_matches_existing_firing(monkeypatch, samples, features, dtype):
     original = [[v.copy() for v in feature] for feature in truth]
     actual = rules._gather_rule_firing(bases, X, truth)
     assert actual is not None
-    np.testing.assert_array_equal(base.compute_firing_strenghts(X, precomputed_truth=truth), actual)
+    np.testing.assert_array_equal(base.compute_firing_strengths(X, precomputed_truth=truth), actual)
     with monkeypatch.context() as reference:
         reference.setattr(rules, '_gather_rule_firing', lambda *args: None)
-        expected = base.compute_firing_strenghts(X, precomputed_truth=truth)
+        expected = base.compute_firing_strengths(X, precomputed_truth=truth)
     np.testing.assert_array_equal(actual, expected)
     for before, after in zip(original, truth):
         np.testing.assert_array_equal(before, after)

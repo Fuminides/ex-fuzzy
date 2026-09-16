@@ -3,6 +3,8 @@
 Persistence
 ====================================
 Rules and fuzzy partitions can be saved and loaded using plain text. The specification for the rule file format is the same the print format of the rules.
+The ``WITH`` clause and each of its statistics (``DS``, ``ACC``, ``WGHT``) are optional, so rules
+printed before they were evaluated load as well.
 We can extract the rules from a model using the ``ex_fuzzy.eval_tools.eval_fuzzy_model`` method, which can can return the rules in string format if the ``return_rules`` parameter is set to ``True``::
 
 

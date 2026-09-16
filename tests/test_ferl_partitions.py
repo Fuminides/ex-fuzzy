@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-import ferl_partitions as fp
+from ex_fuzzy import ferl_partitions as fp
 
 
 def test_term_names():

@@ -13,12 +13,12 @@ from sklearn.model_selection import train_test_split
 # Import the library modules
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # test the checkout, whatever is installed
 
-import fuzzy_sets as fs
-import evolutionary_fit as evf
-import utils
-import rules as rl
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import utils
+from ex_fuzzy import rules as rl
 
 
 @pytest.fixture(scope="session")

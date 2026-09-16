@@ -3,9 +3,9 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import _fitness
-import evolutionary_fit as evf
-from _fitness import _ClassMaskCache, _dominance, score_rulebase
+from ex_fuzzy import _fitness
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy._fitness import _ClassMaskCache, _dominance, score_rulebase
 
 
 def _scalar_dominance(firing, y, consequents):

@@ -17,7 +17,7 @@ predictions are made.
     **Why Choose Ex-Fuzzy?**
     
     - **Explainable**: Generate interpretable fuzzy rules
-    - **Fast**: Optimized for performance with multiprocessing support
+    - **Fast**: Vectorized rule evaluation, with an optional GPU backend for large datasets
     - **Predictive**: Supports classification and continuous regression
     - **Visual**: Rich visualization capabilities
     - **Flexible**: Highly customizable fuzzy systems
@@ -257,12 +257,17 @@ For Large Datasets
 
 .. code-block:: python
 
-    # Use multiprocessing for faster training
+    # Fixed partitions let the evaluator reuse memberships across candidates,
+    # and the EvoX backend scores whole populations on a GPU when one is available.
+    linguistic_variables = utils.construct_partitions(X_train, FUZZY_SETS.t1)
     classifier = BaseFuzzyRulesClassifier(
         nRules=20,
-        runner=4,  # Use 4 CPU cores
-        tolerance=0.1  # Allow some rule overlap
+        linguistic_variables=linguistic_variables,
+        backend="evox",  # or "pymoo" on CPU-only machines
+        tolerance=0.1,   # Prune weak rules
     )
+
+See :doc:`user-guide/training-performance` for what actually speeds up a fit.
 
 For Better Accuracy
 --------------------
@@ -283,15 +288,16 @@ Common Issues and Solutions
 Issue: Training is Too Slow
 ----------------------------
 
-**Solution**: Reduce the number of rules or use multiprocessing:
+**Solution**: Use fixed partitions, fewer rules, and let early stopping end
+the search:
 
 .. code-block:: python
 
     classifier = BaseFuzzyRulesClassifier(
         nRules=5,     # Fewer rules
-        runner=4,     # Use multiple cores
-        verbose=False # Disable verbose output
+        linguistic_variables=linguistic_variables,  # Fixed partitions
     )
+    classifier.fit(X_train, y_train, n_gen=50, pop_size=30, patience=5)
 
 Issue: Poor Classification Accuracy
 ------------------------------------

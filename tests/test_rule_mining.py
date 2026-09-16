@@ -9,15 +9,12 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import load_iris, make_classification
 from sklearn.model_selection import train_test_split
-import sys
-import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'ex_fuzzy', 'ex_fuzzy'))
 
-import fuzzy_sets as fs
-import rules as rl
-import rule_mining as rm
-import utils
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules as rl
+from ex_fuzzy import rule_mining as rm
+from ex_fuzzy import utils
 
 
 def test_rule_search_without_depth_limit_and_general_type_2_mining():
@@ -323,7 +320,7 @@ class TestIntegrationWithClassifier:
     def test_mined_rules_usable_by_classifier(self):
         """Test that mined rules can be used by classifier."""
         from sklearn.datasets import load_iris
-        import evolutionary_fit as evf
+        from ex_fuzzy import evolutionary_fit as evf
 
         X, y = load_iris(return_X_y=True)
         X = pd.DataFrame(X, columns=['f1', 'f2', 'f3', 'f4'])

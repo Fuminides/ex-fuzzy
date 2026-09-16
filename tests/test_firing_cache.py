@@ -3,12 +3,12 @@ import numpy as np
 import pytest
 from sklearn.datasets import load_iris
 
-import _array_fitness as arrfit
-import evolutionary_fit as evf
-import fuzzy_sets as fs
-import rules
-import utils
-from _fitness import _FiringCache, _fitness_cache_scope
+from ex_fuzzy import _array_fitness as arrfit
+from ex_fuzzy import evolutionary_fit as evf
+from ex_fuzzy import fuzzy_sets as fs
+from ex_fuzzy import rules
+from ex_fuzzy import utils
+from ex_fuzzy._fitness import _FiringCache, _fitness_cache_scope
 
 
 @pytest.mark.parametrize('kind', [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2])

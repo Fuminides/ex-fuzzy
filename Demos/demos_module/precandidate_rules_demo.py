@@ -19,17 +19,9 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
-import sys
 
-# In case you run this without installing the package, you need to add the path to the package
 
-# This is for launching from root folder path
-sys.path.append('./ex_fuzzy/')
-sys.path.append('./ex_fuzzy/ex_fuzzy/')
 
-# This is for launching from Demos folder
-sys.path.append('../ex_fuzzy/')
-sys.path.append('../ex_fuzzy/ex_fuzzy/')
 
 
 import ex_fuzzy.fuzzy_sets as fs
