@@ -48,9 +48,9 @@ Changed
   and lift pruning computes the memberships once per variable. The candidate
   rules, their order and the pruned rule bases are identical
 - **Packaging**: metadata moved to ``pyproject.toml`` with
-  ``requires-python >= 3.9``, the AGPL license, and classifiers for Python
-  3.9 to 3.13; ``setup.py`` only builds the optional native FERL extension.
-  CI tests Python 3.9 to 3.13 and runs the EvoX backend tests on CPU
+  ``requires-python >= 3.10``, the AGPL license, and classifiers for Python
+  3.10 to 3.13; ``setup.py`` only builds the optional native FERL extension.
+  CI tests Python 3.10 to 3.13 and runs the EvoX backend tests on CPU
 - **Import time**: matplotlib is imported when a plot is drawn, not when the
   package is imported
 - **Warnings and errors**: the classifier reports the backend fallback,

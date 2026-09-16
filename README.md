@@ -351,7 +351,7 @@ print(f"Bootstrap confidence interval: {np.percentile(bootstrap_results, [2.5, 9
 ## 🛡️ Requirements
 
 ### Core Dependencies
-- **Python** >= 3.9
+- **Python** >= 3.10
 - **NumPy**
 - **Pandas**
 - **Matplotlib**

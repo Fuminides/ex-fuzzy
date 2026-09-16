@@ -85,7 +85,7 @@ active Python environment.
 Requirements
 ============
 
-Ex-Fuzzy requires Python 3.8 or later. Core dependencies are installed
+Ex-Fuzzy requires Python 3.10 or later. Core dependencies are installed
 automatically by ``pip``:
 
 .. list-table::

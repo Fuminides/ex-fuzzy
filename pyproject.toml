@@ -7,7 +7,7 @@ name = "ex_fuzzy"
 dynamic = ["version"]
 description = "Library to perform explainable AI using fuzzy logic."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {text = "AGPL-3.0-or-later"}
 authors = [
     {name = "Javier Fumanal Idocin", email = "javierfumanalidocin@gmail.com"},
@@ -21,7 +21,6 @@ classifiers = [
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
