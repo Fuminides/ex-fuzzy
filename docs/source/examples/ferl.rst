@@ -50,5 +50,5 @@ native evidential predictions.
 
    ferl.print_tree()
 
-The equivalent runnable script is
-``Demos/demos_module/ferl_demo.py`` in the source distribution.
+The notebook ``Demos/06_uncertainty.ipynb`` runs this workflow end to end, with
+FERL's evidential outputs next to conformal prediction sets.

@@ -119,7 +119,7 @@ def plot_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> None:
         plt.tight_layout()
         plt.subplots_adjust(top=0.85)  # Add space for the title
         plt.title(fuzzy_variable.name, fontsize=16, fontweight='bold')
-        fig.show()
+        fig.show(warn=False)
     else:
         # Sample data
         categories = [fuzzy_set.name for fuzzy_set in fuzzy_variable.linguistic_variables]

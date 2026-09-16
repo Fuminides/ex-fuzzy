@@ -684,8 +684,4 @@ Conformal Learning Demo
 Ex-Fuzzy includes a runnable conformal learning demo that trains a fuzzy classifier,
 calibrates conformal prediction, and reports coverage and prediction-set metrics.
 
-Run it from the repository root:
-
-.. code-block:: bash
-
-   python Demos/demos_module/conformal_learning_demo.py
+The notebook ``Demos/06_uncertainty.ipynb`` runs this workflow end to end.

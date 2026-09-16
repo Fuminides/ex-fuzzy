@@ -20,6 +20,11 @@ from .ferl_partitions import learn_partitions_mdlp
 
 
 
+def _label_sort_key(prediction):
+    """A sort key for node predictions that also orders string labels next to integer placeholders."""
+    return (1, str(prediction)) if isinstance(prediction, str) else (0, prediction)
+
+
 def _calculate_coverage(truth_values: np.array, total_samples: int) -> float:
     """
     Calculate the proportion of samples covered by the given truth values.
@@ -2415,6 +2420,16 @@ class FERL(BaseEstimator, ClassifierMixin):
 
         return leaves
 
+    def _prediction_array(self, n_samples: int) -> np.ndarray:
+        """An array of the root prediction typed like the fitted classes.
+
+        The classes decide the dtype, so string labels of different lengths are
+        stored whole instead of being truncated to the root label's width.
+        """
+        classes = getattr(self, 'classes_', None)
+        dtype = classes.dtype if classes is not None else None
+        return np.full(n_samples, self._root['prediction'], dtype=dtype)
+
     def _predict_direct_leaves(self, X: np.array) -> tuple[np.array, np.array, np.array]:
         """
         Fast prediction using direct leaf iteration instead of recursion.
@@ -2435,7 +2450,7 @@ class FERL(BaseEstimator, ClassifierMixin):
         n_samples = X.shape[0]
 
         # Initialize output arrays
-        predictions = np.full(n_samples, self._root['prediction'])
+        predictions = self._prediction_array(n_samples)
         best_memberships = np.zeros(n_samples)
         paths = np.full(n_samples, 'root', dtype=object)
 
@@ -2549,7 +2564,7 @@ class FERL(BaseEstimator, ClassifierMixin):
         n_samples = X.shape[0]
 
         # Initialize output arrays - start with invalid values, not root defaults
-        predictions = np.full(n_samples, -1)  # Invalid prediction initially
+        predictions = self._prediction_array(n_samples)  # Overwritten wherever a node wins; root otherwise
         best_memberships = np.full(n_samples, -1.0)  # Invalid membership initially
         paths = np.full(n_samples, '', dtype=object)  # Empty path initially
 
@@ -2754,7 +2769,7 @@ class FERL(BaseEstimator, ClassifierMixin):
         # Second pass: apply memberships with internal node constraints
         # Process nodes in REVERSE order (longest paths first) so children are processed before parents
         node_items = list(node_memberships.items())
-        node_items.sort(key=lambda x: x[1]['prediction'], reverse=False)  # Just to have consistent ordering
+        node_items.sort(key=lambda x: _label_sort_key(x[1]['prediction']), reverse=False)  # Just to have consistent ordering
 
         mode = getattr(self, 'prediction_mode', 'soft_gate')
         gate_internal = mode in ('soft_gate', 'hard_gate')

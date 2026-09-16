@@ -1075,9 +1075,20 @@ class FitRuleBase(Problem):
             maximum = np.zeros(self.X.shape[1])
             for ix in range(self.X.shape[1]):
                 column = self.X[:, ix]
-                if np.issubdtype(column.dtype, np.number):
-                    minimum[ix] = np.nanmin(column)
-                    maximum[ix] = np.nanmax(column)
+                # A numerical column keeps its numbers even inside an object
+                # array (a mixed DataFrame): only categorical columns count
+                # their categories.
+                mask = getattr(self, 'categorical_mask', None)
+                categorical = mask is not None and mask[ix] > 0
+                numeric = None
+                if not categorical:
+                    try:
+                        numeric = column.astype(float)
+                    except (TypeError, ValueError):
+                        numeric = None
+                if numeric is not None:
+                    minimum[ix] = np.nanmin(numeric)
+                    maximum[ix] = np.nanmax(numeric)
                 else:
                     maximum[ix] = len(np.unique(column[~pd.isna(column)]))
             span = maximum - minimum

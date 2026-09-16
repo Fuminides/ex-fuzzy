@@ -35,65 +35,38 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 Working Examples
 ================
 
-The Ex-Fuzzy repository includes several working Jupyter notebooks. You can run these examples directly in Google Colab:
+The repository ships eight executed notebooks in ``Demos/``. They render with
+their outputs on GitHub and each runs in well under a minute; the Titanic and
+California housing notebooks download their data through scikit-learn on the
+first run.
 
-.. list-table:: Interactive Examples
+.. list-table:: Demo notebooks
    :header-rows: 1
-   :widths: 30 50 20
+   :widths: 30 70
 
-   * - Topic
-     - Description
-     - Colab Link
-   * - **Basic Classification**
-     - Introduction to fuzzy classification with the Iris dataset
-     - `Open Basic Classification in Colab <https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing>`_
-   * - **Custom Loss Functions**
-     - Advanced optimization techniques
-     - `Open Custom Loss in Colab <https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing>`_
-   * - **Rule File Loading**
-     - Working with text-based rule files
-     - `Open Rule File Loading in Colab <https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing>`_
-   * - **Advanced Rules**
-     - Using pre-computed rule populations
-     - `Open Advanced Rules in Colab <https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing>`_
-   * - **Temporal Fuzzy Sets**
-     - Time-aware fuzzy reasoning
-     - `Open Temporal Fuzzy Sets in Colab <https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing>`_
-   * - **Rule Mining**
-     - Automatic rule discovery
-     - `Open Rule Mining in Colab <https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing>`_
-   * - **Fuzzy Regression**
-     - Interpretable prediction of continuous targets
-     - Local notebook ``Demos/regression_demo.ipynb``
-   * - **Conformal Learning**
-     - Prediction sets with coverage guarantees and rule-aware uncertainty
-     - Notebook `Demos/conformal_learning_demo.ipynb` and local script `Demos/demos_module/conformal_learning_demo.py`
+   * - Notebook
+     - What it shows
+   * - `01 Getting started <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/01_getting_started.ipynb>`_
+     - Fit, score, read the rules, probabilities, per-sample explanations, partition plots.
+   * - `02 Scikit-learn integration <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/02_scikit_learn_integration.ipynb>`_
+     - Titanic data with categorical columns and missing values: a pipeline with imputation, cross-validation, grid search.
+   * - `03 Rules and partitions <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/03_rules_and_partitions.ipynb>`_
+     - Fuzzy sets and rules by hand, fixed versus optimised partitions, Type-2 sets, validation, inference modes, LaTeX export, saving and loading.
+   * - `04 Controlling the search <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/04_controlling_the_search.ipynb>`_
+     - Budget and early stopping, custom objectives, checkpoints, mined candidate rules, all classifiers compared.
+   * - `05 Regression <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/05_regression.ipynb>`_
+     - Crisp and Mamdani consequents on California housing, then inference by hand.
+   * - `06 Uncertainty <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/06_uncertainty.ipynb>`_
+     - Conformal prediction sets with coverage evaluation, next to FERL and DeepFERL evidential outputs.
+   * - `07 Robustness <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/07_robustness.ipynb>`_
+     - Pattern stability over repeated fits, permutation and bootstrap validation.
+   * - `08 Temporal <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/08_temporal.ipynb>`_
+     - Temporal fuzzy sets on the occupancy data, one rule base per period of the day.
 
-Local Examples
-==============
-
-The repository also contains local notebooks and scripts in the `Demos/` directory:
-
-- **iris_demo.ipynb**: Basic classification with the Iris dataset
-- **iris_demo_advanced_classifiers.ipynb**: Comparison of different classifier types
-- **iris_demo_persistence.ipynb**: Saving and loading trained models
-- **occupancy_demo_temporal.ipynb**: Time-series occupancy detection
-- **regression_demo.ipynb**: Interpretable fuzzy regression with continuous targets
-- **demos_module/regression_demo.py**: Manually constructed Type-2 regression inference
-- **demos_module/ferl_demo.py**: FERL classification with native evidential predictions
-- **demos_module/iris_demo_stability_report.py**: Pattern stability analysis
-- **conformal_learning_demo.ipynb**: Conformal prediction with calibration and set-valued outputs
-- **demos_module/conformal_learning_demo.py**: Conformal prediction with calibration, set-valued outputs, and coverage metrics
-
-These examples provide complete, working demonstrations of the library's main workflows.
-
-Interactive Notebooks
-=====================
-
-All examples are available as interactive Jupyter notebooks:
-
-- Download notebooks or use Colab with previous links.
-- `Open in Binder <https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos>`_
+The EvoX backend comparison is a script, ``Demos/evox_backend_demo.py``, since
+it needs the optional backend. To run the notebooks yourself, open them with
+Jupyter after installing the package, or launch them
+`in Binder <https://mybinder.org/v2/gh/Fuminides/ex-fuzzy/HEAD?urlpath=%2Fdoc%2Ftree%2FDemos>`_.
 
 Example Categories
 ==================

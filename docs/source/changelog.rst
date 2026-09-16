@@ -26,7 +26,12 @@ Changed
   submodule; submodules and the top-level classes load on first access, which
   takes the import from about two seconds to a few milliseconds
 - **Docstrings** follow the Google style throughout, with triple double quotes
-- **Demos** import through the package without path tricks; every notebook and script was executed against this release
+- **Demos**: eight executed notebooks replace the previous notebooks and
+  scripts. They cover getting started, scikit-learn pipelines and grid search
+  on the Titanic data, rules and partitions by hand, controlling the search
+  and comparing every classifier, regression on California housing,
+  conformal and evidential uncertainty, robustness, and temporal sets.
+  ``Demos/run_notebooks.py`` refreshes their outputs
 - **Search settings are constructor parameters**: ``n_gen``, ``pop_size``,
   ``patience``, ``min_delta``, ``random_state``, ``var_prob``, ``sbx_eta``,
   ``mutation_eta`` and ``tournament_size`` can be given to
@@ -117,6 +122,17 @@ Changed
 
 Fixed
 -----
+- ``FERL`` failed to predict string labels, and could have truncated labels
+  longer than the root's, because its prediction arrays were typed by the
+  first label; they now take the dtype of ``classes_``
+- With optimized partitions, numerical columns of a mixed DataFrame (as an
+  imputer returns it) got a domain of 0 to their number of distinct values
+  instead of their minimum and maximum
+- The pattern stability report printed a fraction of the trials as a
+  percentage
+- Conformal prediction scored test samples with the membership nonconformity
+  whatever ``score_type`` was calibrated with, so the ``entropy`` sets did not
+  reach their coverage; prediction now uses the calibrated score type
 - Missing or infinite feature values were silently assigned class 0, because
   NaN firing strengths made ``argmax`` pick the first rule, and gave NaN
   probabilities. ``fit`` and the prediction methods now reject them with a

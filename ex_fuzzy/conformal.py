@@ -309,14 +309,14 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
         n_classes = self.clf.nclasses_
 
         # Get soft scores for all classes
-        class_scores = self.clf.predict_membership_class(X)  # (n_samples, n_classes)
+        nonconformity = self._class_nonconformity(X)  # (n_samples, n_classes)
 
         prediction_sets = []
         for i in range(n_samples):
             pred_set = set()
             for c in range(n_classes):
                 # Compute p-value for class c
-                score = 1 - class_scores[i, c]  # Nonconformity: 1 - membership
+                score = nonconformity[i, c]
                 p_value = self._compute_p_value(score, c)
                 if p_value > alpha:
                     pred_set.add(self._class_label(c))
@@ -369,6 +369,7 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
         # Get per-rule association degrees
         rule_scores = self.clf.predict_proba_rules(X, truth_degrees=False)
         rule_consequents = self.clf.rule_base.get_consequents()
+        nonconformity = self._class_nonconformity(X)
 
         n_samples = X.shape[0]
         results = []
@@ -381,10 +382,9 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
             }
 
             # Compute p-values per class
-            class_scores = self.clf.predict_membership_class(X[i:i+1])[0]
             selected = set()
             for c in range(self.clf.nclasses_):
-                score = 1 - class_scores[c]
+                score = nonconformity[i, c]
                 p_value = self._compute_p_value(score, c)
                 result['class_p_values'][self._class_label(c)] = p_value
                 if p_value > alpha:
@@ -409,37 +409,28 @@ class ConformalFuzzyClassifier(ClassifierMixin, BaseEstimator):
 
         return results
 
-    def _compute_nonconformity_scores(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
-        """Compute nonconformity scores based on score_type."""
-        if self.score_type == 'membership':
-            # 1 - membership degree of true class
-            class_memberships = self.clf.predict_membership_class(X)
-            scores = 1 - class_memberships[np.arange(len(y)), y.astype(int)]
+    def _class_nonconformity(self, X: np.ndarray) -> np.ndarray:
+        """Nonconformity of every sample for every candidate class, for the chosen score type.
 
-        elif self.score_type == 'association':
-            # 1 - max association degree for rules of true class
-            rule_scores = self.clf.predict_proba_rules(X, truth_degrees=False)
-            consequents = self.clf.rule_base.get_consequents()
-            scores = np.zeros(len(y))
-            for i, true_class in enumerate(y):
-                class_rules = [j for j, c in enumerate(consequents) if c == int(true_class)]
-                if class_rules:
-                    scores[i] = 1 - np.max(rule_scores[i, class_rules])
-                else:
-                    scores[i] = 1.0
-
-        elif self.score_type == 'entropy':
-            # Entropy of class probability distribution
-            probs = self.clf.predict_proba(X)
-            probs = np.clip(probs, 1e-10, 1)  # Avoid log(0)
-            scores = -np.sum(probs * np.log(probs), axis=1)
-            # Normalize by max entropy for comparability
+        Calibration and prediction both use this, so p-values compare like with like.
+        """
+        if self.score_type in ('membership', 'association'):
+            # 1 - the strongest association degree among the rules of the class,
+            # which is what predict_membership_class returns per class.
+            return 1 - self.clf.predict_membership_class(X)
+        if self.score_type == 'entropy':
+            # Entropy of the class probabilities, the same for every candidate class.
+            probs = np.clip(self.clf.predict_proba(X), 1e-10, 1)  # Avoid log(0)
+            entropy = -np.sum(probs * np.log(probs), axis=1)
             max_entropy = np.log(self.clf.nclasses_)
-            scores = scores / max_entropy if max_entropy > 0 else scores
-        else:
-            raise ValueError(f"Unknown score_type: {self.score_type}")
+            entropy = entropy / max_entropy if max_entropy > 0 else entropy
+            return np.repeat(entropy[:, None], self.clf.nclasses_, axis=1)
+        raise ValueError(f"Unknown score_type: {self.score_type}")
 
-        return scores
+    def _compute_nonconformity_scores(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """Nonconformity of each calibration sample for its true class index."""
+        y = np.asarray(y).astype(int)
+        return self._class_nonconformity(X)[np.arange(len(y)), y]
 
     def _compute_p_value(self, score: float, class_idx: int) -> float:
         """

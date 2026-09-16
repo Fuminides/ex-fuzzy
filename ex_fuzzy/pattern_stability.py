@@ -346,7 +346,7 @@ class pattern_stabilizer():
             for jx, rule in enumerate(class_pattern_ix.keys()):
                 if jx < rule_cutoff:
                     rule_print_format = rl.generate_rule_string(rules_array_format[jx], rule_bases[0].antecedents)
-                    print(f'Pattern {rule_print_format} appears in %.2f percent of the trials with a Dominance Score of {patterns_dss_ix[str(rule)]}' % float(class_pattern_ix[str(rule)] / self.n))
+                    print(f'Pattern {rule_print_format} appears in %.0f%% of the trials with a Dominance Score of {patterns_dss_ix[str(rule)]}' % float(class_pattern_ix[str(rule)] / self.n))
                 else:
                     break
             print()

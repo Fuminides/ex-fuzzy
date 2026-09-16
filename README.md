@@ -252,22 +252,21 @@ Both backends automatically batch operations to fit available memory and large d
 
 ## 🛠️ Examples
 
-### 🔬 Interactive Jupyter Notebooks
+### 🔬 Notebooks
 
-Try our hands-on examples in Google Colab:
+Eight executed notebooks in [`Demos/`](Demos/README.md) walk through the library; they render on GitHub with their outputs.
 
-| Topic | Description | Colab Link |
-|-------|-------------|------------|
-| **Basic Classification** | Introduction to fuzzy classification | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1nEIcHEH-FqhJWK-ngPew_gqe82n1Dr2v/view?usp=sharing) |
-| **Custom Loss Functions** | Advanced optimization techniques | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1ciajhHTK0PACgT2bGdfpcisCL8MRgiHa/view?usp=sharing) |
-| **Rule File Loading** | Working with text-based rule files | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1vNAXfQDnLOdTktQ1gyrtEKwjSmNIlSUc/view?usp=sharing) |
-| **Advanced Rules** | Using pre-computed rule populations | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1jsjCcBDR9ZE-qEOJcCYCHmtNmwdrYvPh/view?usp=sharing) |
-| **Temporal Fuzzy Sets** | Time-aware fuzzy reasoning | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1J6T44KBIOdY06BbsO8AvE-X3gRohohIR/view?usp=sharing) |
-| **Rule Mining** | Automatic rule discovery | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1qWlL-A_B21FpdtplMDHzg1M7r5tjbN6g/view?usp=sharing) |
-| **Fuzzy Regression** | Interpretable continuous prediction | [📓 Notebook](Demos/regression_demo.ipynb) |
-| **EvoX Backend** | GPU-accelerated training with EvoX | [🐍 Script](Demos/evox_backend_demo.py) |
-| **Conformal Learning** | Set-valued predictions with calibrated coverage | [📓 Notebook](Demos/conformal_learning_demo.ipynb) |
-| **FERL** | Evidential fuzzy rule-tree classification | [🐍 Script](Demos/demos_module/ferl_demo.py) |
+| Notebook | What it shows |
+|----------|---------------|
+| [Getting started](Demos/01_getting_started.ipynb) | Fit, score, read the rules, probabilities, explanations, partition plots |
+| [Scikit-learn integration](Demos/02_scikit_learn_integration.ipynb) | Titanic data with categorical columns and missing values, pipelines, cross-validation, grid search |
+| [Rules and partitions](Demos/03_rules_and_partitions.ipynb) | Fuzzy sets by hand, fixed versus optimised partitions, Type-2 sets, inference modes, saving and loading |
+| [Controlling the search](Demos/04_controlling_the_search.ipynb) | Budget, early stopping, custom objectives, checkpoints, mined rules, all classifiers compared |
+| [Regression](Demos/05_regression.ipynb) | Crisp and Mamdani consequents on California housing |
+| [Uncertainty](Demos/06_uncertainty.ipynb) | Conformal prediction sets, FERL and DeepFERL evidential outputs |
+| [Robustness](Demos/07_robustness.ipynb) | Pattern stability over repeated fits, permutation and bootstrap validation |
+| [Temporal](Demos/08_temporal.ipynb) | Temporal fuzzy sets on the occupancy data |
+| [EvoX backend](Demos/evox_backend_demo.py) | GPU-accelerated training with EvoX (script) |
 
 #### Real Applications
   - Ex-Fuzzy in fNIRS data: https://github.com/jjcato9/ex_fuzzy_fnirs_demo
