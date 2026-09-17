@@ -254,7 +254,7 @@ Both backends automatically batch operations to fit available memory and large d
 
 ### 🔬 Notebooks
 
-Eight executed notebooks in [`Demos/`](Demos/README.md) walk through the library; they render on GitHub with their outputs.
+Seven executed notebooks in [`Demos/`](Demos/README.md) walk through the library; they render on GitHub with their outputs.
 
 | Notebook | What it shows |
 |----------|---------------|
@@ -265,7 +265,6 @@ Eight executed notebooks in [`Demos/`](Demos/README.md) walk through the library
 | [Regression](Demos/05_regression.ipynb) | Crisp and Mamdani consequents on California housing |
 | [Uncertainty](Demos/06_uncertainty.ipynb) | Conformal prediction sets, FERL and DeepFERL evidential outputs |
 | [Robustness](Demos/07_robustness.ipynb) | Pattern stability over repeated fits, permutation and bootstrap validation |
-| [Temporal](Demos/08_temporal.ipynb) | Temporal fuzzy sets on the occupancy data |
 | [EvoX backend](Demos/evox_backend_demo.py) | GPU-accelerated training with EvoX (script) |
 
 #### Real Applications

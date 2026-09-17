@@ -1,6 +1,6 @@
 # Ex-Fuzzy demos
 
-Eight notebooks walk through the library, from a first classifier to
+Seven notebooks walk through the library, from a first classifier to
 uncertainty quantification. They are executed with their outputs stored, so
 they read well on GitHub, and every one of them runs in well under a minute
 on a laptop. Open them with Jupyter after `pip install ex-fuzzy` (or
@@ -15,12 +15,10 @@ on a laptop. Open them with Jupyter after `pip install ex-fuzzy` (or
 | [05 Regression](05_regression.ipynb) | `BaseFuzzyRulesRegressor` with crisp and Mamdani consequents on California housing, then inference by hand. |
 | [06 Uncertainty](06_uncertainty.ipynb) | Conformal prediction sets with coverage evaluation and rule-level explanations, next to FERL and DeepFERL evidential outputs. |
 | [07 Robustness](07_robustness.ipynb) | Pattern stability over repeated fits, and permutation and bootstrap validation of a fitted rule base. |
-| [08 Temporal](08_temporal.ipynb) | Temporal fuzzy sets on the occupancy data: one rule base per period of the day. |
 
 The Titanic and California housing notebooks download their data through
 scikit-learn on the first run and cache it in your home directory; nothing
-else leaves the repository. The occupancy data used by notebook 8 is in
-`occupancy_data/`.
+else leaves the repository.
 
 `evox_backend_demo.py` compares the PyMoo and EvoX backends and reports
 whether EvoX and CUDA are available; run it as `python Demos/evox_backend_demo.py`.

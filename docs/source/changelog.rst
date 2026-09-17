@@ -26,11 +26,11 @@ Changed
   submodule; submodules and the top-level classes load on first access, which
   takes the import from about two seconds to a few milliseconds
 - **Docstrings** follow the Google style throughout, with triple double quotes
-- **Demos**: eight executed notebooks replace the previous notebooks and
+- **Demos**: seven executed notebooks replace the previous notebooks and
   scripts. They cover getting started, scikit-learn pipelines and grid search
   on the Titanic data, rules and partitions by hand, controlling the search
   and comparing every classifier, regression on California housing,
-  conformal and evidential uncertainty, robustness, and temporal sets.
+  conformal and evidential uncertainty, and robustness.
   ``Demos/run_notebooks.py`` refreshes their outputs
 - **Search settings are constructor parameters**: ``n_gen``, ``pop_size``,
   ``patience``, ``min_delta``, ``random_state``, ``var_prob``, ``sbx_eta``,

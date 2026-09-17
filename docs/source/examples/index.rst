@@ -35,7 +35,7 @@ Welcome to the Ex-Fuzzy examples gallery! Here you'll find practical examples de
 Working Examples
 ================
 
-The repository ships eight executed notebooks in ``Demos/``. They render with
+The repository ships seven executed notebooks in ``Demos/``. They render with
 their outputs on GitHub and each runs in well under a minute; the Titanic and
 California housing notebooks download their data through scikit-learn on the
 first run.
@@ -60,8 +60,6 @@ first run.
      - Conformal prediction sets with coverage evaluation, next to FERL and DeepFERL evidential outputs.
    * - `07 Robustness <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/07_robustness.ipynb>`_
      - Pattern stability over repeated fits, permutation and bootstrap validation.
-   * - `08 Temporal <https://github.com/Fuminides/ex-fuzzy/blob/main/Demos/08_temporal.ipynb>`_
-     - Temporal fuzzy sets on the occupancy data, one rule base per period of the day.
 
 The EvoX backend comparison is a script, ``Demos/evox_backend_demo.py``, since
 it needs the optional backend. To run the notebooks yourself, open them with
