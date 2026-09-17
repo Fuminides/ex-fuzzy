@@ -1,0 +1,1271 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ex_fuzzy.ferl_deep &#8212; Ex-Fuzzy 3.2.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=4f6ddb47"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/ex_fuzzy/ferl_deep';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="3.2.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../step4.html">
+    Inspect rules and fuzzy sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../step4.html">
+    Inspect rules and fuzzy sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tmpfs.html">
+    Temporal Fuzzy Sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">ex_fuzzy.ferl_deep</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for ex_fuzzy.ferl_deep</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""</span>
+<span class="sd">Deep fuzzy evidential rule trees with learned soft splits (FERL-deep).</span>
+
+<span class="sd">:class:`DeepFERL` is the high-accuracy member of the FERL family. :class:`FERL`</span>
+<span class="sd">grows a compact tree over a fixed or learned partition under a rule budget.</span>
+<span class="sd">DeepFERL instead grows a deep binary tree recursively. Each split sits at the</span>
+<span class="sd">weighted-Gini optimal threshold for the samples reaching the node, drawn as a</span>
+<span class="sd">linear soft ramp whose half-width is the bootstrap spread of that threshold: a</span>
+<span class="sd">stable cut becomes nearly crisp and an unstable one stays fuzzy. Point</span>
+<span class="sd">predictions are a soft vote over the leaves, and the evidential read-out uses</span>
+<span class="sd">the same Dempster--Shafer combination rules as FERL.</span>
+
+<span class="sd">The estimator is a port of ``LearnedFuzzyTree`` from the ``fuzzy_greedy_tree``</span>
+<span class="sd">repository, the model its paper reports as FERL-deep. For the same data and</span>
+<span class="sd">seed it grows the same tree and makes the same predictions.</span>
+<span class="sd">"""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_is_fitted</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_evidence</span>
+
+<span class="n">EPS</span> <span class="o">=</span> <span class="mf">1e-9</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_best_cut</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_oh</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">"gini"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return ``(gain, threshold)`` for the best crisp cut on one feature.</span>
+
+<span class="sd">    ``criterion='gini'`` maximizes the weighted-Gini impurity reduction.</span>
+<span class="sd">    ``criterion='cci'`` maximizes the Complete Classification Index: the</span>
+<span class="sd">    accuracy gain of the two children's majority classes over the parent's</span>
+<span class="sd">    single majority, with a tiny Gini term to break ties. All candidate cuts are</span>
+<span class="sd">    evaluated at once from cumulative class weights.</span>
+<span class="sd">    """</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"mergesort"</span><span class="p">)</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+    <span class="n">cum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">y_oh</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">order</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>      <span class="c1"># (n, C)</span>
+    <span class="n">Wl_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">order</span><span class="p">])</span>                              <span class="c1"># (n,)</span>
+    <span class="n">tot</span> <span class="o">=</span> <span class="n">cum</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>                                             <span class="c1"># (C,)</span>
+    <span class="n">bnd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">xs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>                   <span class="c1"># candidate split rows</span>
+    <span class="k">if</span> <span class="n">bnd</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">Wl</span> <span class="o">=</span> <span class="n">Wl_arr</span><span class="p">[</span><span class="n">bnd</span><span class="p">]</span>
+    <span class="n">Wr</span> <span class="o">=</span> <span class="n">W</span> <span class="o">-</span> <span class="n">Wl</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="p">(</span><span class="n">Wl</span> <span class="o">&gt;</span> <span class="n">EPS</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">&gt;</span> <span class="n">EPS</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">bnd</span><span class="p">,</span> <span class="n">Wl</span><span class="p">,</span> <span class="n">Wr</span> <span class="o">=</span> <span class="n">bnd</span><span class="p">[</span><span class="n">ok</span><span class="p">],</span> <span class="n">Wl</span><span class="p">[</span><span class="n">ok</span><span class="p">],</span> <span class="n">Wr</span><span class="p">[</span><span class="n">ok</span><span class="p">]</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">cum</span><span class="p">[</span><span class="n">bnd</span><span class="p">]</span>                                              <span class="c1"># (m, C)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">tot</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">l</span>
+    <span class="n">gini_l</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">((</span><span class="n">l</span> <span class="o">/</span> <span class="n">Wl</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gini_r</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">((</span><span class="n">r</span> <span class="o">/</span> <span class="n">Wr</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gini_gain</span> <span class="o">=</span> <span class="n">parent</span> <span class="o">-</span> <span class="p">(</span><span class="n">Wl</span> <span class="o">/</span> <span class="n">W</span> <span class="o">*</span> <span class="n">gini_l</span> <span class="o">+</span> <span class="n">Wr</span> <span class="o">/</span> <span class="n">W</span> <span class="o">*</span> <span class="n">gini_r</span><span class="p">)</span>  <span class="c1"># (m,)</span>
+    <span class="k">if</span> <span class="n">criterion</span> <span class="o">==</span> <span class="s2">"cci"</span><span class="p">:</span>
+        <span class="n">cci</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">tot</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">/</span> <span class="n">W</span>          <span class="c1"># &gt;= 0 always</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="n">cci</span> <span class="o">+</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">gini_gain</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="n">gini_gain</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">gain</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">gain</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">bnd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">gain</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ramp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Membership of the 'below' branch: 1 at ``center - h``, 0 at ``center + h``."""</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">center</span> <span class="o">+</span> <span class="n">h</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">h</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DeepFERL">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeepFERL</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Deep FERL: a recursively grown fuzzy rule tree with learned soft splits.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_depth (int, default=12):</span>
+<span class="sd">            Maximum depth of the tree.</span>
+<span class="sd">        min_leaf_w (float, default=2.0):</span>
+<span class="sd">            Minimum fuzzy weight (sum of memberships) each child of a split must</span>
+<span class="sd">            keep. Nodes with less than twice this weight become leaves.</span>
+<span class="sd">        n_boot (int, default=25):</span>
+<span class="sd">            Bootstrap replicates used to estimate each split's location and width</span>
+<span class="sd">            when ``width="bootstrap"``.</span>
+<span class="sd">        width ({"bootstrap"} or float, default="bootstrap"):</span>
+<span class="sd">            ``"bootstrap"`` centers each ramp on the mean of the bootstrap</span>
+<span class="sd">            thresholds, with half-width equal to their standard deviation. A</span>
+<span class="sd">            positive float ``c`` centers the ramp on the optimal threshold, with</span>
+<span class="sd">            half-width ``c`` times the node's weighted feature standard deviation.</span>
+<span class="sd">        criterion ({"gini", "cci"}, default="gini"):</span>
+<span class="sd">            Split criterion. Gini is the stronger choice once split locations are</span>
+<span class="sd">            learned; CCI favors changes to the majority class.</span>
+<span class="sd">        bounded_support (bool, default=True):</span>
+<span class="sd">            Gate each split to the node's training range on its feature, widened on</span>
+<span class="sd">            both sides by ``oob_margin`` times that range. Far out-of-distribution</span>
+<span class="sd">            samples then reach no leaf and surface as ignorance; in-distribution</span>
+<span class="sd">            predictions are unaffected.</span>
+<span class="sd">        oob_margin (float, default=1.0):</span>
+<span class="sd">            Relative margin of the bounded support gate.</span>
+<span class="sd">        random_state (int, optional):</span>
+<span class="sd">            Seed for the bootstrap resampling.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        classes_ (np.ndarray):</span>
+<span class="sd">            Class labels seen during ``fit``.</span>
+<span class="sd">        n_features_in_ (int):</span>
+<span class="sd">            Number of features seen during ``fit``.</span>
+<span class="sd">        feature_names_in_ (np.ndarray):</span>
+<span class="sd">            Feature names, when ``X`` was a DataFrame with string column names.</span>
+<span class="sd">        root_ (dict):</span>
+<span class="sd">            Root of the fitted tree. Internal nodes hold the split feature ``f``,</span>
+<span class="sd">            ramp ``center`` and half-width ``h``, the node's training range</span>
+<span class="sd">            ``lo``/``hi``, and children ``L`` (below) and ``R`` (above). Every node</span>
+<span class="sd">            holds its Laplace-smoothed class distribution ``dist`` and fuzzy</span>
+<span class="sd">            training ``support``.</span>
+<span class="sd">        n_leaves_ (int):</span>
+<span class="sd">            Number of leaves, which are the model's rules.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="DeepFERL.__init__">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">min_leaf_w</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">n_boot</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
+                 <span class="n">width</span><span class="o">=</span><span class="s2">"bootstrap"</span><span class="p">,</span> <span class="n">criterion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"gini"</span><span class="p">,</span> <span class="n">bounded_support</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">oob_margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">=</span> <span class="n">max_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_leaf_w</span> <span class="o">=</span> <span class="n">min_leaf_w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_boot</span> <span class="o">=</span> <span class="n">n_boot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">criterion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounded_support</span> <span class="o">=</span> <span class="n">bounded_support</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oob_margin</span> <span class="o">=</span> <span class="n">oob_margin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------ fitting</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"max_depth must be a non-negative integer."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_leaf_w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"min_leaf_w must be positive."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"gini"</span><span class="p">,</span> <span class="s2">"cci"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"criterion must be either 'gini' or 'cci'."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">!=</span> <span class="s2">"bootstrap"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"width must be 'bootstrap' or a positive number."</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_boot</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_boot</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> \
+                    <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_boot</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"n_boot must be an integer of at least 2 when width='bootstrap'."</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">))</span> \
+                <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"width must be 'bootstrap' or a positive number."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">oob_margin</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"oob_margin must be non-negative."</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeepFERL.fit">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Grow the tree.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (array-like of shape (n_samples, n_features)):</span>
+<span class="sd">                Training features. Must be finite.</span>
+<span class="sd">            y (array-like of shape (n_samples,)):</span>
+<span class="sd">                Class labels.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DeepFERL</span>
+<span class="sd">                The fitted estimator.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_params</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="s2">"columns"</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">feature_names_in_</span> <span class="o">=</span> <span class="n">columns</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"feature_names_in_"</span><span class="p">):</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_names_in_</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"X must be a two-dimensional array."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"X and y must contain the same number of samples."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"DeepFERL requires at least one training sample."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"DeepFERL does not support NaN or infinite feature values."</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> <span class="n">y_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y_oh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">))[</span><span class="n">y_index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_leaves_</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>                                               <span class="c1"># release training references</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y_oh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_leaves_</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_oh</span> <span class="o">*</span> <span class="n">w</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span>          <span class="c1"># Laplace</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"leaf"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"dist"</span><span class="p">:</span> <span class="n">cnt</span> <span class="o">/</span> <span class="n">cnt</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="s2">"support"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">())}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="ow">or</span> <span class="n">W</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_leaf_w</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_oh</span> <span class="o">*</span> <span class="n">w</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">W</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="o">&lt;</span> <span class="mf">1e-9</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+        <span class="n">n_eff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">n_eff</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">Xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="n">wr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">[</span><span class="n">region</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y_oh</span><span class="p">[</span><span class="n">region</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">region</span><span class="p">]</span>
+        <span class="n">Wr</span> <span class="o">=</span> <span class="n">wr</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">pr</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(((</span><span class="n">yr</span> <span class="o">*</span> <span class="n">wr</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">Wr</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">bf</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">bthr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>                           <span class="c1"># best feature by criterion gain</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">g</span><span class="p">,</span> <span class="n">thr</span> <span class="o">=</span> <span class="n">_best_cut</span><span class="p">(</span><span class="n">Xr</span><span class="p">[:,</span> <span class="n">f</span><span class="p">],</span> <span class="n">yr</span><span class="p">,</span> <span class="n">wr</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">Wr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">thr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">g</span> <span class="o">&gt;</span> <span class="n">bg</span><span class="p">:</span>
+                <span class="n">bf</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">bthr</span> <span class="o">=</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">thr</span>
+        <span class="k">if</span> <span class="n">bf</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">Xr</span><span class="p">[:,</span> <span class="n">bf</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">==</span> <span class="s2">"bootstrap"</span><span class="p">:</span>
+            <span class="n">pw</span> <span class="o">=</span> <span class="n">wr</span> <span class="o">/</span> <span class="n">Wr</span>
+            <span class="n">thetas</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_boot</span><span class="p">):</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_eff</span><span class="p">,</span> <span class="n">n_eff</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pw</span><span class="p">)</span>
+                <span class="n">_g</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">_best_cut</span><span class="p">(</span><span class="n">xr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">yr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_eff</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_eff</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">thetas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">thetas</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="n">center</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">thetas</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">thetas</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">wr</span> <span class="o">*</span> <span class="n">xr</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">Wr</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">wr</span> <span class="o">*</span> <span class="p">(</span><span class="n">xr</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">Wr</span><span class="p">))</span>
+            <span class="n">center</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">bthr</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">*</span> <span class="n">std</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">xr</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">xr</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">+</span> <span class="n">EPS</span><span class="p">))</span>
+        <span class="n">ml</span> <span class="o">=</span> <span class="n">_ramp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">[:,</span> <span class="n">bf</span><span class="p">],</span> <span class="n">center</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">wl</span><span class="p">,</span> <span class="n">wR</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">ml</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ml</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wl</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_leaf_w</span> <span class="ow">or</span> <span class="n">wR</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_leaf_w</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_oh</span> <span class="o">*</span> <span class="n">w</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span>          <span class="c1"># internal-node consequent</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"leaf"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"f"</span><span class="p">:</span> <span class="n">bf</span><span class="p">,</span> <span class="s2">"center"</span><span class="p">:</span> <span class="n">center</span><span class="p">,</span> <span class="s2">"h"</span><span class="p">:</span> <span class="n">h</span><span class="p">,</span>
+                <span class="s2">"lo"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">xr</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="s2">"hi"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">xr</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+                <span class="s2">"dist"</span><span class="p">:</span> <span class="n">cnt</span> <span class="o">/</span> <span class="n">cnt</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="s2">"support"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">W</span><span class="p">),</span>
+                <span class="s2">"L"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="n">wl</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">"R"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="n">wR</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span>
+
+    <span class="c1"># --------------------------------------------------------------- inference</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="p">):</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[</span><span class="s2">"classes_"</span><span class="p">,</span> <span class="s2">"root_"</span><span class="p">])</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"X must be a one- or two-dimensional array."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"X has </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> features, but DeepFERL was fitted with "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="si">}</span><span class="s2"> features."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">observed_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">observed_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">observed_mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">observed_mask</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">observed_mask</span> <span class="o">=</span> <span class="n">observed_mask</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">observed_mask</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"observed_mask must have the same shape as X."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Routing weights ``(below, above)`` of a node, gated to its support.</span>
+
+<span class="sd">        A sample whose split feature is unobserved sends half of its weight</span>
+<span class="sd">        down each branch, so leaf weights still sum to its total routing mass.</span>
+<span class="sd">        """</span>
+        <span class="n">xf</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">node</span><span class="p">[</span><span class="s2">"f"</span><span class="p">]]</span>
+        <span class="n">ml</span> <span class="o">=</span> <span class="n">_ramp</span><span class="p">(</span><span class="n">xf</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="s2">"center"</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="s2">"h"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounded_support</span><span class="p">:</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">"lo"</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="s2">"hi"</span><span class="p">]</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">oob_margin</span> <span class="o">*</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">+</span> <span class="n">EPS</span>
+            <span class="n">gate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">xf</span> <span class="o">-</span> <span class="p">(</span><span class="n">lo</span> <span class="o">-</span> <span class="n">g</span><span class="p">))</span> <span class="o">/</span> <span class="n">g</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(((</span><span class="n">hi</span> <span class="o">+</span> <span class="n">g</span><span class="p">)</span> <span class="o">-</span> <span class="n">xf</span><span class="p">)</span> <span class="o">/</span> <span class="n">g</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">ml</span> <span class="o">*</span> <span class="n">gate</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ml</span><span class="p">)</span> <span class="o">*</span> <span class="n">gate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">ml</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">ml</span>
+        <span class="k">if</span> <span class="n">observed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="o">~</span><span class="n">observed</span><span class="p">[:,</span> <span class="n">node</span><span class="p">[</span><span class="s2">"f"</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">missing</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="n">left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">missing</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">missing</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">observed</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">"leaf"</span><span class="p">]:</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="n">m</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">node</span><span class="p">[</span><span class="s2">"dist"</span><span class="p">]</span>
+            <span class="k">return</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"L"</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">left</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"R"</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">right</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeepFERL.predict_proba">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.predict_proba">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Class probabilities from the soft vote of the leaves.</span>
+
+<span class="sd">        Samples that reach no leaf, such as far out-of-distribution inputs under</span>
+<span class="sd">        ``bounded_support``, receive uniform probabilities.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (array-like of shape (n_samples, n_features)):</span>
+<span class="sd">                Samples to predict.</span>
+<span class="sd">            observed_mask (array-like of bool, optional):</span>
+<span class="sd">                Same shape as ``X``; ``False`` marks an unobserved feature value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray</span>
+<span class="sd">                Probabilities of shape (n_samples, n_classes).</span>
+<span class="sd">        """</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">observed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">C</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)),</span> <span class="n">out</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">s</span> <span class="o">&lt;=</span> <span class="n">EPS</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">C</span>
+        <span class="k">return</span> <span class="n">out</span> <span class="o">/</span> <span class="n">out</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.predict">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.predict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Predict the most probable class for each sample."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">observed</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">"r"</span><span class="p">:</span>
+            <span class="n">acc</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="s2">"dist"</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="s2">"support"</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="p">[</span><span class="s2">"leaf"</span><span class="p">]:</span>
+            <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_collect</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"L"</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">left</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">"_0"</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_collect</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"R"</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">"_1"</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeepFERL.node_activation_matrix">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.node_activation_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_activation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Path membership of every non-root node.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple</span>
+<span class="sd">                ``(M, cons, names, support)``: firing of shape (n_samples, n_nodes),</span>
+<span class="sd">                consequents of shape (n_nodes, n_classes), hierarchical node names</span>
+<span class="sd">                (a child extends its parent's name with ``"_0"`` or ``"_1"``), and</span>
+<span class="sd">                each node's fuzzy training support.</span>
+<span class="sd">        """</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">observed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="p">)</span>
+        <span class="n">acc</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)),</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">acc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">))),</span> <span class="p">[],</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">acc</span><span class="p">]</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">acc</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">acc</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">entry</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">acc</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">,</span> <span class="n">cons</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">support</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.leaf_mask">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.leaf_mask">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">leaf_mask</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Boolean mask of the nodes in ``names`` that have no descendant."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">o</span> <span class="o">!=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="s2">"_"</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">names</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.node_depths">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.node_depths">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_depths</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of splits on the path to each node in ``names``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.firing_strength">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.firing_strength">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">firing_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Total leaf firing per sample.</span>
+
+<span class="sd">        In-distribution samples route all of their weight to the leaves (total</span>
+<span class="sd">        1). Under ``bounded_support`` the total falls toward 0 outside the</span>
+<span class="sd">        training range, which makes it an out-of-distribution signal.</span>
+<span class="sd">        """</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_activation_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf_mask</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.predict_ds">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.predict_ds">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_ds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">leaves_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dempster"</span><span class="p">,</span>
+                   <span class="n">top_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reliability_vec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Combine activated rule nodes as Dempster--Shafer evidence.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (array-like of shape (n_samples, n_features)):</span>
+<span class="sd">                Samples to predict.</span>
+<span class="sd">            observed_mask (array-like of bool, optional):</span>
+<span class="sd">                Same shape as ``X``; ``False`` marks an unobserved feature value.</span>
+<span class="sd">            leaves_only (bool, default=False):</span>
+<span class="sd">                Combine leaf rules only.</span>
+<span class="sd">            rule (str, default="dempster"):</span>
+<span class="sd">                One of ``"dempster"``, ``"cautious"``, ``"hybrid"``,</span>
+<span class="sd">                ``"incremental"``, ``"incremental_local"`` or ``"mixture"``.</span>
+<span class="sd">            top_p (float, optional):</span>
+<span class="sd">                Top-p routing threshold applied to each consequent.</span>
+<span class="sd">            reliability_vec (array-like, optional):</span>
+<span class="sd">                Per-node reliability in [0, 1], aligned with the combined nodes,</span>
+<span class="sd">                that discounts firing toward ignorance.</span>
+<span class="sd">            beta (float, default=10.0):</span>
+<span class="sd">                Support pseudo-count for the incremental and mixture reliabilities.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple</span>
+<span class="sd">                ``(betp, belief, plausibility, ignorance)``; the first three have</span>
+<span class="sd">                shape (n_samples, n_classes) and ignorance has shape (n_samples,).</span>
+<span class="sd">        """</span>
+        <span class="n">_evidence</span><span class="o">.</span><span class="n">check_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">cons</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">support</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_activation_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">leaves_only</span> <span class="ow">and</span> <span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leaf_mask</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">cons</span><span class="p">,</span> <span class="n">support</span> <span class="o">=</span> <span class="n">M</span><span class="p">[:,</span> <span class="n">keep</span><span class="p">],</span> <span class="n">cons</span><span class="p">[</span><span class="n">keep</span><span class="p">],</span> <span class="n">support</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">top_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">M</span><span class="p">,</span> <span class="n">cons</span> <span class="o">=</span> <span class="n">_evidence</span><span class="o">.</span><span class="n">route_top_p</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">cons</span><span class="p">,</span> <span class="n">top_p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">reliability_vec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">M</span> <span class="o">=</span> <span class="n">M</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reliability_vec</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">betp</span><span class="p">,</span> <span class="n">belief</span><span class="p">,</span> <span class="n">plausibility</span><span class="p">,</span> <span class="n">ignorance</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_evidence</span><span class="o">.</span><span class="n">combine_evidence</span><span class="p">(</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">cons</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">),</span> <span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">,</span> <span class="n">support</span><span class="o">=</span><span class="n">support</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">betp</span><span class="p">,</span> <span class="n">belief</span><span class="p">,</span> <span class="n">plausibility</span><span class="p">,</span> <span class="n">ignorance</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.predict_credal">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.predict_credal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_credal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">leaves_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                       <span class="n">rule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dempster"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Pignistic probabilities, belief, plausibility and ignorance.</span>
+
+<span class="sd">        Leaves are combined by default, which avoids repeating the evidence of</span>
+<span class="sd">        nested internal rules on a deep tree.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_ds</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="n">observed_mask</span><span class="p">,</span> <span class="n">leaves_only</span><span class="o">=</span><span class="n">leaves_only</span><span class="p">,</span>
+                               <span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.predict_set">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.predict_set">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">leaves_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">rule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dempster"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Native credal prediction sets as a boolean class mask.</span>
+
+<span class="sd">        A class is kept when its plausibility reaches the largest belief. A</span>
+<span class="sd">        singleton is a confident prediction; a larger set abstains between its</span>
+<span class="sd">        classes.</span>
+<span class="sd">        """</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">belief</span><span class="p">,</span> <span class="n">plausibility</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_credal</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="n">observed_mask</span><span class="p">,</span> <span class="n">leaves_only</span><span class="o">=</span><span class="n">leaves_only</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plausibility</span> <span class="o">&gt;=</span> <span class="n">belief</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1e-12</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.predict_dirichlet">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.predict_dirichlet">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_dirichlet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">u_floor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="o">**</span><span class="n">ds_kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Dirichlet parameters ``alpha_c = K * Bel(c) / m(Theta) + 1`` per sample.</span>
+
+<span class="sd">        ``u_floor`` keeps ignorance away from zero so confident samples give a</span>
+<span class="sd">        finite concentration. Extra keyword arguments go to :meth:`predict_ds`.</span>
+<span class="sd">        """</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">belief</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ignorance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_ds</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">observed_mask</span><span class="o">=</span><span class="n">observed_mask</span><span class="p">,</span> <span class="o">**</span><span class="n">ds_kwargs</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">ignorance</span><span class="p">,</span> <span class="n">u_floor</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span> <span class="o">*</span> <span class="n">belief</span> <span class="o">/</span> <span class="n">u</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------- inspection</span>
+<div class="viewcode-block" id="DeepFERL.n_rules">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.n_rules">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of rules, i.e. leaves."""</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[</span><span class="s2">"root_"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_leaves_</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.get_tree_stats">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.get_tree_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tree_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structural statistics: leaves, internal nodes and leaf depths."""</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[</span><span class="s2">"root_"</span><span class="p">])</span>
+        <span class="n">leaf_depths</span><span class="p">,</span> <span class="n">internal</span> <span class="o">=</span> <span class="p">[],</span> <span class="mi">0</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">node</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">"leaf"</span><span class="p">]:</span>
+                <span class="n">leaf_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">internal</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">[</span><span class="s2">"R"</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">[</span><span class="s2">"L"</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"leaves"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">leaf_depths</span><span class="p">),</span> <span class="s2">"internal_nodes"</span><span class="p">:</span> <span class="n">internal</span><span class="p">,</span>
+                <span class="s2">"max_depth"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">leaf_depths</span><span class="p">)),</span> <span class="s2">"mean_leaf_depth"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">leaf_depths</span><span class="p">)),</span>
+                <span class="s2">"total_leaf_depth"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">leaf_depths</span><span class="p">))}</span></div>
+
+
+<div class="viewcode-block" id="DeepFERL.print_tree">
+<a class="viewcode-back" href="../../api/ferl.html#ex_fuzzy.DeepFERL.print_tree">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Print the tree as soft threshold rules.</span>
+
+<span class="sd">        Each split reads "feature is below/above center (± half-width)", and</span>
+<span class="sd">        each leaf shows its most probable class, that probability and its</span>
+<span class="sd">        support.</span>
+<span class="sd">        """</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[</span><span class="s2">"root_"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">feature_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feature_names</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"feature_names_in_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feature_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feature_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"x</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">)]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">describe</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"dist"</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">[</span><span class="n">best</span><span class="p">]</span><span class="si">}</span><span class="s2"> (p=</span><span class="si">{</span><span class="n">node</span><span class="p">[</span><span class="s1">'dist'</span><span class="p">][</span><span class="n">best</span><span class="p">]</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">decimals</span><span class="si">}</span><span class="s2">f</span><span class="si">}</span><span class="s2">, "</span>
+                    <span class="sa">f</span><span class="s2">"support=</span><span class="si">{</span><span class="n">node</span><span class="p">[</span><span class="s1">'support'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"root: </span><span class="si">{</span><span class="n">describe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">"leaf"</span><span class="p">]:</span>
+                <span class="k">return</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">feature_names</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">"f"</span><span class="p">]]</span>
+            <span class="n">spread</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">node</span><span class="p">[</span><span class="s1">'center'</span><span class="p">]</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">decimals</span><span class="si">}</span><span class="s2">g</span><span class="si">}</span><span class="s2"> (±</span><span class="si">{</span><span class="n">node</span><span class="p">[</span><span class="s1">'h'</span><span class="p">]</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">decimals</span><span class="si">}</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">word</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(((</span><span class="n">node</span><span class="p">[</span><span class="s2">"L"</span><span class="p">],</span> <span class="s2">"below"</span><span class="p">),</span> <span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"R"</span><span class="p">],</span> <span class="s2">"above"</span><span class="p">))):</span>
+                <span class="n">last</span> <span class="o">=</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="n">marker</span> <span class="o">=</span> <span class="s2">"└── "</span> <span class="k">if</span> <span class="n">last</span> <span class="k">else</span> <span class="s2">"├── "</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="s2">"leaf: "</span> <span class="o">+</span> <span class="n">describe</span><span class="p">(</span><span class="n">branch</span><span class="p">)</span> <span class="k">if</span> <span class="n">branch</span><span class="p">[</span><span class="s2">"leaf"</span><span class="p">]</span> <span class="k">else</span> <span class="n">describe</span><span class="p">(</span><span class="n">branch</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">marker</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">spread</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">walk</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"    "</span> <span class="k">if</span> <span class="n">last</span> <span class="k">else</span> <span class="s2">"│   "</span><span class="p">))</span>
+
+        <span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
