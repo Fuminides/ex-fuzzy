@@ -8,11 +8,10 @@ a fit follows the same search whichever device scored it.
 Elementwise IEEE operations give identical results on any conforming device;
 reductions are what differ between libraries.  Products over the feature axis
 are written as the left-to-right loop ``np.prod`` performs, and every float sum
-reproduces NumPy's pairwise summation tree (:class:`_PairwisePlan`).  Label
-counts and the MCC's integer-valued float sums are exact in any order.  The
-remaining MCC arithmetic, including its square root, and the complexity
-penalties run in NumPy on the host: PyTorch's CPU ``sqrt`` was measured not to
-be correctly rounded.
+reproduces NumPy's pairwise summation tree (:class:`_PairwisePlan`).  The
+per-class label counts, covered classes and condition counts are exact
+integers; the macro F1 and the penalties are computed from them in NumPy on
+the host, with the same function as every CPU evaluator.
 
 ``_population_fitness.score_population`` is the template and, with the scalar
 array evaluator, the oracle.  :meth:`TorchObjective.build` declines problems it
@@ -26,6 +25,7 @@ from typing import Optional
 
 import numpy as np
 
+from ._fitness import _macro_f1, _penalized_objective
 from ._population_fitness import _RouteProbe
 
 
@@ -258,6 +258,7 @@ class TorchObjective:
         self.tolerance = problem.tolerance
         self.alpha = problem.alpha_
         self.beta = problem.beta_
+        self.max_conditions = problem._max_conditions
         self.n_terms = int(counts.sum())
         self._counts = counts.tolist()
         self.term_counts = torch.as_tensor(counts, device=device)
@@ -274,6 +275,7 @@ class TorchObjective:
         labels = problem._label_domain()
         self.y = torch.as_tensor(y, dtype=torch.int64, device=device)
         self.label_size = labels.size
+        self.class_sizes = labels.class_sizes
         self.shifted_y = torch.as_tensor(labels.shifted_y, dtype=torch.int64, device=device)
         self.class_masks = [torch.as_tensor(y == klass, dtype=torch.float64, device=device)
                             for klass in range(self.n_classes)]
@@ -301,31 +303,18 @@ class TorchObjective:
                   for start in range(0, population, self.chunk)]
         return self._finish(*(torch.cat(pieces).cpu().numpy() for pieces in zip(*chunks)))
 
-    def _finish(self, covariance, pred_variance, true_variance, survivors, declined,
-                complete=None, width=None, possible=None, rules=None) -> tuple:
+    def _finish(self, true_positive, predicted, survivors, declined, covered,
+                conditions) -> tuple:
         """
         Complete the objective on the host exactly as ``score_population`` does.
 
-        Every input holds exact integer values; the square root, the divisions
-        and the penalty additions are left to NumPy.
+        Every input holds exact integer values; the divisions and the penalties
+        are left to NumPy.
         """
-        population = len(covariance)
-        result = np.zeros(population)
-        denominator = pred_variance * true_variance
-        valid = denominator != 0
-        result[valid] = covariance[valid] / np.sqrt(denominator[valid])
-        result[survivors == 0] = 0.0
-        if complete is not None:
-            size = np.divide(width, possible, out=np.zeros(population), where=possible != 0)
-            size = np.where(complete & (possible != 0), 1 - size, 0.0)
-            rulesize = np.divide(rules, survivors, out=np.zeros(population),
-                                 where=survivors != 0)
-            rulesize = np.where(complete, rulesize, 0.0)
-            # Accumulate as the reference does: one addition per penalty.
-            if self.alpha != 0.0:
-                result += self.alpha * size
-            if self.beta != 0.0:
-                result += self.beta * rulesize
+        primary = _macro_f1(true_positive, predicted, self.class_sizes)
+        primary[survivors == 0] = 0.0
+        result = _penalized_objective(primary, covered, conditions, self.n_classes,
+                                      self.max_conditions, self.alpha, self.beta)
         return result, declined
 
     def _score_chunk(self, genes) -> tuple:
@@ -419,10 +408,8 @@ class TorchObjective:
         if self.allow_unknown:
             maxima = association.gather(1, winners.unsqueeze(1)).squeeze(1)
             prediction = torch.where(maxima == 0.0, -1, prediction)
-        parts = list(self._mcc_terms(prediction)) + [survivors, declined]
-        if self.alpha != 0.0 or self.beta != 0.0:
-            parts.extend(self._complexity_counts(effective, consequents, active, scores))
-        return parts
+        return (list(self._class_counts(prediction)) + [survivors, declined]
+                + self._size_counts(effective, consequents, active))
 
     def _partition_table(self, genes) -> tuple:
         """
@@ -518,37 +505,28 @@ class TorchObjective:
         return torch.bincount(encoded, minlength=population * self.n_rules).reshape(
             population, self.n_rules)
 
-    def _mcc_terms(self, prediction) -> tuple:
-        """Integer-valued MCC covariance and variances over the fixed label layout."""
+    def _class_counts(self, prediction) -> tuple:
+        """Per-candidate true positives and predictions per class, as integers."""
         torch = _torch()
         population = prediction.shape[0]
         size = self.label_size
-        offsets = torch.arange(population, device=self.device).unsqueeze(1) * size * size
-        encoded = offsets + self.shifted_y.unsqueeze(0) * size + (prediction + 1)
-        matrix = torch.bincount(encoded.reshape(-1), minlength=population * size * size)
-        matrix = matrix.reshape(population, size, size).double()
-        true_sum = matrix.sum(dim=2)
-        pred_sum = matrix.sum(dim=1)
-        correct = matrix.diagonal(dim1=1, dim2=2).sum(dim=1)
-        samples = pred_sum.sum(dim=1)
-        covariance = correct * samples - (true_sum * pred_sum).sum(dim=1)
-        pred_variance = samples * samples - (pred_sum * pred_sum).sum(dim=1)
-        true_variance = samples * samples - (true_sum * true_sum).sum(dim=1)
-        return covariance, pred_variance, true_variance
+        offsets = torch.arange(population, device=self.device).unsqueeze(1) * size
+        shifted = prediction + 1
+        labels = self.shifted_y.unsqueeze(0)
+        hits = (offsets + labels)[shifted == labels]
+        true_positive = torch.bincount(hits, minlength=population * size)
+        predicted = torch.bincount((offsets + shifted).reshape(-1), minlength=population * size)
+        return (true_positive.reshape(population, size)[:, 1:],
+                predicted.reshape(population, size)[:, 1:])
 
-    def _complexity_counts(self, effective, consequents, active, scores) -> list:
-        """Integer inputs of ``_array_fitness._complexity`` for every candidate."""
+    def _size_counts(self, effective, consequents, active) -> list:
+        """Classes that keep a rule, and the conditions of the kept rules, per candidate."""
         torch = _torch()
         class_ids = torch.arange(self.n_classes, device=self.device)
-        complete = (active.unsqueeze(2) & (consequents.unsqueeze(2) == class_ids)).any(
-            dim=1).all(dim=1)
-        widths = (effective != -1).sum(dim=2)
-        # evalRuleBase uses a strict comparison here.
-        selected = active & (scores > self.tolerance)
-        possible = selected.sum(dim=1) * self.n_features
-        width = torch.where(selected, torch.where(widths == 0, self.n_features, widths), 0)
-        rules = (selected & (widths != 0)).sum(dim=1)
-        return [complete, width.sum(dim=1), possible, rules]
+        covered = (active.unsqueeze(2) & (consequents.unsqueeze(2) == class_ids)).any(
+            dim=1).sum(dim=1)
+        conditions = torch.where(active, (effective != -1).sum(dim=2), 0).sum(dim=1)
+        return [covered, conditions]
 
 
 class _DeviceProbe(_RouteProbe):

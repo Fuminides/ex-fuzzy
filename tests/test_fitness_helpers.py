@@ -4,18 +4,18 @@ import importlib
 
 import numpy as np
 import pytest
-from sklearn.metrics import matthews_corrcoef
 
 from ex_fuzzy import _ferl_backend
 from ex_fuzzy import _fitness
 
 
-def test_mcc_falls_back_to_sklearn_for_non_integer_labels():
+def test_class_counts_compare_labels_without_a_counting_layout():
     y = np.array([0.0, 1.0, 1.0, 0.0])
-    prediction = np.array([0.0, 1.0, 0.0, 0.0])
+    prediction = np.array([0, 1, 0, -1])
 
-    assert _fitness._mcc(y, prediction) == matthews_corrcoef(y, prediction)
-    assert _fitness._mcc(y.astype(int), prediction.astype(int)) == pytest.approx(matthews_corrcoef(y, prediction))
+    for counted, expected in zip(_fitness._class_counts(y, prediction, 2),
+                                 _fitness._class_counts(y.astype(int), prediction, 2)):
+        np.testing.assert_array_equal(counted, expected)
 
 
 def test_kernels_load_from_the_package_or_explain_how_to_build_them(monkeypatch):

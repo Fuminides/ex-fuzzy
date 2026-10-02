@@ -96,9 +96,9 @@ def test_gene_population_matches_scalar_evaluation(fixed):
     np.testing.assert_array_equal(second, expected)
 
 
-def test_batched_complexity_penalty_when_survivors_score_exactly_the_tolerance():
-    # With one class every survivor must clear the strict tolerance to count,
-    # so a tolerance equal to the best rule score leaves no selected rule.
+def test_batched_penalties_when_survivors_score_exactly_the_tolerance():
+    # A tolerance equal to the best rule score keeps only the rules at the
+    # pruning edge, which the batched and scalar routes must prune alike.
     X, _ = _data()
     y = np.zeros(len(X), dtype=int)
     partitions = utils.construct_partitions(X, fs.FUZZY_SETS.t1)

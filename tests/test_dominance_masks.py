@@ -100,8 +100,10 @@ def test_score_rulebase_shares_masks_only_within_one_evaluation(monkeypatch):
         return original(firing, labels, consequents, mask_cache)
 
     monkeypatch.setattr(_fitness, '_dominance', observed)
-    score_rulebase(problem._construct_ruleBase(gene, problem.fuzzy_type), X, y, 0.0, 0.0, 0.0)
-    score_rulebase(problem._construct_ruleBase(gene, problem.fuzzy_type), X, y, 0.0, 0.0, 0.0)
+    score_rulebase(problem._construct_ruleBase(gene, problem.fuzzy_type), X, y, 0.0, 0.0, 0.0,
+                   max_conditions=problem._max_conditions)
+    score_rulebase(problem._construct_ruleBase(gene, problem.fuzzy_type), X, y, 0.0, 0.0, 0.0,
+                   max_conditions=problem._max_conditions)
 
     assert len(caches) == 4
     assert caches[0] is caches[1]

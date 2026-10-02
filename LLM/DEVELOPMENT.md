@@ -70,10 +70,13 @@ kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
   `FitRuleBase._array_score` returns `None` for unsupported cases.
 - NumPy reduction layout and pairwise summation affect exactness. Compare new
   reductions with the reference across relevant types and array layouts.
+- The objective is the macro F1 of the pruned rule base minus the class-coverage
+  and compactness penalties. Every evaluator computes exact integer counts and
+  finishes with `_fitness._macro_f1` and `_fitness._penalized_objective`; keep
+  the float arithmetic in those two functions so the evaluators agree.
 - The PyTorch objective reproduces NumPy's pairwise sums and left-to-right
-  products, and leaves non-integer MCC and penalty arithmetic to NumPy because
-  CPU `torch.sqrt` is not correctly rounded. Its runtime verification is a
-  safety net, not a substitute for parity tests.
+  products, and returns integer counts for NumPy to finish. Its runtime
+  verification is a safety net, not a substitute for parity tests.
 - Fit-local fitness/firing caches and packed memberships must remain bounded and
   scoped to a fit, with cleanup on success and failure. Do not make them global.
 - Respect fast-path eligibility and preserve logical evaluation counts even on

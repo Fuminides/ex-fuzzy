@@ -12,7 +12,7 @@ from typing import Optional
 import numpy as np
 
 from . import rules
-from ._fitness import _FiringCache, _LabelDomain
+from ._fitness import _FiringCache, _LabelDomain, _macro_f1, _penalized_objective
 
 
 _GATHER_BUDGET = 32 * 1024 * 1024
@@ -159,28 +159,17 @@ def _winner_counts(winners: np.ndarray, selected: np.ndarray,
         population, n_rules)
 
 
-def _mcc_population(prediction: np.ndarray, domain: _LabelDomain) -> np.ndarray:
-    """MCC for a population using a fixed superset of zero rows/columns."""
+def _class_counts_population(prediction: np.ndarray, domain: _LabelDomain) -> tuple:
+    """Per-candidate true positives and predictions per class, and the class sizes."""
     population, _ = prediction.shape
     size = domain.size
     shifted = prediction + 1
-    offsets = np.arange(population)[:, None] * size * size
-    encoded = offsets + domain.shifted_y[None, :] * size + shifted
-    matrix = np.bincount(encoded.reshape(-1),
-                         minlength=population * size * size).reshape(
-                             population, size, size)
-    true_sum = matrix.sum(axis=2, dtype=np.float64)
-    pred_sum = matrix.sum(axis=1, dtype=np.float64)
-    correct = np.trace(matrix, axis1=1, axis2=2, dtype=np.float64)
-    samples = pred_sum.sum(axis=1)
-    covariance = correct * samples - np.sum(true_sum * pred_sum, axis=1)
-    pred_variance = samples ** 2 - np.sum(pred_sum * pred_sum, axis=1)
-    true_variance = samples ** 2 - np.sum(true_sum * true_sum, axis=1)
-    denominator = pred_variance * true_variance
-    result = np.zeros(population)
-    valid = denominator != 0
-    result[valid] = covariance[valid] / np.sqrt(denominator[valid])
-    return result
+    offsets = np.arange(population)[:, None] * size
+    hits = (offsets + domain.shifted_y[None, :])[shifted == domain.shifted_y[None, :]]
+    true_positive = np.bincount(hits, minlength=population * size).reshape(population, size)
+    predicted = np.bincount((offsets + shifted).reshape(-1),
+                            minlength=population * size).reshape(population, size)
+    return true_positive[:, 1:], predicted[:, 1:], domain.class_sizes
 
 
 def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
@@ -190,7 +179,8 @@ def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
                      tolerance: float, alpha: float, beta: float,
                      labels: _LabelDomain,
                      firing_cache: Optional[_FiringCache] = None,
-                     gather_budget: int = _GATHER_BUDGET) -> Optional[np.ndarray]:
+                     gather_budget: int = _GATHER_BUDGET, *,
+                     max_conditions: int) -> Optional[np.ndarray]:
     """Return exact built-in scores, or None when this narrow route declines."""
     genes = np.asarray(genes)
     population = len(genes)
@@ -241,33 +231,14 @@ def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
     prediction = np.take_along_axis(consequents, winners, axis=1)
     if allow_unknown:
         prediction[np.max(association, axis=2) == 0.0] = -1
-    result = _mcc_population(prediction, labels)
-    result[survivor_count == 0] = 0.0
-
-    if alpha != 0.0 or beta != 0.0:
-        class_ids = np.arange(n_classes)
-        class_present = np.any(
-            active[:, :, None] & (consequents[:, :, None] == class_ids), axis=1)
-        complete = np.all(class_present, axis=1)
-        widths = np.count_nonzero(antecedents != -1, axis=2)
-        selected = active & (scores > tolerance)
-        possible = np.count_nonzero(selected, axis=1) * n_features
-        effective = np.sum(np.where(selected, np.where(
-            widths == 0, n_features, widths), 0), axis=1)
-        size = np.divide(effective, possible, out=np.zeros(population),
-                         where=possible != 0)
-        # _complexity's size is 0.0, not 1.0, when no survivor clears the strict
-        # tolerance, e.g. when every survivor scores exactly the tolerance.
-        size = np.where(complete & (possible != 0), 1 - size, 0.0)
-        effective_rules = np.count_nonzero(selected & (widths != 0), axis=1)
-        rulesize = np.divide(effective_rules, survivor_count,
-                             out=np.zeros(population), where=survivor_count != 0)
-        rulesize = np.where(complete, rulesize, 0.0)
-        if alpha != 0.0:
-            result += alpha * size
-        if beta != 0.0:
-            result += beta * rulesize
-    return result
+    primary = _macro_f1(*_class_counts_population(prediction, labels))
+    primary[survivor_count == 0] = 0.0
+    class_ids = np.arange(n_classes)
+    covered = np.count_nonzero(np.any(
+        active[:, :, None] & (consequents[:, :, None] == class_ids), axis=1), axis=1)
+    conditions = np.sum(np.where(active, np.count_nonzero(antecedents != -1, axis=2), 0), axis=1)
+    return _penalized_objective(primary, covered, conditions, n_classes,
+                                max_conditions, alpha, beta)
 
 
 class _RouteProbe:

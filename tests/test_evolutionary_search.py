@@ -51,14 +51,20 @@ def test_the_gene_chooses_the_rules(iris):
     assert bad['F'] > good['F']
 
 
-def test_size_penalties_are_added_to_the_fitness(iris):
+def test_penalties_are_subtracted_from_the_fitness(iris):
     X, y = iris
     problem = es.ExploreRuleBases(X, y, nRules=3, n_classes=3, candidate_rules=_candidates(X))
-    rule_base = problem._construct_ruleBase(np.array([0, 2, 3]), fs.FUZZY_SETS.t1)
 
-    plain = problem.fitness_func(rule_base, problem.X, y, 0.0)
-    penalised = problem.fitness_func(rule_base, problem.X, y, 0.0, alpha=0.5, beta=0.5)
-    assert penalised > plain
+    def fitness(gene, **weights):
+        # Scoring prunes the rule base, so every call gets a fresh one.
+        rule_base = problem._construct_ruleBase(np.array(gene), fs.FUZZY_SETS.t1)
+        return problem.fitness_func(rule_base, problem.X, y, 0.0, **weights)
+
+    # One rule per class: only the compactness penalty applies.
+    assert fitness([0, 2, 3], alpha=0.5) < fitness([0, 2, 3])
+    assert fitness([0, 2, 3], beta=0.5) == fitness([0, 2, 3])
+    # Only virginica has rules: the coverage penalty applies to the two others.
+    assert fitness([4, 4, 3], beta=0.5) == pytest.approx(fitness([4, 4, 3]) - 0.5 * 2 / 3)
 
 
 @pytest.mark.parametrize('fuzzy_type, rule_base_class', [(fs.FUZZY_SETS.t2, rl.RuleBaseT2), (fs.FUZZY_SETS.gt2, rl.RuleBaseGT2)])

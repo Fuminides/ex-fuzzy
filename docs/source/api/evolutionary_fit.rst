@@ -22,14 +22,15 @@ evaluator. It decodes each chromosome with the reference rule constructor,
 computes firing strengths once, and reuses them for dominance scoring, pruning
 and final winner-rule prediction. Rules that never win a correctly classified
 sample are still removed. Reporting metrics are computed for the selected model
-rather than repeatedly for every candidate. Integer-label MCC uses a direct
-confusion-matrix calculation.
+rather than repeatedly for every candidate. Integer labels are counted per class
+directly for the macro F1.
 
 No public parameters change, and no compiler or additional dependency is needed.
 Fixed partitions retain their precomputed memberships; optimized partitions are
 recomputed for each chromosome. Custom losses, nonnumeric internal labels and
 other fuzzy types retain the full evaluator. EvoX classification also uses this
-CPU path. Regression and candidate-rule mining retain their existing evaluators.
+CPU path. Rule selection from candidate rules optimizes the same objective through
+the reference evaluator; regression retains its own.
 
 To compare exact fitness values, selected chromosomes and predictions while
 measuring candidate evaluation and complete seeded fits, run from the repository

@@ -56,7 +56,7 @@ def _no_firing_cache_scope(fitness):
     from contextlib import contextmanager
 
     @contextmanager
-    def scope(problem, enabled):
+    def scope(problem, enabled, population=None):
         if not enabled:
             yield
             return

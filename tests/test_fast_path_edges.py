@@ -51,13 +51,14 @@ def test_t1_firing_without_gatherable_memberships_matches_the_gathered_path():
     assert af.firing_strengths(antecedents, as_lists, 5, False, cache=_FiringCache()) is None
 
     decoded = af._DecodedCandidate(antecedents, np.array([0, 1, 1]), np.ones(3))
-    assert af.score_candidate(decoded, unusable, np.zeros((5, 2)), Y[:5], 2, 0, False, 0.0, 0.0, 0.0, False) is None
+    assert af.score_candidate(decoded, unusable, np.zeros((5, 2)), Y[:5], 2, 0, False, 0.0, 0.0, 0.0, False,
+                              max_conditions=2) is None
 
 
 def _population_arguments(**overrides):
     arguments = dict(n_rules=2, n_ants=1, n_features=2, n_classes=2, term_counts=TERM_COUNTS,
                      fourth_pointer=4, ds_mode=0, allow_unknown=False, tolerance=0.0,
-                     alpha=0.0, beta=0.0, labels=_LabelDomain.build(Y, 2))
+                     alpha=0.0, beta=0.0, labels=_LabelDomain.build(Y, 2), max_conditions=2)
     arguments.update(overrides)
     return arguments
 
@@ -95,5 +96,5 @@ def test_population_scores_match_the_scalar_route_with_each_penalty():
             decoded = af.decode_rule_arrays(gene, 2, 1, 2, 2, TERM_COUNTS, 0, 4)
             expected = af.score_candidate(decoded, truth, X, Y, 2, 0, False, 0.0,
                                           arguments['alpha'], arguments['beta'], False,
-                                          labels=arguments['labels'])
+                                          labels=arguments['labels'], max_conditions=2)
             assert score == expected

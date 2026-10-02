@@ -467,10 +467,10 @@ class evalRuleBase():
 
     def size_antecedents_eval(self, tolerance=0.1) -> float:
         """
-        Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.
+        Returns the share of the possible conditions the rule base leaves unused.
 
-        0 means that the rule base contains all rules with more than {tolerance} DS, there are many of them and they have all possible antecedents.
-        The more rules and antecedent per rules the lower this score is.
+        Over the rules whose dominance score exceeds the tolerance, it is 1 - conditions / (rules x input variables),
+        so shorter rules score higher. It is 0 when a class has no rules.
 
         Args:
             tolerance: float in [0, 1]. The tolerance for the dominance score. Default 0.1
@@ -507,10 +507,10 @@ class evalRuleBase():
 
     def effective_rulesize_eval(self, tolerance=0.1) -> float:
         """
-        Returns a score between 0 and 1, where 1 means that the rule base only contains almost no antecedents.
+        Returns the share of rules that are effective.
 
-        0 means that the rule base contains all rules with more than {tolerance} DS, there are many of them and they have all possible antecedents.
-        The more rules and antecedent per rules the lower this score is.
+        A rule is effective when its dominance score exceeds the tolerance and it has at least one condition.
+        It is 0 when a class has no rules. It does not depend on how many rules there are.
 
         Args:
             tolerance: float in [0, 1]. The tolerance for the dominance score. Default 0.1

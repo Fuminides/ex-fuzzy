@@ -76,5 +76,7 @@ def test_weighted_duplicates_are_removed_alike_on_both_evaluation_paths(kind, fi
         # The first occurrence keeps its weight; the dropped copies' weights are gone.
         assert {rule.weight for rule in master.get_rules()} <= {0.1, 0.4, 0.5}
         expected = score_rulebase(problem._construct_ruleBase(gene.copy(), kind), X, y,
-                                  problem.tolerance, 0.0, 0.0, problem._precomputed_truth)
+                                  problem.tolerance, problem.alpha_, problem.beta_,
+                                  problem._precomputed_truth,
+                                  max_conditions=problem._max_conditions)
         assert problem._array_score(gene.copy()) == expected

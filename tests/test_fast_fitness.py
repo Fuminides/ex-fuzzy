@@ -4,21 +4,11 @@ import copy
 import numpy as np
 import pytest
 from sklearn.datasets import load_iris, make_classification
-from sklearn.metrics import matthews_corrcoef
 
 from ex_fuzzy import evolutionary_fit as evf
 from ex_fuzzy import fuzzy_sets as fs
 from ex_fuzzy import utils
-from ex_fuzzy._fitness import _mcc, score_rulebase
-
-
-@pytest.mark.parametrize('labels', [[0], [0, 1], [-1, 0, 1, 2], [10, 30, 90]])
-def test_integer_mcc_matches_sklearn(labels):
-    rng = np.random.default_rng(6)
-    for n in (1, 2, 30, 1000):
-        y = rng.choice(labels, n)
-        for prediction in (y, y[::-1], np.full(n, labels[0]), rng.choice(labels, n)):
-            assert _mcc(y, prediction) == matthews_corrcoef(y, prediction)
+from ex_fuzzy._fitness import score_rulebase
 
 
 @pytest.mark.parametrize('fixed', [False, True])
@@ -59,7 +49,8 @@ def test_pruning_and_penalties_at_exact_dominance_threshold(ds_mode):
         for tolerance in (threshold, np.nextafter(threshold, np.inf)):
             left, right = copy.deepcopy(base), copy.deepcopy(base)
             slow = problem.fitness_func(left, X, y, tolerance, 0.2, 0.3)
-            fast = score_rulebase(right, X, y, tolerance, 0.2, 0.3)
+            fast = score_rulebase(right, X, y, tolerance, 0.2, 0.3,
+                                  max_conditions=problem._max_conditions)
             assert fast == slow
             assert left.get_consequents() == right.get_consequents()
             np.testing.assert_array_equal(left.get_scores(), right.get_scores())
@@ -101,5 +92,5 @@ def test_fast_path_evaluates_firing_once(monkeypatch):
         return original(*args, **kwargs)
 
     monkeypatch.setattr(base, 'compute_firing_strengths', counted)
-    score_rulebase(base, X, y, 0.0, 0.0, 0.0)
+    score_rulebase(base, X, y, 0.0, 0.0, 0.0, max_conditions=problem._max_conditions)
     assert len(calls) == 1

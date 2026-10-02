@@ -12,11 +12,33 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 Changed
 -------
+- **Genetic objective**: the search maximizes the macro F1 of the pruned rule
+  base on the training data instead of its Matthews correlation coefficient,
+  minus two small penalties: ``beta`` times the share of classes without rules
+  (default 0.05) and ``alpha`` times the share of the possible antecedent
+  conditions, ``nRules * nAnts``, that the rule base uses (default 0.03).
+  ``reparametrize_loss(alpha, beta)`` sets these two weights; the rule-length
+  and effective-rule terms it used to add are gone. On the 43 KEEL datasets
+  with at most 2,500 samples, optimizing macro F1 instead of MCC raised the
+  mean test macro F1 by 0.020 and halved how often a class was left without
+  rules, while the mean test MCC fell by 0.018. With the default penalties,
+  rule bases on the same datasets had 21% fewer conditions and 14% fewer rules
+  than without them, at the same test macro F1. Rule selection from mined
+  candidates (``fit`` with ``candidate_rules``) optimizes the same objective and
+  now prunes rules during the search. Seeded fits, fitted models and
+  ``performance`` differ from earlier versions, and a rule base without rules
+  scores ``-beta`` instead of 0
 - **Tournament selection**: the pymoo backend runs tournaments of
   ``tournament_size`` candidates (default 3). pymoo's GA ignored the setting
   and always ran binary tournaments, so seeded fits of the classifier and of
   the regressor, which asks for tournaments of 3, change. Ties go to the first
   candidate of a tournament, whose candidates are drawn at random
+
+Fixed
+-----
+- The core concepts guide described a multi-objective search and a two-stage
+  workflow through functions that do not exist; it now shows the objective,
+  ``reparametrize_loss`` and rule selection through ``fit``
 
 [3.2.0] - 2026-09-16
 ====================

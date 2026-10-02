@@ -4,6 +4,7 @@ from multiprocessing.pool import ThreadPool
 import numpy as np
 import pytest
 from sklearn.datasets import load_iris
+from sklearn.metrics import f1_score
 
 from ex_fuzzy import evolutionary_fit as evf
 from ex_fuzzy import evolutionary_backends as eb
@@ -36,8 +37,6 @@ def objective(problem, chromosome):
 
 def reference(problem, chromosome):
     rulebase = problem._construct_ruleBase(chromosome, problem.fuzzy_type)
-    if not rulebase.get_rules():
-        return 1.0
     return 1 - problem.fitness_func(
         rulebase, problem.X, problem.y, problem.tolerance,
         problem.alpha_, problem.beta_, problem._precomputed_truth,
@@ -85,11 +84,32 @@ def test_custom_loss_receives_normalized_rulebase_and_penalties():
     assert calls == [(0.01, 0.1, 0.2)]
 
 
+@pytest.mark.parametrize('fixed', [False, True])
+def test_objective_is_macro_f1_minus_coverage_and_compactness_penalties(fixed):
+    problem = make_problem(fixed=fixed)  # alpha=0.1, beta=0.2
+    for chromosome in population(problem, 20):
+        rulebase = problem._construct_ruleBase(chromosome, problem.fuzzy_type)
+        # Scoring prunes the rule base exactly as the search does.
+        problem.fitness_func(rulebase, problem.X, problem.y, problem.tolerance,
+                             0.0, 0.0, problem._precomputed_truth)
+        survivors = rulebase.get_rules()
+        if survivors:
+            predicted = rulebase.winning_rule_predict(problem.X, precomputed_truth=problem._precomputed_truth)
+            f1 = f1_score(problem.y, predicted, labels=[0, 1, 2], average='macro', zero_division=0)
+        else:
+            f1 = 0.0
+        uncovered = sum(1 for base in rulebase.get_rulebases() if len(base) == 0) / 3
+        conditions = sum(int(np.sum(np.asarray(rule.antecedents) != -1)) for rule in survivors)
+        expected = f1 - 0.2 * uncovered - 0.1 * conditions / (problem.nRules * problem.nAnts)
+        assert 1 - objective(problem, chromosome) == pytest.approx(expected, abs=1e-12)
+
+
 def test_disabled_rules_do_not_vote_for_last_class():
     problem = make_problem(fixed=True)
     chromosome = population(problem, 1)[0]
     chromosome[-problem.nRules:] = -1
-    assert objective(problem, chromosome) == 1.0
+    # No rule votes, so F1 is 0 and every class lacks rules.
+    assert objective(problem, chromosome) == 1.0 + problem.beta_
 
 
 @pytest.mark.parametrize('fixed', [False, True])

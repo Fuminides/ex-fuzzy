@@ -17,8 +17,9 @@ import numpy as np
 from typing import Optional
 
 from . import rules
-from ._fitness import (_ClassMaskCache, _FiringCache, _LabelDomain,
-                       _association, _dominance, _mcc, _mcc_encoded)
+from ._fitness import (_ClassMaskCache, _FiringCache, _LabelDomain, _association,
+                       _class_counts, _class_counts_encoded, _dominance, _macro_f1,
+                       _penalized_objective)
 
 class _DecodedCandidate:
     """Effective phenotype of one chromosome, in class-major rule order."""
@@ -157,30 +158,13 @@ def _cached_firing(antecedents: np.ndarray, truth, n_samples: int, tail: tuple,
     return result
 
 
-def _complexity(antecedents: np.ndarray, consequents: np.ndarray,
-                scores: np.ndarray, n_classes: int,
-                tolerance: float) -> tuple[float, float]:
-    """Array form of size_antecedents_eval and effective_rulesize_eval."""
-    if np.any(np.bincount(consequents, minlength=n_classes)[:n_classes] == 0):
-        return 0.0, 0.0  # evalRuleBase returns 0.0 as soon as one class is empty.
-    n_features = antecedents.shape[1]
-    selected = scores > tolerance  # evalRuleBase uses a strict comparison here.
-    widths = np.count_nonzero(antecedents != -1, axis=1)
-    possible = int(np.count_nonzero(selected)) * n_features
-    chosen = widths[selected]
-    effective = int(np.sum(np.where(chosen == 0, n_features, chosen)))
-    size = 1 - effective / possible if possible else 0.0
-    effective_rules = int(np.count_nonzero(selected & (widths != 0)))
-    rulesize = effective_rules / len(consequents) if len(consequents) else 0.0
-    return size, rulesize
-
-
 def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndarray,
                     n_classes: int, ds_mode: int, allow_unknown: bool,
                     tolerance: float, alpha: float, beta: float,
                     interval: bool, labels: Optional[_LabelDomain] = None,
                     firing_cache: Optional[_FiringCache] = None,
-                    packed: Optional[tuple] = None) -> Optional[float]:
+                    packed: Optional[tuple] = None, *,
+                    max_conditions: int) -> Optional[float]:
     """
     Objective value for a decoded candidate, or None if unsupported.
 
@@ -189,7 +173,7 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
     """
     n_rules = len(decoded.consequents)
     if n_rules == 0:
-        return 0.0
+        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
     firing = firing_strengths(decoded.antecedents, truth, len(X), interval,
                               firing_cache, packed)
     if firing is None:
@@ -214,7 +198,7 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
     # is retained because 'NaN < tolerance' is False.
     keep = ~(scores < tolerance) & (accuracy != 0.0)
     if not keep.any():
-        return 0.0
+        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
     firing = np.ascontiguousarray(firing[:, keep])
     consequents = consequents[keep]
     scores = _dominance(firing, y, consequents, mask_cache)
@@ -222,13 +206,9 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
     prediction = consequents[np.argmax(association, axis=1)]
     if allow_unknown:
         prediction[np.max(association, axis=1) == 0.0] = -1
-    result = _mcc(y, prediction) if labels is None else _mcc_encoded(prediction, labels)
-    if alpha != 0.0 or beta != 0.0:
-        # Accumulate exactly as score_rulebase does: one addition per penalty.
-        size, rulesize = _complexity(decoded.antecedents[keep], consequents,
-                                     scores, n_classes, tolerance)
-        if alpha != 0.0:
-            result += alpha * size
-        if beta != 0.0:
-            result += beta * rulesize
-    return result
+    counts = (_class_counts(y, prediction, n_classes) if labels is None
+              else _class_counts_encoded(prediction, labels))
+    covered = np.count_nonzero(np.bincount(consequents, minlength=n_classes))
+    conditions = np.count_nonzero(decoded.antecedents[keep] != -1)
+    return float(_penalized_objective(_macro_f1(*counts), covered, conditions, n_classes,
+                                      max_conditions, alpha, beta))

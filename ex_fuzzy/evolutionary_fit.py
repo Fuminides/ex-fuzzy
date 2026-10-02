@@ -48,6 +48,7 @@ from . import rules
 from . import eval_rules as evr
 from . import vis_rules
 from .evolutionary_search import ExploreRuleBases
+from ._fitness import DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT
 
 
 class _ConstructorValue:
@@ -243,8 +244,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             self.n_linguist_variables = n_linguistic_variables
             self.domain = domain
 
-        self.alpha_ = 0.0
-        self.beta_ = 0.0
+        self.alpha_ = DEFAULT_COMPACTNESS_WEIGHT
+        self.beta_ = DEFAULT_COVERAGE_WEIGHT
 
 
     def customized_loss(self, loss_function):
@@ -370,7 +371,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
-            problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), candidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules)
+            problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), candidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules,
+                                       alpha=self.alpha_, beta=self.beta_)
 
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
@@ -823,11 +825,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
     def reparametrize_loss(self, alpha:float, beta:float) -> None:
         """
-        Changes the parameters in the loss function. 
+        Changes the parameters in the loss function.
+
+        The genetic search maximizes the macro F1 of the pruned rule base on the training data minus two
+        penalties: ``beta`` times the share of classes left without rules, and ``alpha`` times the share of
+        the possible antecedent conditions (``nRules * nAnts``) the rule base uses. Keep both weights small
+        so that they only decide between rule bases of similar accuracy.
 
         Args:
-            alpha: controls the MCC term.
-            beta: controls the average rule size loss.
+            alpha: weight of the compactness penalty. Default ``DEFAULT_COMPACTNESS_WEIGHT``.
+            beta: weight of the class-coverage penalty. Default ``DEFAULT_COVERAGE_WEIGHT``.
 
         Note:
             Does not check for convexity preservation. The user can play with these parameters as it wills.
@@ -922,7 +929,7 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: Optional[Any]=None,
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
-                 tolerance:float=0.01, alpha:float=0.0, beta:float=0.0, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None) -> None:
+                 tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None) -> None:
         """
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -937,8 +944,8 @@ class FitRuleBase(Problem):
             fuzzy_type: Define the fuzzy set or fuzzy set extension used as linguistic variable.
             domain: list with the upper and lower domains of each input variable. If None (as default) it will stablish the empirical min/max as the limits.
             tolerance: float. Tolerance for the size evaluation.
-            alpha: float. Weight for the rulebase size term in the fitness function. (Penalizes number of rules)
-            beta: float. Weight for the average rule size term in the fitness function.
+            alpha: float. Weight of the compactness penalty in the fitness function (see ``BaseFuzzyRulesClassifier.reparametrize_loss``).
+            beta: float. Weight of the class-coverage penalty in the fitness function.
             ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
             allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
             var_names: list of variable names. If None, extracted from DataFrame columns or auto-generated.
@@ -1035,6 +1042,8 @@ class FitRuleBase(Problem):
         self.single_gen_size = nVar
         self.alpha_ = alpha
         self.beta_ = beta
+        # A rule has at most one condition per selected variable.
+        self._max_conditions = self.nRules * min(self.nAnts, self.X.shape[1])
         self.backend_name = backend_name
 
         if self.lvs is None:
@@ -1529,9 +1538,11 @@ class FitRuleBase(Problem):
             out: dict where the F field is the fitness. It is used from the outside.
         """
         ruleBase = self._construct_ruleBase(x, self.fuzzy_type)
+        standard_loss = getattr(self.fitness_func, '__func__', None) is FitRuleBase.fitness_func
 
-        if len(ruleBase.get_rules()) > 0:
-            if getattr(self.fitness_func, '__func__', None) is not FitRuleBase.fitness_func:
+        # The built-in objective scores empty rule bases itself; custom losses never see them.
+        if standard_loss or len(ruleBase.get_rules()) > 0:
+            if not standard_loss:
                 evaluator = evr.evalRuleBase(
                     ruleBase, self.X, self.y, precomputed_truth=self._precomputed_truth)
                 evaluator.add_rule_weights()
@@ -1594,7 +1605,8 @@ class FitRuleBase(Problem):
             self.X.shape[1], self.n_classes, term_counts,
             self._consequent_pointer(self.fuzzy_type), self.ds_mode,
             self.allow_unknown, self.tolerance, self.alpha_, self.beta_,
-            self._label_domain(), getattr(self, '_firing_cache', None))
+            self._label_domain(), getattr(self, '_firing_cache', None),
+            max_conditions=self._max_conditions)
 
 
     def _population_chunks(self, population: int):
@@ -1876,7 +1888,7 @@ class FitRuleBase(Problem):
 
     def _label_domain(self):
         """
-        Returns the fit-local integer label layout used by the MCC, or None.
+        Returns the fit-local integer label layout used by the macro F1, or None.
 
         The training labels of a problem do not change during its optimization,
         exactly like its precomputed memberships.
@@ -1950,7 +1962,8 @@ class FitRuleBase(Problem):
             decoded, truth, self.X, self.y, self.n_classes, self.ds_mode,
             self.allow_unknown, self.tolerance, self.alpha_, self.beta_,
             self.fuzzy_type == fs.FUZZY_SETS.t2, self._label_domain(),
-            getattr(self, '_firing_cache', None), packed)
+            getattr(self, '_firing_cache', None), packed,
+            max_conditions=self._max_conditions)
 
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):
         """Use reusable T1/T2 fitness primitives for the built-in objective only."""
@@ -1969,7 +1982,8 @@ class FitRuleBase(Problem):
                 rulebase = self._construct_ruleBase(x, self.fuzzy_type)
                 score = score_rulebase(
                     rulebase, self.X, self.y, self.tolerance,
-                    self.alpha_, self.beta_, self._precomputed_truth)
+                    self.alpha_, self.beta_, self._precomputed_truth,
+                    max_conditions=self._max_conditions)
             out['F'] = 1 - score
             if cache is not None:
                 cache.put(key, out['F'])
@@ -1985,31 +1999,18 @@ class FitRuleBase(Problem):
             ruleBase: RuleBase object
             X: array of train samples. X shape = (n_samples, n_features)
             y: array of train labels. y shape = (n_samples,)
-            tolerance: float. Tolerance for the size evaluation.
-            alpha: float. Weight for the accuracy term.
-            beta: float. Weight for the average rule size term.
+            tolerance: float. Dominance score below which rules are pruned.
+            alpha: float. Weight of the compactness penalty (see ``BaseFuzzyRulesClassifier.reparametrize_loss``).
+            beta: float. Weight of the class-coverage penalty.
             precomputed_truth: np array. If given, it will be used as the truth values for the evaluation.
 
         Returns:
-            float. Fitness value.
+            float. Fitness value: macro F1 minus the penalties.
         """
-        if precomputed_truth is None:
-            precomputed_truth = rules.compute_antecedents_memberships(ruleBase.antecedents, X)
+        from ._fitness import score_rulebase_objects
 
-        ev_object = evr.evalRuleBase(ruleBase, X, y, precomputed_truth=precomputed_truth)
-        ev_object.add_full_evaluation()
-        ruleBase.purge_rules(tolerance)
-
-        if len(ruleBase.get_rules()) > 0: 
-            score_acc = ev_object.classification_eval()
-            score_rules_size = ev_object.size_antecedents_eval(tolerance)
-            score_nrules = ev_object.effective_rulesize_eval(tolerance)
-
-            score = score_acc + score_rules_size * alpha + score_nrules * beta
-        else:
-            score = 0.0
-            
-        return score
+        return score_rulebase_objects(ruleBase, X, y, tolerance, alpha, beta, precomputed_truth,
+                                      max_conditions=self._max_conditions)
 
 
 def _population_module():

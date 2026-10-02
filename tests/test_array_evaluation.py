@@ -13,7 +13,8 @@ def _reference(problem, gene):
     """The objective as computed through rule objects."""
     rulebase = problem._construct_ruleBase(gene.copy(), problem.fuzzy_type)
     return score_rulebase(rulebase, problem.X, problem.y, problem.tolerance,
-                          problem.alpha_, problem.beta_, problem._precomputed_truth)
+                          problem.alpha_, problem.beta_, problem._precomputed_truth,
+                          max_conditions=problem._max_conditions)
 
 
 def _genes(problem, count, seed):
@@ -81,14 +82,15 @@ def test_array_objective_handles_degenerate_candidates(kind):
     problem = _problem(X, y, kind, True, nRules=6, nAnts=2, tolerance=0.01)
     empty = np.zeros(problem.n_var, dtype=int)
     empty[2 * problem.nRules * problem.nAnts:] = -1  # every rule disabled
-    assert problem._array_score(empty.copy()) == 0.0 == _reference(problem, empty)
+    # A rule base without rules has no F1 and pays the full coverage penalty.
+    assert problem._array_score(empty.copy()) == -problem.beta_ == _reference(problem, empty)
     # Every rule identical: duplicate removal must leave a single rule per class.
     duplicated = np.zeros(problem.n_var, dtype=int)
     assert problem._array_score(duplicated.copy()) == _reference(problem, duplicated)
     # An impossible tolerance prunes everything.
     strict = _problem(X, y, kind, True, nRules=6, nAnts=2, tolerance=2.0)
     for gene in _genes(strict, 5, 2):
-        assert strict._array_score(gene.copy()) == 0.0 == _reference(strict, gene)
+        assert strict._array_score(gene.copy()) == -strict.beta_ == _reference(strict, gene)
 
 
 @pytest.mark.parametrize('kind', [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2])

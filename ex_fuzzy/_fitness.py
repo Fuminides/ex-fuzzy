@@ -8,9 +8,15 @@ import numpy as np
 from collections import OrderedDict
 from contextlib import contextmanager
 from typing import Iterator, Optional
-from sklearn.metrics import matthews_corrcoef
 
 from . import rules, eval_rules
+
+#: Default weight of the compactness penalty: the share of the possible antecedent
+#: conditions a rule base uses (``alpha`` of ``reparametrize_loss``).
+DEFAULT_COMPACTNESS_WEIGHT = 0.03
+#: Default weight of the class-coverage penalty: the share of classes left
+#: without rules (``beta`` of ``reparametrize_loss``).
+DEFAULT_COVERAGE_WEIGHT = 0.05
 
 
 class _FitnessCache:
@@ -258,19 +264,19 @@ class _LabelDomain:
     """
     Immutable label layout for one problem's integer training labels.
 
-    ``np.unique`` sorts ``2 * samples`` values on every candidate.  The labels a
-    candidate can predict are known in advance -- the consequent classes plus
-    the unknown ``-1`` -- so the same sorted label set can be rebuilt with
-    counting instead of sorting.  Created once per problem; ``y`` must not
-    change while it is in use, exactly like the precomputed memberships.
+    Classes are the consequent indexes ``0 .. n_classes - 1``; a candidate can
+    also predict the unknown ``-1``.  Shifting every label by one gives each
+    class and the unknown a counting slot, the unknown at index 0, so per-class
+    counts need no sorting.  Created once per problem; ``y`` must not change
+    while it is in use, exactly like the precomputed memberships.
     """
 
-    __slots__ = ('size', 'present', 'shifted_y')
+    __slots__ = ('size', 'shifted_y', 'class_sizes')
 
     def __init__(self, y: np.ndarray, n_classes: int) -> None:
         self.size = n_classes + 1  # one slot per class, plus unknown at index 0
         self.shifted_y = np.asarray(y) + 1
-        self.present = np.bincount(self.shifted_y, minlength=self.size) > 0
+        self.class_sizes = np.bincount(self.shifted_y, minlength=self.size)[1:]
 
     @classmethod
     def build(cls, y: np.ndarray, n_classes: int) -> Optional['_LabelDomain']:
@@ -283,61 +289,83 @@ class _LabelDomain:
         return cls(values, n_classes)
 
 
-def _mcc_encoded(prediction: np.ndarray, domain: _LabelDomain) -> float:
-    """MCC over the same sorted label set ``_mcc`` derives with np.unique."""
+def _class_counts(y: np.ndarray, prediction: np.ndarray, n_classes: int) -> tuple:
+    """
+    Per-class true positives, predictions and samples, as exact integers.
+
+    Classes are the consequent indexes ``0 .. n_classes - 1``.  An unknown
+    prediction (-1) counts for no class, so it is a miss for its sample's class.
+    """
+    domain = _LabelDomain.build(y, n_classes)
+    if domain is not None:
+        return _class_counts_encoded(prediction, domain)
+    classes = range(n_classes)
+    predicted = np.array([np.count_nonzero(prediction == k) for k in classes])
+    actual = np.array([np.count_nonzero(y == k) for k in classes])
+    true_positive = np.array([np.count_nonzero((prediction == k) & (y == k)) for k in classes])
+    return true_positive, predicted, actual
+
+
+def _class_counts_encoded(prediction: np.ndarray, domain: _LabelDomain) -> tuple:
+    """:func:`_class_counts` for labels with a counting layout."""
     shifted = prediction + 1
-    present = domain.present | (np.bincount(shifted, minlength=domain.size) > 0)
-    labels = np.flatnonzero(present)
-    count = labels.size
-    lookup = np.empty(domain.size, dtype=np.intp)
-    lookup[labels] = np.arange(count)
-    matrix = np.bincount(lookup[domain.shifted_y] * count + lookup[shifted],
-                         minlength=count * count).reshape(count, count)
-    return _mcc_from_matrix(matrix)
+    hits = domain.shifted_y[shifted == domain.shifted_y]
+    true_positive = np.bincount(hits, minlength=domain.size)[1:]
+    predicted = np.bincount(shifted, minlength=domain.size)[1:]
+    return true_positive, predicted, domain.class_sizes
 
 
-def _mcc_from_matrix(matrix: np.ndarray) -> float:
-    true_sum = matrix.sum(axis=1, dtype=np.float64)
-    pred_sum = matrix.sum(axis=0, dtype=np.float64)
-    correct = np.trace(matrix, dtype=np.float64)
-    samples = pred_sum.sum()
-    covariance = correct * samples - np.dot(true_sum, pred_sum)
-    pred_variance = samples ** 2 - np.dot(pred_sum, pred_sum)
-    true_variance = samples ** 2 - np.dot(true_sum, true_sum)
-    if pred_variance * true_variance == 0:
-        return 0.0
-    return covariance / np.sqrt(pred_variance * true_variance)
-
-
-def _mcc(y: np.ndarray, prediction: np.ndarray) -> float:
+def _macro_f1(true_positive, predicted, actual) -> np.ndarray:
     """
-    MCC for internal integer labels, retaining sklearn for other dtypes.
+    Macro F1 from per-class counts shaped ``(..., classes)``.
 
-    The union includes unknown (-1) and non-contiguous labels. Zero rows and
-    columns are allowed, and a zero denominator yields the reference's 0.0.
+    A class's F1 is ``2 TP / (predicted + actual)``, and 0 when the class is
+    neither present nor predicted.  The classes are added one at a time, left
+    to right, so the result does not depend on the array layout: every
+    evaluator, scalar or batched, rounds the same way.
     """
-    if y.dtype.kind not in 'biu':
-        return matthews_corrcoef(y, prediction)
-    labels, encoded = np.unique(np.concatenate((y, prediction)), return_inverse=True)
-    n = y.size
-    count = labels.size
-    matrix = np.bincount(
-        encoded[:n] * count + encoded[n:], minlength=count * count,
-    ).reshape(count, count)
-    return _mcc_from_matrix(matrix)
+    true_positive = np.asarray(true_positive)
+    predicted, actual = np.asarray(predicted), np.asarray(actual)
+    n_classes = true_positive.shape[-1]
+    total = np.zeros(true_positive.shape[:-1])
+    for klass in range(n_classes):
+        denominator = predicted[..., klass] + actual[..., klass]
+        total = total + np.divide(2 * true_positive[..., klass], denominator,
+                                  out=np.zeros(total.shape), where=denominator != 0)
+    return total / n_classes
+
+
+def _penalized_objective(primary, covered, conditions, n_classes: int,
+                         max_conditions: int, alpha: float, beta: float):
+    """
+    Subtract the class-coverage and compactness penalties from ``primary``.
+
+    ``covered`` counts the classes that keep at least one rule and
+    ``conditions`` the antecedent conditions of the kept rules; ``beta``
+    weighs the share of classes without rules and ``alpha`` the share of
+    ``max_conditions`` used.  Works on scalars and arrays alike.  Every
+    evaluator finishes here, so all of them round the same way.
+    """
+    uncovered = (n_classes - covered) / n_classes
+    return primary - beta * uncovered - alpha * (conditions / max_conditions)
 
 
 def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
-                   alpha: float, beta: float, precomputed_truth=None) -> float:
+                   alpha: float, beta: float, precomputed_truth=None, *,
+                   max_conditions: int) -> float:
     """
     Compute the standard objective with one firing-strength evaluation.
 
-    Pruning uses winners *before* removal. Final predictions select winners
-    among surviving rules, preserving class/rule order and first-index ties.
+    The objective is the macro F1 of the pruned rule base on the training data,
+    minus the penalties of :func:`_penalized_objective`; ``y`` holds consequent
+    indexes.  Pruning uses winners *before* removal. Final predictions select
+    winners among surviving rules, preserving class/rule order and first-index
+    ties.
     """
+    n_classes = len(rulebase.get_rulebases())
     all_rules = rulebase.get_rules()
     if not all_rules:
-        return 0.0
+        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
     if precomputed_truth is None:
         precomputed_truth = rules.compute_antecedents_memberships(rulebase.antecedents, X)
     firing = rulebase.compute_firing_strengths(X, precomputed_truth=precomputed_truth)
@@ -361,7 +389,7 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
     rulebase.purge_rules(tolerance)
     survivors = rulebase.get_rules()
     if not survivors:
-        return 0.0
+        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
     retained = {id(rule) for rule in survivors}
     keep = np.asarray([id(rule) in retained for rule in all_rules])
     # Match the contiguous layout of a fresh reference firing calculation.
@@ -374,11 +402,37 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
     prediction = consequents[np.argmax(association, axis=1)]
     if rulebase.allow_unknown:
         prediction[np.max(association, axis=1) == 0.0] = -1
-    result = _mcc(y, prediction)
-    if alpha != 0.0 or beta != 0.0:
-        evaluator = eval_rules.evalRuleBase(rulebase, X, y, precomputed_truth=precomputed_truth)
-        if alpha != 0.0:
-            result += alpha * evaluator.size_antecedents_eval(tolerance)
-        if beta != 0.0:
-            result += beta * evaluator.effective_rulesize_eval(tolerance)
-    return result
+    primary = _macro_f1(*_class_counts(y, prediction, n_classes))
+    covered = np.count_nonzero(np.bincount(consequents, minlength=n_classes))
+    conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
+    return float(_penalized_objective(primary, covered, conditions, n_classes,
+                                      max_conditions, alpha, beta))
+
+
+def score_rulebase_objects(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
+                           alpha: float, beta: float, precomputed_truth=None, *,
+                           max_conditions: int) -> float:
+    """
+    The objective of :func:`score_rulebase` through ``evalRuleBase``.
+
+    For rule bases ``score_rulebase`` does not reproduce, such as general
+    Type-2 ones, and for labels that are not consequent indexes.
+    """
+    n_classes = len(rulebase.get_rulebases())
+    if not rulebase.get_rules():
+        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+    if precomputed_truth is None:
+        precomputed_truth = rules.compute_antecedents_memberships(rulebase.antecedents, X)
+    evaluator = eval_rules.evalRuleBase(rulebase, X, y, precomputed_truth=precomputed_truth)
+    evaluator.add_full_evaluation()
+    rulebase.purge_rules(tolerance)
+    survivors = rulebase.get_rules()
+    if not survivors:
+        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+    evaluator.add_rule_weights()
+    prediction = np.asarray(rulebase.winning_rule_predict(X, precomputed_truth=precomputed_truth))
+    primary = _macro_f1(*_class_counts(np.asarray(y), prediction, n_classes))
+    covered = sum(1 for rule_base in rulebase.get_rulebases() if len(rule_base) > 0)
+    conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
+    return float(_penalized_objective(primary, covered, conditions, n_classes,
+                                      max_conditions, alpha, beta))

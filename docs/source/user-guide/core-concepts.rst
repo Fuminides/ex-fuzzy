@@ -330,29 +330,18 @@ Two-Stage Approach
 
 .. code-block:: python
 
-   # Stage 1: Mine candidate rules
    import ex_fuzzy.rule_mining as rm
-   
-   candidate_rules = rm.mine_fuzzy_rules(
-       antecedents=linguistic_vars,
-       X=X_train,
-       y=y_train,
-       min_support=0.1,
-       min_confidence=0.6
-   )
-   
-   # Stage 2: Optimize rule selection
    import ex_fuzzy.evolutionary_fit as evf
-   
-   problem = evf.FitRuleBase(
-       antecedents=linguistic_vars,
-       X=X_train,
-       y=y_train,
-       candidate_rules=candidate_rules,
-       n_rules=20
+
+   # Stage 1: mine candidate rules for each class
+   candidate_rules = rm.multiclass_mine_rulebase(
+       X_train, y_train, linguistic_vars,
+       support_threshold=0.1, max_depth=3, confidence_threshold=0.6
    )
-   
-   result = evf.evolutionary_fit(problem, n_gen=50, pop_size=100)
+
+   # Stage 2: the genetic search selects nRules of them
+   classifier = evf.BaseFuzzyRulesClassifier(nRules=20, linguistic_variables=linguistic_vars)
+   classifier.fit(X_train, y_train, candidate_rules=candidate_rules, n_gen=50, pop_size=100)
 
 Quality Measures
 ~~~~~~~~~~~~~~~~
@@ -374,16 +363,31 @@ Rules are evaluated using multiple criteria:
 **Complexity**
   Number of conditions in the rule
 
-Multi-Objective Optimization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Accuracy and Complexity
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Balance multiple criteria simultaneously:
+The genetic search optimizes a single objective: the macro F1 of the rule base
+on the training data, after pruning, minus two small penalties.
+
+.. code-block:: text
+
+   fitness = macro F1 - beta  * (classes without rules / classes)
+                      - alpha * (conditions / (nRules * nAnts))
+
+Macro F1 averages the F1 of every class, so each class counts the same whatever
+its size, and a class without rules scores 0. The two penalties are deliberately
+small, so they mostly decide between rule bases of similar accuracy, in favour of
+rule bases with rules for every class (``beta``) and with fewer antecedent
+conditions (``alpha``). ``nRules`` and ``nAnts`` cap the size of the rule base,
+and rules whose dominance score falls below ``tolerance`` or that classify no
+sample correctly are pruned. ``reparametrize_loss`` sets the two weights, by
+default ``alpha=0.03`` and ``beta=0.05``:
 
 .. code-block:: python
 
-   # Optimize for both accuracy and interpretability
-   fitness_functions = ['accuracy', 'complexity']
-   weights = [0.8, 0.2]  # 80% accuracy, 20% simplicity
+   classifier = evf.BaseFuzzyRulesClassifier(nRules=20, nAnts=4)
+   classifier.reparametrize_loss(alpha=0.1, beta=0.05)  # prefer smaller rule bases
+   classifier.fit(X_train, y_train)
 
 Interpretability and Explainability
 -----------------------------------
@@ -480,7 +484,7 @@ Performance Considerations
 **Accuracy vs. Interpretability**
   - More rules generally improve accuracy
   - Balance performance with understandability
-  - Use multi-objective optimization
+  - Cap complexity with ``nRules`` and ``nAnts``, or weight it with ``reparametrize_loss``
 
 Common Pitfalls
 ~~~~~~~~~~~~~~~

@@ -1,21 +1,22 @@
-"""Counting-based MCC must equal the np.unique reference and sklearn."""
+"""Counting-based class counts must equal the comparison reference, and macro F1 sklearn's."""
 import numpy as np
 import pytest
-from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import f1_score
 
-from ex_fuzzy import _fitness
-from ex_fuzzy._fitness import _LabelDomain, _mcc, _mcc_encoded
+from ex_fuzzy._fitness import _LabelDomain, _class_counts, _class_counts_encoded, _macro_f1
 
 
 def _check(y, prediction, n_classes):
     domain = _LabelDomain.build(y, n_classes)
     assert domain is not None
-    expected = _mcc(y, prediction)
-    assert _mcc_encoded(prediction, domain) == expected
+    # Float labels have no counting layout, so they take the comparison path.
+    expected = _class_counts(y.astype(float), prediction, n_classes)
+    for counted, reference in zip(_class_counts_encoded(prediction, domain), expected):
+        np.testing.assert_array_equal(counted, reference)
 
 
 @pytest.mark.parametrize('n_classes', [1, 2, 3, 7])
-def test_encoded_mcc_matches_the_unique_reference(n_classes):
+def test_encoded_counts_match_the_comparison_reference(n_classes):
     rng = np.random.default_rng(3)
     for samples in (1, 5, 200, 3001):
         for _ in range(20):
@@ -24,7 +25,7 @@ def test_encoded_mcc_matches_the_unique_reference(n_classes):
             _check(y, prediction, n_classes)
 
 
-def test_encoded_mcc_handles_unknowns_absent_and_constant_labels():
+def test_encoded_counts_handle_unknowns_absent_and_constant_labels():
     y = np.array([0, 0, 1, 1, 2, 2])
     # every prediction unknown; a class absent from y; perfect and constant cases
     for prediction in (np.full(6, -1), np.array([0, 0, 1, 1, 2, 2]),
@@ -35,13 +36,26 @@ def test_encoded_mcc_handles_unknowns_absent_and_constant_labels():
     _check(np.zeros(5, dtype=int), np.array([-1, 0, 0, -1, 0]), 4)
 
 
-def test_encoded_mcc_matches_sklearn_where_both_apply():
+@pytest.mark.parametrize('n_classes', [2, 3, 7])
+def test_macro_f1_matches_sklearn(n_classes):
     rng = np.random.default_rng(8)
-    y = rng.integers(0, 3, size=400)
-    prediction = rng.integers(0, 3, size=400)
-    domain = _LabelDomain.build(y, 3)
-    assert _mcc_encoded(prediction, domain) == pytest.approx(
-        matthews_corrcoef(y, prediction))
+    for samples in (5, 400):
+        y = rng.integers(0, n_classes, size=samples)
+        prediction = rng.integers(-1, n_classes, size=samples)
+        expected = f1_score(y, prediction, labels=np.arange(n_classes), average='macro',
+                            zero_division=0)
+        assert _macro_f1(*_class_counts(y, prediction, n_classes)) == pytest.approx(expected)
+
+
+def test_macro_f1_is_the_same_for_one_candidate_and_a_population():
+    rng = np.random.default_rng(5)
+    y = rng.integers(0, 4, size=300)
+    predictions = rng.integers(-1, 4, size=(6, 300))
+    counts = [_class_counts(y, prediction, 4) for prediction in predictions]
+    batched = _macro_f1(np.stack([c[0] for c in counts]), np.stack([c[1] for c in counts]),
+                        counts[0][2])
+    for row, (tp, predicted, actual) in zip(batched, counts):
+        assert row == _macro_f1(tp, predicted, actual)
 
 
 def test_label_domain_declines_unsupported_labels():
