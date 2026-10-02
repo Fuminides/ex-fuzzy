@@ -37,6 +37,9 @@ that workload on a desktop CPU.
 
 Regression retains its separate batched Torch evaluator.
 
+The Pareto search, ``algorithm='nsga2'``, runs on the PyMoo backend only; see
+:ref:`ga`.
+
 Installation
 ============
 

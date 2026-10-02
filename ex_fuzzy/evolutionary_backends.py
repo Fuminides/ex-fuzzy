@@ -112,13 +112,57 @@ class PyMooBackend(EvolutionaryBackend):
             eliminate_duplicates=False
         )
 
+    def _build_nsga2_algorithm(self, pop_size: int, var_prob: float, sbx_eta: float,
+                               mutation_eta: float, sampling: Any):
+        """
+        Create a configured pymoo NSGA-II instance with the GA's variation operators.
+
+        NSGA-II selects parents by its own binary tournament on rank and crowding
+        distance, so it takes no tournament size.
+        """
+        try:
+            from pymoo.algorithms.moo.nsga2 import NSGA2
+            from pymoo.operators.repair.rounding import RoundingRepair
+            from pymoo.operators.sampling.rnd import IntegerRandomSampling
+            from pymoo.operators.crossover.sbx import SBX
+            from pymoo.operators.mutation.pm import PolynomialMutation
+        except ImportError as error:
+            raise ImportError(PYMOO_INSTALL_MESSAGE) from error
+
+        if sampling is None:
+            sampling = IntegerRandomSampling()
+
+        return NSGA2(
+            pop_size=pop_size,
+            crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
+            mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
+            sampling=sampling,
+            eliminate_duplicates=False
+        )
+
+    def _build_algorithm(self, algorithm: str, pop_size: int, var_prob: float, sbx_eta: float,
+                         mutation_eta: float, tournament_size: int, sampling: Any):
+        """Create the pymoo algorithm named by ``algorithm``: 'ga' or 'nsga2'."""
+        if algorithm == 'nsga2':
+            return self._build_nsga2_algorithm(pop_size, var_prob, sbx_eta, mutation_eta, sampling)
+        if algorithm != 'ga':
+            raise ValueError(f"Unknown algorithm {algorithm!r}. Use 'ga' or 'nsga2'.")
+        return self._build_ga_algorithm(pop_size, var_prob, sbx_eta, mutation_eta,
+                                        tournament_size, sampling)
+
     def _run_ga_loop(self, problem: Any, algorithm: Any, n_gen: int,
                      random_state: int, verbose: bool,
                      checkpoint_freq: Optional[int] = None,
                      checkpoint_callback: Optional[Callable] = None,
                      patience: Optional[int] = None,
                      min_delta: float = 0.0) -> dict:
-        """Run a pymoo GA loop with optional checkpoints and early stopping."""
+        """
+        Run a pymoo GA loop with optional checkpoints and early stopping.
+
+        With several objectives the first one decides the best individual and the
+        early stopping, ties going to the following ones, and the result also
+        holds the final Pareto front.
+        """
         algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen))
 
         if verbose:
@@ -137,8 +181,10 @@ class PyMooBackend(EvolutionaryBackend):
             algorithm.next()
             executed_generations = gen + 1
             pop = algorithm.pop
-            fitness_last_gen = pop.get('F').reshape(-1)
-            best_solution_arg = int(np.argmin(fitness_last_gen))
+            objectives = pop.get('F').reshape(len(pop), -1)
+            fitness_last_gen = objectives[:, 0]
+            # The first index among ties, as argmin; later objectives break ties.
+            best_solution_arg = int(np.lexsort(objectives.T[::-1])[0])
             current_best_fitness = float(fitness_last_gen[best_solution_arg])
             current_best_individual = pop.get('X')[best_solution_arg, :].copy()
 
@@ -167,10 +213,18 @@ class PyMooBackend(EvolutionaryBackend):
                 break
 
         pop = algorithm.pop
+        front = None
+        if problem.n_obj > 1:
+            front = self._pareto_front(algorithm)
+            # Elitism keeps the lowest first objective on the front; returning the
+            # front's own member keeps the result one of its solutions.
+            best_individual = front['X'][0].copy()
+            best_fitness = float(front['F'][0, 0])
 
         return {
             'X': best_individual,
             'F': best_fitness,
+            'front': front,
             'pop': pop,
             'algorithm': algorithm,
             'res': algorithm,
@@ -178,14 +232,30 @@ class PyMooBackend(EvolutionaryBackend):
             'stopped_early': executed_generations < n_gen
         }
     
+    @staticmethod
+    def _pareto_front(algorithm: Any) -> dict:
+        """
+        The non-dominated solutions of the final population, one per objective vector.
+
+        Sorted by the first objective, then the following ones, so the first
+        solution is the one the search returns.
+        """
+        X = algorithm.opt.get('X')
+        F = algorithm.opt.get('F').reshape(len(X), -1)
+        _, first = np.unique(F, axis=0, return_index=True)
+        first = np.sort(first)
+        X, F = X[first], F[first]
+        order = np.lexsort(F.T[::-1])
+        return {'X': X[order].astype(int), 'F': F[order]}
+
     def optimize(self, problem: Any, n_gen: int, pop_size: int, 
                  random_state: int, verbose: bool, 
                  var_prob: float = 0.3, sbx_eta: float = 3.0, 
                  mutation_eta: float = 7.0, tournament_size: int = 3,
                  sampling: Any = None, patience: Optional[int] = 10,
-                 min_delta: float = 1e-4, **kwargs) -> dict:
+                 min_delta: float = 1e-4, algorithm: str = 'ga', **kwargs) -> dict:
         """
-        Optimize using pymoo's genetic algorithm.
+        Optimize using pymoo's genetic algorithm, or NSGA-II for two objectives.
         
         Args:
             problem: Ex-Fuzzy problem, wrapped for pymoo here, or a pymoo Problem
@@ -196,14 +266,17 @@ class PyMooBackend(EvolutionaryBackend):
             var_prob: Crossover probability
             sbx_eta: SBX crossover eta parameter
             mutation_eta: Polynomial mutation eta parameter
-            tournament_size: Number of candidates in each selection tournament
+            tournament_size: Number of candidates in each selection tournament (GA only;
+                NSGA-II uses its own binary tournament)
             sampling: Initial population sampling strategy
+            algorithm: 'ga' (default) or 'nsga2', which needs a problem with two objectives
             **kwargs: Additional pymoo-specific parameters
             
         Returns:
             dict with optimization results
         """
-        algorithm = self._build_ga_algorithm(
+        search = self._build_algorithm(
+            algorithm,
             pop_size=pop_size,
             var_prob=var_prob,
             sbx_eta=sbx_eta,
@@ -214,7 +287,7 @@ class PyMooBackend(EvolutionaryBackend):
 
         return self._run_ga_loop(
             problem=as_pymoo_problem(problem),
-            algorithm=algorithm,
+            algorithm=search,
             n_gen=n_gen,
             random_state=random_state,
             verbose=verbose,
@@ -228,7 +301,7 @@ class PyMooBackend(EvolutionaryBackend):
                                    var_prob: float = 0.3, sbx_eta: float = 3.0,
                                    mutation_eta: float = 7.0, tournament_size: int = 3,
                                    sampling: Any = None, patience: Optional[int] = 10,
-                                   min_delta: float = 1e-4, **kwargs) -> dict:
+                                   min_delta: float = 1e-4, algorithm: str = 'ga', **kwargs) -> dict:
         """
         Optimize with checkpoint callbacks at specified intervals.
         
@@ -243,14 +316,17 @@ class PyMooBackend(EvolutionaryBackend):
             var_prob: Crossover probability
             sbx_eta: SBX crossover eta parameter
             mutation_eta: Polynomial mutation eta parameter
-            tournament_size: Number of candidates in each selection tournament
+            tournament_size: Number of candidates in each selection tournament (GA only;
+                NSGA-II uses its own binary tournament)
             sampling: Initial population sampling strategy
+            algorithm: 'ga' (default) or 'nsga2', which needs a problem with two objectives
             **kwargs: Additional parameters
             
         Returns:
             dict with optimization results
         """
-        algorithm = self._build_ga_algorithm(
+        search = self._build_algorithm(
+            algorithm,
             pop_size=pop_size,
             var_prob=var_prob,
             sbx_eta=sbx_eta,
@@ -261,7 +337,7 @@ class PyMooBackend(EvolutionaryBackend):
 
         return self._run_ga_loop(
             problem=as_pymoo_problem(problem),
-            algorithm=algorithm,
+            algorithm=search,
             n_gen=n_gen,
             random_state=random_state,
             verbose=verbose,

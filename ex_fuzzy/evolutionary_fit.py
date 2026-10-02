@@ -132,7 +132,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: Union[int, str] = 0, allow_unknown:bool=False, backend: str='pymoo',
                  detect_categorical: bool = True, n_gen: int = 70, pop_size: int = 30, patience: Optional[int] = 10,
                  min_delta: float = 1e-4, random_state: int = 33, var_prob: float = 0.3, sbx_eta: float = 3.0,
-                 mutation_eta: float = 7.0, tournament_size: int = 3) -> None:
+                 mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga') -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -161,6 +161,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             sbx_eta: eta parameter of the SBX crossover.
             mutation_eta: eta parameter of the polynomial mutation.
             tournament_size: size of the selection tournament.
+            algorithm: genetic search to run. 'ga' (default) maximizes one objective, the macro F1 minus the
+                class-coverage and compactness penalties. 'nsga2' searches the trade-off between that accuracy
+                (with the coverage penalty) and the share of conditions used, and keeps the whole Pareto front:
+                ``fit`` selects its most accurate solution and ``select_pareto_solution`` switches to another.
+                'nsga2' needs the pymoo backend and the built-in loss.
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
         self.n_gen = n_gen
@@ -172,6 +177,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.sbx_eta = sbx_eta
         self.mutation_eta = mutation_eta
         self.tournament_size = tournament_size
+        self.algorithm = algorithm
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -306,6 +312,13 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         if patience is not None and patience <= 0:
             patience = None
         min_delta = max(0.0, float(min_delta))
+        if self.algorithm not in ('ga', 'nsga2'):
+            raise ValueError(f"Unknown algorithm {self.algorithm!r}. Use 'ga' or 'nsga2'.")
+        pareto = self.algorithm == 'nsga2'
+        if pareto and not isinstance(self.backend, ev_backends.PyMooBackend):
+            raise ValueError("algorithm='nsga2' needs the pymoo backend.")
+        if pareto and self.custom_loss is not None:
+            raise ValueError("algorithm='nsga2' optimizes the built-in objectives; it cannot use a custom loss.")
 
         # Detected before X loses its column dtypes below.
         categorical_mask = self.categorical_mask
@@ -361,18 +374,20 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode, categorical_mask=categorical_mask,
-                                    allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names)
+                                    allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
+                                    pareto=pareto)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode,
-                                    allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names)
+                                    allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
+                                    pareto=pareto)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
             problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), candidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules,
-                                       alpha=self.alpha_, beta=self.beta_)
+                                       alpha=self.alpha_, beta=self.beta_, pareto=pareto)
 
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
@@ -428,7 +443,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     tournament_size=tournament_size,
                     sampling=rules_gene,
                     patience=patience,
-                    min_delta=min_delta
+                    min_delta=min_delta,
+                    algorithm=self.algorithm
                 )
                 
                 best_individual = result['X']
@@ -450,7 +466,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                         tournament_size=tournament_size,
                         sampling=rules_gene,
                         patience=patience,
-                        min_delta=min_delta
+                        min_delta=min_delta,
+                        algorithm=self.algorithm
                     )
                 
                 best_individual = result['X']
@@ -470,7 +487,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     tournament_size=tournament_size,
                     sampling=rules_gene,
                     patience=patience,
-                    min_delta=min_delta
+                    min_delta=min_delta,
+                    algorithm=self.algorithm
                 )
             
             best_individual = result['X']
@@ -483,10 +501,24 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.X = X
         self.var_names = lvs_names
 
-        self.rule_base = problem._construct_ruleBase(
-        best_individual, self.fuzzy_type)
-        self.lvs = self.rule_base.rule_bases[0].antecedents if self.lvs is None else self.lvs
+        searched_partitions = self.lvs is None
+        self.rule_base, self.eval_performance = self._finalized_rule_base(problem, best_individual, X, y)
+        self.lvs = self.rule_base.rule_bases[0].antecedents if searched_partitions else self.lvs
 
+        if p_value_compute:
+            self.p_value_validation(bootstrap_size)
+
+        self.rule_base.rename_cons(self.classes_names)
+        self.pareto_front_ = None
+        self.pareto_index_ = None
+        if result.get('front') is not None:
+            self._store_pareto_front(problem, result['front'], X, y, searched_partitions)
+        return self
+
+
+    def _finalized_rule_base(self, problem, gene: np.ndarray, X: np.ndarray, y: np.ndarray) -> tuple:
+        """Decode ``gene``, then prune and evaluate its rule base as a fitted model."""
+        rule_base = problem._construct_ruleBase(gene, self.fuzzy_type)
         # Finalization requests the same firing strengths repeatedly while it
         # computes rule weights, pruning accuracy, and the public metrics. Reuse
         # fixed-partition memberships from the problem; for the one selected
@@ -494,29 +526,75 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         # firing matrices are released before optional resampling or fit return.
         finalization_truth = getattr(problem, '_precomputed_truth', None)
         if (finalization_truth is None and type(problem) is FitRuleBase
-                and self.rule_base.get_rules()):
+                and rule_base.get_rules()):
             finalization_truth = rules.compute_antecedents_memberships(
-                self.rule_base.antecedents, np.asarray(X))
-        self.eval_performance = evr.evalRuleBase(
-            self.rule_base, np.array(X), y,
-            precomputed_truth=finalization_truth)
+                rule_base.antecedents, np.asarray(X))
+        evaluation = evr.evalRuleBase(rule_base, np.array(X), y, precomputed_truth=finalization_truth)
         try:
-            with self.rule_base._firing_cache_scope():
+            with rule_base._firing_cache_scope():
                 # Pruning needs per-rule dominance scores and winning-rule
                 # accuracy, but not the global MCC/accuracy. The latter is
                 # computed after pruning and is the public final evaluation.
-                self.eval_performance.add_rule_weights()
-                self.eval_performance.add_classification_metrics()
-                self.rule_base.purge_rules(self.tolerance)
-                self.eval_performance.add_full_evaluation()
+                evaluation.add_rule_weights()
+                evaluation.add_classification_metrics()
+                rule_base.purge_rules(self.tolerance)
+                evaluation.add_full_evaluation()
         finally:
-            self.eval_performance.precomputed_truth = None
-            finalization_truth = None
-        
-        if p_value_compute:
-            self.p_value_validation(bootstrap_size)
+            evaluation.precomputed_truth = None
+        return rule_base, evaluation
 
-        self.rule_base.rename_cons(self.classes_names)
+
+    def _store_pareto_front(self, problem, front: dict, X: np.ndarray, y: np.ndarray,
+                            searched_partitions: bool) -> None:
+        """Finalize every solution of the Pareto front; the first one is the fitted model."""
+        self.pareto_front_ = []
+        for index, (gene, objectives) in enumerate(zip(front['X'], front['F'])):
+            if index == 0:
+                rule_base, evaluation = self.rule_base, self.eval_performance
+            else:
+                rule_base, evaluation = self._finalized_rule_base(problem, gene, X, y)
+                rule_base.rename_cons(self.classes_names)
+            survivors = rule_base.get_rules()
+            self.pareto_front_.append(dict(
+                fitness=float(1 - objectives[0]),
+                rules=len(survivors),
+                conditions=int(sum(np.count_nonzero(np.asarray(rule.antecedents) != -1)
+                                   for rule in survivors)),
+                rule_base=rule_base,
+                evaluation=evaluation,
+                partitions=rule_base.rule_bases[0].antecedents if searched_partitions else None))
+        self.pareto_index_ = 0
+
+
+    def select_pareto_solution(self, index: int) -> 'BaseFuzzyRulesClassifier':
+        """
+        Make the classifier use another solution of the Pareto front found with ``algorithm='nsga2'``.
+
+        ``pareto_front_`` lists the solutions from the most accurate on the training data, the one ``fit``
+        selects, to the most compact. Each entry holds its training ``fitness`` (macro F1 minus the
+        class-coverage penalty), its number of ``rules`` and ``conditions``, and the fitted ``rule_base``.
+
+        Args:
+            index: position of the solution in ``pareto_front_``; negative indexes count from the end.
+
+        Returns:
+            the classifier.
+
+        Raises:
+            ValueError: if the classifier has no Pareto front or ``index`` is out of range.
+        """
+        front = getattr(self, 'pareto_front_', None)
+        if not front:
+            raise ValueError("No Pareto front: fit the classifier with algorithm='nsga2' first.")
+        if not -len(front) <= index < len(front):
+            raise ValueError(f'index must be in [{-len(front)}, {len(front)}), got {index}.')
+        solution = front[index]
+        self.rule_base = solution['rule_base']
+        self.eval_performance = solution['evaluation']
+        self.performance = solution['fitness']
+        if solution['partitions'] is not None:
+            self.lvs = solution['partitions']
+        self.pareto_index_ = index % len(front)
         return self
 
 
@@ -929,7 +1007,7 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: Optional[Any]=None,
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
-                 tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None) -> None:
+                 tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None, pareto: bool = False) -> None:
         """
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -949,6 +1027,8 @@ class FitRuleBase(Problem):
             ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
             allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
             var_names: list of variable names. If None, extracted from DataFrame columns or auto-generated.
+            pareto: if True, the problem has two objectives for a Pareto search: one minus the macro F1 with
+                the class-coverage penalty, and the share of the possible conditions used. ``alpha`` is unused.
         """
         if var_names is not None:
             self.var_names = var_names
@@ -1044,6 +1124,7 @@ class FitRuleBase(Problem):
         self.beta_ = beta
         # A rule has at most one condition per selected variable.
         self._max_conditions = self.nRules * min(self.nAnts, self.X.shape[1])
+        self.pareto = pareto
         self.backend_name = backend_name
 
         if self.lvs is None:
@@ -1054,7 +1135,7 @@ class FitRuleBase(Problem):
             super().__init__(
                 vars=vars,
                 n_var=nVar,
-                n_obj=1,
+                n_obj=2 if pareto else 1,
                 elementwise=True,
                 vtype=int,
                 xl=varbound[:, 0],
@@ -1065,7 +1146,7 @@ class FitRuleBase(Problem):
             super().__init__(
                 vars=vars,
                 n_var=nVar,
-                n_obj=1,
+                n_obj=2 if pareto else 1,
                 elementwise=True,
                 vtype=int,
                 xl=varbound[:, 0],
@@ -1550,7 +1631,15 @@ class FitRuleBase(Problem):
         else:
             score = 0.0
         
-        out["F"] = 1 - score
+        out["F"] = self._objectives(score)
+
+
+    def _objectives(self, score):
+        """The minimized objective values of a fitness score, or of the Pareto pair of scores."""
+        if self.pareto:
+            accuracy, compactness = score
+            return np.array([1 - accuracy, compactness])
+        return 1 - score
 
     
     #: Set to False to force the object decoder, for benchmarks and parity tests.
@@ -1578,7 +1667,8 @@ class FitRuleBase(Problem):
         return (standard_loss and np.asarray(self.y).dtype.kind in 'biuf'
                 and self.fuzzy_type == fs.FUZZY_SETS.t1
                 and self.ds_mode in (0, 1)
-                and not self._external_elementwise_runner)
+                and not self._external_elementwise_runner
+                and not self.pareto)
 
 
     def _can_batch_population(self, *args, **kwargs) -> bool:
@@ -1963,7 +2053,7 @@ class FitRuleBase(Problem):
             self.allow_unknown, self.tolerance, self.alpha_, self.beta_,
             self.fuzzy_type == fs.FUZZY_SETS.t2, self._label_domain(),
             getattr(self, '_firing_cache', None), packed,
-            max_conditions=self._max_conditions)
+            max_conditions=self._max_conditions, pareto=self.pareto)
 
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):
         """Use reusable T1/T2 fitness primitives for the built-in objective only."""
@@ -1983,8 +2073,8 @@ class FitRuleBase(Problem):
                 score = score_rulebase(
                     rulebase, self.X, self.y, self.tolerance,
                     self.alpha_, self.beta_, self._precomputed_truth,
-                    max_conditions=self._max_conditions)
-            out['F'] = 1 - score
+                    max_conditions=self._max_conditions, pareto=self.pareto)
+            out['F'] = self._objectives(score)
             if cache is not None:
                 cache.put(key, out['F'])
         else:
@@ -2005,12 +2095,13 @@ class FitRuleBase(Problem):
             precomputed_truth: np array. If given, it will be used as the truth values for the evaluation.
 
         Returns:
-            float. Fitness value: macro F1 minus the penalties.
+            float. Fitness value: macro F1 minus the penalties. For a Pareto problem, the pair
+            ``(accuracy, compactness)`` instead.
         """
         from ._fitness import score_rulebase_objects
 
         return score_rulebase_objects(ruleBase, X, y, tolerance, alpha, beta, precomputed_truth,
-                                      max_conditions=self._max_conditions)
+                                      max_conditions=self._max_conditions, pareto=self.pareto)
 
 
 def _population_module():

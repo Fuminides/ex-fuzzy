@@ -389,6 +389,29 @@ default ``alpha=0.03`` and ``beta=0.05``:
    classifier.reparametrize_loss(alpha=0.1, beta=0.05)  # prefer smaller rule bases
    classifier.fit(X_train, y_train)
 
+Pareto Search
+~~~~~~~~~~~~~
+
+``algorithm='nsga2'`` turns compactness into a second objective instead of a
+penalty. NSGA-II searches the trade-off between accuracy (the macro F1 with the
+coverage penalty) and the share of conditions used, and the classifier keeps the
+whole Pareto front, ordered from the most accurate solution on the training data
+to the most compact. ``fit`` selects the most accurate one, and
+``select_pareto_solution`` switches to another:
+
+.. code-block:: python
+
+   classifier = evf.BaseFuzzyRulesClassifier(nRules=30, nAnts=4, algorithm='nsga2')
+   classifier.fit(X_train, y_train)
+   for index, solution in enumerate(classifier.pareto_front_):
+       print(index, solution['fitness'], solution['rules'], solution['conditions'])
+   classifier.select_pareto_solution(2)  # a smaller rule base
+
+Even its most accurate solution is usually smaller than the rule base of the
+default search: on 61 KEEL datasets, with the objective of an earlier version,
+it had about half the conditions for about one point less test accuracy.
+NSGA-II needs the pymoo backend and the built-in loss.
+
 Interpretability and Explainability
 -----------------------------------
 

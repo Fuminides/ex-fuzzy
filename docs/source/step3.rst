@@ -59,12 +59,10 @@ You can modulate the inference process regarding rule weights by using the ds_mo
 -----------------
 Evaluation
 -----------------
-The genetic algorithm needs a fitness measure to evaluate the quality of each solution. In order to obtain the best possible set of rules,
-Ex-Fuzzy uses three different criteria.
-
-1. Matthew Correlation Coefficient: it is a metric that ranges from [-1, 1] that measures the quality of a classification performance. It less sensible to imbalance classification than the standard accuracy.
-2. Less antecedents: the less antecedents per rule, the better.
-3. Less rules: rule bases with less rules are prefered.
+The genetic algorithm needs a fitness measure to evaluate the quality of each solution. Ex-Fuzzy maximizes the macro F1 of the rule
+base on the training data, which weighs every class the same, minus two small penalties: one for classes left without rules, and one
+for the antecedent conditions the rule base uses. With ``algorithm='nsga2'`` the classifier instead searches the trade-off between
+accuracy and size, and keeps the whole Pareto front to choose from. :ref:`ga` describes both searches.
     
 
 [Fach23] Fumanal-Idocin, J., Andreu-Perez, J., Cord, O., Hagras, H., & Bustince, H. (2023). Artxai: Explainable artificial intelligence curates deep representation learning for artistic images using fuzzy techniques. IEEE Transactions on Fuzzy Systems.

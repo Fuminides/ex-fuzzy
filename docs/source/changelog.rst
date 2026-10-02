@@ -10,6 +10,18 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Added
+-----
+- **Pareto search**: ``BaseFuzzyRulesClassifier(algorithm='nsga2')`` runs
+  pymoo's NSGA-II on two objectives, the macro F1 with the class-coverage
+  penalty and the share of conditions used, and keeps the Pareto front in
+  ``pareto_front_``. ``fit`` selects its most accurate solution and
+  ``select_pareto_solution`` switches to another. On 61 KEEL datasets, in a
+  prototype comparison with the MCC objective, the most accurate NSGA-II
+  solution had 46% fewer conditions and 37% fewer rules than the genetic
+  algorithm's, for 0.010 lower test accuracy. It needs the pymoo backend and
+  the built-in loss, and also selects from candidate rules
+
 Changed
 -------
 - **Genetic objective**: the search maximizes the macro F1 of the pruned rule
@@ -39,6 +51,7 @@ Fixed
 - The core concepts guide described a multi-objective search and a two-stage
   workflow through functions that do not exist; it now shows the objective,
   ``reparametrize_loss`` and rule selection through ``fit``
+- The extending guide named a ``new_loss`` method; it is ``customized_loss``
 
 [3.2.0] - 2026-09-16
 ====================

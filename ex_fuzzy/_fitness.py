@@ -336,36 +336,49 @@ def _macro_f1(true_positive, predicted, actual) -> np.ndarray:
 
 
 def _penalized_objective(primary, covered, conditions, n_classes: int,
-                         max_conditions: int, alpha: float, beta: float):
+                         max_conditions: int, alpha: float, beta: float,
+                         pareto: bool = False):
     """
     Subtract the class-coverage and compactness penalties from ``primary``.
 
     ``covered`` counts the classes that keep at least one rule and
     ``conditions`` the antecedent conditions of the kept rules; ``beta``
     weighs the share of classes without rules and ``alpha`` the share of
-    ``max_conditions`` used.  Works on scalars and arrays alike.  Every
-    evaluator finishes here, so all of them round the same way.
+    ``max_conditions`` used.  With ``pareto`` the two parts are returned
+    separately, ``(accuracy, compactness)``, and ``alpha`` is unused: the
+    Pareto search minimizes the share of conditions as its own objective.
+    Works on scalars and arrays alike.  Every evaluator finishes here, so all
+    of them round the same way.
     """
-    uncovered = (n_classes - covered) / n_classes
-    return primary - beta * uncovered - alpha * (conditions / max_conditions)
+    accuracy = primary - beta * ((n_classes - covered) / n_classes)
+    compactness = conditions / max_conditions
+    if pareto:
+        return accuracy, compactness
+    return accuracy - alpha * compactness
+
+
+def _as_score(value):
+    """A scalar objective as a float, or the Pareto pair as two floats."""
+    return tuple(float(part) for part in value) if isinstance(value, tuple) else float(value)
 
 
 def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
                    alpha: float, beta: float, precomputed_truth=None, *,
-                   max_conditions: int) -> float:
+                   max_conditions: int, pareto: bool = False):
     """
     Compute the standard objective with one firing-strength evaluation.
 
     The objective is the macro F1 of the pruned rule base on the training data,
     minus the penalties of :func:`_penalized_objective`; ``y`` holds consequent
-    indexes.  Pruning uses winners *before* removal. Final predictions select
-    winners among surviving rules, preserving class/rule order and first-index
-    ties.
+    indexes.  With ``pareto`` it returns ``(accuracy, compactness)`` instead.
+    Pruning uses winners *before* removal. Final predictions select winners
+    among surviving rules, preserving class/rule order and first-index ties.
     """
     n_classes = len(rulebase.get_rulebases())
     all_rules = rulebase.get_rules()
     if not all_rules:
-        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+        return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
+                                              pareto))
     if precomputed_truth is None:
         precomputed_truth = rules.compute_antecedents_memberships(rulebase.antecedents, X)
     firing = rulebase.compute_firing_strengths(X, precomputed_truth=precomputed_truth)
@@ -389,7 +402,8 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
     rulebase.purge_rules(tolerance)
     survivors = rulebase.get_rules()
     if not survivors:
-        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+        return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
+                                              pareto))
     retained = {id(rule) for rule in survivors}
     keep = np.asarray([id(rule) in retained for rule in all_rules])
     # Match the contiguous layout of a fresh reference firing calculation.
@@ -405,13 +419,13 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
     primary = _macro_f1(*_class_counts(y, prediction, n_classes))
     covered = np.count_nonzero(np.bincount(consequents, minlength=n_classes))
     conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
-    return float(_penalized_objective(primary, covered, conditions, n_classes,
-                                      max_conditions, alpha, beta))
+    return _as_score(_penalized_objective(primary, covered, conditions, n_classes,
+                                          max_conditions, alpha, beta, pareto))
 
 
 def score_rulebase_objects(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
                            alpha: float, beta: float, precomputed_truth=None, *,
-                           max_conditions: int) -> float:
+                           max_conditions: int, pareto: bool = False):
     """
     The objective of :func:`score_rulebase` through ``evalRuleBase``.
 
@@ -420,7 +434,8 @@ def score_rulebase_objects(rulebase, X: np.ndarray, y: np.ndarray, tolerance: fl
     """
     n_classes = len(rulebase.get_rulebases())
     if not rulebase.get_rules():
-        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+        return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
+                                              pareto))
     if precomputed_truth is None:
         precomputed_truth = rules.compute_antecedents_memberships(rulebase.antecedents, X)
     evaluator = eval_rules.evalRuleBase(rulebase, X, y, precomputed_truth=precomputed_truth)
@@ -428,11 +443,12 @@ def score_rulebase_objects(rulebase, X: np.ndarray, y: np.ndarray, tolerance: fl
     rulebase.purge_rules(tolerance)
     survivors = rulebase.get_rules()
     if not survivors:
-        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+        return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
+                                              pareto))
     evaluator.add_rule_weights()
     prediction = np.asarray(rulebase.winning_rule_predict(X, precomputed_truth=precomputed_truth))
     primary = _macro_f1(*_class_counts(np.asarray(y), prediction, n_classes))
     covered = sum(1 for rule_base in rulebase.get_rulebases() if len(rule_base) > 0)
     conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
-    return float(_penalized_objective(primary, covered, conditions, n_classes,
-                                      max_conditions, alpha, beta))
+    return _as_score(_penalized_objective(primary, covered, conditions, n_classes,
+                                          max_conditions, alpha, beta, pareto))

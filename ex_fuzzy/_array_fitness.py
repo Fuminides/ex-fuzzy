@@ -17,7 +17,7 @@ import numpy as np
 from typing import Optional
 
 from . import rules
-from ._fitness import (_ClassMaskCache, _FiringCache, _LabelDomain, _association,
+from ._fitness import (_ClassMaskCache, _FiringCache, _LabelDomain, _as_score, _association,
                        _class_counts, _class_counts_encoded, _dominance, _macro_f1,
                        _penalized_objective)
 
@@ -164,16 +164,20 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
                     interval: bool, labels: Optional[_LabelDomain] = None,
                     firing_cache: Optional[_FiringCache] = None,
                     packed: Optional[tuple] = None, *,
-                    max_conditions: int) -> Optional[float]:
+                    max_conditions: int, pareto: bool = False):
     """
     Objective value for a decoded candidate, or None if unsupported.
+
+    With ``pareto`` it returns ``(accuracy, compactness)``, as
+    ``_fitness.score_rulebase`` does.
 
     Mirrors ``_fitness.score_rulebase`` step by step, including pruning on the
     pre-removal winners and the second dominance pass over the survivors.
     """
     n_rules = len(decoded.consequents)
     if n_rules == 0:
-        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+        return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
+                                              pareto))
     firing = firing_strengths(decoded.antecedents, truth, len(X), interval,
                               firing_cache, packed)
     if firing is None:
@@ -198,7 +202,8 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
     # is retained because 'NaN < tolerance' is False.
     keep = ~(scores < tolerance) & (accuracy != 0.0)
     if not keep.any():
-        return float(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta))
+        return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
+                                              pareto))
     firing = np.ascontiguousarray(firing[:, keep])
     consequents = consequents[keep]
     scores = _dominance(firing, y, consequents, mask_cache)
@@ -210,5 +215,5 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
               else _class_counts_encoded(prediction, labels))
     covered = np.count_nonzero(np.bincount(consequents, minlength=n_classes))
     conditions = np.count_nonzero(decoded.antecedents[keep] != -1)
-    return float(_penalized_objective(_macro_f1(*counts), covered, conditions, n_classes,
-                                      max_conditions, alpha, beta))
+    return _as_score(_penalized_objective(_macro_f1(*counts), covered, conditions, n_classes,
+                                          max_conditions, alpha, beta, pareto))

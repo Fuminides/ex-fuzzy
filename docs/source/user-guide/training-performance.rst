@@ -88,7 +88,8 @@ as fast as another one.
        runner and no checkpointing. The firing cache additionally needs fixed
        partitions.
    * - Population batching
-     - Everything the caches need, plus Type-1 sets and fixed partitions.
+     - Everything the caches need, plus Type-1 sets, fixed partitions and the
+       default ``algorithm='ga'``.
    * - Device objective
      - Everything the caches need, plus the ``evox`` backend on a CUDA device,
        Type-1 sets, ``ds_mode`` 0 or 1, and no categorical variables when the
@@ -119,6 +120,11 @@ fit is not reliably faster than a serial one — measure before assuming it is.
 A custom loss disables the caches and the array evaluator together, since
 Ex-Fuzzy cannot know that your objective depends only on the rule base. Your
 loss still receives an ordinary ``MasterRuleBase``, exactly as before.
+
+**The Pareto search scores two objectives.** ``algorithm='nsga2'`` uses the array
+evaluator and the fit-local caches like the genetic algorithm, but population
+batching scores a single objective and stays off, so with fixed partitions a
+Pareto fit can take longer than a genetic one.
 
 How the batching route is chosen
 ================================

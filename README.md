@@ -65,7 +65,7 @@
 
 ###  **Advanced Learning Routines**
 - **Multiple Backend Support**: Choose between PyMoo (CPU) and EvoX (GPU-accelerated) backends for evolutionary optimization.
-- **Genetic Algorithms**: Rule base optimization supports fine-tuning of different hyperparameters, like tournament size, crossover rate, etc.
+- **Genetic Algorithms**: Rule base optimization maximizes macro F1 with small penalties for classes without rules and for model size, or searches the accuracy–size trade-off with NSGA-II (`algorithm='nsga2'`) and keeps the Pareto front to choose from. Hyperparameters like tournament size and crossover rate can be tuned.
 - **GPU Genetic Acceleration**: EvoX backend with PyTorch provides significant speedups for large datasets and complex rule bases.
 - **Extensible Architecture**: Easy to extend with custom components.
 
