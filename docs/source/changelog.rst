@@ -10,6 +10,14 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Changed
+-------
+- **Tournament selection**: the pymoo backend runs tournaments of
+  ``tournament_size`` candidates (default 3). pymoo's GA ignored the setting
+  and always ran binary tournaments, so seeded fits of the classifier and of
+  the regressor, which asks for tournaments of 3, change. Ties go to the first
+  candidate of a tournament, whose candidates are drawn at random
+
 [3.2.0] - 2026-09-16
 ====================
 

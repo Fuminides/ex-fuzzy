@@ -197,6 +197,25 @@ class TestPyMooBackend:
 
         assert algorithm.initialization.sampling is sampling
 
+    def test_tournament_size_sets_the_selection_pressure(self):
+        algorithm = eb.PyMooBackend()._build_ga_algorithm(
+            pop_size=4, var_prob=0.3, sbx_eta=3.0, mutation_eta=7.0,
+            tournament_size=4, sampling=None,
+        )
+
+        assert algorithm.mating.selection.pressure == 4
+
+    def test_tournament_winner_is_the_best_candidate(self):
+        from pymoo.core.population import Population
+
+        pop = Population.new(F=np.array([[3.0], [1.0], [2.0], [1.0], [0.0]]),
+                             CV=np.array([[0.0], [0.0], [0.0], [0.0], [1.0]]))
+        P = np.array([[0, 1, 2],   # lowest fitness wins, wherever it stands
+                      [2, 3, 1],   # a tie goes to the first candidate
+                      [4, 0, 2]])  # feasibility comes before fitness
+
+        assert eb._tournament_winners(pop, P).ravel().tolist() == [1, 3, 2]
+
 
 @needs_evox
 class TestEvoXBackend:

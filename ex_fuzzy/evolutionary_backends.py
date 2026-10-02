@@ -62,6 +62,20 @@ class EvolutionaryBackend(ABC):
         return f'{type(self).__name__}()'
 
 
+def _tournament_winners(pop, P, **kwargs) -> np.ndarray:
+    """
+    Pick the winner of each pymoo tournament: the lowest constraint violation, then the lowest fitness.
+
+    pymoo's own ``comp_by_cv_and_fitness`` compares only the first two candidates
+    of each row, so it cannot run tournaments of more than two. Ties go to the
+    first candidate; the candidates of a row are already in random order.
+    """
+    violation = np.asarray(pop.get('CV'), dtype=float).reshape(len(pop), -1)[:, 0][P]
+    fitness = np.asarray(pop.get('F'), dtype=float).reshape(len(pop), -1)[:, 0][P]
+    fitness = np.where(violation == violation.min(axis=1, keepdims=True), fitness, np.inf)
+    return P[np.arange(len(P)), np.argmin(fitness, axis=1)][:, None]
+
+
 class PyMooBackend(EvolutionaryBackend):
     """Backend using pymoo for CPU-based evolutionary optimization."""
 
@@ -82,6 +96,7 @@ class PyMooBackend(EvolutionaryBackend):
             from pymoo.operators.sampling.rnd import IntegerRandomSampling
             from pymoo.operators.crossover.sbx import SBX
             from pymoo.operators.mutation.pm import PolynomialMutation
+            from pymoo.operators.selection.tournament import TournamentSelection
         except ImportError as error:
             raise ImportError(PYMOO_INSTALL_MESSAGE) from error
 
@@ -90,9 +105,9 @@ class PyMooBackend(EvolutionaryBackend):
 
         return GA(
             pop_size=pop_size,
+            selection=TournamentSelection(func_comp=_tournament_winners, pressure=tournament_size),
             crossover=SBX(prob=var_prob, eta=sbx_eta, repair=RoundingRepair()),
             mutation=PolynomialMutation(eta=mutation_eta, repair=RoundingRepair()),
-            tournament_size=tournament_size,
             sampling=sampling,
             eliminate_duplicates=False
         )
@@ -181,7 +196,7 @@ class PyMooBackend(EvolutionaryBackend):
             var_prob: Crossover probability
             sbx_eta: SBX crossover eta parameter
             mutation_eta: Polynomial mutation eta parameter
-            tournament_size: Tournament selection size
+            tournament_size: Number of candidates in each selection tournament
             sampling: Initial population sampling strategy
             **kwargs: Additional pymoo-specific parameters
             
@@ -228,7 +243,7 @@ class PyMooBackend(EvolutionaryBackend):
             var_prob: Crossover probability
             sbx_eta: SBX crossover eta parameter
             mutation_eta: Polynomial mutation eta parameter
-            tournament_size: Tournament selection size
+            tournament_size: Number of candidates in each selection tournament
             sampling: Initial population sampling strategy
             **kwargs: Additional parameters
             
