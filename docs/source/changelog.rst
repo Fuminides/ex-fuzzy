@@ -10,6 +10,13 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Changed
+-------
+- **Packaging**: the metadata declares the license as the SPDX expression
+  ``AGPL-3.0-or-later`` and ships the ``LICENSE`` file, replacing the
+  deprecated license table and classifier. Building from source needs
+  setuptools 77 or later
+
 [3.3.0] - 2026-10-02
 ====================
 
