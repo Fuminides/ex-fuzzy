@@ -17,6 +17,13 @@ Changed
   deprecated license table and classifier. Building from source needs
   setuptools 77 or later
 
+Fixed
+-----
+- **Pickling**: genetic classifiers fitted with the pymoo backend load with
+  ``pickle`` in a new process. They keep pymoo's algorithm, whose problem is a
+  ``PymooProblemWrapper``, and that class was built only on first use, so
+  loading failed with ``AttributeError`` until something else had built it
+
 [3.3.0] - 2026-10-02
 ====================
 

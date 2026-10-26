@@ -108,6 +108,20 @@ def test_wrapped_problems_pickle():
     np.testing.assert_array_equal(restored.evaluate(genes), problem.evaluate(genes))
 
 
+def test_wrapped_problems_unpickle_in_a_fresh_process(tmp_path):
+    # Fitted genetic classifiers keep pymoo's algorithm, whose problem is a wrapper; a new process
+    # has not built the wrapper class yet when it loads such a pickle.
+    path = tmp_path / 'wrapped.pkl'
+    path.write_bytes(pickle.dumps(eb.as_pymoo_problem(_iris_problem())))
+    result = _run_isolated(f"""
+        import pickle
+        restored = pickle.loads(open({str(path)!r}, 'rb').read())
+        print(type(restored).__name__, type(restored.problem).__name__)
+    """)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.split() == ['PymooProblemWrapper', 'FitRuleBase']
+
+
 def test_starmap_runner_evaluates_in_order_and_drops_its_pool_when_pickled():
     with ThreadPool(2) as pool:
         runner = problem_module.StarmapParallelization(pool.starmap)

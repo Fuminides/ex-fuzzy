@@ -271,6 +271,19 @@ def _pymoo_problem_class():
     return PymooProblemWrapper
 
 
+def __getattr__(name: str) -> Any:
+    """
+    Build ``PymooProblemWrapper`` when it is first looked up.
+
+    Unpickling in a new process looks the class up by name before anything has
+    built it, for example when loading a fitted genetic classifier, which keeps
+    pymoo's algorithm and its wrapped problem.
+    """
+    if name == "PymooProblemWrapper":
+        return _pymoo_problem_class()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 def as_pymoo_problem(problem: Any):
     """
     Return ``problem`` as a pymoo problem, wrapping Ex-Fuzzy problems.
