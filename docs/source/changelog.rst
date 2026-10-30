@@ -10,6 +10,14 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Added
+-----
+- **Pruning tolerance**: ``MasterRuleBase.pruning_tolerance`` records the
+  tolerance of the last ``purge_rules`` call, so a fitted or stored model says
+  which dominance-score threshold produced its rules (``None`` if it was never
+  purged). Fitted classifiers carry their ``tolerance``; ``copy`` and pickling
+  keep it. The text format of ``persistence`` does not store it
+
 [3.3.1] - 2026-10-26
 ====================
 

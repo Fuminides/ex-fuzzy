@@ -1355,7 +1355,14 @@ class RuleBaseT1(RuleBase):
 class MasterRuleBase():
     """
     This Class encompasses a list of rule bases where each one corresponds to a different class.
+
+    Attributes:
+        pruning_tolerance: the dominance-score threshold of the last purge_rules call, which is the one that
+            produced the rules kept by a fitted model. None if the rule base was never purged (or was pickled
+            before the attribute existed).
     """
+
+    pruning_tolerance = None
 
     def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0, allow_unknown:bool=False) -> None:
         """
@@ -1794,11 +1801,14 @@ class MasterRuleBase():
         """
         Delete the roles with a dominance score lower than the tolerance.
 
+        The tolerance is kept in ``pruning_tolerance``, so a stored rule base says which one produced it.
+
         Args:
             tolerance: tolerance to delete the rules.
         """
         for ruleBase in self.rule_bases:
             ruleBase.prune_bad_rules(tolerance)
+        self.pruning_tolerance = tolerance
 
 
     def __getitem__(self, item) -> RuleBase:
@@ -1924,7 +1934,8 @@ class MasterRuleBase():
             self.ds_mode, 
             self.allow_unknown
         )
-        
+        new_master_rb.pruning_tolerance = self.pruning_tolerance
+
         return new_master_rb
 
 
