@@ -149,7 +149,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
             runner: number of threads used to evaluate candidates. Threads disable the fit-local fitness and firing caches, so a serial fit (1, the default) is usually faster; more threads only pay off for an expensive custom loss.
             ds_mode: inference weighting mode: 0 or 'dominance' weights rules by their dominance score, 1 or 'unweighted' uses the firing strengths alone, 2 or 'optimized' lets the genetic search set a weight per rule.
-            allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
+            allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value). If False (default), a sample that fires no rule gets the class of the first rule, with association degree 0, and predict warns about it.
             backend: evolutionary backend to use. Options: 'pymoo' (default, CPU) or 'evox' (GPU-accelerated). Install with: pip install ex-fuzzy[evox]
             detect_categorical: if True (default) and no categorical_mask is given, the categorical variables are detected from the data with utils.detect_categorical_mask. Ignored when categorical_mask is given or when linguistic_variables are precomputed.
             n_gen: number of generations of the genetic search. fit can override it for one call.
@@ -737,17 +737,19 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         _check_no_missing(X)
 
         if out_class_names:
-            return self.rule_base.winning_rule_predict(X, out_class_names=True)
-        return self._decode_predictions(self.rule_base.winning_rule_predict(X))
+            return self.rule_base.winning_rule_predict(X, out_class_names=True, warn_uncovered=True)
+        return self._decode_predictions(self.rule_base.winning_rule_predict(X, warn_uncovered=True))
 
 
     def predict(self, X: np.array, out_class_names=False) -> np.array:
         """
         Returns the predicted class for each sample.
 
-        A fitted classifier predicts the labels it was fitted with (see ``classes_``); samples where
-        no rule fires are -1 for numeric labels and 'Unknown' otherwise. A classifier built from
-        precomputed rules predicts consequent indexes.
+        A fitted classifier predicts the labels it was fitted with (see ``classes_``). With
+        ``allow_unknown=True``, samples where no rule fires are -1 for numeric labels and 'Unknown'
+        otherwise. With the default ``allow_unknown=False`` they get the class of the first rule
+        (the class with rules that comes first) and a ``UserWarning`` reports how many. A classifier
+        built from precomputed rules predicts consequent indexes.
 
         Args:
             X: np array samples x features.

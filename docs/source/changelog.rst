@@ -10,6 +10,15 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Changed
+-------
+- **Uncovered samples**: with ``allow_unknown=False`` (the default) a sample
+  that fires no rule has always been given the class of the first rule, with
+  association degree 0. ``predict``, ``forward`` and ``explainable_predict`` now
+  warn, with the number of such samples, and the ``allow_unknown`` and
+  ``predict`` docstrings state the behaviour. Predictions are unchanged;
+  ``allow_unknown=True`` returns -1 (or ``'Unknown'``) for them
+
 [3.3.1] - 2026-10-26
 ====================
 

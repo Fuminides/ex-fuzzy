@@ -63,6 +63,7 @@ def test_firing_matches_per_rule_base_reference(kind, frame):
 @pytest.mark.parametrize('kind', KINDS)
 @pytest.mark.parametrize('ds_mode', [0, 1, 2])
 @pytest.mark.parametrize('out_class_names', [False, True])
+@pytest.mark.filterwarnings('ignore:.*fire no rule')
 def test_predictions_match_reference(kind, ds_mode, out_class_names):
     master, X, _ = _random_master(kind, ds_mode=ds_mode)
     if ds_mode == 2:
@@ -78,6 +79,55 @@ def test_predictions_match_reference(kind, ds_mode, out_class_names):
     np.testing.assert_array_equal(explained[1], winners)
     if not out_class_names:
         assert predicted.dtype.kind in 'iu'
+
+
+def _uncovered_master(allow_unknown):
+    """Class 'a' has the rule on x low and class 'b' the rule on x high; x = 0.5 fires neither."""
+    X = np.array([[0.0], [0.5], [1.0], [0.5]])
+    partition = fs.fuzzyVariable('x', [fs.FS('low', [0, 0, 0.2, 0.4], [0, 1]),
+                                       fs.FS('high', [0.6, 0.8, 1, 1], [0, 1])])
+    first, second = rules.RuleSimple([0]), rules.RuleSimple([1])
+    first.score = second.score = 1.0
+    master = rules.MasterRuleBase([rules.RuleBaseT1([partition], [first]), rules.RuleBaseT1([partition], [second])],
+                                  ['a', 'b'], allow_unknown=allow_unknown)
+    return master, X
+
+
+def test_rows_without_a_firing_rule_warn_and_take_the_first_rules_class():
+    master, X = _uncovered_master(allow_unknown=False)
+    with pytest.warns(UserWarning, match=r"2 of 4 samples fire no rule.*first rule \('a'\)"):
+        predicted = master.predict(X)
+    # The documented fallback, unchanged: rule 0's class and association degree 0.
+    np.testing.assert_array_equal(predicted, [0, 0, 1, 0])
+    with pytest.warns(UserWarning, match='fire no rule'):
+        explained = master.explainable_predict(X)
+    np.testing.assert_array_equal(explained.winning_rule, [0, 0, 1, 0])
+    np.testing.assert_array_equal(explained.association_degree[:, 0], [1.0, 0.0, 1.0, 0.0])
+    with pytest.warns(UserWarning, match='fire no rule'):
+        master.winning_rule_predict(X, warn_uncovered=True)
+
+
+def test_the_uncovered_warning_is_opt_in_inside_the_library_and_silent_without_gaps(recwarn):
+    master, X = _uncovered_master(allow_unknown=False)
+    master.winning_rule_predict(X)  # the evaluators and the fitness oracle call it this way
+    master._winning_rules(X)
+    master.predict(X[[0, 2]])
+    known, _ = _uncovered_master(allow_unknown=True)
+    np.testing.assert_array_equal(known.predict(X), [0, -1, 1, -1])
+    known.explainable_predict(X)
+    assert not [w for w in recwarn if 'fire no rule' in str(w.message)]
+
+
+def test_classifier_predict_warns_for_uncovered_rows():
+    master, X = _uncovered_master(allow_unknown=False)
+    classifier = evf.BaseFuzzyRulesClassifier()
+    classifier.load_master_rule_base(master)
+    with pytest.warns(UserWarning, match='2 of 4 samples fire no rule'):
+        np.testing.assert_array_equal(classifier.predict(X), [0, 0, 1, 0])
+    with pytest.warns(UserWarning, match='fire no rule'):
+        classifier.predict(X, out_class_names=True)
+    with pytest.warns(UserWarning, match='fire no rule'):
+        classifier.explainable_predict(X)
 
 
 @pytest.mark.parametrize('names', [None, ['low', 'high']])
