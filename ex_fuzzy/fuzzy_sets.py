@@ -87,7 +87,8 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
             - b: left shoulder (membership reaches 1.0)  
             - c: right shoulder (membership starts falling)
             - d: right foot (membership reaches 0.0)
-        epsilon (float, optional): Small value for numerical stability. Defaults to 10E-5.
+        epsilon (float, optional): Width of the shift applied to degenerate edges (see Note).
+            Defaults to 10E-5 (1e-4).
             
     Returns:
         np.array: Membership values in [0, 1] for each input value
@@ -101,6 +102,15 @@ def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> n
     Note:
         Special case: if a == d (singleton), returns 1.0 for exact matches, 0.0 otherwise.
         This handles degenerate trapezoids that collapse to single points.
+
+        Vertical edges: if a == b (the left edge is vertical) the function evaluates
+        with ``a - epsilon`` instead of ``a``, and if c == d it evaluates with
+        ``d + epsilon`` instead of ``d``. The membership is then exactly 1.0 at the
+        edge itself (``x == a`` or ``x == d``) and falls to 0.0 over ``epsilon`` outside
+        it, instead of dividing by zero. The shift only exists inside this function:
+        the ``membership_parameters`` stored in the fuzzy set, and anything exported
+        from them, keep the original, unshifted ``a`` and ``d``. The PyTorch objectives
+        of the genetic fits apply the same 1e-4 shift, so both routes agree.
     """
     if isinstance(x, list):
         return list(trapezoidal_membership(np.array(x, dtype=float), params, epsilon))
@@ -811,14 +821,14 @@ class fuzzyVariable():
         
     Example:
         >>> # Create fuzzy sets for temperature
-        >>> low_temp = gaussianFS([15, 5], "Low", 100)
-        >>> medium_temp = gaussianFS([25, 5], "Medium", 100)
-        >>> high_temp = gaussianFS([35, 5], "High", 100)
+        >>> low_temp = gaussianFS("Low", [15, 5], [0, 50])
+        >>> medium_temp = gaussianFS("Medium", [25, 5], [0, 50])
+        >>> high_temp = gaussianFS("High", [35, 5], [0, 50])
         >>> 
         >>> # Create fuzzy variable
         >>> temp_var = fuzzyVariable("Temperature", [low_temp, medium_temp, high_temp], "°C")
-        >>> memberships = temp_var.membership([20, 25, 30])
-        >>> print(memberships.shape)  # (3, 3) - 3 inputs, 3 fuzzy sets
+        >>> memberships = temp_var.compute_memberships([20, 25, 30])  # or temp_var([20, 25, 30])
+        >>> print(memberships.shape)  # (3, 3) - (fuzzy sets, inputs)
         
     Note:
         All fuzzy sets in the variable must be of the same type (t1 or t2).
