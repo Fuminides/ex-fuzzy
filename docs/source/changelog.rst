@@ -10,6 +10,17 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Fixed
+-----
+- **Genetic classifier**: with partitions of different sizes, the term gene of
+  rule slot ``j`` was bounded by the term count of feature ``j``, although the
+  slot may hold any feature. A feature with more terms than the first ``nAnts``
+  features could never use its extra terms. Every term gene is now bounded by
+  the largest partition, and the decoders still clip an index to the term count
+  of the feature the slot holds. With equal term counts the bounds, searches and
+  results are bit-for-bit unchanged; with unequal counts the search space and so
+  seeded results change
+
 [3.3.1] - 2026-10-26
 ====================
 
