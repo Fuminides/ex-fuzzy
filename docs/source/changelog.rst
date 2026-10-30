@@ -10,6 +10,14 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Added
+-----
+- **Partitions from breakpoints**: ``utils.construct_breakpoint_partition``
+  builds a Type-1 trapezoidal variable from user-given band boundaries (for
+  example the official bands of an index), with shoulders at the ends of the
+  domain and a linear crossover of a chosen width around each boundary, so rules
+  can use a domain vocabulary instead of quantile terms
+
 [3.3.1] - 2026-10-26
 ====================
 
