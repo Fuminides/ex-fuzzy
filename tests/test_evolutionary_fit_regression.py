@@ -779,3 +779,136 @@ class TestRegressionValidationAndHelperEdges:
             evr.BaseFuzzyRulesRegressor(nRules=2, nAnts=1).fit(
                 X, y, n_gen=1, pop_size=4
             )
+
+
+def _antecedent_sets(rulebase):
+    return [tuple(rule.antecedents) for rule in rulebase.rules]
+
+
+class TestUniqueAntecedents:
+    """``unique_antecedents`` keeps the first of several rules with the same antecedents."""
+
+    X = np.array([[0.1, 0.2], [0.4, 0.8], [0.9, 0.6]])
+    Y = np.array([0.0, 5.0, 10.0])
+    # Rules 0 and 1 share their antecedents (feature 0, term 0) but not their consequents.
+    DUPLICATE = np.array([0, 0, 1, 0, 0, 2, 0, 100, 50])
+
+    def _problem(self, unique, **kwargs):
+        return evr.FitRuleBaseRegression(
+            self.X, self.Y, 3, 1, _partitions(self.X), unique_antecedents=unique, **kwargs
+        )
+
+    def test_default_keeps_repeats_and_flag_drops_all_but_the_first(self):
+        default, unique = self._problem(False), self._problem(True)
+
+        assert len(default._construct_ruleBase(self.DUPLICATE)) == 3
+        decoded = unique._construct_ruleBase(self.DUPLICATE)
+        assert len(decoded) == 2
+        assert len(set(_antecedent_sets(decoded))) == 2
+        # The kept rule is the first one, with the first one's consequent (0), not the mean (50).
+        np.testing.assert_allclose(decoded.scalar_consequents, [self.Y.min(), 5.0])
+        np.testing.assert_allclose(
+            unique._fast_predict(self.DUPLICATE), decoded.predict(self.X), rtol=1e-12, atol=1e-12
+        )
+        assert not np.array_equal(
+            default._fast_predict(self.DUPLICATE), unique._fast_predict(self.DUPLICATE)
+        )
+
+    def test_objective_is_bit_identical_without_repeats(self):
+        rng = np.random.default_rng(8)
+        X = rng.uniform(0.0, 1.0, size=(40, 4))
+        y = X[:, 0] - 2.0 * X[:, 3]
+        default = evr.FitRuleBaseRegression(X, y, 4, 2, _partitions(X))
+        unique = evr.FitRuleBaseRegression(X, y, 4, 2, _partitions(X), unique_antecedents=True)
+        compared = 0
+        while compared < 30:
+            chromosome = rng.integers(default.xl, default.xu + 1)
+            terms = default._rule_term_matrix(chromosome)
+            if len({tuple(row) for row in terms}) < len(terms):
+                continue
+            first, second = {}, {}
+            default._evaluate(chromosome[None, :], first)
+            unique._evaluate(chromosome[None, :], second)
+            assert first["F"].tobytes() == second["F"].tobytes()
+            compared += 1
+
+    @pytest.mark.parametrize("consequent_type", ["crisp", "fuzzy"])
+    @pytest.mark.parametrize("rule_mode", ["additive", "sufficient"])
+    def test_decoded_rulebase_matches_fast_path_and_has_distinct_antecedents(
+        self, consequent_type, rule_mode
+    ):
+        rng = np.random.default_rng(14)
+        X = rng.uniform(0.0, 1.0, size=(30, 2))
+        y = X[:, 0] - X[:, 1]
+        problem = evr.FitRuleBaseRegression(
+            X, y, 8, 1, _partitions(X), consequent_type=consequent_type,
+            rule_mode=rule_mode, tolerance=0.05, unique_antecedents=True,
+        )
+        repeated = 0
+        for _ in range(60):
+            chromosome = rng.integers(problem.xl, problem.xu + 1)
+            decoded = problem._construct_ruleBase(chromosome)
+            sets = _antecedent_sets(decoded)
+            assert len(sets) == len(set(sets))
+            terms = problem._rule_term_matrix(chromosome)
+            active = terms[np.any(terms != problem._dont_care, axis=1)]
+            repeated += len(active) - len(sets)
+            np.testing.assert_allclose(
+                decoded.predict(X), problem._fast_predict(chromosome), rtol=1e-12, atol=1e-12
+            )
+        assert repeated > 0  # the random chromosomes did contain repeats to drop
+
+    def test_sufficient_mode_predictions_do_not_change(self):
+        # Later repeats never speak in sufficient mode, so dropping them is exact.
+        default = self._problem(False, rule_mode="sufficient", tolerance=0.01)
+        unique = self._problem(True, rule_mode="sufficient", tolerance=0.01)
+        np.testing.assert_array_equal(
+            default._fast_predict(self.DUPLICATE), unique._fast_predict(self.DUPLICATE)
+        )
+
+    @pytest.mark.parametrize("consequent_type", ["crisp", "fuzzy"])
+    @pytest.mark.parametrize("rule_mode", ["additive", "sufficient"])
+    def test_torch_objective_matches_numpy(self, consequent_type, rule_mode):
+        torch = pytest.importorskip("torch")
+        rng = np.random.default_rng(77)
+        X = rng.uniform(-1.0, 1.0, size=(29, 3))
+        y = 3.0 * X[:, 0] - 2.0 * X[:, 2]
+        problem = evr.FitRuleBaseRegression(
+            X, y, 8, 1, _partitions(X), consequent_type=consequent_type,
+            rule_mode=rule_mode, tolerance=0.05, unique_antecedents=True,
+        )
+        population = rng.integers(problem.xl, problem.xu + 1, size=(12, problem.n_var))
+        numpy_output = {}
+        problem._evaluate(population, numpy_output)
+
+        torch_output = problem._evaluate_torch_population(
+            population, device="cpu", population_batch_size=5, sample_batch_size=9
+        )
+
+        np.testing.assert_allclose(
+            torch_output.numpy(), numpy_output["F"].reshape(-1), rtol=2e-5, atol=2e-5
+        )
+
+    def test_estimator_parameter_validation_and_clone(self):
+        X = np.arange(12.0).reshape(6, 2)
+        with pytest.raises(ValueError, match="unique_antecedents"):
+            evr.BaseFuzzyRulesRegressor(nRules=2, nAnts=1, unique_antecedents="yes").fit(
+                X, np.arange(6.0), n_gen=1, pop_size=4
+            )
+        regressor = evr.BaseFuzzyRulesRegressor(unique_antecedents=True)
+        assert evr.BaseFuzzyRulesRegressor().unique_antecedents is False
+        assert clone(regressor).unique_antecedents is True
+
+    @pytest.mark.parametrize("rule_mode", ["additive", "sufficient"])
+    def test_fitted_model_has_distinct_antecedents_and_exact_performance(self, rule_mode):
+        # Two features with three terms each and 12 rule slots: repeats are very likely without the flag.
+        rng = np.random.default_rng(2)
+        X = rng.uniform(0.0, 1.0, size=(150, 2))
+        y = np.sin(3.0 * X[:, 0]) + X[:, 1]
+        regressor = evr.BaseFuzzyRulesRegressor(
+            nRules=12, nAnts=1, rule_mode=rule_mode, tolerance=0.02, unique_antecedents=True
+        ).fit(X, y, n_gen=15, pop_size=20, random_state=0)
+
+        sets = _antecedent_sets(regressor.get_rulebase())
+        assert len(sets) == len(set(sets))
+        assert regressor.performance_ == pytest.approx(r2_score(y, regressor.predict(X)), abs=1e-12)

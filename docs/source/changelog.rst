@@ -10,6 +10,16 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Added
+-----
+- **Regression**: ``BaseFuzzyRulesRegressor(unique_antecedents=True)`` keeps only
+  the first of several rules that share the same antecedents. The genetic search
+  often fills part of the ``nRules`` budget with such repeats, which in additive
+  mode act as one rule with the mean consequent and in sufficient mode never
+  speak. The option applies to the NumPy and PyTorch objectives and to the fitted
+  rule base. It is off by default and then leaves every objective value, seeded
+  fit and prediction unchanged
+
 [3.3.1] - 2026-10-26
 ====================
 
