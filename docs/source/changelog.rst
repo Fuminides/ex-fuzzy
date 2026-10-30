@@ -10,6 +10,18 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Changed
+-------
+- **Smaller fitted models**: ``optimization_result_`` of genetic classifiers and
+  regressors no longer keeps pymoo's problem, which held the training samples
+  and their memberships (about 200 bytes per row for a regressor), so pickled
+  models no longer grow with the training set: a regressor fitted on 20,000
+  rows went from 4.2 MB to 16 kB. The population, evaluator counters, best
+  solution and ``performance``/``performance_`` are kept; only
+  ``optimization_result_['algorithm'].problem`` (and ``['res']``) is now
+  ``None``. Predictions and fitted rules are unchanged. A classifier still
+  stores its training matrix in ``X`` and ``eval_performance``
+
 [3.3.1] - 2026-10-26
 ====================
 

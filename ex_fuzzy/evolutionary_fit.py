@@ -493,7 +493,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             
             best_individual = result['X']
             self.performance = 1 - result['F']
-        self.optimization_result_ = result
+        # The stored result must not keep (or pickle) the training data through pymoo's problem.
+        self.optimization_result_ = ev_backends.release_problem_data(result)
         self.n_generations_run_ = result.get('n_gen_run', n_gen)
         self.stopped_early_ = result.get('stopped_early', False)
 

@@ -577,6 +577,29 @@ class EvoXBackend(EvolutionaryBackend):
         }
 
 
+def release_problem_data(result: dict) -> dict:
+    """
+    Drop the optimization problem, and with it the training data, from a backend result.
+
+    pymoo's algorithm keeps the problem it ran on, and the problem holds the training
+    samples and the memberships computed from them, so an estimator that stores the result
+    would carry (and pickle) a copy of its training set. The population, evaluator counters
+    and best solution stay; only ``algorithm.problem`` is reset to None. Results without a
+    pymoo algorithm (EvoX) are returned unchanged.
+
+    Args:
+        result: dict returned by ``EvolutionaryBackend.optimize``. Modified in place.
+
+    Returns:
+        the same dict.
+    """
+    for key in ('algorithm', 'res'):
+        algorithm = result.get(key)
+        if algorithm is not None and getattr(algorithm, 'problem', None) is not None:
+            algorithm.problem = None
+    return result
+
+
 def get_backend(backend_name: str = 'pymoo') -> EvolutionaryBackend:
     """
     Get an evolutionary backend by name.
