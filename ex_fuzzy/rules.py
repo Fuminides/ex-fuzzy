@@ -1363,6 +1363,10 @@ class MasterRuleBase():
 
         Args:
             rule_base: list of rule bases.
+            consequent_names: names of the consequents, one per rule base. Defaults to their indexes.
+            ds_mode: inference weighting mode (see resolve_ds_mode).
+            allow_unknown: if True, a sample that fires no rule is predicted as -1 ('Unknown'). If False, it gets
+                the consequent of the first rule (the argmax of an all-zero row), with association degree 0.
         """
         if len(rule_base) == 0:
             raise RuleError('No rule bases given!')
@@ -1577,7 +1581,7 @@ class MasterRuleBase():
         return self.compute_firing_strengths(*args, **kwargs)
 
 
-    def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unknown=True) -> np.array:
+    def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unknown=True, warn_uncovered=False) -> np.array:
         # One firing computation serves both the winners and their strengths.
         firing_strengths = self.compute_firing_strengths(X, precomputed_truth=precomputed_truth)
         association_degrees = self.compute_association_degrees(
@@ -1595,8 +1599,25 @@ class MasterRuleBase():
         if allow_unknown:
             # If there is no rule that fires, we set the consequent to -1
             winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
+        elif warn_uncovered:
+            self._warn_uncovered(np.count_nonzero(np.max(association_degrees, axis=1) == 0.0), X.shape[0])
 
         return winning_rules, winning_association_degrees
+
+
+    def _warn_uncovered(self, n_uncovered: int, n_samples: int) -> None:
+        """
+        Warns that samples fired no rule and took the class of the first rule (allow_unknown=False).
+
+        The stack level points at the caller of winning_rule_predict, explainable_predict or __call__.
+        """
+        if n_uncovered == 0:
+            return
+        first = str(self.get_consequents_names()[int(self.get_consequents()[0])])
+        warnings.warn(f'{n_uncovered} of {n_samples} samples fire no rule. With allow_unknown=False they get the '
+                      f'consequent of the first rule ({first!r}), with association degree 0. '
+                      'Use allow_unknown=True to predict -1 (or "Unknown") for them instead.',
+                      UserWarning, stacklevel=4)
 
 
     def compute_association_degrees(self, X, precomputed_truth=None, firing_strengths=None) -> np.array:
@@ -1639,13 +1660,16 @@ class MasterRuleBase():
         return association_degrees
     
     
-    def winning_rule_predict(self, X: np.array, precomputed_truth=None, out_class_names=False) -> np.array:
+    def winning_rule_predict(self, X: np.array, precomputed_truth=None, out_class_names=False, warn_uncovered=False) -> np.array:
         """
         Returns the winning rule for each sample. Takes into account dominance scores if already computed.
 
         Args:
             X: array with the values of the inputs.
             precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
+            out_class_names: if True, the output will be the class names instead of the class index.
+            warn_uncovered: if True and allow_unknown is False, warns when some samples fire no rule. Those samples
+                get the consequent of the first rule (the argmax of an all-zero row), not -1.
 
         Returns:
             array with the winning rule for each sample.
@@ -1657,7 +1681,7 @@ class MasterRuleBase():
             else:
                 return np.full(X.shape[0], -1)
 
-        winning_rules, _winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unknown=self.allow_unknown)
+        winning_rules, _winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unknown=self.allow_unknown, warn_uncovered=warn_uncovered)
 
         return self._winning_consequents(winning_rules, out_class_names)
 
@@ -1707,7 +1731,7 @@ class MasterRuleBase():
                 preds = np.full(n_samples, -1)
             return ExplainedPrediction(preds, np.full(n_samples, -1), np.zeros((n_samples, 1)), np.zeros((n_samples, 1)))
 
-        winning_rules, winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unknown=self.allow_unknown)
+        winning_rules, winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unknown=self.allow_unknown, warn_uncovered=True)
         try:
             confidence_intervals = np.array([rule.boot_confidence_interval for rule in self.get_rules()])
             # A -1 winner selects the last rule's interval, as list indexing did.
@@ -1854,7 +1878,7 @@ class MasterRuleBase():
         Returns:
             vector of predictions, size: samples,
         """
-        aux = self.winning_rule_predict(X)
+        aux = self.winning_rule_predict(X, warn_uncovered=True)
          
         # Convert the predictions to the names of the consequents
         #return np.array(self.consequent_names)[aux]
