@@ -94,6 +94,13 @@ def _validate_rule_mode(rule_mode: str, tolerance: float) -> None:
         raise ValueError("tolerance must be non-negative.")
 
 
+def _validate_unique_antecedents(unique_antecedents) -> bool:
+    """Return ``unique_antecedents`` if it is a bool."""
+    if not isinstance(unique_antecedents, (bool, np.bool_)):
+        raise ValueError("unique_antecedents must be True or False.")
+    return bool(unique_antecedents)
+
+
 def _validate_linguistic_variables(
     linguistic_variables: list[fs.fuzzyVariable], n_features: int
 ) -> None:
@@ -412,6 +419,12 @@ class FitRuleBaseRegression(Problem):
         ``nRules`` output-set indices, then ``4 * n_output_lvs`` trapezoid
         breakpoints.  Each set's four breakpoints are sorted on decoding, so
         every chromosome yields a valid trapezoid.
+
+    With ``unique_antecedents`` a rule whose antecedents repeat those of an
+    earlier rule is dropped on decoding, so the search, the objective and the
+    fitted rule base all see each antecedent set once (the first occurrence
+    keeps its consequent).  Off by default, which leaves every objective value
+    unchanged.
     """
 
     def __init__(
@@ -429,6 +442,7 @@ class FitRuleBaseRegression(Problem):
         n_universe_points: int = 101,
         rule_mode: str = "additive",
         tolerance: float = 0.0,
+        unique_antecedents: bool = False,
     ) -> None:
         """Initialize the vectorized regression optimization problem."""
         self.X = _as_2d_float_array(X)
@@ -450,6 +464,7 @@ class FitRuleBaseRegression(Problem):
         _validate_linguistic_variables(linguistic_variables, self.X.shape[1])
         self.rule_mode = rule_mode
         self.tolerance = float(tolerance)
+        self.unique_antecedents = _validate_unique_antecedents(unique_antecedents)
         self.consequent_type = consequent_type
         self.n_output_lvs = int(n_output_lvs)
         self.n_universe_points = int(n_universe_points)
@@ -548,6 +563,14 @@ class FitRuleBaseRegression(Problem):
             ]
         return rule_terms
 
+    def _active_rule_mask(self, rule_terms: np.ndarray) -> np.ndarray:
+        """Return which rules take part: not all don't-care and, if requested, not a repeat."""
+        active_rules = np.any(rule_terms != self._dont_care, axis=1)
+        if self.unique_antecedents:
+            same = np.all(rule_terms[:, None, :] == rule_terms[None, :, :], axis=2)
+            active_rules &= ~np.tril(same, -1).any(axis=1)
+        return active_rules
+
     def _decode_consequents(self, chromosome: np.ndarray) -> np.ndarray:
         """Decode consequent genes into the target range."""
         start = 2 * self.nRules * self.nAnts
@@ -584,7 +607,7 @@ class FitRuleBaseRegression(Problem):
         """Predict all training samples without constructing rule objects."""
         chromosome = np.rint(np.asarray(chromosome)).astype(int)
         rule_terms = self._rule_term_matrix(chromosome)
-        active_rules = np.any(rule_terms != self._dont_care, axis=1)
+        active_rules = self._active_rule_mask(rule_terms)
 
         gathered = self._membership_array[:, self._feature_gather_index, rule_terms]
         firing = np.prod(gathered, axis=2)
@@ -806,6 +829,12 @@ class FitRuleBaseRegression(Problem):
             batch_size = batch.shape[0]
             rule_terms = self._torch_rule_terms(batch, torch)
             active_rules = torch.any(rule_terms != self._dont_care, dim=2)
+            if self.unique_antecedents:
+                same = (rule_terms[:, :, None, :] == rule_terms[:, None, :, :]).all(dim=3)
+                earlier = torch.ones(
+                    self.nRules, self.nRules, dtype=torch.bool, device=device
+                ).tril(-1)
+                active_rules = active_rules & ~(same & earlier).any(dim=2)
             expanded_features = feature_indices.expand(
                 batch_size, self.nRules, self.X.shape[1]
             )
@@ -894,7 +923,7 @@ class FitRuleBaseRegression(Problem):
         """Decode a chromosome into a prediction-equivalent concrete rule base."""
         chromosome = np.rint(np.asarray(chromosome)).astype(int)
         rule_terms = self._rule_term_matrix(chromosome)
-        active_rules = np.any(rule_terms != self._dont_care, axis=1)
+        active_rules = self._active_rule_mask(rule_terms)
         decoded_terms = np.where(rule_terms == self._dont_care, -1, rule_terms)
 
         if self.consequent_type == "fuzzy":
@@ -958,6 +987,19 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
     ``backend="pymoo"`` uses the vectorized NumPy objective on the CPU.
     ``backend="evox"`` evolves populations with EvoX and evaluates complete
     population batches with PyTorch on CUDA when available.
+
+    ``unique_antecedents`` (default ``False``) keeps only the first of several
+    rules that share the same antecedents.  The genetic search can otherwise
+    spend part of the ``nRules`` budget on such repeats: in additive mode they
+    act as one rule with the mean consequent (and double weight), in sufficient
+    mode the later ones never speak.  With ``True`` the repeats are ignored by
+    the objective and absent from the fitted rule base, so every rule slot left
+    to the search describes a distinct antecedent set.  The default leaves the
+    objective, and so seeded fits, unchanged.
+    ``n_linguistic_variables`` is the number of terms of each input partition
+    built from the data. It is ignored when ``linguistic_variables`` is given:
+    the term counts are then read from those variables, and they may differ
+    between features.
     """
 
     def __init__(
@@ -974,6 +1016,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         tolerance: float = 0.0,
         verbose: bool = False,
         backend: str = "pymoo",
+        unique_antecedents: bool = False,
     ) -> None:
         """Configure the regressor; optimization is performed in :meth:`fit`."""
         self.nRules = nRules
@@ -988,6 +1031,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         self.tolerance = tolerance
         self.verbose = verbose
         self.backend = backend
+        self.unique_antecedents = unique_antecedents
 
     def _validate_parameters(self) -> None:
         """Validate estimator hyperparameters without mutating them."""
@@ -1005,6 +1049,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         if self.consequent_type not in ("crisp", "fuzzy"):
             raise ValueError("consequent_type must be either 'crisp' or 'fuzzy'.")
         _validate_rule_mode(self.rule_mode, self.tolerance)
+        _validate_unique_antecedents(self.unique_antecedents)
         if self.consequent_type == "fuzzy":
             if not isinstance(self.n_output_lvs, (int, np.integer)) or self.n_output_lvs < 2:
                 raise ValueError("n_output_lvs must be an integer of at least two.")
@@ -1076,6 +1121,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
             n_universe_points=int(self.n_universe_points),
             rule_mode=self.rule_mode,
             tolerance=float(self.tolerance),
+            unique_antecedents=self.unique_antecedents,
         )
 
         backend = ev_backends.get_backend(self.backend)
@@ -1094,7 +1140,8 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         if result.get("X") is None or result.get("F") is None:
             raise RuntimeError("The evolutionary optimizer did not return a valid solution.")
 
-        self.optimization_result_ = result
+        # The stored result must not keep (or pickle) the training data through pymoo's problem.
+        self.optimization_result_ = ev_backends.release_problem_data(result)
         self.backend_ = backend.name()
         self.optimization_device_ = result.get("device", "cpu")
         self.gpu_accelerated_ = bool(result.get("gpu_accelerated", False))

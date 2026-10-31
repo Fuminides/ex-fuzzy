@@ -134,6 +134,43 @@ def test_rule_bases_with_their_own_antecedents_evaluate_themselves():
     np.testing.assert_array_equal(master.compute_firing_strengths(X), _reference_firing(master, X))
 
 
+@pytest.mark.parametrize('ds_mode, attribute', [(0, 'score'), (2, 'weight')])
+def test_explained_association_is_the_winners_firing_times_its_score(ds_mode, attribute):
+    # Both rules fire fully at x = 0.5, but the first has the larger score.
+    X = np.array([[0.5], [0.0], [1.0]])
+    partition = fs.fuzzyVariable('x', [fs.FS('low', [0, 0, 0.5, 0.5], [0, 1]),
+                                       fs.FS('high', [0.5, 0.5, 1, 1], [0, 1])])
+    first, second = rules.RuleSimple([0]), rules.RuleSimple([1])
+    setattr(first, attribute, 0.5)
+    setattr(second, attribute, 0.25)
+    master = rules.MasterRuleBase([rules.RuleBaseT1([partition], [first]), rules.RuleBaseT1([partition], [second])],
+                                  ds_mode=ds_mode, allow_unknown=True)
+
+    firing = master.compute_firing_strengths(X)
+    explained = master.explainable_predict(X)
+
+    np.testing.assert_array_equal(firing[0], [1.0, 1.0])
+    np.testing.assert_array_equal(explained.winning_rule, [0, 0, 1])
+    # The largest firing would be 1.0 in every row, whatever the winner's score.
+    np.testing.assert_array_equal(explained.association_degree, [[0.5], [0.5], [0.25]])
+    association = master.compute_association_degrees(X)
+    np.testing.assert_array_equal(explained.association_degree[:, 0],
+                                  association[np.arange(len(X)), explained.winning_rule])
+
+
+@pytest.mark.parametrize('kind', KINDS)
+@pytest.mark.parametrize('ds_mode', [0, 1, 2])
+def test_explained_association_matches_the_association_matrix(kind, ds_mode):
+    master, X, _ = _random_master(kind, ds_mode=ds_mode)
+    if ds_mode == 2:
+        for index, rule in enumerate(master.get_rules()):
+            rule.weight = 0.25 + 0.05 * index
+    explained = master.explainable_predict(X)
+    association = master.compute_association_degrees(X)
+    assert explained.association_degree.shape == (len(X), 1)
+    np.testing.assert_array_equal(explained.association_degree[:, 0], association.max(axis=1))
+
+
 @pytest.mark.parametrize('kind', [fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2])
 def test_evaluator_methods_compute_firing_once_and_exactly(kind, monkeypatch):
     master, X, y = _random_master(kind, seed=11)
