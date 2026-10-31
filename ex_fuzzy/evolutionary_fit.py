@@ -143,7 +143,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             tolerance: tolerance for the dominance score of the rules.
             n_linguist_variables: number of linguistic variables per antecedent.
             verbose: if True, prints the progress of the optimization.
-            linguistic_variables: list of fuzzyVariables type. If None (default) the optimization process will init+optimize them.
+            n_linguistic_variables: number of terms per variable (an int, or a list with one count per feature) when the partitions are optimized. Ignored when ``linguistic_variables`` is given: the term counts are then read from those variables, and they may differ between features.
+            linguistic_variables: list of fuzzyVariables type. If None (default) the optimization process will init+optimize them. When given, ``n_linguistic_variables`` is ignored.
             domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
             n_class: number of classes in the problem. If None (default) the classifier will compute it empirically.
             precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
