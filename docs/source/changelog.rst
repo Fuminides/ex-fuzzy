@@ -15,10 +15,24 @@ Fixed
   rule slot ``j`` was bounded by the term count of feature ``j``, although the
   slot may hold any feature. A feature with more terms than the first ``nAnts``
   features could never use its extra terms. Every term gene is now bounded by
-  the largest partition, and the decoders still clip an index to the term count
-  of the feature the slot holds. With equal term counts the bounds, searches and
-  results are bit-for-bit unchanged; with unequal counts the search space and so
-  seeded results change
+  the largest partition, and the decoders map a gene onto the terms of the
+  feature the slot holds (see the next entry). With equal term counts the bounds,
+  searches and results are bit-for-bit unchanged; with unequal counts the search
+  space and so seeded results change
+- **Genetic classifier**: with partitions of different sizes, a term gene above
+  the term count of the feature its slot holds was clipped to that feature's
+  last term, so under uniform sampling the last term of every smaller variable
+  was over-represented (with genes 0 to 4, the last of three terms got 3 of 5
+  values and the last of four terms got 2 of 5, against 1 of 5 for the rest).
+  A gene ``g`` now selects term ``(g * n) // M`` of a variable with ``n`` terms,
+  where ``M`` is the largest term count: the map is order preserving, reaches
+  every term, gives each term ``floor(M / n)`` or ``ceil(M / n)`` gene values and
+  is the identity when ``n == M``. The object decoder, the array and population
+  evaluators, the PyTorch objective and ``encode_rulebase`` (which now writes the
+  first gene of each term) use it. With equal term counts the decoding, searches
+  and results are bit-for-bit unchanged; with unequal counts seeded results
+  change again before any release. A gene beyond the bound is still clipped
+  to the last term
 
 [3.3.1] - 2026-10-26
 
