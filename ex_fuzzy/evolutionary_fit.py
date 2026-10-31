@@ -1071,8 +1071,14 @@ class FitRuleBase(Problem):
 
         possible_antecedent_bounds = np.array(
             [[0, self.X.shape[1] - 1]] * self.nAnts * self.nRules)  
+        # A term gene does not know which feature its slot will hold (that is the
+        # gene next to it), so every slot is bounded by the largest partition and
+        # the decoders clip the index to the feature's own term count. Bounding
+        # slot j by feature j's count would stop later, larger variables from
+        # ever using their extra terms. Equal term counts give the same bounds as before.
+        max_terms = max(self.n_lv_possible)
         vl_antecedent_bounds = np.array(
-            [[-1, self.n_lv_possible[ax] - 1] for ax in range(self.nAnts)] * self.nRules) # -1 means not caring
+            [[-1, max_terms - 1] for ax in range(self.nAnts)] * self.nRules) # -1 means not caring
         antecedent_bounds = np.concatenate(
             (possible_antecedent_bounds, vl_antecedent_bounds))
         vars_antecedent = {ix: Integer(
