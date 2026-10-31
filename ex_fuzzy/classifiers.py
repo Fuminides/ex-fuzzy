@@ -200,7 +200,8 @@ class FuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             search chooses from.
         linguistic_variables (list of fuzzyVariable, optional):
             One fuzzy variable per input feature. When omitted, partitions are
-            built from the data.
+            built from the data. When given, ``n_linguistic_variables`` is ignored
+            and each variable keeps its own number of terms.
         max_features (int, "auto" or None, default=8):
             Maximum number of input features to keep. ``None`` keeps them all.
             ``"auto"`` keeps 8 for problems with up to five classes and 16 for
@@ -216,7 +217,8 @@ class FuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             small.
         n_linguistic_variables (int or "auto", default="auto"):
             Number of fuzzy terms per numerical feature. ``"auto"`` uses three
-            terms for binary problems and five otherwise.
+            terms for binary problems and five otherwise. Ignored when
+            ``linguistic_variables`` is given.
         min_support (float, default=0.05):
             Minimum class support of a candidate rule.
         min_confidence (float, default=0.5):

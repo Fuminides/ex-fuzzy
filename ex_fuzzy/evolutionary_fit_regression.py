@@ -958,6 +958,11 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
     ``backend="pymoo"`` uses the vectorized NumPy objective on the CPU.
     ``backend="evox"`` evolves populations with EvoX and evaluates complete
     population batches with PyTorch on CUDA when available.
+
+    ``n_linguistic_variables`` is the number of terms of each input partition
+    built from the data. It is ignored when ``linguistic_variables`` is given:
+    the term counts are then read from those variables, and they may differ
+    between features.
     """
 
     def __init__(

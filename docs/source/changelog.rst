@@ -21,6 +21,15 @@ Changed
   ``optimization_result_['algorithm'].problem`` (and ``['res']``) is now
   ``None``. Predictions and fitted rules are unchanged. A classifier still
   stores its training matrix in ``X`` and ``eval_performance``
+Fixed
+-----
+- **Explained predictions**: ``explainable_predict`` returned the largest rule
+  *firing strength* in ``association_degree`` instead of the association degree
+  of the winning rule (firing strength times its score or weight, as
+  ``compute_association_degrees`` reports). The confidence interval, which is
+  scaled by that degree, changes with it. The degree is now always a
+  ``(n_samples, 1)`` column; for interval type-2 and general type-2 rule bases it
+  was an ``(n_samples, 2)`` array of interval bounds
 
 [3.3.1] - 2026-10-26
 ====================
