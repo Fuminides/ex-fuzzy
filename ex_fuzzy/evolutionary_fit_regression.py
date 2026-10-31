@@ -958,6 +958,11 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
     ``backend="pymoo"`` uses the vectorized NumPy objective on the CPU.
     ``backend="evox"`` evolves populations with EvoX and evaluates complete
     population batches with PyTorch on CUDA when available.
+
+    ``n_linguistic_variables`` is the number of terms of each input partition
+    built from the data. It is ignored when ``linguistic_variables`` is given:
+    the term counts are then read from those variables, and they may differ
+    between features.
     """
 
     def __init__(
@@ -1094,7 +1099,8 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         if result.get("X") is None or result.get("F") is None:
             raise RuntimeError("The evolutionary optimizer did not return a valid solution.")
 
-        self.optimization_result_ = result
+        # The stored result must not keep (or pickle) the training data through pymoo's problem.
+        self.optimization_result_ = ev_backends.release_problem_data(result)
         self.backend_ = backend.name()
         self.optimization_device_ = result.get("device", "cpu")
         self.gpu_accelerated_ = bool(result.get("gpu_accelerated", False))
