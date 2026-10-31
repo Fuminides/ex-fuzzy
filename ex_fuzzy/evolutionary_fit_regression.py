@@ -1099,7 +1099,8 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         if result.get("X") is None or result.get("F") is None:
             raise RuntimeError("The evolutionary optimizer did not return a valid solution.")
 
-        self.optimization_result_ = result
+        # The stored result must not keep (or pickle) the training data through pymoo's problem.
+        self.optimization_result_ = ev_backends.release_problem_data(result)
         self.backend_ = backend.name()
         self.optimization_device_ = result.get("device", "cpu")
         self.gpu_accelerated_ = bool(result.get("gpu_accelerated", False))
