@@ -996,6 +996,10 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
     the objective and absent from the fitted rule base, so every rule slot left
     to the search describes a distinct antecedent set.  The default leaves the
     objective, and so seeded fits, unchanged.
+    ``n_linguistic_variables`` is the number of terms of each input partition
+    built from the data. It is ignored when ``linguistic_variables`` is given:
+    the term counts are then read from those variables, and they may differ
+    between features.
     """
 
     def __init__(
@@ -1136,7 +1140,8 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         if result.get("X") is None or result.get("F") is None:
             raise RuntimeError("The evolutionary optimizer did not return a valid solution.")
 
-        self.optimization_result_ = result
+        # The stored result must not keep (or pickle) the training data through pymoo's problem.
+        self.optimization_result_ = ev_backends.release_problem_data(result)
         self.backend_ = backend.name()
         self.optimization_device_ = result.get("device", "cpu")
         self.gpu_accelerated_ = bool(result.get("gpu_accelerated", False))

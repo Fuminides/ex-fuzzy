@@ -1590,7 +1590,8 @@ class MasterRuleBase():
             return winning_rules, winning_association_degrees
 
         winning_rules = np.argmax(association_degrees, axis=1)
-        winning_association_degrees = np.max(firing_strengths, axis=1)
+        # The winner's association degree (firing x score or weight), not the largest firing.
+        winning_association_degrees = np.max(association_degrees, axis=1)
 
         if allow_unknown:
             # If there is no rule that fires, we set the consequent to -1
@@ -1697,6 +1698,9 @@ class MasterRuleBase():
 
         Returns:
             an ExplainedPrediction named tuple: predictions, winning rules, association degrees and confidence intervals.
+            The association degree is a (n_samples, 1) column holding the winning rule's association degree, as
+            returned by compute_association_degrees (firing strength times the rule's score or weight, depending on
+            ds_mode), and 0 where no rule fires. It is a degree of rule match, not a probability.
         """
         # Handle empty rule base - return unknown predictions
         if len(self.get_rules()) == 0:
