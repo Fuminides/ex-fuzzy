@@ -82,6 +82,40 @@ The pie charts look like this:
 
 
 
+Rule-set stability: selection frequency, Jaccard and consensus
+----------------------------------------------------------------
+
+The text report counts patterns per class. To ask how stable the whole rule base is, ``pattern_stabilizer.rule_set_stability`` runs the same resampled fits (a different train/test split and seed per fit) and returns plain data:
+
+1. The **selection frequency** of each rule: the share of the fits whose final rule base contains it. A rule is identified by its antecedents (the sorted ``(variable name, term name)`` pairs) and its class, never by its score or weight; a rule repeated inside one fit counts once.
+2. The **pairwise Jaccard** of the rule sets of the fits (mean, standard deviation, minimum and maximum over all pairs) as a single stability number.
+3. Given ``pi``, a **consensus** list: the rules selected in at least a share ``pi`` of the fits, as in stability selection (Meinshausen and Buehlmann, 2010).
+
+Rules of different fits are comparable only if the fits share their fuzzy sets, so the stabilizer must be created with ``linguistic_variables``. Without them every fit searches its own partitions and ``Low`` does not mean the same thing in two fits.
+
+.. code-block:: python
+
+    from sklearn.datasets import load_iris
+    from ex_fuzzy import pattern_stability as ps, utils
+
+    X, y = load_iris(return_X_y=True)
+    lvs = utils.construct_partitions(X)
+    stabilizer = ps.pattern_stabilizer(X, y, nRules=10, nAnts=2, linguistic_variables=lvs)
+    res = stabilizer.rule_set_stability(n=10, n_gen=10, pop_size=20, pi=0.5)
+
+    res['jaccard']       # {'n_pairs': 45, 'mean': 0.27, 'sd': 0.20, 'min': 0.0, 'max': 0.75}
+    res['frequencies'][0]  # {'antecedents': (('3', 'High'),), 'consequent': 2, 'count': 9, 'frequency': 0.9}
+    res['consensus']     # the rows of 'frequencies' with frequency >= 0.5 (here two rules)
+
+The same diagnostics are available for fits you already have, as ``rule_set_stability_summary(rule_bases, pi)``, or piece by piece with ``rule_keys``, ``selection_frequencies``, ``pairwise_jaccard`` and ``consensus_keys``. ``consensus_rule_base(keys, template, X, y)`` turns the consensus keys into a ``MasterRuleBase`` that holds only those rules, with the dominance scores recomputed by the library on ``X`` and ``y``.
+
+How to read these numbers:
+
+* A selection frequency is a count of fits, not a probability that the rule is true, important or correct.
+* A low Jaccard can reflect a large rule space under a fixed budget (``nRules``, ``n_gen``, ``pop_size``), where equally good fits seldom choose the identical rule, and not only an unstable learner. In the example above only 15 distinct rules appear in 10 fits, and the mean Jaccard is low.
+* When many rules are possible the consensus is expected to be short and made of simple rules, and ``pi`` is a threshold you choose, not a guarantee on false rules.
+* The fits are subsamples without replacement of the same data, so the numbers describe the variability of this procedure on this dataset, not a confidence interval on new data.
+
 Bootstrapping
 -------------
 

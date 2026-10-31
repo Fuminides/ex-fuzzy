@@ -18,6 +18,19 @@ Added
   speak. The option applies to the NumPy and PyTorch objectives and to the fitted
   rule base. It is off by default and then leaves every objective value, seeded
   fit and prediction unchanged
+- **Pattern stability**: rule-set stability diagnostics for classification rule
+  bases. ``pattern_stabilizer.rule_set_stability`` runs the existing resampled
+  fits, which must share their ``linguistic_variables``, and returns the
+  selection frequency of each rule (identified by its sorted
+  ``(variable, term)`` pairs and class), the pairwise Jaccard of the rule sets
+  (mean, sd, min, max) and, given ``pi``, the consensus rules selected in at
+  least that share of the fits. The pure functions ``rule_keys``,
+  ``selection_frequencies``, ``pairwise_jaccard``, ``consensus_keys``,
+  ``check_shared_variables`` and ``rule_set_stability_summary`` work on any
+  list of ``MasterRuleBase``, and ``consensus_rule_base`` builds a rule base
+  from consensus keys with the dominance scores recomputed on the given data.
+  A frequency is a count of fits, not a probability. Existing methods and
+  outputs are unchanged
 
 [3.3.1] - 2026-10-26
 
