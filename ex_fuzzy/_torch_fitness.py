@@ -262,6 +262,7 @@ class TorchObjective:
         self.n_terms = int(counts.sum())
         self._counts = counts.tolist()
         self.term_counts = torch.as_tensor(counts, device=device)
+        self.max_terms = int(counts.max())
         self.offsets = torch.as_tensor(np.concatenate(([0], np.cumsum(counts)[:-1])),
                                        dtype=torch.int64, device=device)
         self.table = None if table is None else torch.as_tensor(table, device=device)
@@ -340,7 +341,11 @@ class TorchObjective:
         for slot in range(n_ants):
             # Later slots overwrite earlier ones, as in the reference decoder.
             chosen = features[:, :, slot]
-            chosen_terms = torch.minimum(terms[:, :, slot], self.term_counts[chosen] - 1)
+            # The proportional term map of ``_fitness.remap_term``.
+            counts = self.term_counts[chosen]
+            chosen_terms = torch.where(
+                terms[:, :, slot] < 0, terms[:, :, slot],
+                torch.minimum((terms[:, :, slot] * counts) // self.max_terms, counts - 1))
             effective.scatter_(2, chosen.unsqueeze(2), chosen_terms.unsqueeze(2))
         active = (consequents != -1) & (effective != -1).any(dim=2)
         for source in range(1, n_rules):

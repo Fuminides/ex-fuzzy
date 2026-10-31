@@ -19,7 +19,7 @@ from typing import Optional
 from . import rules
 from ._fitness import (_ClassMaskCache, _FiringCache, _LabelDomain, _as_score, _association,
                        _class_counts, _class_counts_encoded, _dominance, _macro_f1,
-                       _penalized_objective)
+                       _penalized_objective, remap_terms)
 
 class _DecodedCandidate:
     """Effective phenotype of one chromosome, in class-major rule order."""
@@ -55,7 +55,7 @@ def decode_rule_arrays(x: np.ndarray, n_rules: int, n_ants: int, n_features: int
         raw_weights = None
 
     effective = np.full((n_rules, n_features), -1, dtype=np.int64)
-    clipped = np.minimum(terms, term_counts[features] - 1)
+    clipped = remap_terms(terms, term_counts[features], int(term_counts.max()))
     # The reference writes slots left to right, so a feature selected twice in
     # one rule keeps its last slot.  Advanced assignment has the same rule.
     rows = np.repeat(np.arange(n_rules), n_ants)

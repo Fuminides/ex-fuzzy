@@ -2,7 +2,8 @@
 Private fitness evaluation for decoded T1/T2 classification rule bases.
 
 Decoding remains in FitRuleBase: this module never interprets chromosomes or
-caches chromosome-dependent memberships. The full evaluator is the oracle.
+caches chromosome-dependent memberships, apart from the one term-gene mapping
+every decoder shares (``remap_term``). The full evaluator is the oracle.
 """
 import numpy as np
 from collections import OrderedDict
@@ -17,6 +18,37 @@ DEFAULT_COMPACTNESS_WEIGHT = 0.03
 #: Default weight of the class-coverage penalty: the share of classes left
 #: without rules (``beta`` of ``reparametrize_loss``).
 DEFAULT_COVERAGE_WEIGHT = 0.05
+
+
+def remap_term(gene: int, n_terms: int, max_terms: int) -> int:
+    """
+    Term index a term gene selects in a variable with ``n_terms`` terms.
+
+    A term gene is bounded by the largest partition (``max_terms``) because it
+    does not know which variable its slot will hold. A value ``g`` in
+    ``0..max_terms - 1`` selects term ``(g * n_terms) // max_terms``: the map is
+    order preserving (neighbouring genes select equal or adjacent terms), reaches
+    every term, gives each term ``floor`` or ``ceil`` of ``max_terms / n_terms``
+    gene values, and is the identity when ``n_terms == max_terms``. Negative
+    genes ("don't care") are returned unchanged. A gene above ``max_terms - 1``
+    (never drawn within the bounds) selects the last term.
+    """
+    if gene < 0:
+        return gene
+    return min((gene * n_terms) // max_terms, n_terms - 1)
+
+
+def remap_terms(genes: np.ndarray, n_terms: np.ndarray, max_terms: int) -> np.ndarray:
+    """Array form of :func:`remap_term`; ``n_terms`` broadcasts against ``genes``."""
+    mapped = np.minimum((genes * n_terms) // max_terms, n_terms - 1)
+    return np.where(genes < 0, genes, mapped)
+
+
+def term_gene(term: int, n_terms: int, max_terms: int) -> int:
+    """Smallest gene that :func:`remap_term` decodes to ``term`` (``-1`` stays ``-1``)."""
+    if term < 0:
+        return term
+    return -((-term * max_terms) // n_terms)
 
 
 class _FitnessCache:
