@@ -155,13 +155,24 @@ class PyMooBackend(EvolutionaryBackend):
                      checkpoint_freq: Optional[int] = None,
                      checkpoint_callback: Optional[Callable] = None,
                      patience: Optional[int] = None,
-                     min_delta: float = 0.0) -> dict:
+                     min_delta: float = 0.0,
+                     minibatch: Optional[Any] = None) -> dict:
         """
         Run a pymoo GA loop with optional checkpoints and early stopping.
 
         With several objectives the first one decides the best individual and the
         early stopping, ties going to the following ones, and the result also
         holds the final Pareto front.
+
+        With a ``minibatch`` schedule (single objective only; the caller disables
+        early stopping, since batch scores of different generations are not
+        comparable) each generation is scored on its own batch of rows. The first
+        population is scored on batch 0. Before every later generation a new batch
+        is drawn and the parents are re-scored on it, so the offspring, the
+        tournaments and the survival all use scores measured on the same rows.
+        After the last generation the full training set is restored, the final
+        population is scored exactly on it, and the best of that scoring is the
+        result.
         """
         algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen))
 
@@ -178,6 +189,11 @@ class PyMooBackend(EvolutionaryBackend):
         executed_generations = 0
 
         for gen in range(n_gen):
+            if minibatch is not None:
+                minibatch.activate_next()
+                if gen > 0:
+                    algorithm.evaluator.eval(problem, algorithm.pop, skip_already_evaluated=False,
+                                             algorithm=algorithm)
             algorithm.next()
             executed_generations = gen + 1
             pop = algorithm.pop
@@ -211,6 +227,17 @@ class PyMooBackend(EvolutionaryBackend):
                         f"(no improvement larger than {min_delta} for {patience} generations)."
                     )
                 break
+
+        if minibatch is not None:
+            minibatch.finish()
+            if executed_generations > 0:
+                algorithm.evaluator.eval(problem, algorithm.pop, skip_already_evaluated=False,
+                                         algorithm=algorithm)
+                algorithm._set_optimum()
+                objectives = algorithm.pop.get('F').reshape(len(algorithm.pop), -1)
+                best_solution_arg = int(np.lexsort(objectives.T[::-1])[0])
+                best_fitness = float(objectives[best_solution_arg, 0])
+                best_individual = algorithm.pop.get('X')[best_solution_arg, :].copy()
 
         pop = algorithm.pop
         front = None
@@ -253,7 +280,8 @@ class PyMooBackend(EvolutionaryBackend):
                  var_prob: float = 0.3, sbx_eta: float = 3.0, 
                  mutation_eta: float = 7.0, tournament_size: int = 3,
                  sampling: Any = None, patience: Optional[int] = 10,
-                 min_delta: float = 1e-4, algorithm: str = 'ga', **kwargs) -> dict:
+                 min_delta: float = 1e-4, algorithm: str = 'ga',
+                 minibatch: Optional[Any] = None, **kwargs) -> dict:
         """
         Optimize using pymoo's genetic algorithm, or NSGA-II for two objectives.
         
@@ -270,6 +298,8 @@ class PyMooBackend(EvolutionaryBackend):
                 NSGA-II uses its own binary tournament)
             sampling: Initial population sampling strategy
             algorithm: 'ga' (default) or 'nsga2', which needs a problem with two objectives
+            minibatch: a ``_fitness.MinibatchSchedule`` that scores each generation on a batch
+                of rows (see ``_run_ga_loop``); None scores every generation on all rows
             **kwargs: Additional pymoo-specific parameters
             
         Returns:
@@ -292,7 +322,8 @@ class PyMooBackend(EvolutionaryBackend):
             random_state=random_state,
             verbose=verbose,
             patience=patience,
-            min_delta=min_delta
+            min_delta=min_delta,
+            minibatch=minibatch
         )
     
     def optimize_with_checkpoints(self, problem: Any, n_gen: int, pop_size: int,

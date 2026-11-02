@@ -87,6 +87,11 @@ class _FitnessCache:
             removed, _ = self.entries.popitem(last=False)
             self.key_bytes -= len(removed)
 
+    def clear(self) -> None:
+        """Forget every entry: the fit context they were measured on has changed."""
+        self.entries.clear()
+        self.key_bytes = 0
+
 
 class _ClassMaskCache:
     """Bounded, evaluation-local cache of consequent-match masks."""
@@ -146,6 +151,72 @@ class _FiringCache:
         while self.bytes > self.max_bytes:
             _, removed = self.entries.popitem(last=False)
             self.bytes -= removed.nbytes
+
+    def clear(self) -> None:
+        """Forget every column: the memberships they were computed from have changed."""
+        self.entries.clear()
+        self.bytes = 0
+
+
+def _batch_quotas(class_sizes: np.ndarray, batch_size: int) -> np.ndarray:
+    """
+    Rows per class of a stratified batch: proportional, by largest remainder.
+
+    Every class gets at least one row (rows are taken from the largest quota
+    for that), so ``batch_size`` must be at least the number of classes. Ties
+    in the remainders go to the lower class index.
+    """
+    sizes = np.asarray(class_sizes, dtype=np.int64)
+    ideal = sizes * batch_size / sizes.sum()
+    quotas = np.floor(ideal).astype(np.int64)
+    leftover = batch_size - int(quotas.sum())
+    if leftover > 0:
+        order = np.argsort(-(ideal - quotas), kind='stable')
+        quotas[order[:leftover]] += 1
+    for klass in np.flatnonzero(quotas == 0):
+        quotas[klass] = 1
+        quotas[int(np.argmax(quotas))] -= 1
+    return quotas
+
+
+class MinibatchSchedule:
+    """
+    Draws the stratified training batches of a minibatch-fitness fit.
+
+    Each draw takes ``batch_size`` rows without replacement, class by class in
+    proportion to the training class sizes (see :func:`_batch_quotas`), and makes
+    them the active rows of ``problem``. The random stream is a private
+    ``numpy.random.Generator`` seeded with ``seed``, so drawing never touches the
+    global NumPy generator or the optimizer's, and a seed fixes the batch sequence.
+    """
+
+    def __init__(self, problem, batch_size: int, seed: Optional[int]) -> None:
+        y = np.asarray(problem.y)
+        classes, inverse, counts = np.unique(y, return_inverse=True, return_counts=True)
+        if not 0 < batch_size < len(y) or batch_size < len(classes):
+            raise ValueError(f'batch_size must be in [{len(classes)}, {len(y)}), got {batch_size}.')
+        order = np.argsort(inverse, kind='stable')
+        self.members = np.split(order, np.cumsum(counts)[:-1])
+        self.quotas = _batch_quotas(counts, batch_size)
+        self.problem = problem
+        self.batch_size = batch_size
+        self.rng = np.random.default_rng(seed)
+
+    def draw(self) -> np.ndarray:
+        """The sorted row indexes of the next batch."""
+        chosen = [self.rng.choice(rows, size=int(take), replace=False)
+                  for rows, take in zip(self.members, self.quotas)]
+        return np.sort(np.concatenate(chosen))
+
+    def activate_next(self) -> np.ndarray:
+        """Draw the next batch and make it the problem's training data."""
+        rows = self.draw()
+        self.problem._activate_rows(rows)
+        return rows
+
+    def finish(self) -> None:
+        """Return the problem to the full training set."""
+        self.problem._restore_rows()
 
 
 #: Populations of genotypes the fitness cache holds when the fit's size is known.

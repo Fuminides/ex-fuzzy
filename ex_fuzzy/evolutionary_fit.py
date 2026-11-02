@@ -133,7 +133,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: Union[int, str] = 0, allow_unknown:bool=False, backend: str='pymoo',
                  detect_categorical: bool = True, n_gen: int = 70, pop_size: int = 30, patience: Optional[int] = 10,
                  min_delta: float = 1e-4, random_state: int = 33, var_prob: float = 0.3, sbx_eta: float = 3.0,
-                 mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga') -> None:
+                 mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga',
+                 batch_size: Optional[int] = None) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -168,6 +169,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 (with the coverage penalty) and the share of conditions used, and keeps the whole Pareto front:
                 ``fit`` selects its most accurate solution and ``select_pareto_solution`` switches to another.
                 'nsga2' needs the pymoo backend and the built-in loss.
+            batch_size: minibatch fitness for large training sets. None (default) scores every candidate on all the
+                training rows. An integer ``n_classes <= batch_size < n_rows`` scores each generation on a fresh random
+                batch of that many rows, drawn without replacement and stratified by class, so the search sees every row
+                over its run without a full-data evaluation per candidate. The parents are re-scored on each new batch,
+                the final population is scored on all rows and the best of that scoring is returned. Needs the pymoo
+                backend and ``algorithm='ga'``, and cannot be combined with ``candidate_rules`` or checkpoints. Batch
+                scores of different generations are not comparable, so ``patience`` is ignored. fit can override it for
+                one call.
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
         self.n_gen = n_gen
@@ -180,6 +189,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.mutation_eta = mutation_eta
         self.tournament_size = tournament_size
         self.algorithm = algorithm
+        self.batch_size = batch_size
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -274,12 +284,13 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state: int = CONSTRUCTOR,
             var_prob: float = CONSTRUCTOR, sbx_eta: float = CONSTRUCTOR, mutation_eta: float = CONSTRUCTOR, tournament_size: int = CONSTRUCTOR, bootstrap_size:int=1000, checkpoint_path:str='',
             p_value_compute:bool=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None,
-            patience: Optional[int] = CONSTRUCTOR, min_delta: float = CONSTRUCTOR):
+            patience: Optional[int] = CONSTRUCTOR, min_delta: float = CONSTRUCTOR,
+            batch_size: Optional[int] = CONSTRUCTOR):
         """
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
         The search settings (n_gen, pop_size, patience, min_delta, random_state, var_prob, sbx_eta,
-        mutation_eta and tournament_size) default to the values given to the constructor; passing
+        mutation_eta, tournament_size and batch_size) default to the values given to the constructor; passing
         them here overrides them for this fit only.
 
         Args:
@@ -299,9 +310,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
             patience: integer. Stop early when the best fitness does not improve for this many generations. Default is 10. Use None to run all generations.
             min_delta: float. Minimum fitness improvement required to reset patience. Default is 1e-4.
+            batch_size: None to score candidates on all training rows, or the number of rows of the stratified random
+                batch each generation is scored on (see the constructor). The returned model is chosen and finalized
+                on all the training rows.
 
         Returns:
             the fitted classifier.
+
+        Raises:
+            ValueError: if ``batch_size`` is not an integer in ``[n_classes, n_rows)``, or is combined with
+                ``algorithm='nsga2'``, a backend other than pymoo, ``candidate_rules`` or ``checkpoints``.
         """
         n_gen, pop_size = _resolve(n_gen, self.n_gen), _resolve(pop_size, self.pop_size)
         random_state = _resolve(random_state, self.random_state)
@@ -309,6 +327,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         mutation_eta = _resolve(mutation_eta, self.mutation_eta)
         tournament_size = _resolve(tournament_size, self.tournament_size)
         patience, min_delta = _resolve(patience, self.patience), _resolve(min_delta, self.min_delta)
+        batch_size = _resolve(batch_size, self.batch_size)
         _check_no_missing(X)
         ds_mode = rules.resolve_ds_mode(self.ds_mode)
         if patience is not None and patience <= 0:
@@ -350,6 +369,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         # The search works on consequent indexes; predict maps them back.
         y = self._encode_labels(y)
+
+        if batch_size is not None:
+            self._check_batch_size(batch_size, y, checkpoints, candidate_rules)
+            if patience is not None:
+                warnings.warn('patience is ignored with batch_size: the batch scores of different generations '
+                              'are measured on different rows and cannot be compared, so the search runs every '
+                              'generation.', stacklevel=3)
+                patience = None
 
         if candidate_rules is None:
             if initial_rules is not None:
@@ -401,7 +428,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             rules_gene = problem.encode_rulebase(initial_rules, self.lvs is None)
             rules_gene = (np.ones((pop_size, len(rules_gene))) * rules_gene).astype(int)
 
-        from ._fitness import _fitness_cache_scope
+        from ._fitness import _fitness_cache_scope, MinibatchSchedule
+        # Backend options of the minibatch mode only; a fit without batches calls the backend as ever.
+        batch_options = {}
+        if batch_size is not None:
+            batch_options['minibatch'] = MinibatchSchedule(problem, batch_size, random_state)
         # Only a built-in serial search has a private, stable fit context for
         # the fit-local caches. Keep callbacks, custom losses/backends and
         # workers on their existing evaluation path. EvoX scores whole
@@ -490,7 +521,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     sampling=rules_gene,
                     patience=patience,
                     min_delta=min_delta,
-                    algorithm=self.algorithm
+                    algorithm=self.algorithm,
+                    **batch_options
                 )
             
             best_individual = result['X']
@@ -517,6 +549,24 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         if result.get('front') is not None:
             self._store_pareto_front(problem, result['front'], X, y, searched_partitions)
         return self
+
+
+    def _check_batch_size(self, batch_size, y: np.ndarray, checkpoints: int, candidate_rules) -> None:
+        """Reject a ``batch_size`` that is invalid or combined with an unsupported option."""
+        n_classes, n_rows = len(np.unique(y)), len(y)
+        if isinstance(batch_size, (bool, np.bool_)) or not isinstance(batch_size, (int, np.integer)):
+            raise ValueError(f'batch_size must be None or an integer, got {batch_size!r}.')
+        if not n_classes <= batch_size < n_rows:
+            raise ValueError(f'batch_size must be at least the number of classes ({n_classes}) and below the '
+                             f'number of training rows ({n_rows}), got {batch_size}.')
+        if self.algorithm != 'ga':
+            raise ValueError("batch_size needs algorithm='ga'; 'nsga2' does not support minibatch fitness.")
+        if not isinstance(self.backend, ev_backends.PyMooBackend):
+            raise ValueError('batch_size needs the pymoo backend.')
+        if candidate_rules is not None:
+            raise ValueError('batch_size cannot be combined with candidate_rules.')
+        if checkpoints > 0:
+            raise ValueError('batch_size cannot be combined with checkpoints.')
 
 
     def _finalized_rule_base(self, problem, gene: np.ndarray, X: np.ndarray, y: np.ndarray) -> tuple:
@@ -1170,6 +1220,58 @@ class FitRuleBase(Problem):
                 vtype=int,
                 xl=varbound[:, 0],
                 xu=varbound[:, 1])
+
+
+    def _activate_rows(self, rows: np.ndarray) -> None:
+        """
+        Make a subset of the training rows the data every evaluation sees.
+
+        Used by the minibatch fitness mode. Everything that depends on the rows
+        is replaced or discarded: ``X``, ``y``, the fixed partitions' memberships
+        (recomputed from the batch, as a problem built on those rows would), and
+        the fit-local caches that were measured on the previous rows. What does
+        not depend on them stays as the full training set made it: the gene
+        layout and bounds, ``n_lv_possible``, the categorical partitions, the
+        classes and the normalization domain that decodes searched partitions.
+        The first call keeps the full data for :meth:`_restore_rows`.
+
+        Args:
+            rows: sorted indexes into the full training set.
+        """
+        if not hasattr(self, '_full_rows'):
+            self._full_rows = (self.X, self.y, self._precomputed_truth)
+        X, y, _ = self._full_rows
+        self._swap_rows(X[rows], y[rows],
+                        None if self.lvs is None
+                        else rules.compute_antecedents_memberships(self.lvs, X[rows]))
+
+
+    def _restore_rows(self) -> None:
+        """Return to the full training set after :meth:`_activate_rows`; a no-op otherwise."""
+        if hasattr(self, '_full_rows'):
+            self._swap_rows(*self._full_rows)
+            del self._full_rows
+
+
+    def _swap_rows(self, X: np.ndarray, y: np.ndarray, truth) -> None:
+        """Install the data of a row subset, or of all rows, and drop the state tied to the old rows."""
+        rows_changed = len(X) != len(self.X)
+        self.X, self.y, self._precomputed_truth = X, y, truth
+        # Rebuilt on demand from the new rows.
+        self.__dict__.pop('_label_domain_cache', None)
+        self.__dict__.pop('_packed_memberships_cache', None)
+        # Fit-local caches are keyed by genes (or antecedents) alone, so their
+        # entries are the old rows' results.
+        for name in ('_fitness_cache', '_firing_cache'):
+            cache = getattr(self, name, None)
+            if cache is not None:
+                cache.clear()
+        # The route choice depends on the number of rows, not on which rows.
+        if rows_changed and getattr(self, '_route_probe', None) is not None:
+            self._route_probe = None
+        # The device copies of the data and the verification against them.
+        if getattr(self, '_torch_route', None) is not None:
+            self._torch_route = None
 
 
     def _normalization_domain(self) -> tuple:
