@@ -44,7 +44,7 @@ def test_evox_fits_run_when_pymoo_cannot_be_imported():
             simulated_binary=lambda population, **kwargs: population.clone())
         operators.mutation = types.SimpleNamespace(
             polynomial_mutation=lambda population, **kwargs: population + torch.randint(
-                -1, 2, population.shape).float())
+                -1, 2, population.shape, device=population.device).float())
         evox.operators = operators
         sys.modules['evox'] = evox
         sys.modules['evox.operators'] = operators

@@ -41,6 +41,8 @@ def fake_evox(monkeypatch):
     evox.operators = operators
     monkeypatch.setitem(sys.modules, 'evox', evox)
     monkeypatch.setitem(sys.modules, 'evox.operators', operators)
+    # These tests check the CPU route; on a machine with CUDA the backend would pick the GPU.
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
     return torch
 
 
@@ -229,7 +231,9 @@ class TestEvoXBackend:
         assert backend._device.type == 'cuda'
         assert 'EvoX backend using GPU: Fake GPU' in capsys.readouterr().out
 
-    def test_generic_problems_with_seeded_and_random_populations(self, capsys):
+    def test_generic_problems_with_seeded_and_random_populations(self, monkeypatch, capsys):
+        import torch
+        monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)  # the CPU route, also on CUDA machines
         backend = eb.get_backend('evox')
         problem = SquaresProblem()
 
