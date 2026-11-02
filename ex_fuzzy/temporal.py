@@ -331,18 +331,27 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
             out_class_names: if True, returns the consequent names instead of their indexes.
 
         Returns:
-            array with the consequent of the winning rule for each sample (-1 or 'Unknown' if no rule fires).
+            array with the consequent of the winning rule for each sample. A sample that fires no rule gets -1
+            ('Unknown') if allow_unknown is True, and otherwise the most frequent training class of its time
+            moment (see MasterRuleBase.class_priors).
         """
         consequents = []
+        # The consequent each time moment's samples fall back to when no rule fires.
+        fallback = []
         for mrb in self.time_mrule_bases:
             for jx, rb in enumerate(mrb):
                 consequent = mrb.consequent_names[jx] if out_class_names else jx
                 consequents.extend([consequent] * len(rb))
+            if self.allow_unknown:
+                fallback.append('Unknown' if out_class_names else -1)
+            else:
+                majority = mrb._uncovered_consequent()
+                fallback.append(mrb.consequent_names[majority] if out_class_names else majority)
 
-        winning_rules, _winning_association_degrees = self._winning_rules(X, time_moments, allow_unknown=self.allow_unknown)
-        unknown = 'Unknown' if out_class_names else -1
+        winning_rules, _winning_association_degrees = self._winning_rules(X, time_moments)
 
-        return np.array([consequents[ix] if ix != -1 else unknown for ix in winning_rules])
+        return np.array([consequents[ix] if ix != -1 else fallback[time]
+                         for ix, time in zip(winning_rules, np.asarray(time_moments))])
 
 
     def add_rule_base(self, rule_base: rl.RuleBase, time: int) -> None:
@@ -459,14 +468,14 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
         return rule_bases
     
 
-    def _winning_rules(self, X: np.array, temporal_moments: list[int], precomputed_truth=None, allow_unknown=True) -> tuple[np.array, np.array]:
+    def _winning_rules(self, X: np.array, temporal_moments: list[int], precomputed_truth=None) -> tuple[np.array, np.array]:
         """
-        Returns the winning rule for each sample. Takes into account dominance scores if already computed.
+        Returns the winning rule for each sample, -1 where no rule fires. Takes into account dominance scores if
+        already computed.
 
         Args:
             X: array with the values of the inputs.
             temporal_moments: time moment of each sample.
-            allow_unknown: if True, samples that fire no rule get -1 as winning rule.
 
         Returns:
             the index of the winning rule and its firing strength for each sample.
@@ -479,8 +488,7 @@ class temporalMasterRuleBase(rl.MasterRuleBase):
         winning_rules = np.argmax(association_degrees, axis=1)
         winning_association_degrees = np.max(firing_strengths, axis=1)
 
-        if allow_unknown:
-            winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
+        winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
 
         return winning_rules, winning_association_degrees
         

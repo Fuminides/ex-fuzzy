@@ -48,7 +48,8 @@ from . import rules
 from . import eval_rules as evr
 from . import vis_rules
 from .evolutionary_search import ExploreRuleBases
-from ._fitness import DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT, remap_term, term_gene
+from ._fitness import (DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT, _class_priors, remap_term,
+                       term_gene)
 
 
 class _ConstructorValue:
@@ -150,7 +151,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             precomputed_rules: MasterRuleBase object. If not None, the classifier will use the rules in the object and ignore the conflicting parameters.
             runner: number of threads used to evaluate candidates. Threads disable the fit-local fitness and firing caches, so a serial fit (1, the default) is usually faster; more threads only pay off for an expensive custom loss.
             ds_mode: inference weighting mode: 0 or 'dominance' weights rules by their dominance score, 1 or 'unweighted' uses the firing strengths alone, 2 or 'optimized' lets the genetic search set a weight per rule.
-            allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
+            allow_unknown: what a sample that fires no rule is predicted as. If True, the unknown class (-1, or 'Unknown'); if False (default), the most frequent class of the training data. The genetic objective scores such samples the same way, and explainable_predict reports winning rule -1 for them either way.
             backend: evolutionary backend to use. Options: 'pymoo' (default, CPU) or 'evox' (GPU-accelerated). Install with: pip install ex-fuzzy[evox]
             detect_categorical: if True (default) and no categorical_mask is given, the categorical variables are detected from the data with utils.detect_categorical_mask. Ignored when categorical_mask is given or when linguistic_variables are precomputed.
             n_gen: number of generations of the genetic search. fit can override it for one call.
@@ -747,9 +748,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         """
         Returns the predicted class for each sample.
 
-        A fitted classifier predicts the labels it was fitted with (see ``classes_``); samples where
-        no rule fires are -1 for numeric labels and 'Unknown' otherwise. A classifier built from
-        precomputed rules predicts consequent indexes.
+        A fitted classifier predicts the labels it was fitted with (see ``classes_``). Samples where
+        no rule fires get the most frequent training class, or, with ``allow_unknown=True``, -1 for
+        numeric labels and 'Unknown' otherwise. A classifier built from precomputed rules predicts
+        consequent indexes.
 
         Args:
             X: np array samples x features.
@@ -815,6 +817,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         """
         Returns the predicted class probabilities for each sample.
 
+        Samples where no rule fires get the class distribution of the training data
+        (``rule_base.class_priors``), or a uniform one for rule bases without it.
+
         Args:
             X: np array samples x features.
 
@@ -823,14 +828,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         """
         beliefs = self.predict_membership_class(X)
 
-        # Normalize beliefs to sum to 1; handle zero-sum cases with uniform distribution
+        # Normalize beliefs to sum to 1; samples without rule activation get the base rates
         row_sums = np.sum(beliefs, axis=1, keepdims=True)
         zero_mask = row_sums == 0
         row_sums[zero_mask] = 1  # Avoid division by zero
         beliefs = beliefs / row_sums
-        # For samples with no rule activation, assign uniform probability
         if np.any(zero_mask):
-            beliefs[zero_mask.flatten()] = 1.0 / beliefs.shape[1]
+            priors = self.rule_base.class_priors
+            beliefs[zero_mask.flatten()] = 1.0 / beliefs.shape[1] if priors is None else priors
 
         return beliefs
 
@@ -1027,7 +1032,7 @@ class FitRuleBase(Problem):
             alpha: float. Weight of the compactness penalty in the fitness function (see ``BaseFuzzyRulesClassifier.reparametrize_loss``).
             beta: float. Weight of the class-coverage penalty in the fitness function.
             ds_mode: int. Mode for the dominance score. 0: normal dominance score, 1: rules without weights, 2: weights optimized for each rule based on the data.
-            allow_unknown: if True, the classifier will allow the unknown class in the classification process. (Which would be a -1 value)
+            allow_unknown: if True, a sample that fires no rule is predicted as the unknown class (-1); if False, as the most frequent class of y.
             var_names: list of variable names. If None, extracted from DataFrame columns or auto-generated.
             pareto: if True, the problem has two objectives for a Pareto search: one minus the macro F1 with
                 the class-coverage penalty, and the share of the possible conditions used. ``alpha`` is unused.
@@ -1056,6 +1061,8 @@ class FitRuleBase(Problem):
             self.n_classes = n_classes
         else:
             self.n_classes = len(np.unique(y))
+        # Every decoded rule base falls back to these when no rule fires, as the objective does.
+        self._class_priors = _class_priors(np.asarray(y), self.n_classes)
 
         if categorical_mask is None:
             self.categorical_mask = np.zeros(X.shape[1])
@@ -1622,6 +1629,7 @@ class FitRuleBase(Problem):
                 res.add_rule_base(rule_base)
 
         res.rename_cons(self.classes_names)
+        res.class_priors = self._class_priors
 
         return res
     

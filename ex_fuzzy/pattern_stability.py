@@ -169,11 +169,12 @@ def consensus_rule_base(keys: list[tuple], template: rl.MasterRuleBase, X: np.ar
     """
     Builds a MasterRuleBase that holds exactly the given rules, e.g. the consensus of :func:`rule_set_stability_summary`.
 
-    The variables, the fuzzy-set type, the t-norm, the class names, ``ds_mode`` and ``allow_unknown`` are taken from
-    ``template``, one of the fitted rule bases. If ``X`` and ``y`` are given, the dominance score of every rule is
-    recomputed on that data with :class:`eval_rules.evalRuleBase`; the scores of the fits are not reused. Without
-    them the rules have no score and the rule base cannot predict until ``evalRuleBase(...).add_rule_weights()``
-    is called. The scores are those of the library on the data given, not selection frequencies.
+    The variables, the fuzzy-set type, the t-norm, the class names, ``ds_mode``, ``allow_unknown`` and
+    ``class_priors`` are taken from ``template``, one of the fitted rule bases. If ``X`` and ``y`` are given, the
+    dominance score of every rule is recomputed on that data with :class:`eval_rules.evalRuleBase`; the scores of
+    the fits are not reused. Without them the rules have no score and the rule base cannot predict until
+    ``evalRuleBase(...).add_rule_weights()`` is called. The scores are those of the library on the data given, not
+    selection frequencies.
 
     Args:
         keys: rule keys, see :func:`rule_keys`.
@@ -211,6 +212,7 @@ def consensus_rule_base(keys: list[tuple], template: rl.MasterRuleBase, X: np.ar
                   for rb, rules in zip(template.rule_bases, per_class)]
     res = rl.MasterRuleBase(rule_bases, list(template.get_consequents_names()), ds_mode=template.ds_mode,
                             allow_unknown=template.allow_unknown)
+    res.class_priors = template.class_priors
     if X is not None and len(res.get_rules()) > 0:
         evr.evalRuleBase(res, np.asarray(X), np.asarray(y)).add_rule_weights()
     return res

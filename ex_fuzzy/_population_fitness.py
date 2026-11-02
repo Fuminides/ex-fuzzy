@@ -207,9 +207,7 @@ def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
     winners = np.argmax(association, axis=2)
     maxima = np.max(association, axis=2)
     has_rules = np.any(active, axis=1)
-    eligible = ((maxima != 0.0) if allow_unknown
-                else np.ones((population, n_samples), dtype=bool))
-    eligible &= has_rules[:, None]
+    eligible = (maxima != 0.0) & has_rules[:, None]
     predicted = np.take_along_axis(consequents, winners, axis=1)
     correct = (predicted == y[None, :]) & eligible
     wins = _winner_counts(winners, eligible, n_rules)
@@ -230,8 +228,7 @@ def score_population(genes: np.ndarray, packed: tuple, y: np.ndarray,
     association = np.where(active[:, None, :], association, -np.inf)
     winners = np.argmax(association, axis=2)
     prediction = np.take_along_axis(consequents, winners, axis=1)
-    if allow_unknown:
-        prediction[np.max(association, axis=2) == 0.0] = -1
+    prediction[np.max(association, axis=2) == 0.0] = -1 if allow_unknown else labels.majority
     primary = _macro_f1(*_class_counts_population(prediction, labels))
     primary[survivor_count == 0] = 0.0
     class_ids = np.arange(n_classes)
