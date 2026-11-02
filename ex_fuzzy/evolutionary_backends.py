@@ -155,13 +155,20 @@ class PyMooBackend(EvolutionaryBackend):
                      checkpoint_freq: Optional[int] = None,
                      checkpoint_callback: Optional[Callable] = None,
                      patience: Optional[int] = None,
-                     min_delta: float = 0.0) -> dict:
+                     min_delta: float = 0.0,
+                     data_schedule: Optional[Any] = None) -> dict:
         """
         Run a pymoo GA loop with optional checkpoints and early stopping.
 
         With several objectives the first one decides the best individual and the
         early stopping, ties going to the following ones, and the result also
         holds the final Pareto front.
+
+        A ``data_schedule`` (``_growing_data.GrowingData``) sets the training
+        subset of each generation before it runs. Parents keep the scores of
+        earlier subsets until the data becomes complete; then the population is
+        re-scored on every sample, and the best-so-far and the patience start
+        over, so early stopping and the result only compare full-data scores.
         """
         algorithm.setup(problem, seed=random_state, termination=('n_gen', n_gen))
 
@@ -178,6 +185,12 @@ class PyMooBackend(EvolutionaryBackend):
         executed_generations = 0
 
         for gen in range(n_gen):
+            if data_schedule is not None and data_schedule.advance(gen):
+                if gen > 0:
+                    algorithm.evaluator.eval(problem, algorithm.pop, skip_already_evaluated=False,
+                                             algorithm=algorithm)
+                best_individual, best_fitness = None, None
+                generations_without_improvement = 0
             algorithm.next()
             executed_generations = gen + 1
             pop = algorithm.pop
@@ -204,7 +217,8 @@ class PyMooBackend(EvolutionaryBackend):
             if checkpoint_freq is not None and checkpoint_callback is not None and gen % checkpoint_freq == 0:
                 checkpoint_callback(gen, best_individual.copy())
 
-            if patience_enabled and generations_without_improvement >= patience:
+            complete = data_schedule is None or data_schedule.complete
+            if patience_enabled and complete and generations_without_improvement >= patience:
                 if verbose:
                     print(
                         f"Early stopping at generation {executed_generations} "
@@ -253,7 +267,8 @@ class PyMooBackend(EvolutionaryBackend):
                  var_prob: float = 0.3, sbx_eta: float = 3.0, 
                  mutation_eta: float = 7.0, tournament_size: int = 3,
                  sampling: Any = None, patience: Optional[int] = 10,
-                 min_delta: float = 1e-4, algorithm: str = 'ga', **kwargs) -> dict:
+                 min_delta: float = 1e-4, algorithm: str = 'ga',
+                 data_schedule: Optional[Any] = None, **kwargs) -> dict:
         """
         Optimize using pymoo's genetic algorithm, or NSGA-II for two objectives.
         
@@ -270,6 +285,7 @@ class PyMooBackend(EvolutionaryBackend):
                 NSGA-II uses its own binary tournament)
             sampling: Initial population sampling strategy
             algorithm: 'ga' (default) or 'nsga2', which needs a problem with two objectives
+            data_schedule: a growing training subset (see ``_run_ga_loop``), or None
             **kwargs: Additional pymoo-specific parameters
             
         Returns:
@@ -292,7 +308,8 @@ class PyMooBackend(EvolutionaryBackend):
             random_state=random_state,
             verbose=verbose,
             patience=patience,
-            min_delta=min_delta
+            min_delta=min_delta,
+            data_schedule=data_schedule
         )
     
     def optimize_with_checkpoints(self, problem: Any, n_gen: int, pop_size: int,
@@ -301,7 +318,8 @@ class PyMooBackend(EvolutionaryBackend):
                                    var_prob: float = 0.3, sbx_eta: float = 3.0,
                                    mutation_eta: float = 7.0, tournament_size: int = 3,
                                    sampling: Any = None, patience: Optional[int] = 10,
-                                   min_delta: float = 1e-4, algorithm: str = 'ga', **kwargs) -> dict:
+                                   min_delta: float = 1e-4, algorithm: str = 'ga',
+                                   data_schedule: Optional[Any] = None, **kwargs) -> dict:
         """
         Optimize with checkpoint callbacks at specified intervals.
         
@@ -320,6 +338,7 @@ class PyMooBackend(EvolutionaryBackend):
                 NSGA-II uses its own binary tournament)
             sampling: Initial population sampling strategy
             algorithm: 'ga' (default) or 'nsga2', which needs a problem with two objectives
+            data_schedule: a growing training subset (see ``_run_ga_loop``), or None
             **kwargs: Additional parameters
             
         Returns:
@@ -344,7 +363,8 @@ class PyMooBackend(EvolutionaryBackend):
             checkpoint_freq=checkpoint_freq,
             checkpoint_callback=checkpoint_callback,
             patience=patience,
-            min_delta=min_delta
+            min_delta=min_delta,
+            data_schedule=data_schedule
         )
 
 
