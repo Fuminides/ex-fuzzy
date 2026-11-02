@@ -179,6 +179,10 @@ def _batch_quotas(class_sizes: np.ndarray, batch_size: int) -> np.ndarray:
     return quotas
 
 
+#: Tag that makes the batch generator's seed differ from the plain ``random_state``.
+_BATCH_STREAM = 0x62617463
+
+
 class MinibatchSchedule:
     """
     Draws the stratified training batches of a minibatch-fitness fit.
@@ -186,7 +190,7 @@ class MinibatchSchedule:
     Each draw takes ``batch_size`` rows without replacement, class by class in
     proportion to the training class sizes (see :func:`_batch_quotas`), and makes
     them the active rows of ``problem``. The random stream is a private
-    ``numpy.random.Generator`` seeded with ``seed``, so drawing never touches the
+    ``numpy.random.Generator`` derived from ``seed``, so drawing never touches the
     global NumPy generator or the optimizer's, and a seed fixes the batch sequence.
     """
 
@@ -200,7 +204,10 @@ class MinibatchSchedule:
         self.quotas = _batch_quotas(counts, batch_size)
         self.problem = problem
         self.batch_size = batch_size
-        self.rng = np.random.default_rng(seed)
+        # Mixing in a tag keeps the stream apart from the optimizer's, which is seeded with the
+        # same ``random_state``: equal seeds would otherwise give correlated draws.
+        self.rng = np.random.default_rng(
+            None if seed is None else np.random.SeedSequence([int(seed), _BATCH_STREAM]))
 
     def draw(self) -> np.ndarray:
         """The sorted row indexes of the next batch."""
