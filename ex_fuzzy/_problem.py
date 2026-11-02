@@ -219,7 +219,7 @@ class Problem:
 
 
 #: Actionable error for code paths that need pymoo when it cannot be imported.
-PYMOO_INSTALL_MESSAGE = ("The 'pymoo' backend and the temporal classifier need pymoo. "
+PYMOO_INSTALL_MESSAGE = ("The 'pymoo' backend needs pymoo. "
                          "Install it with: pip install 'pymoo>=0.6.2'")
 
 _PYMOO_PROBLEM_CLASS = None

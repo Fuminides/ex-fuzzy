@@ -865,6 +865,8 @@ review checked 180 contexts and padded/inactive rules at 512 samples.
 consistent with the existing value-based equality. `temporal.NEW_FUZZY_SETS`
 is a compatibility alias; the temporal-only enum keeps its existing integer
 values. Importing `temporal` no longer replaces the canonical enum.
+(2026-11-02: the `temporal` module and the temporal `FUZZY_SETS` members were
+removed from the library.)
 
 Five serialization tests pass: fresh-process object/model/problem round trips
 in both import modes, cross-import enum equality/hash, and real spawned-worker

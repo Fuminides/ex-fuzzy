@@ -37,7 +37,7 @@ scalar, batched or device route automatically, by measurement.
 | C02 | Measured; follows C01 | Same headroom, plus a per-candidate membership dimension and a much larger memory budget. Optimized partitions also cannot share the packed table. |
 | C03 | Numerical experiment; rejected as formulated | Chunked partial sums change rounding. Exact streaming needs an explicit accumulation design and global-pruning passes. |
 | C04 | Measured | Complete serial/2-thread/4-thread diagnostic checks fit parity. Note that threads disable both fit-local caches, so the array evaluator widened the gap a worker pool has to make up. |
-| C05 | Serialization prerequisite fixed; worker optimization deferred | `FUZZY_SETS` has a stable definition and value-consistent hash; temporal retains compatibility aliases. Fresh-process round trips and actual spawned-worker evaluation parity are tested. Persistent shared-memory workers and a process speedup are not claimed. |
+| C05 | Serialization prerequisite fixed; worker optimization deferred | `FUZZY_SETS` has a stable definition and value-consistent hash. Fresh-process round trips and actual spawned-worker evaluation parity are tested. Persistent shared-memory workers and a process speedup are not claimed. |
 | C06 | Inspect; defer | GCC/OpenMP available. D02 clears local kernel parity, but production native integration and parallel scheduling remain unimplemented. |
 | C07 | Implemented; tested | Classifier-owned pools exist only during a fit and close/join on failure and success; external runners remain caller-owned. Global thread limits are not changed. |
 | C08 | Measured | Diagnostic compares two independent serial-worker fits with two spawned processes; throughput, not single-fit acceleration. |

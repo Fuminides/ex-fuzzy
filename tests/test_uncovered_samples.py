@@ -7,7 +7,6 @@ from sklearn.metrics import f1_score
 from ex_fuzzy import evolutionary_fit as evf
 from ex_fuzzy import fuzzy_sets as fs
 from ex_fuzzy import rules
-from ex_fuzzy import temporal
 from ex_fuzzy import utils
 from ex_fuzzy._fitness import _fitness_cache_scope, score_rulebase, score_rulebase_objects
 
@@ -123,26 +122,3 @@ def test_classifier_predicts_the_base_rates_where_no_rule_fires(allow_unknown):
     probabilities = classifier.predict_proba(X)
     np.testing.assert_array_equal(probabilities[uncovered], np.tile(priors, (uncovered.sum(), 1)))
     assert not np.any(np.all(probabilities[~uncovered] == priors, axis=1))
-
-
-def test_temporal_rule_base_falls_back_to_each_moments_majority():
-    X, y = _imbalanced()
-    time_moments = np.arange(len(y)) % 2
-    variables = [temporal.temporalFuzzyVariable(lv.name, [temporal.temporalFS(fuzzy_set, np.array([1.0, 0.25]))
-                                                          for fuzzy_set in lv.linguistic_variables])
-                 for lv in utils.construct_partitions(X, fs.FUZZY_SETS.t1)]
-    np.random.seed(0)
-    model = temporal.TemporalFuzzyRulesClassifier(nRules=4, nAnts=2, linguistic_variables=variables)
-    model.fit(X, y, n_gen=2, pop_size=8, time_moments=time_moments)
-    rule_base = model.rule_base
-
-    winners, _ = rule_base._winning_rules(X, time_moments)
-    uncovered = winners == -1
-    assert uncovered.any()
-    majority = np.array([mrb._uncovered_consequent() for mrb in rule_base.time_mrule_bases])
-    for time, mrb in enumerate(rule_base.time_mrule_bases):
-        slice_labels = y[time_moments == time]
-        np.testing.assert_array_equal(mrb.class_priors, np.bincount(slice_labels, minlength=3) / len(slice_labels))
-    np.testing.assert_array_equal(model.predict(X, time_moments)[uncovered], majority[time_moments[uncovered]])
-    rule_base.allow_unknown = True
-    np.testing.assert_array_equal(model.predict(X, time_moments)[uncovered], -1)

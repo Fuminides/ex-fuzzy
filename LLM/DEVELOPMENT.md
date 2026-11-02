@@ -30,7 +30,7 @@ All module paths below are relative to `ex_fuzzy/`.
 
 | Area | Modules |
 | --- | --- |
-| Fuzzy sets and linguistic variables | `fuzzy_sets.py`, `utils.py`, `temporal.py`, `centroid.py` |
+| Fuzzy sets and linguistic variables | `fuzzy_sets.py`, `utils.py`, `centroid.py` |
 | Rule representation, inference, firing kernels | `rules.py` |
 | Genetic classification | `evolutionary_fit.py`, `evolutionary_backends.py`, `evolutionary_search.py`, `_problem.py` (optimizer-independent problem base and pymoo wrapper) |
 | Exact built-in objective | `_fitness.py`, `_array_fitness.py`, `_population_fitness.py` (CPU population batching), `_torch_fitness.py` (exact PyTorch population objective for EvoX devices) |
@@ -45,8 +45,8 @@ All module paths below are relative to `ex_fuzzy/`.
 
 PyMoo is the default backend and supports checkpoints. The fitting problems
 subclass `_problem.Problem`, not pymoo's; pymoo is imported only when the PyMoo
-backend or the temporal classifier runs, which wrap problems with
-`as_pymoo_problem`. Keep module-level pymoo imports out of the package
+backend runs, which wraps problems with `as_pymoo_problem`. Keep module-level
+pymoo imports out of the package
 (`tests/test_optional_pymoo.py` checks it). EvoX classification scores
 whole generations through `FitRuleBase._evaluate_gene_population`, sharing the
 fit-local caches and batching, and on CUDA an exact PyTorch objective that each

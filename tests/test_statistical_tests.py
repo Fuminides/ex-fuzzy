@@ -111,12 +111,12 @@ class TestBootstrappingTest:
     def test_membership_of_a_random_rule_rejects_other_fuzzy_types(self, iris):
         X, _ = iris
 
-        class TemporalVariable:
+        class UnknownVariable:
             def fuzzy_type(self):
-                return fs.FUZZY_SETS.temporal
+                return 'not a fuzzy type'
 
         with pytest.raises(ValueError, match='not supported'):
-            bt.membership_randomrule([[0], 0], X, [TemporalVariable()])
+            bt.membership_randomrule([[0], 0], X, [UnknownVariable()])
 
     def test_quality_metric_contrasts_class_and_non_class_memberships(self, iris):
         X, y = iris

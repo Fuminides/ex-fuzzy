@@ -875,9 +875,6 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     for zx, fuzzy_set in enumerate(fv.linguistic_variables):
                         studied_fz = fuzzy_set.type()
                         
-                        if studied_fz == fs.FUZZY_SETS.temporal:
-                            studied_fz = fuzzy_set.inside_type()
-
                         if studied_fz == fs.FUZZY_SETS.t1:
                             f1 = np.mean(
                                 fuzzy_set.membership_parameters[0] + fuzzy_set.membership_parameters[1])
@@ -1455,7 +1452,7 @@ class FitRuleBase(Problem):
                 len(self.n_lv_possible) * 2 + sum(np.array(self.n_lv_possible)-1) * mf_size
 
 
-    def _decode_antecedents(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> list:
+    def _decode_antecedents(self, x: np.array, fuzzy_type: fs.FUZZY_SETS) -> list:
         """
         Decodes the fuzzy variables a subject uses as antecedents.
 
@@ -1512,27 +1509,18 @@ class FitRuleBase(Problem):
                     antecedents.append(linguistic_variable)
                              
         else:
-            try:
-                antecedents = self.lvs[kwargs['time_moment']]
-            except (KeyError, TypeError, IndexError):
-                antecedents = self.lvs
+            antecedents = self.lvs
 
         return antecedents
 
 
-    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS, **kwargs) -> rules.MasterRuleBase:
+    def _construct_ruleBase(self, x: np.array, fuzzy_type: fs.FUZZY_SETS) -> rules.MasterRuleBase:
         """
         Given a subject, it creates a rulebase according to its specification.
-
-
-        kwargs:
-            - time_moment: if temporal fuzzy sets are used with different partitions for each time interval, 
-                            then this parameter is used to specify which time moment is being used.
 
         Args:
             x: gen of a rulebase. type: dict.
             fuzzy_type: a enum type. Check fuzzy_sets for complete specification (two fields, t1 and t2, to mark which fs you want to use)
-            kwargs: additional parameters to pass to the rule
 
         Returns:
             a rulebase object.
@@ -1609,17 +1597,14 @@ class FitRuleBase(Problem):
                     rs_instance)
 
             
-        antecedents = self._decode_antecedents(x, fuzzy_type, **kwargs)
+        antecedents = self._decode_antecedents(x, fuzzy_type)
 
         for i in range(self.n_classes):
-            if fuzzy_type == fs.FUZZY_SETS.temporal:
-                fuzzy_type = self.lvs[0][0].inside_type()
-
             if fuzzy_type == fs.FUZZY_SETS.t1:
                 rule_base = rules.RuleBaseT1(antecedents, rule_list[i])
             elif fuzzy_type == fs.FUZZY_SETS.t2:
                 rule_base = rules.RuleBaseT2(antecedents, rule_list[i])
-            elif fuzzy_type == fs.FUZZY_SETS.gt2:  # pragma: no branch - temporal types are unwrapped above
+            elif fuzzy_type == fs.FUZZY_SETS.gt2:  # pragma: no branch - the fuzzy types are t1, t2 and gt2
                 rule_base = rules.RuleBaseGT2(antecedents, rule_list[i])
             
 
@@ -2048,7 +2033,7 @@ class FitRuleBase(Problem):
         elif isinstance(self.lvs, (list, tuple)):
             term_counts = np.asarray([len(lv) for lv in self.lvs])
         else:
-            return None  # Temporal partitions keep the object decoder.
+            return None  # Other partition containers keep the object decoder.
         try:
             x = np.array(list(x.values())).astype(int)
         except AttributeError:

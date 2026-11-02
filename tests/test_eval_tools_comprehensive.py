@@ -86,33 +86,6 @@ def test_string_labels_and_explicit_evaluation_data(iris):
     assert mrule_base[2].rules[0].accuracy == 0.0
 
 
-def test_temporal_moments_are_used_by_all_support_helpers():
-    class TemporalRuleBase:
-        def __init__(self):
-            self.rule = rl.RuleSimple([0])
-            self.calls = []
-
-        def compute_firing_strengths(self, X, time_moments, **kwargs):
-            self.calls.append((X, time_moments))
-            return np.array([[0.2], [0.4], [0.6], [0.8]])
-
-        def get_rules(self):
-            return [self.rule]
-
-        def fuzzy_type(self):
-            return fs.FUZZY_SETS.t1
-
-    X = np.arange(4.0)[:, None]
-    y = np.array([0, 1, 0, 1])
-    moments = np.array([0, 0, 1, 1])
-    rule_base = TemporalRuleBase()
-    evaluator = eval_rules.evalRuleBase(rule_base, X, y, time_moments=moments)
-
-    np.testing.assert_allclose(evaluator.compute_antecedent_pattern_support(), [0.5])
-    np.testing.assert_allclose(evaluator.compute_aux_pattern_support(), [[0.2, 0.3]])
-    np.testing.assert_allclose(evaluator.compute_aux_pattern_confidence(), [[0.4, 0.6]])
-    assert len(rule_base.calls) == 3
-    assert all(call[0] is X and call[1] is moments for call in rule_base.calls)
 
 
 def test_rule_size_metrics(iris):

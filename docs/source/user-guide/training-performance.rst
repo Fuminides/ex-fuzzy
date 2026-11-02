@@ -81,8 +81,7 @@ as fast as another one.
    * - Optimization
      - Active when
    * - Array evaluator
-     - The built-in objective (no ``custom_loss``), Type-1 or Type-2 sets, and
-       ordinary — not temporal — partitions.
+     - The built-in objective (no ``custom_loss``) and Type-1 or Type-2 sets.
    * - Fit-local caches
      - The built-in objective, the ``pymoo`` or ``evox`` backend, no thread
        runner and no checkpointing. The firing cache additionally needs fixed
@@ -206,8 +205,8 @@ When training is slower than expected
 Work down this list:
 
 1. **Check the table above.** A custom loss, a thread runner, checkpointing,
-   optimized partitions, Type-2 sets or temporal partitions each disable one or
-   more fast paths. This explains most large differences between two fits.
+   optimized partitions or Type-2 sets each disable one or more fast paths.
+   This explains most large differences between two fits.
 2. **Scale the search, not the data.** ``n_gen`` and ``pop_size`` multiply
    directly into the number of evaluations. Start small and increase.
 3. **Reconsider threads.** They disable both caches, so a serial fit is often
