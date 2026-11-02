@@ -1,8 +1,11 @@
 """Deterministic edge coverage for the rule and rule-base protocols."""
 
+import pickle
+
 import numpy as np
 import pytest
 
+from ex_fuzzy import evolutionary_fit as evf
 from ex_fuzzy import fuzzy_sets as fs
 from ex_fuzzy import rules as rl
 from ex_fuzzy import utils
@@ -192,6 +195,42 @@ def _classification_master(fuzzy_type=fs.FUZZY_SETS.t1, *, allow_unknown=True, d
         [base_class(partitions, [rule]), base_class(partitions, [])],
         consequent_names=['low', 'other'], ds_mode=ds_mode, allow_unknown=allow_unknown,
     )
+
+
+def test_purging_records_the_pruning_tolerance_on_the_master_rule_base():
+    master = _classification_master()
+    assert master.pruning_tolerance is None
+
+    master.purge_rules(0.25)
+    assert master.pruning_tolerance == 0.25
+    assert master.copy().pruning_tolerance == 0.25
+    assert master.copy(deep=False).pruning_tolerance == 0.25
+    assert pickle.loads(pickle.dumps(master)).pruning_tolerance == 0.25
+    master.purge_rules()
+    assert master.pruning_tolerance == 0.001
+
+    # A rule base pickled before the attribute existed has no instance value.
+    del master.__dict__['pruning_tolerance']
+    assert master.pruning_tolerance is None
+
+
+def test_a_failed_purge_leaves_the_pruning_tolerance_alone():
+    master = rl.MasterRuleBase([rl.RuleBaseT1(_partitions(), [rl.RuleSimple([0])])])
+    with pytest.raises(ValueError, match='Dominance scores'):
+        master.purge_rules(0.5)
+    assert master.pruning_tolerance is None
+
+
+@pytest.mark.parametrize('tolerance', [0.0, 0.01, 0.2])
+def test_fitted_classifiers_carry_the_tolerance_that_pruned_their_rules(tolerance):
+    X = np.random.default_rng(0).normal(size=(120, 3))
+    y = (X[:, 0] > 0).astype(int)
+    model = evf.BaseFuzzyRulesClassifier(nRules=4, nAnts=2, tolerance=tolerance).fit(
+        X, y, n_gen=2, pop_size=8, random_state=0)
+    assert model.rule_base.pruning_tolerance == tolerance
+    restored = pickle.loads(pickle.dumps(model))
+    assert restored.rule_base.pruning_tolerance == tolerance
+    assert all(rule.score >= tolerance for rule in model.rule_base.get_rules())
 
 
 def test_master_rulebase_empty_predictions_mutation_and_accessors(capsys):
