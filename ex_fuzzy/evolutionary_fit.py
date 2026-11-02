@@ -48,7 +48,7 @@ from . import rules
 from . import eval_rules as evr
 from . import vis_rules
 from .evolutionary_search import ExploreRuleBases
-from ._fitness import DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT
+from ._fitness import DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT, remap_term, term_gene
 
 
 class _ConstructorValue:
@@ -1073,9 +1073,13 @@ class FitRuleBase(Problem):
             [[0, self.X.shape[1] - 1]] * self.nAnts * self.nRules)  
         # A term gene does not know which feature its slot will hold (that is the
         # gene next to it), so every slot is bounded by the largest partition and
-        # the decoders clip the index to the feature's own term count. Bounding
-        # slot j by feature j's count would stop later, larger variables from
-        # ever using their extra terms. Equal term counts give the same bounds as before.
+        # the decoders map the gene proportionally onto the feature's own terms:
+        # term = (gene * n_terms) // max_terms, see ``_fitness.remap_term``.
+        # Clipping to the last term instead would make the last term of every
+        # smaller variable more likely under uniform sampling. Bounding slot j by
+        # feature j's count would stop later, larger variables from ever using
+        # their extra terms. Equal term counts give the same bounds and the same
+        # decoding as before.
         max_terms = max(self.n_lv_possible)
         vl_antecedent_bounds = np.array(
             [[-1, max_terms - 1] for ax in range(self.nAnts)] * self.nRules) # -1 means not caring
@@ -1379,6 +1383,7 @@ class FitRuleBase(Problem):
             raise ValueError('Encoding a rule base needs one antecedent slot per feature (nAnts equal to the number of features).')
 
         gene = np.zeros((self.single_gen_size,))
+        max_terms = max(self.n_lv_possible)
         rule_consequents = rule_base.get_consequents()
         nreal_rules = len(rule_consequents)
 
@@ -1398,7 +1403,8 @@ class FitRuleBase(Problem):
 
             for ax, linguistic_variable in enumerate(rule.antecedents):
                 gene[first_pointer + ax] = ax
-                gene[second_pointer + ax] = linguistic_variable
+                # Inverse of the decoder's proportional term map.
+                gene[second_pointer + ax] = term_gene(linguistic_variable, self.n_lv_possible[ax], max_terms)
 
             # Update the fourth section of the gene: consequents using the fourth pointer
             gene[fourth_pointer + i0] = rule_consequents[i0]
@@ -1558,6 +1564,7 @@ class FitRuleBase(Problem):
         except AttributeError:
             x = x.astype(int)
 
+        max_terms = max(self.n_lv_possible)
         for i0 in range(self.nRules):  # Reconstruct the rules
             first_pointer = i0 * self.nAnts
             chosen_ants = x[first_pointer:first_pointer + self.nAnts]
@@ -1570,9 +1577,9 @@ class FitRuleBase(Problem):
                 (self.X.shape[1],)) - 1  # -1 is dont care
             for jx, ant in enumerate(chosen_ants):
                 if self.lvs is not None:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], len(self.lvs[ant]) - 1)
+                    antecedent_parameters[jx] = remap_term(antecedent_parameters[jx], len(self.lvs[ant]), max_terms)
                 else:
-                    antecedent_parameters[jx] = min(antecedent_parameters[jx], self.n_lv_possible[ant] - 1)
+                    antecedent_parameters[jx] = remap_term(antecedent_parameters[jx], self.n_lv_possible[ant], max_terms)
 
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
