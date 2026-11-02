@@ -42,6 +42,16 @@ Added
   which dominance-score threshold produced its rules (``None`` if it was never
   purged). Fitted classifiers carry their ``tolerance``; ``copy`` and pickling
   keep it. The text format of ``persistence`` does not store it
+- **Training sets too large for memory**: ``BaseFuzzyRulesClassifier(batch_size=n)``
+  (also a ``fit`` argument) computes each candidate's firing strengths for ``n``
+  training samples at a time instead of all at once. Every candidate is still
+  scored on all the samples and gets exactly the same score, so seeded fits are
+  identical with and without it: per-rule sums are added in NumPy's own order,
+  which is checked when the fit starts. On 2,000,000 samples with 30 rules the
+  peak memory of scoring a Type-1 candidate fell from about 1,000 MB to 95 MB
+  (``batch_size=100_000``) for 8-16% more time. Needs the built-in loss and
+  Type-1 or interval Type-2 sets; population batching and the GPU objective
+  stay off while it streams
 
 Changed
 -------
