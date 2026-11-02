@@ -66,8 +66,21 @@ Changed
   distribution in ``MasterRuleBase.class_priors``; ``copy`` and pickling keep
   it, the text format of ``persistence`` does not, and a rule base without it
   falls back to consequent 0. ``allow_unknown=True`` still predicts -1 (or
-  ``'Unknown'``). The temporal classifier falls back to the majority class of
-  each time moment. Seeded fits on data with uncovered samples change
+  ``'Unknown'``). Seeded fits on data with uncovered samples change
+
+Removed
+-------
+- **Temporal fuzzy sets**: the ``temporal`` module (``temporalFS``,
+  ``temporalFuzzyVariable``, ``temporalMasterRuleBase``,
+  ``TemporalFuzzyRulesClassifier``, ``eval_temporal_fuzzy_model`` and the
+  ``TMP_FUZZY_SETS`` and ``NEW_FUZZY_SETS`` aliases), the ``FUZZY_SETS``
+  members ``temporal``, ``temporal_t2`` and ``temporal_gt2``, and the ``utils``
+  helpers that built temporal variables and split data by time
+  (``construct_conditional_frequencies``, ``classify_temp``, ``assign_time``,
+  ``create_tempVariables``, ``create_multi_tempVariables``, ``temporal_cuts``
+  and ``temporal_assemble``). ``evalRuleBase`` loses its ``time_moments``
+  argument, so ``precomputed_truth`` is now its fourth parameter. Objects
+  pickled with temporal sets no longer load
 
 Fixed
 -----

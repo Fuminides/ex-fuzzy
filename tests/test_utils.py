@@ -54,40 +54,6 @@ def test_construct_partitions_gt2():
     assert partitions[0][0].alpha_reduction(partitions[0](0.1)[0]) is not None, 'Alpha reduction should return a value'
 
 
-def test_temporal_conditional():
-    sample_size = 10
-    first_temp = int(sample_size / 2)
-    sample = np.concatenate([
-        np.linspace(0.05, 0.45, first_temp),
-        np.linspace(0.55, 0.95, sample_size - first_temp),
-    ])
-    time_labels = [0] * sample_size
-    time_labels[first_temp:] = [1] * first_temp
-
-    vl1 = ex_fuzzy.fuzzy_sets.FS('',[0, 0.20, 0.30, 0.5], [0, 1])
-    vl2 = ex_fuzzy.fuzzy_sets.FS('',[0.5, 0.70, 0.80, 1], [0, 1])
-
-    conditional_frequencies = ex_fuzzy.utils.construct_conditional_frequencies(sample, time_labels, [vl1, vl2])
-
-    assert conditional_frequencies[0, 0] > conditional_frequencies[0, 1]
-    assert conditional_frequencies[1, 0] < conditional_frequencies[1, 1]
-
-
-def test_temporal_assemble():
-    sample_size = 1000
-    sample = np.random.random_sample((sample_size, 5))
-    y = np.random.randint(0, 2, sample_size)
-
-    temp_moments1 = np.random.randint(0, 2, sample_size)
-    temp_moments2 = 1 - temp_moments1
-    temp_moments = [temp_moments1, temp_moments2]
-
-    [X_train, X_test, y_train, y_test], [train_temporal_boolean_markers, test_temporal_boolean_markers] = ex_fuzzy.utils.temporal_assemble(sample, y, temp_moments)
-
-    t1test = [y_test[jx] for jx, aux in enumerate(test_temporal_boolean_markers[0]) if aux]
-    t2test = [y_test[jx] for jx, aux in enumerate(test_temporal_boolean_markers[1]) if aux]
-
-    assert len(t1test) == len(t2test)
 
 
 import pandas as pd
@@ -122,7 +88,7 @@ def test_partition_shapes_names_and_errors():
     with pytest.raises(ValueError, match='Shape not recognized'):
         utils.construct_partitions(X, fs.FUZZY_SETS.t1, shape='hexagon')
     with pytest.raises(ValueError, match='Fuzzy set type not recognized'):
-        utils.construct_partitions(X, fs.FUZZY_SETS.temporal)
+        utils.construct_partitions(X, 'not a fuzzy type')
 
 
 def test_breakpoint_partition_follows_the_given_bands_with_shoulders():
@@ -209,41 +175,6 @@ def test_categorical_partitions_follow_the_fuzzy_type():
     assert isinstance(only_categorical[0][0], fs.categoricalIVFS)
 
 
-@pytest.mark.parametrize('fuzzy_type', [fs.FUZZY_SETS.t2, fs.FUZZY_SETS.gt2])
-def test_temporal_conditional_for_type_2_sets(fuzzy_type):
-    sample = np.concatenate([np.linspace(0, 0.3, 20), np.linspace(0.7, 1, 20)])
-    partitions = utils.construct_partitions(sample.reshape(-1, 1), fuzzy_type)[0]
-
-    conditional_frequencies = utils.construct_conditional_frequencies(sample, [0] * 20 + [1] * 20, partitions)
-    assert conditional_frequencies.shape == (2, 3)
-    assert conditional_frequencies[0, 0] > conditional_frequencies[0, 2]
-    assert conditional_frequencies[1, 2] > conditional_frequencies[1, 0]
-
-
-def test_temporal_cuts_and_time_assignment():
-    dates = pd.DataFrame({'date': pd.date_range('2024-01-01 00:00', periods=24, freq='h')})
-    cuts = utils.temporal_cuts(dates, [('2024-01-01 00:00', '2024-01-01 11:00'), ('2024-01-01 12:00', '2024-01-01 23:00')])
-
-    np.testing.assert_array_equal(cuts[0], np.arange(24) <= 11)
-    np.testing.assert_array_equal(cuts[1], np.arange(24) >= 12)
-    assert utils.assign_time(3, cuts) == 0
-    assert utils.assign_time(20, cuts) == 1
-    with pytest.raises(ValueError, match='No temporal moment'):
-        utils.assign_time(3, [np.zeros(24, dtype=bool)])
-
-
-def test_temporal_assemble_keeps_dataframes():
-    rng = np.random.default_rng(0)
-    frame = pd.DataFrame(rng.random((100, 3)))
-    y = rng.integers(0, 2, 100)
-    moments = [np.arange(100) < 50, np.arange(100) >= 50]
-
-    [X_train, X_test, y_train, y_test], [train_markers, test_markers] = utils.temporal_assemble(frame, y, moments)
-    assert isinstance(X_train, pd.DataFrame) and isinstance(X_test, pd.DataFrame)
-    assert len(X_train) + len(X_test) == 100
-    assert len(y_train) == len(X_train) and len(y_test) == len(X_test)
-    assert sum(train_markers[0]) + sum(train_markers[1]) == len(X_train)
-    assert sum(test_markers[0]) + sum(test_markers[1]) == len(X_test)
 
 
 def test_mcc_loss_scores_a_rule_base():
@@ -276,6 +207,4 @@ if __name__ == '__main__':
     test_construct_partitions_t1()
     test_construct_partitions_t2()
     test_construct_partitions_gt2()
-    test_temporal_conditional()
-    test_temporal_assemble()
     print('All tests passed.')

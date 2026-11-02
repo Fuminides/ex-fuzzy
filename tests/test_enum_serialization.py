@@ -6,7 +6,7 @@ import sys
 import textwrap
 
 ROOT = Path(__file__).resolve().parents[1]
-IMPORTS = "from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, rules, temporal, utils"
+IMPORTS = "from ex_fuzzy import evolutionary_fit as evf, fuzzy_sets as fs, rules, utils"
 
 
 def _run_python(source, cwd):
@@ -31,7 +31,6 @@ def test_fuzzy_objects_round_trip_in_fresh_process(tmp_path):
         {IMPORTS}
 
         original_enum = fs.FUZZY_SETS
-        assert temporal.NEW_FUZZY_SETS is original_enum
         assert fs.FUZZY_SETS is original_enum
 
         X = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
@@ -48,18 +47,15 @@ def test_fuzzy_objects_round_trip_in_fresh_process(tmp_path):
             precomputed_rules=rule_base,
         )
         with open({str(payload)!r}, "wb") as stream:
-            pickle.dump((list(fs.FUZZY_SETS), list(temporal.TMP_FUZZY_SETS),
-                         problem, rule_base, model), stream)
+            pickle.dump((list(fs.FUZZY_SETS), problem, rule_base, model), stream)
     """
     reader = f"""
         import pickle
         {IMPORTS}
 
         with open({str(payload)!r}, "rb") as stream:
-            members, temporal_members, problem, rule_base, model = pickle.load(stream)
+            members, problem, rule_base, model = pickle.load(stream)
         assert all(member is fs.FUZZY_SETS[member.name] for member in members)
-        assert all(member is temporal.TMP_FUZZY_SETS[member.name]
-                   for member in temporal_members)
         assert problem.fuzzy_type is fs.FUZZY_SETS.t1
         assert rule_base.fuzzy_type() is fs.FUZZY_SETS.t1
         assert model.fuzzy_type is fs.FUZZY_SETS.t1

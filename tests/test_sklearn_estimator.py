@@ -186,18 +186,3 @@ def test_conformal_classifier_is_an_estimator(iris):
     assert ConformalFuzzyClassifier(clf_or_nRules=inner).clf is inner
     with pytest.raises(TypeError):
         ConformalFuzzyClassifier(inner, nAnts=3)
-
-
-def test_temporal_classifier_predicts_and_returns_self(iris):
-    from ex_fuzzy import temporal
-    X, y = iris
-    time_moments = np.arange(len(y)) % 2
-    variables = [temporal.temporalFuzzyVariable(
-                     lv.name, [temporal.temporalFS(fuzzy_set, np.array([1.0, 0.25]))
-                               for fuzzy_set in lv.linguistic_variables])
-                 for lv in utils.construct_partitions(X, fs.FUZZY_SETS.t1)]
-    model = temporal.TemporalFuzzyRulesClassifier(nRules=4, nAnts=2, linguistic_variables=variables)
-    assert clone(model).get_params()['nRules'] == 4
-    assert model.fit(X, y, n_gen=2, pop_size=6, time_moments=time_moments) is model
-    assert model.n_features_in_ == 4
-    np.testing.assert_array_equal(model.predict(X, time_moments), model.forward(X, time_moments))

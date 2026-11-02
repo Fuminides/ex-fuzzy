@@ -10,7 +10,7 @@ keeps exactly one implementation.
 ``FitRuleBase._construct_ruleBase`` plus ``_fitness.score_rulebase`` remains the
 oracle *and* the fallback: every function here returns ``None`` (or the caller
 refuses the candidate) as soon as an input leaves the narrow supported case, so
-custom losses, modifiers, temporal partitions, GT2 and custom t-norms keep their
+custom losses, modifiers, GT2 and custom t-norms keep their
 previous behavior.
 """
 import numpy as np

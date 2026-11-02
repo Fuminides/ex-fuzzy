@@ -36,7 +36,7 @@ class evalRuleBase():
     Class to evaluate a set of rules given a evaluation dataset.
     """
 
-    def __init__(self, mrule_base: rules.MasterRuleBase, X: np.array, y: np.array, time_moments: np.array=None, precomputed_truth=None) -> None:
+    def __init__(self, mrule_base: rules.MasterRuleBase, X: np.array, y: np.array, precomputed_truth=None) -> None:
         """
         Creates the object with the rulebase to evaluate and the data to use in the evaluation.
 
@@ -44,7 +44,6 @@ class evalRuleBase():
             mrule_base: The rule base to evaluate.
             X: array shape samples x features. The data to evaluate the rule base.
             y: array shape samples x 1. The labels of the data.
-            time_moments: array shape samples x 1. The time moments of the samples. (Only for temporal rule bases)
 
         Returns:
             None
@@ -52,7 +51,6 @@ class evalRuleBase():
         self.mrule_base = mrule_base
         self.X = X
         self.y = y
-        self.time_moments = time_moments
 
         self.precomputed_truth = precomputed_truth
 
@@ -75,12 +73,8 @@ class evalRuleBase():
         data_X = X if X is not None else self.X
         precomputed_truth = self.precomputed_truth if self.precomputed_truth is not None else None
 
-        if self.time_moments is None:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-                data_X, precomputed_truth=precomputed_truth)
-        else:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-                data_X, self.time_moments)
+        antecedent_memberships = self.mrule_base.compute_firing_strengths(
+            data_X, precomputed_truth=precomputed_truth)
 
 
         patterns = self._get_all_rules()
@@ -115,12 +109,8 @@ class evalRuleBase():
         data_y = y if y is not None else self.y
         precomputed_truth = self.precomputed_truth if self.precomputed_truth is not None else None
 
-        if self.time_moments is None:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-                data_X, precomputed_truth=precomputed_truth)
-        else:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-                data_X, self.time_moments)
+        antecedent_memberships = self.mrule_base.compute_firing_strengths(
+            data_X, precomputed_truth=precomputed_truth)
 
         patterns = self._get_all_rules()
 
@@ -162,12 +152,8 @@ class evalRuleBase():
         Returns:
             array of shape rules x 2
         """
-        if self.time_moments is None:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-                self.X)
-        else:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-                self.X, self.time_moments)
+        antecedent_memberships = self.mrule_base.compute_firing_strengths(
+            self.X)
 
         patterns = self._get_all_rules()
         n_classes = len(np.unique(self.y))
@@ -221,12 +207,8 @@ class evalRuleBase():
         data_y = y if y is not None else self.y
         precomputed_truth = self.precomputed_truth if self.precomputed_truth is not None else None
 
-        if self.time_moments is None:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
+        antecedent_memberships = self.mrule_base.compute_firing_strengths(
             data_X, precomputed_truth=precomputed_truth)
-        else:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-            data_X, self.time_moments, precomputed_truth=precomputed_truth)
 
 
         patterns = self._get_all_rules()
@@ -264,12 +246,8 @@ class evalRuleBase():
         Returns:
             array of shape rules x classes
         """
-        if self.time_moments is None:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
+        antecedent_memberships = self.mrule_base.compute_firing_strengths(
             self.X)
-        else:
-            antecedent_memberships = self.mrule_base.compute_firing_strengths(
-            self.X, self.time_moments)
 
         patterns = self._get_all_rules()
         n_classes = len(np.unique(self.y))
@@ -314,10 +292,7 @@ class evalRuleBase():
         Returns:
             vector of shape rules
         """
-        if self.time_moments is None:
-            firing_strengths = self.mrule_base.compute_firing_strengths(self.X)
-        else:
-            firing_strengths = self.mrule_base.compute_firing_strengths(self.X, self.time_moments)
+        firing_strengths = self.mrule_base.compute_firing_strengths(self.X)
         dominance_scores = self.dominance_scores()
         if firing_strengths.ndim == 3:
             dominance_scores = dominance_scores[:, None]
@@ -410,13 +385,8 @@ class evalRuleBase():
             self.add_rule_weights()
 
 
-        if self.time_moments is None:
-            winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth)
-            preds = self.mrule_base.winning_rule_predict(actual_X, precomputed_truth=self.precomputed_truth)
-        else:
-
-            winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, self.time_moments)
-            preds = self.mrule_base.winning_rule_predict(actual_X, self.time_moments)
+        winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth)
+        preds = self.mrule_base.winning_rule_predict(actual_X, precomputed_truth=self.precomputed_truth)
 
 
         # Predictions are consequent indexes, so they are named when the labels are names.
@@ -454,10 +424,7 @@ class evalRuleBase():
 
         from sklearn.metrics import matthews_corrcoef
         self.add_rule_weights()
-        if self.time_moments is None:
-            preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
-        else:
-            preds = self.mrule_base.winning_rule_predict(self.X, self.time_moments)
+        preds = self.mrule_base.winning_rule_predict(self.X, precomputed_truth=self.precomputed_truth)
 
         self.mcc = matthews_corrcoef(self.y, preds)
         self.acc = accuracy_score(self.y, preds)

@@ -158,11 +158,10 @@ def test_p_value_validation_annotates_the_model(iris, capsys):
     assert 'Rules for consequent' in capsys.readouterr().out
 
 
-def test_general_type_2_and_temporal_partitions_cannot_be_optimized(iris):
+def test_general_type_2_partitions_cannot_be_optimized(iris):
     X, y = iris
-    for fuzzy_type in (fs.FUZZY_SETS.gt2, fs.FUZZY_SETS.temporal):
-        with pytest.raises(ValueError, match='precomputed linguistic_variables'):
-            evf.FitRuleBase(X, y, 4, 2, 3, fuzzy_type=fuzzy_type)
+    with pytest.raises(ValueError, match='precomputed linguistic_variables'):
+        evf.FitRuleBase(X, y, 4, 2, 3, fuzzy_type=fs.FUZZY_SETS.gt2)
 
 
 def test_custom_losses_score_empty_rule_bases_as_zero():

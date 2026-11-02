@@ -120,7 +120,7 @@ def test_array_path_declines_unsupported_problems():
     X, y = load_iris(return_X_y=True)
     problem = _problem(X, y, fs.FUZZY_SETS.t1, True)
     gene = _genes(problem, 1, 4)[0]
-    assert problem._array_score(gene.copy(), time_moment=0) is None
+    assert problem._array_score(gene.copy(), unsupported=0) is None
     problem.array_evaluation = False
     assert problem._array_score(gene.copy()) is None
     problem.array_evaluation = True

@@ -65,12 +65,6 @@ class FUZZY_SETS(enum.Enum):
     t2 = 'Type 2'
     #: General Type-2 fuzzy sets with full secondary membership functions.
     gt2 = 'General Type 2'
-    #: Type-1 sets whose membership depends on a discrete temporal moment.
-    temporal = 'temporal'
-    #: Interval Type-2 sets whose membership depends on a temporal moment.
-    temporal_t2 = 'temporal_t2'
-    #: General Type-2 sets whose membership depends on a temporal moment.
-    temporal_gt2 = 'temporal_gt2'
 
 
 def trapezoidal_membership(x: np.array, params: list[float], epsilon=10E-5) -> np.array:
