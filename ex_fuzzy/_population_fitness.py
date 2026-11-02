@@ -12,7 +12,7 @@ from typing import Optional
 import numpy as np
 
 from . import rules
-from ._fitness import _FiringCache, _LabelDomain, _macro_f1, _penalized_objective
+from ._fitness import _FiringCache, _LabelDomain, _macro_f1, _penalized_objective, remap_terms
 
 
 _GATHER_BUDGET = 32 * 1024 * 1024
@@ -61,13 +61,14 @@ def _decode_population(genes: np.ndarray, n_rules: int, n_ants: int,
             or np.any(terms < -1)):
         return None
 
+    max_terms = int(term_counts.max())
     effective = np.full((population, n_rules, n_features), -1, dtype=np.int64)
     batch_rows = np.arange(population)[:, None]
     rule_rows = np.arange(n_rules)[None, :]
     for slot in range(n_ants):
         selected_features = features[:, :, slot]
-        selected_terms = np.minimum(
-            terms[:, :, slot], term_counts[selected_features] - 1)
+        selected_terms = remap_terms(
+            terms[:, :, slot], term_counts[selected_features], max_terms)
         effective[batch_rows, rule_rows, selected_features] = selected_terms
 
     active = (consequents != -1) & np.any(effective != -1, axis=2)

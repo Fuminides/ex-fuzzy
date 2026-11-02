@@ -148,6 +148,24 @@ mean.
 rule. With crisp consequents the model becomes piecewise constant, since every
 prediction is then one rule's consequent.
 
+Repeated Antecedents
+====================
+
+The genetic search may place several rules with the same antecedents (and
+different consequents) in the rule base. In additive mode they behave as one
+rule with the mean consequent and double weight; in sufficient mode the later
+ones never speak. Either way they use rule slots without describing a new
+region. ``unique_antecedents=True`` keeps only the first of them, in the
+objective and in the fitted rule base:
+
+.. code-block:: python
+
+   regressor = BaseFuzzyRulesRegressor(nRules=30, nAnts=2, unique_antecedents=True)
+
+The default is ``False``, which leaves the objective unchanged.
+``benchmarks/benchmark_regression_unique_antecedents.py`` compares both
+settings.
+
 Reading the Fitted Model
 ========================
 

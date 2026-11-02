@@ -11,6 +11,8 @@ Main Components:
     - Stability metrics: Quantitative measures of pattern consistency
     - Multi-run experiments: Automated execution of multiple classifier runs
     - Statistical reporting: Comprehensive analysis of pattern stability
+    - Rule-set stability: selection frequency of each rule, pairwise Jaccard of the
+      rule sets and a consensus rule base (see :func:`rule_set_stability_summary`)
 
 Key Features:
     - Automated multi-run experiments with configurable parameters
@@ -34,6 +36,253 @@ from sklearn.model_selection import train_test_split
 from . import fuzzy_sets as fs
 from . import rules as rl
 from . import evolutionary_fit as evf
+from . import eval_rules as evr
+
+
+def rule_keys(mrule_base: rl.MasterRuleBase) -> list[tuple]:
+    """
+    Identifies each rule of a classification rule base by its antecedents and its class.
+
+    A key is ``(antecedents, label)``. ``antecedents`` is the tuple of ``(variable name, term name)`` pairs
+    of the rule, sorted, with the names that the linguistic variables carry (``fuzzyVariable.name`` and the
+    name of each fuzzy set). ``label`` is the entry of ``consequent_names`` of the rule base that holds the
+    rule, whatever the rule's own ``consequent`` field says. Names are used instead of indexes because they
+    are readable and do not depend on the order of the variables; indexes would be as valid when the fits share
+    their linguistic variables, which :func:`check_shared_variables` verifies. Score, weight and accuracy are not part
+    of the identity of a rule, and neither are its modifiers: two rules that differ only in their modifiers
+    get the same key.
+
+    Args:
+        mrule_base: MasterRuleBase of a classifier.
+
+    Returns:
+        list of the distinct keys, sorted. A rule repeated in the rule base appears once.
+
+    Raises:
+        ValueError: if variable names, or term names within a variable, are not unique, since keys
+            would then be ambiguous.
+    """
+    names, term_names = _variable_names(mrule_base)
+    labels = [_plain(label) for label in mrule_base.get_consequents_names()]
+    keys = set()
+    for label, rule_base in zip(labels, mrule_base.rule_bases):
+        for rule in rule_base.get_rules():
+            antecedents = tuple(sorted(
+                (names[ix], term_names[ix][int(term)])
+                for ix, term in enumerate(rule.antecedents) if term != -1))
+            keys.add((antecedents, label))
+    return sorted(keys, key=_key_order)
+
+
+def selection_frequencies(rule_bases: list[rl.MasterRuleBase]) -> dict:
+    """
+    Share of the fits whose final rule base contains each rule.
+
+    This is a count of fits divided by the number of fits, not a probability that the rule is true,
+    useful or contributes to a prediction. Rules never selected are absent.
+
+    Args:
+        rule_bases: MasterRuleBases of several fits that share their linguistic variables.
+
+    Returns:
+        dict from :func:`rule_keys` key to a frequency in ``(0, 1]``. A rule repeated inside one fit counts once.
+
+    Raises:
+        ValueError: if there are no rule bases.
+    """
+    return {key: count / len(rule_bases) for key, count in _selection_counts(rule_bases).items()}
+
+
+def pairwise_jaccard(rule_bases: list[rl.MasterRuleBase]) -> dict:
+    """
+    Summary of the Jaccard index of the rule sets of every pair of fits.
+
+    The Jaccard index of two fits is the number of rules (keys, see :func:`rule_keys`) in both divided by
+    the number in either; two empty rule bases count as 1.0. It is a single stability number, but a low
+    value does not by itself mean an unstable learner: with a large rule space and a fixed rule budget even
+    equally good fits rarely pick the same rules.
+
+    Args:
+        rule_bases: MasterRuleBases of at least two fits that share their linguistic variables.
+
+    Returns:
+        dict with ``n_pairs``, ``mean``, ``sd`` (population standard deviation over the pairs, which are
+        not independent), ``min`` and ``max``.
+
+    Raises:
+        ValueError: if there are fewer than two rule bases.
+    """
+    if len(rule_bases) < 2:
+        raise ValueError('At least two rule bases are needed to compare rule sets.')
+    sets = [set(rule_keys(rb)) for rb in rule_bases]
+    values = np.array([_jaccard(sets[i], sets[j]) for i in range(len(sets)) for j in range(i + 1, len(sets))])
+    return dict(n_pairs=len(values), mean=float(values.mean()), sd=float(values.std()),
+                min=float(values.min()), max=float(values.max()))
+
+
+def consensus_keys(frequencies: dict, pi: float) -> list[tuple]:
+    """
+    Rules selected in at least a share ``pi`` of the fits, as in stability selection (Meinshausen and Buehlmann, 2010).
+
+    The threshold ``pi`` is a choice of the user, not a guarantee of control of false rules: the
+    error bound of that paper assumes conditions that a rule-learning search does not verify. When the
+    number of possible rules is large, two fits rarely contain the same rule, so the consensus is expected
+    to be short and made of simple rules.
+
+    Args:
+        frequencies: output of :func:`selection_frequencies`.
+        pi: threshold in ``(0, 1]``.
+
+    Returns:
+        keys with frequency at least ``pi``, by decreasing frequency (ties: label, then antecedents).
+
+    Raises:
+        ValueError: if ``pi`` is not in ``(0, 1]``.
+    """
+    if not 0.0 < pi <= 1.0:
+        raise ValueError(f'pi must be in (0, 1], got {pi}.')
+    # The epsilon absorbs the float noise of count / n (3 / 10 against pi = 0.3).
+    kept = [key for key, frequency in frequencies.items() if frequency >= pi - 1e-12]
+    return sorted(kept, key=lambda key: (-frequencies[key], *_key_order(key)))
+
+
+def check_shared_variables(rule_bases: list[rl.MasterRuleBase]) -> None:
+    """
+    Checks that all the fits use the same linguistic variables, terms and membership parameters.
+
+    Rule keys are comparable across fits only then. A classifier built without ``linguistic_variables`` searches
+    its own partitions in every fit, so its terms of the same name are different fuzzy sets.
+
+    Raises:
+        ValueError: if some rule base differs from the first one.
+    """
+    def spec(mrule_base):
+        return [(str(var.name), [(str(fz.name), np.asarray(fz.membership_parameters, dtype=float).tolist())
+                                 for fz in var.linguistic_variables]) for var in mrule_base.antecedents]
+
+    reference = spec(rule_bases[0])
+    if any(spec(rb) != reference for rb in rule_bases[1:]):
+        raise ValueError('The fits do not share linguistic variables, terms and membership parameters.')
+
+
+def consensus_rule_base(keys: list[tuple], template: rl.MasterRuleBase, X: np.array = None, y: np.array = None) -> rl.MasterRuleBase:
+    """
+    Builds a MasterRuleBase that holds exactly the given rules, e.g. the consensus of :func:`rule_set_stability_summary`.
+
+    The variables, the fuzzy-set type, the t-norm, the class names, ``ds_mode`` and ``allow_unknown`` are taken from
+    ``template``, one of the fitted rule bases. If ``X`` and ``y`` are given, the dominance score of every rule is
+    recomputed on that data with :class:`eval_rules.evalRuleBase`; the scores of the fits are not reused. Without
+    them the rules have no score and the rule base cannot predict until ``evalRuleBase(...).add_rule_weights()``
+    is called. The scores are those of the library on the data given, not selection frequencies.
+
+    Args:
+        keys: rule keys, see :func:`rule_keys`.
+        template: a MasterRuleBase of the pool, which fixes everything but the rules.
+        X: optional array samples x features used to recompute the dominance scores.
+        y: optional labels of ``X``, as consequent indexes or class names.
+
+    Returns:
+        a new MasterRuleBase; ``template`` is not modified.
+
+    Raises:
+        ValueError: if a key does not fit ``template``, if only one of ``X`` and ``y`` is given, or if
+            ``template`` uses ``ds_mode`` 2 (optimized weights come from the search and cannot be recomputed).
+    """
+    if (X is None) != (y is None):
+        raise ValueError('Give both X and y, or neither.')
+    if template.ds_mode == 2:
+        raise ValueError("ds_mode 2 weights are optimized by the search; a consensus rule base cannot recompute them.")
+    names, term_names = _variable_names(template)
+    labels = [_plain(label) for label in template.get_consequents_names()]
+    per_class = [[] for _ in labels]
+    for antecedents, label in keys:
+        if label not in labels:
+            raise ValueError(f'Class {label!r} is not a class of the template: {labels}.')
+        class_ix = labels.index(label)
+        encoded = [-1] * len(names)
+        for name, term in antecedents:
+            if name not in names or term not in term_names[names.index(name)]:
+                raise ValueError(f'({name!r}, {term!r}) is not a variable and term of the template.')
+            var_ix = names.index(name)
+            encoded[var_ix] = term_names[var_ix].index(term)
+        per_class[class_ix].append(rl.RuleSimple(encoded, consequent=class_ix))
+
+    rule_bases = [type(rb)(template.antecedents, rules, tnorm=rb.tnorm)
+                  for rb, rules in zip(template.rule_bases, per_class)]
+    res = rl.MasterRuleBase(rule_bases, list(template.get_consequents_names()), ds_mode=template.ds_mode,
+                            allow_unknown=template.allow_unknown)
+    if X is not None and len(res.get_rules()) > 0:
+        evr.evalRuleBase(res, np.asarray(X), np.asarray(y)).add_rule_weights()
+    return res
+
+
+def rule_set_stability_summary(rule_bases: list[rl.MasterRuleBase], pi: float = None) -> dict:
+    """
+    Rule-set stability diagnostics of several fits, as plain data.
+
+    Fits are compared by the rules of their final rule bases (:func:`rule_keys`), so they must share their
+    linguistic variables (checked with :func:`check_shared_variables`). Every fit counts, including those
+    with an empty rule base. The selection frequency of a rule is a count of fits, not a probability that the
+    rule is true; see :func:`pairwise_jaccard` and :func:`consensus_keys` for how to read the other outputs.
+
+    Args:
+        rule_bases: MasterRuleBases of at least two fits.
+        pi: if given, threshold in ``(0, 1]`` of the consensus rule list.
+
+    Returns:
+        dict with ``n_fits``; ``n_empty_fits``; ``frequencies``, a list with one dict per rule selected at
+        least once (``antecedents``, ``consequent``, ``count``, ``frequency``) by decreasing frequency; ``jaccard``
+        (see :func:`pairwise_jaccard`); ``pi``; and ``consensus``, the rows of ``frequencies`` with frequency at
+        least ``pi`` (``None`` when ``pi`` is None). Build a rule base from them with :func:`consensus_rule_base`,
+        passing ``(row['antecedents'], row['consequent'])`` as keys.
+    """
+    if len(rule_bases) < 2:
+        raise ValueError('At least two rule bases are needed to compare rule sets.')
+    if pi is not None and not 0.0 < pi <= 1.0:
+        raise ValueError(f'pi must be in (0, 1], got {pi}.')
+    check_shared_variables(rule_bases)
+    counts = _selection_counts(rule_bases)
+    n = len(rule_bases)
+    frequencies = {key: count / n for key, count in counts.items()}
+    rows = {key: dict(antecedents=key[0], consequent=key[1], count=counts[key], frequency=frequencies[key])
+            for key in counts}
+    ordered = sorted(rows, key=lambda key: (-frequencies[key], *_key_order(key)))
+    consensus = None if pi is None else [rows[key] for key in consensus_keys(frequencies, pi)]
+    return dict(n_fits=n, n_empty_fits=sum(len(rb.get_rules()) == 0 for rb in rule_bases),
+                frequencies=[rows[key] for key in ordered], jaccard=pairwise_jaccard(rule_bases),
+                pi=pi, consensus=consensus)
+
+
+def _plain(value):
+    # numpy scalars hash and compare as Python ones, but print and serialize differently.
+    return value.item() if isinstance(value, np.generic) else value
+
+
+def _key_order(key: tuple) -> tuple:
+    return str(key[1]), key[0]
+
+
+def _variable_names(mrule_base: rl.MasterRuleBase) -> tuple:
+    names = [str(var.name) for var in mrule_base.antecedents]
+    term_names = [[str(term) for term in var.linguistic_variable_names()] for var in mrule_base.antecedents]
+    if len(set(names)) != len(names) or any(len(set(terms)) != len(terms) for terms in term_names):
+        raise ValueError('Variable names, and the term names of each variable, must be unique to identify rules.')
+    return names, term_names
+
+
+def _selection_counts(rule_bases: list[rl.MasterRuleBase]) -> dict:
+    if len(rule_bases) == 0:
+        raise ValueError('No rule bases given.')
+    counts = {}
+    for rule_base in rule_bases:
+        for key in rule_keys(rule_base):  # distinct keys: a repeated rule counts once per fit
+            counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _jaccard(a: set, b: set) -> float:
+    union = len(a | b)
+    return len(a & b) / union if union else 1.0
 
 
 def add_dicts(dict1: dict, dict2: dict):
@@ -373,6 +622,47 @@ class pattern_stabilizer():
 
         return self.text_report(class_patterns, patterns_dss, class_vars, accuracies, rule_bases)
     
+
+    def rule_set_stability(self, n:int=10, n_gen:int=30, pop_size:int=20, test_size:float=0.33, pi:float=None) -> dict:
+        """
+        Fits ``n`` classifiers on resampled training sets and reports how stable their rule sets are.
+
+        It runs the same fits as :meth:`stability_report` (``generate_solutions``: a different random
+        train/test split and seed per fit) and summarises them with :func:`rule_set_stability_summary`: the
+        selection frequency of each rule, the pairwise Jaccard of the rule sets and, given ``pi``, the rules
+        selected in at least a share ``pi`` of the fits. A frequency is a count of fits, not a probability that a
+        rule is true, and a low Jaccard can reflect a large rule space under a fixed budget (``nRules``,
+        ``n_gen``, ``pop_size``) and not only instability. The fits are subsamples of the data without
+        replacement; the Jaccard and the frequencies depend on ``test_size`` and on the search budget.
+
+        The stabilizer must have been built with ``linguistic_variables``, so that all the fits share their
+        fuzzy sets. Otherwise each fit searches its own partitions and rules of different fits cannot be compared.
+
+        Args:
+            n: number of fits, at least 2.
+            n_gen: generations of each fit.
+            pop_size: population size of each fit.
+            test_size: share of the data held out of each fit.
+            pi: optional threshold in ``(0, 1]`` for the consensus rule list.
+
+        Returns:
+            the dict of :func:`rule_set_stability_summary`, plus ``accuracies``, the held-out accuracy of each fit.
+
+        Raises:
+            ValueError: if the stabilizer has no ``linguistic_variables``, ``n`` is below 2 or ``pi`` is invalid.
+        """
+        if self.lvs is None:
+            raise ValueError('rule_set_stability needs linguistic_variables shared by all the fits, e.g. '
+                             'linguistic_variables=ex_fuzzy.utils.construct_partitions(X).')
+        if n < 2:
+            raise ValueError(f'n must be at least 2, got {n}.')
+        if pi is not None and not 0.0 < pi <= 1.0:
+            raise ValueError(f'pi must be in (0, 1], got {pi}.')
+        rule_bases, accuracies = self.generate_solutions(n, n_gen=n_gen, pop_size=pop_size, test_size=test_size)
+        res = rule_set_stability_summary(rule_bases, pi)
+        res['accuracies'] = [float(acc) for acc in accuracies]
+        return res
+
 
     def pie_chart_basic(self, var_ix: int, class_ix: int):
         """
