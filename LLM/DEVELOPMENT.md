@@ -32,7 +32,7 @@ All module paths below are relative to `ex_fuzzy/`.
 | --- | --- |
 | Fuzzy sets and linguistic variables | `fuzzy_sets.py`, `utils.py`, `centroid.py` |
 | Rule representation, inference, firing kernels | `rules.py` |
-| Genetic classification | `evolutionary_fit.py`, `evolutionary_backends.py`, `evolutionary_search.py`, `_problem.py` (optimizer-independent problem base and pymoo wrapper) |
+| Genetic classification | `evolutionary_fit.py`, `evolutionary_backends.py`, `evolutionary_search.py`, `_problem.py` (optimizer-independent problem base and pymoo wrapper), `_growing_data.py` (training subset that grows during a pymoo search, `initial_data_fraction`) |
 | Exact built-in objective | `_fitness.py`, `_array_fitness.py`, `_population_fitness.py` (CPU population batching), `_torch_fitness.py` (exact PyTorch population objective for EvoX devices), `_streamed_fitness.py` (the array objective with the samples streamed in batches, `batch_size`) |
 | Population route selection | `_dispatch_profile.py` |
 | Regression | `evolutionary_fit_regression.py` |
@@ -92,6 +92,11 @@ kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
   rows longer than `np.getbufsize()`, 2.3 does not, and both buffer the strided
   Type-2 denominator), so `Summation.measure` checks it when a fit starts. A
   reduction added to `_fitness._dominance` needs its streamed counterpart.
+- `initial_data_fraction` is the one search option that is not exact: it
+  scores early generations on growing subsets and so changes seeded fits.
+  Unset, nothing changes. `FitRuleBase._activate_rows` must switch every
+  row-dependent state; a new cache or table derived from `X`, `y` or the
+  memberships belongs in `_forget_row_state`.
 - Fit-local fitness/firing caches and packed memberships must remain bounded and
   scoped to a fit, with cleanup on success and failure. Do not make them global.
 - Respect fast-path eligibility and preserve logical evaluation counts even on

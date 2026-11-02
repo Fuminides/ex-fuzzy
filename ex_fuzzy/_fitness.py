@@ -87,6 +87,11 @@ class _FitnessCache:
             removed, _ = self.entries.popitem(last=False)
             self.key_bytes -= len(removed)
 
+    def clear(self) -> None:
+        """Forget every entry, measured on training data that has changed."""
+        self.entries.clear()
+        self.key_bytes = 0
+
 
 class _ClassMaskCache:
     """Bounded, evaluation-local cache of consequent-match masks."""
@@ -146,6 +151,11 @@ class _FiringCache:
         while self.bytes > self.max_bytes:
             _, removed = self.entries.popitem(last=False)
             self.bytes -= removed.nbytes
+
+    def clear(self) -> None:
+        """Forget every column, computed on training data that has changed."""
+        self.entries.clear()
+        self.bytes = 0
 
 
 #: Populations of genotypes the fitness cache holds when the fit's size is known.

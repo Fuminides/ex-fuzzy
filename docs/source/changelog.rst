@@ -52,6 +52,14 @@ Added
   (``batch_size=100_000``) for 8-16% more time. Needs the built-in loss and
   Type-1 or interval Type-2 sets; population batching and the GPU objective
   stay off while it streams
+- **Growing training subset**: ``BaseFuzzyRulesClassifier(initial_data_fraction=x)``
+  (also a ``fit`` argument) scores the first generation of the pymoo search on a
+  share ``x`` of the training samples and grows it linearly, on stratified
+  subsets that each hold the previous one, to all of them by ``full_data_at`` of
+  the generations (half by default). Candidates keep the scores of the subsets
+  they were scored on until the data is complete; the population is then
+  re-scored on every sample, and the result and early stopping only compare
+  full-data scores. Off by default, since it changes seeded fits
 
 Changed
 -------

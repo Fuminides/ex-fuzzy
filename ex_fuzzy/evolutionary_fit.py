@@ -134,7 +134,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  detect_categorical: bool = True, n_gen: int = 70, pop_size: int = 30, patience: Optional[int] = 10,
                  min_delta: float = 1e-4, random_state: int = 33, var_prob: float = 0.3, sbx_eta: float = 3.0,
                  mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga',
-                 batch_size: Optional[int] = None) -> None:
+                 batch_size: Optional[int] = None, initial_data_fraction: Optional[float] = None,
+                 full_data_at: float = 0.5) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -175,6 +176,15 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 gets exactly the same score, so the fit is the same; memory falls and time rises (each candidate
                 reads the data two or three times). Needs the built-in loss, Type-1 or interval Type-2 sets and no
                 ``candidate_rules``. fit can override it for one call.
+            initial_data_fraction: None (default) to score every generation on all the training samples, or the
+                share of them, in (0, 1], that the first generation is scored on. The share grows linearly, on
+                stratified random subsets that each contain the previous one, to all the samples by
+                ``full_data_at``; parents keep the scores of the smaller subsets until then, when the population
+                is re-scored and early stopping starts counting. Saves time on large training sets, but changes
+                the search, so seeded fits differ from those without it. Needs the pymoo backend and no
+                ``candidate_rules``. fit can override it for one call.
+            full_data_at: share of ``n_gen``, in (0, 1], after which ``initial_data_fraction`` has grown to all
+                the samples; 0.5 (default) reaches them halfway through the search. fit can override it.
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
         self.n_gen = n_gen
@@ -188,6 +198,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.tournament_size = tournament_size
         self.algorithm = algorithm
         self.batch_size = batch_size
+        self.initial_data_fraction = initial_data_fraction
+        self.full_data_at = full_data_at
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -283,13 +295,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             var_prob: float = CONSTRUCTOR, sbx_eta: float = CONSTRUCTOR, mutation_eta: float = CONSTRUCTOR, tournament_size: int = CONSTRUCTOR, bootstrap_size:int=1000, checkpoint_path:str='',
             p_value_compute:bool=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None,
             patience: Optional[int] = CONSTRUCTOR, min_delta: float = CONSTRUCTOR,
-            batch_size: Optional[int] = CONSTRUCTOR):
+            batch_size: Optional[int] = CONSTRUCTOR, initial_data_fraction: Optional[float] = CONSTRUCTOR,
+            full_data_at: float = CONSTRUCTOR):
         """
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
         The search settings (n_gen, pop_size, patience, min_delta, random_state, var_prob, sbx_eta,
-        mutation_eta, tournament_size and batch_size) default to the values given to the constructor;
-        passing them here overrides them for this fit only.
+        mutation_eta, tournament_size, batch_size, initial_data_fraction and full_data_at) default to the
+        values given to the constructor; passing them here overrides them for this fit only.
 
         Args:
             X: numpy array samples x features
@@ -310,6 +323,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             min_delta: float. Minimum fitness improvement required to reset patience. Default is 1e-4.
             batch_size: None to compute firing strengths for all the samples at once, or the number of samples to
                 compute them for at a time; see the constructor.
+            initial_data_fraction: None, or the share of the samples the first generation is scored on, growing
+                to all of them by ``full_data_at``; see the constructor.
+            full_data_at: share of the generations after which every sample is used; see the constructor.
 
         Returns:
             the fitted classifier.
@@ -321,6 +337,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         tournament_size = _resolve(tournament_size, self.tournament_size)
         patience, min_delta = _resolve(patience, self.patience), _resolve(min_delta, self.min_delta)
         batch_size = _resolve(batch_size, self.batch_size)
+        initial_data_fraction = _resolve(initial_data_fraction, self.initial_data_fraction)
+        full_data_at = _resolve(full_data_at, self.full_data_at)
         _check_no_missing(X)
         ds_mode = rules.resolve_ds_mode(self.ds_mode)
         if patience is not None and patience <= 0:
@@ -337,6 +355,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError('batch_size scores the built-in objective; a custom loss sees every sample at once.')
         if batch_size is not None and candidate_rules is not None:
             raise ValueError('batch_size cannot be combined with candidate_rules.')
+        if initial_data_fraction is not None and not isinstance(self.backend, ev_backends.PyMooBackend):
+            raise ValueError('initial_data_fraction needs the pymoo backend.')
+        if initial_data_fraction is not None and candidate_rules is not None:
+            raise ValueError('initial_data_fraction cannot be combined with candidate_rules.')
 
         # Detected before X loses its column dtypes below.
         categorical_mask = self.categorical_mask
@@ -410,6 +432,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
 
+        data_schedule = None
+        if initial_data_fraction is not None:
+            from ._growing_data import GrowingData
+            data_schedule = GrowingData(problem, initial_data_fraction, full_data_at, n_gen, random_state)
+
         # Prepare initial population
         if initial_rules is None:
             rules_gene = None  # Will use default random sampling
@@ -462,7 +489,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     sampling=rules_gene,
                     patience=patience,
                     min_delta=min_delta,
-                    algorithm=self.algorithm
+                    algorithm=self.algorithm,
+                    data_schedule=data_schedule
                 )
                 
                 best_individual = result['X']
@@ -485,7 +513,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                         sampling=rules_gene,
                         patience=patience,
                         min_delta=min_delta,
-                        algorithm=self.algorithm
+                        algorithm=self.algorithm,
+                        data_schedule=data_schedule
                     )
                 
                 best_individual = result['X']
@@ -506,7 +535,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                     sampling=rules_gene,
                     patience=patience,
                     min_delta=min_delta,
-                    algorithm=self.algorithm
+                    algorithm=self.algorithm,
+                    data_schedule=data_schedule
                 )
             
             best_individual = result['X']
@@ -2015,6 +2045,52 @@ class FitRuleBase(Problem):
                     if objective is not None:
                         self._torch_route = torchfit.DeviceRoute(objective)
         return self._torch_route or None
+
+
+    def _activate_rows(self, rows: np.ndarray) -> None:
+        """
+        Make the training samples ``rows`` the problem's data until ``_restore_rows``.
+
+        For a training subset that grows during the search. The memberships of
+        fixed partitions are sliced from the ones computed for the fit; the
+        normalization domain of optimized partitions stays that of all the
+        samples, so a chromosome decodes to the same partitions on every subset.
+        The fitness cache keeps its scores: a chromosome keeps the score of the
+        subset it was first scored on, as the surviving parents do, and the
+        many repeats of a converging population are not scored again.
+        ``_restore_rows`` forgets them.
+        """
+        if not hasattr(self, '_full_rows'):
+            self._full_rows = (self.X, self.y, self._precomputed_truth)
+        X, y, truth = self._full_rows
+        self.X, self.y = X[rows], np.asarray(y)[rows]
+        self._precomputed_truth = None if truth is None else [feature[:, rows] for feature in truth]
+        self._forget_row_state(keep_scores=True)
+
+
+    def _restore_rows(self) -> None:
+        """Give the problem back every training sample after ``_activate_rows``."""
+        if hasattr(self, '_full_rows'):
+            self.X, self.y, self._precomputed_truth = self._full_rows
+            del self._full_rows
+            self._forget_row_state(keep_scores=False)
+
+
+    def _forget_row_state(self, keep_scores: bool) -> None:
+        """Drop what was computed on the previous rows, but the cached scores if ``keep_scores``."""
+        self.__dict__.pop('_label_domain_cache', None)
+        self.__dict__.pop('_packed_memberships_cache', None)
+        for name in ('_firing_cache',) if keep_scores else ('_fitness_cache', '_firing_cache'):
+            cache = getattr(self, name, None)
+            if cache is not None:
+                cache.clear()
+        # Route measurements and device copies of the data depend on the rows too.
+        for name in ('_route_probe', '_torch_route'):
+            if hasattr(self, name):
+                setattr(self, name, None)
+        if self._streamed_summation is not None:
+            from . import _streamed_fitness as streamfit
+            self._streamed_summation = streamfit.Summation(self._streamed_summation.buffers)
 
 
     def _label_domain(self):

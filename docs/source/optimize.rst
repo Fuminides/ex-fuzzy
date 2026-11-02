@@ -131,3 +131,39 @@ partitions takes about as long. With fixed partitions the genetic algorithm can
 also score whole populations at once, which NSGA-II cannot, so it may be faster
 there. ``algorithm='nsga2'`` needs the PyMoo backend and the built-in loss, and
 it ignores ``alpha`` and ``tournament_size``. It works with ``candidate_rules``.
+
+.. _ga-growing-data:
+
+-------------------------------------
+Large training sets: a growing subset
+-------------------------------------
+
+The first generations hold nearly random rule bases, and ranking those does not
+need every training sample. ``initial_data_fraction`` scores the first
+generation on that share of the samples and grows it linearly to all of them by
+``full_data_at`` of the generations, half of them by default:
+
+.. code-block:: python
+
+   clf = BaseFuzzyRulesClassifier(nRules=30, nAnts=4, initial_data_fraction=0.2)
+   clf.fit(X_train, y_train, n_gen=70, pop_size=30)
+   # 20% of the samples at generation 0, 43% at generation 10, all from 35 on
+
+Each subset is a stratified random sample, drawn with ``random_state``, that
+holds the previous one and at least one sample of every class.
+
+A candidate keeps the score of the subset it was first scored on, also when it
+survives into later generations or the search proposes it again: re-scoring the
+parents every time the subset grows would cost more than the subset saves. When
+the data becomes complete, the population is scored again on every sample, and
+from then on the search runs as without the option: the result, ``performance``
+and early stopping only compare scores on all the samples. Early stopping
+therefore cannot end a search before ``full_data_at``, so with the default
+``patience`` a search that would have stopped early may run longer.
+
+The option changes the search, so seeded fits differ from those without it. It
+is meant for large training sets, where scoring the samples dominates the time,
+and combines with ``batch_size`` (see :ref:`performance-batch-size`). It needs
+the PyMoo backend and cannot be combined with ``candidate_rules``. A custom loss
+receives the current subset. While the subset is partial, the search holds a
+copy of its data next to the full training set.

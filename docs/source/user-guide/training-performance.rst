@@ -262,6 +262,10 @@ Work down this list:
 4. **Expect large datasets to cost more per candidate, not less.** Beyond a few
    thousand samples the per-candidate work is dominated by the data itself, and
    the optimizations that remove fixed overhead have proportionally less to give.
+5. **Score the early generations on fewer samples.** ``initial_data_fraction``
+   starts the search on a share of the training samples and grows it to all of
+   them (see :ref:`ga-growing-data`). Unlike everything else on this page, it
+   changes the search and so the fitted model.
 
 For a rough sense of scale: on synthetic 1,000-sample data, the optimizations
 described here take a complete fit from about 4.0 s to about 0.5 s with
