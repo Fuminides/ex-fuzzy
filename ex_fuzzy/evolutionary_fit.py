@@ -133,7 +133,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: Union[int, str] = 0, allow_unknown:bool=False, backend: str='pymoo',
                  detect_categorical: bool = True, n_gen: int = 70, pop_size: int = 30, patience: Optional[int] = 10,
                  min_delta: float = 1e-4, random_state: int = 33, var_prob: float = 0.3, sbx_eta: float = 3.0,
-                 mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga') -> None:
+                 mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga',
+                 batch_size: Optional[int] = None) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -168,6 +169,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 (with the coverage penalty) and the share of conditions used, and keeps the whole Pareto front:
                 ``fit`` selects its most accurate solution and ``select_pareto_solution`` switches to another.
                 'nsga2' needs the pymoo backend and the built-in loss.
+            batch_size: None (default) to compute a candidate's firing strengths for all the training samples at
+                once, or a number of samples to compute them for at a time, for training sets whose
+                samples x rules arrays do not fit in memory. Every candidate is still scored on all the samples and
+                gets exactly the same score, so the fit is the same; memory falls and time rises (each candidate
+                reads the data two or three times). Needs the built-in loss, Type-1 or interval Type-2 sets and no
+                ``candidate_rules``. fit can override it for one call.
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
         self.n_gen = n_gen
@@ -180,6 +187,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.mutation_eta = mutation_eta
         self.tournament_size = tournament_size
         self.algorithm = algorithm
+        self.batch_size = batch_size
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -274,13 +282,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             checkpoints:int=0, candidate_rules:rules.MasterRuleBase=None, initial_rules:rules.MasterRuleBase=None, random_state: int = CONSTRUCTOR,
             var_prob: float = CONSTRUCTOR, sbx_eta: float = CONSTRUCTOR, mutation_eta: float = CONSTRUCTOR, tournament_size: int = CONSTRUCTOR, bootstrap_size:int=1000, checkpoint_path:str='',
             p_value_compute:bool=False, checkpoint_callback: Callable[[int, rules.MasterRuleBase], None] = None,
-            patience: Optional[int] = CONSTRUCTOR, min_delta: float = CONSTRUCTOR):
+            patience: Optional[int] = CONSTRUCTOR, min_delta: float = CONSTRUCTOR,
+            batch_size: Optional[int] = CONSTRUCTOR):
         """
         Fits a fuzzy rule based classifier using a genetic algorithm to the given data.
 
         The search settings (n_gen, pop_size, patience, min_delta, random_state, var_prob, sbx_eta,
-        mutation_eta and tournament_size) default to the values given to the constructor; passing
-        them here overrides them for this fit only.
+        mutation_eta, tournament_size and batch_size) default to the values given to the constructor;
+        passing them here overrides them for this fit only.
 
         Args:
             X: numpy array samples x features
@@ -299,6 +308,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
             patience: integer. Stop early when the best fitness does not improve for this many generations. Default is 10. Use None to run all generations.
             min_delta: float. Minimum fitness improvement required to reset patience. Default is 1e-4.
+            batch_size: None to compute firing strengths for all the samples at once, or the number of samples to
+                compute them for at a time; see the constructor.
 
         Returns:
             the fitted classifier.
@@ -309,6 +320,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         mutation_eta = _resolve(mutation_eta, self.mutation_eta)
         tournament_size = _resolve(tournament_size, self.tournament_size)
         patience, min_delta = _resolve(patience, self.patience), _resolve(min_delta, self.min_delta)
+        batch_size = _resolve(batch_size, self.batch_size)
         _check_no_missing(X)
         ds_mode = rules.resolve_ds_mode(self.ds_mode)
         if patience is not None and patience <= 0:
@@ -321,6 +333,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError("algorithm='nsga2' needs the pymoo backend.")
         if pareto and self.custom_loss is not None:
             raise ValueError("algorithm='nsga2' optimizes the built-in objectives; it cannot use a custom loss.")
+        if batch_size is not None and self.custom_loss is not None:
+            raise ValueError('batch_size scores the built-in objective; a custom loss sees every sample at once.')
+        if batch_size is not None and candidate_rules is not None:
+            raise ValueError('batch_size cannot be combined with candidate_rules.')
 
         # Detected before X loses its column dtypes below.
         categorical_mask = self.categorical_mask
@@ -377,14 +393,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode, categorical_mask=categorical_mask,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
-                                    pareto=pareto)
+                                    pareto=pareto, batch_size=batch_size)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
-                                    pareto=pareto)
+                                    pareto=pareto, batch_size=batch_size)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
@@ -1011,7 +1027,8 @@ class FitRuleBase(Problem):
 
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: Optional[Any]=None,
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
-                 tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None, pareto: bool = False) -> None:
+                 tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None, pareto: bool = False,
+                 batch_size: Optional[int] = None) -> None:
         """
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -1033,6 +1050,9 @@ class FitRuleBase(Problem):
             var_names: list of variable names. If None, extracted from DataFrame columns or auto-generated.
             pareto: if True, the problem has two objectives for a Pareto search: one minus the macro F1 with
                 the class-coverage penalty, and the share of the possible conditions used. ``alpha`` is unused.
+            batch_size: None (default) to compute each candidate's firing strengths for all the samples at once, or
+                a number of samples to compute them for at a time. Every candidate is still scored on all the
+                samples and gets the same score; only memory and time change. Type-1 and interval Type-2 sets.
         """
         if var_names is not None:
             self.var_names = var_names
@@ -1072,6 +1092,10 @@ class FitRuleBase(Problem):
                 n_linguistic_variables = [n_linguistic_variables] * self.X.shape[1]
             self._init_optimize_vl(
                 fuzzy_type=fuzzy_type, n_linguist_variables=n_linguistic_variables, categorical_variables=categorical_mask, domain=domain, X=X)
+
+        self.batch_size = batch_size
+        if batch_size is not None:
+            self._check_batch_size(batch_size)
 
         possible_antecedent_bounds = np.array(
             [[0, self.X.shape[1] - 1]] * self.nAnts * self.nRules)  
@@ -1653,6 +1677,12 @@ class FitRuleBase(Problem):
     #: Set to False to force the object decoder, for benchmarks and parity tests.
     array_evaluation = True
 
+    #: Samples per batch when candidates stream their samples (``batch_size``),
+    #: and the running NumPy's summation order that streaming reproduces; the
+    #: latter stays None while every sample is scored at once.
+    batch_size = None
+    _streamed_summation = None
+
     #: Device types on which populations may be scored by the exact PyTorch
     #: objective. Scoring CPU tensors gains nothing over the NumPy routes, so
     #: only CUDA is enabled; parity tests add 'cpu' to run the same code.
@@ -1663,8 +1693,10 @@ class FitRuleBase(Problem):
         Whether whole populations have an exact batched Type-1 objective.
 
         True for the unmodified built-in objective with ``ds_mode`` 0 or 1,
-        numeric labels and no external runner, with fixed or optimized
-        partitions alike. The individual routes add their own requirements.
+        numeric labels, no external runner and no samples streamed in batches
+        (``batch_size``: these routes hold every sample's firing strengths),
+        with fixed or optimized partitions alike. The individual routes add
+        their own requirements.
         """
         if type(self) is not FitRuleBase or not self.array_evaluation or args or kwargs:
             return False
@@ -1676,7 +1708,8 @@ class FitRuleBase(Problem):
                 and self.fuzzy_type == fs.FUZZY_SETS.t1
                 and self.ds_mode in (0, 1)
                 and not self._external_elementwise_runner
-                and not self.pareto)
+                and not self.pareto
+                and self._streamed_summation is None)
 
 
     def _can_batch_population(self, *args, **kwargs) -> bool:
@@ -2043,6 +2076,8 @@ class FitRuleBase(Problem):
             term_counts, self.ds_mode, self._consequent_pointer(self.fuzzy_type))
         if decoded is None:
             return None
+        if self._streamed_summation is not None:
+            return self._streamed_array_score(x, decoded)
         packed = None
         if self.lvs is None:
             antecedents = self._decode_antecedents(x, self.fuzzy_type)
@@ -2061,6 +2096,66 @@ class FitRuleBase(Problem):
             self.allow_unknown, self.tolerance, self.alpha_, self.beta_,
             self.fuzzy_type == fs.FUZZY_SETS.t2, self._label_domain(),
             getattr(self, '_firing_cache', None), packed,
+            max_conditions=self._max_conditions, pareto=self.pareto)
+
+    def _check_batch_size(self, batch_size) -> None:
+        """Validate ``batch_size`` and measure the summation order streaming reproduces."""
+        if (isinstance(batch_size, (bool, np.bool_)) or not isinstance(batch_size, (int, np.integer))
+                or batch_size < 1):
+            raise ValueError(f'batch_size must be None or a positive integer, got {batch_size!r}.')
+        if self.fuzzy_type not in (fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2):
+            raise ValueError(f'batch_size supports Type-1 and interval Type-2 fuzzy sets, not {self.fuzzy_type}.')
+        if batch_size >= len(self.X):
+            return  # A single batch holds every sample: nothing changes.
+        from . import _streamed_fitness as streamfit
+        summation = streamfit.Summation.measure()
+        if summation is None:
+            raise ValueError(f'batch_size is unavailable with NumPy {np.__version__}: it sums arrays in an order '
+                             'streamed scoring does not reproduce, so batches could change the scores. '
+                             'Use batch_size=None.')
+        self._streamed_summation = summation
+
+
+    def _streamed_array_score(self, x: np.ndarray, decoded) -> Optional[float]:
+        """
+        ``_array_score`` holding the firing strengths of ``batch_size`` samples at a time.
+
+        Fixed partitions slice the memberships computed once for the fit;
+        optimized ones are evaluated on each batch of ``X`` in every pass. A
+        membership depends only on its own sample, so both give the values of
+        the whole data.
+        """
+        from . import _streamed_fitness as streamfit
+
+        interval = self.fuzzy_type == fs.FUZZY_SETS.t2
+        tail = (2,) if interval else ()
+        if self.lvs is None:
+            variables = self._decode_antecedents(x, self.fuzzy_type)
+
+            def memberships(start, stop):
+                part = self.X[start:stop]
+                packed = rules.pack_membership_table_from_variables(variables, part, tail)
+                if packed is not None:
+                    return None, packed
+                return rules.compute_antecedents_memberships(variables, part), None
+        else:
+            truth, packed = self._precomputed_truth, self._packed_memberships()
+
+            def memberships(start, stop):
+                if packed is not None:
+                    table, offsets, lengths = packed
+                    return None, (table[start:stop], offsets, lengths)
+                return [[values[start:stop] for values in feature] for feature in truth], None
+
+        def firing_rows(antecedents, start, stop):
+            batch_truth, batch_packed = memberships(start, stop)
+            return rules._gather_firing_from_arrays(antecedents, batch_truth, stop - start, tail,
+                                                    batch_packed)
+
+        return streamfit.score_candidate(
+            decoded, firing_rows, self.y, self.n_classes, self.ds_mode, self.allow_unknown,
+            self.tolerance, self.alpha_, self.beta_, interval, self._label_domain(),
+            self.batch_size, self._streamed_summation,
             max_conditions=self._max_conditions, pareto=self.pareto)
 
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):

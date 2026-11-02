@@ -33,7 +33,7 @@ All module paths below are relative to `ex_fuzzy/`.
 | Fuzzy sets and linguistic variables | `fuzzy_sets.py`, `utils.py`, `centroid.py` |
 | Rule representation, inference, firing kernels | `rules.py` |
 | Genetic classification | `evolutionary_fit.py`, `evolutionary_backends.py`, `evolutionary_search.py`, `_problem.py` (optimizer-independent problem base and pymoo wrapper) |
-| Exact built-in objective | `_fitness.py`, `_array_fitness.py`, `_population_fitness.py` (CPU population batching), `_torch_fitness.py` (exact PyTorch population objective for EvoX devices) |
+| Exact built-in objective | `_fitness.py`, `_array_fitness.py`, `_population_fitness.py` (CPU population batching), `_torch_fitness.py` (exact PyTorch population objective for EvoX devices), `_streamed_fitness.py` (the array objective with the samples streamed in batches, `batch_size`) |
 | Population route selection | `_dispatch_profile.py` |
 | Regression | `evolutionary_fit_regression.py` |
 | High-level classifiers and mining | `classifiers.py`, `rule_mining.py` |
@@ -85,6 +85,13 @@ kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
 - The PyTorch objective reproduces NumPy's pairwise sums and left-to-right
   products, and returns integer counts for NumPy to finish. Its runtime
   verification is a safety net, not a substitute for parity tests.
+- With `batch_size`, `_streamed_fitness.score_candidate` must equal
+  `_array_fitness.score_candidate` bit for bit. Counts add up across batches;
+  sums go through `_StreamingSum`, which reproduces NumPy's order for the
+  sum's layout. That order changed between releases (NumPy <= 2.2 buffers
+  rows longer than `np.getbufsize()`, 2.3 does not, and both buffer the strided
+  Type-2 denominator), so `Summation.measure` checks it when a fit starts. A
+  reduction added to `_fitness._dominance` needs its streamed counterpart.
 - Fit-local fitness/firing caches and packed memberships must remain bounded and
   scoped to a fit, with cleanup on success and failure. Do not make them global.
 - Respect fast-path eligibility and preserve logical evaluation counts even on
@@ -104,8 +111,8 @@ selected test files. Fixtures live in `tests/conftest.py`.
 
 For evaluator changes, relevant suites include `test_array_evaluation.py`,
 `test_genetic_fitness_semantics.py`, `test_fast_fitness.py`, cache tests,
-`test_population_evaluation.py`, `test_route_dispatch.py` and
-`test_evox_population.py`.
+`test_population_evaluation.py`, `test_route_dispatch.py`,
+`test_evox_population.py` and `test_streamed_fitness.py`.
 Measure complete seeded fits with
 `python benchmarks/benchmark_evaluator_variants.py`, and EvoX fits with
 `python benchmarks/benchmark_evox_routes.py`; both refuse timings unless

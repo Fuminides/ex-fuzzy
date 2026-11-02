@@ -34,6 +34,7 @@ authorize future work. Confirm the scope of new work from the current task.
 | B03 | Implemented: populations | A genotype repeated within one population is scored once, on the batched PyMoo route and for EvoX. |
 | B04 | Implemented: scoped | Fit-local firing reuse, fixed partitions only, 8 MiB of retained columns. |
 | B05 | Measured: rejected | Reusing firing across candidates with optimized partitions changed the objective of about half the candidates. |
+| C03 | Implemented as the opt-in `batch_size` (2026-11-02) | Built-in T1/interval T2 objective through the array evaluator, fixed or optimized partitions, any backend. Bounds per-candidate memory, not time; population batching and the device objective stay off while streaming. |
 | C01/C02 | C01 implemented, dispatch measured; C02 deferred | Serial built-in T1, fixed partitions. The population is chunked to the gather budget, and the route is chosen by a runtime probe or an opt-in stored calibration instead of the former 512-sample constant. Unsupported contexts retain scalar evaluation. EvoX reaches the same routes. |
 | C05 | Serialization prerequisite fixed | Stable enum definition; fresh-process and spawned-worker parity tests. Persistent/shared-memory workers are not implemented. |
 | C07 | Partial: implemented | Fit-scoped owned pools; success/error cleanup and external ownership preserved. |
@@ -1326,3 +1327,84 @@ python benchmarks/benchmark_evox_routes.py --samples 1000 --population 200 --rep
 
 Add `--evox-source <EvoX source tree>` when `import evox` fails. Full suite on
 the retained tree: **1,245 passed, 43 skipped**.
+
+## Sample streaming (C03) — 2026-11-02
+
+`batch_size` (classifier constructor or `fit`, and `FitRuleBase`) scores every
+candidate on all the training samples while holding the firing strengths of
+one batch of samples at a time. It is for memory, not speed: the per-candidate
+arrays of the array evaluator grow with samples × rules, which stops fitting
+in memory at millions of samples. It is not minibatch training: no candidate
+is scored on a subset.
+
+### Design
+
+`_streamed_fitness.score_candidate` reads the samples in up to three passes:
+the per-rule dominance sums; the winners for pruning, plus the predictions in
+case nothing is pruned; and, only when pruning removed rules, the survivors'
+winners for the macro F1. Firing strengths are recomputed in each pass from the
+fixed memberships (sliced per batch) or, for optimized partitions, from
+memberships evaluated per batch. Rule-wise products and memberships are
+per sample, so they do not depend on the batch.
+
+Counts add up exactly. Sums do not, so C03's original objection holds for naive
+subtotals. `_StreamingSum` reproduces NumPy's order instead: a `_SumLayout`
+lists the pairwise tree's leaves (runs of at most 128 values) for the total
+length, optionally cut into buffers summed left to right; each leaf is summed
+by NumPy on a contiguous run, holding back the values of a leaf cut by a batch
+boundary; the leaves are combined in tree order at the end.
+
+### NumPy's summation order is version dependent
+
+Measured with random data against a Python model of the pairwise sum
+(`np.getbufsize()` is 8192 on all three):
+
+| Layout | NumPy 1.26.4 / 2.2.6 | NumPy 2.3.5 |
+| --- | --- | --- |
+| Contiguous rows, `np.sum(table, axis=1)` | buffered: 8192-value pairwise blocks added left to right | one pairwise tree |
+| T2 denominator, strided `(samples, 2)` slice | buffered | buffered |
+| T2 denominator of a single rule (contiguous slice) | buffered | one pairwise tree |
+
+`Summation.measure` matches each layout against both orders on uniform random
+data (values of very different magnitudes let the largest decide and fail to
+discriminate) and refuses streaming unless exactly one order matches. The
+probe streams in batches, so it also checks `_StreamingSum`.
+
+`_torch_fitness._PairwisePlan` models the unbuffered order only. On NumPy <= 2.2
+with more than 8192 samples, its runtime verification should therefore fail and
+keep EvoX fits on the CPU. This was not tested; the CPU routes are unaffected.
+
+### Results
+
+Exactness: `tests/test_streamed_fitness.py` (99 tests, 9,000 samples so sums
+cross the buffer boundary) passes on NumPy 1.26.4, 2.2.6 and 2.3.5. An ad hoc
+check of 288 random candidates at 20,000 samples (T1/T2 × fixed/optimized ×
+`ds_mode` 0/1/2 × two batch sizes) matched the unbatched array evaluator on all
+three.
+
+Memory and time per candidate, 2,000,000 synthetic samples, 10 features,
+30 rules, 4 antecedents, fixed partitions, BURRITA; median time and largest
+`tracemalloc` peak while scoring 4 candidates, above the problem's own data:
+
+| Sets | `batch_size` | Peak (MB) | Time (s) |
+| --- | --- | ---: | ---: |
+| T1 | None | 996 | 4.07 |
+| T1 | 100,000 | 95 | 4.74 |
+| T1 | 20,000 | 25 | 4.40 |
+| T2 | None | 2,145 | 15.58 |
+| T2 | 100,000 | 214 | 21.26 |
+| T2 | 20,000 | 60 | 20.48 |
+
+Process maximum RSS fell from 1,831 to 1,019 MB (T1) and from 3,480 to
+1,537 MB (T2); what remains is `X`, the labels and the fixed memberships.
+Streaming does not speed anything up: 4 s per candidate at 2,000,000 samples
+is about 2.3 hours for a default 70 × 30 search. A growing training subset in
+the early generations is the separate, proposed next step.
+
+### Reproduction
+
+```bash
+pytest -q tests/test_streamed_fitness.py
+python benchmarks/benchmark_streamed_memory.py --samples 2000000
+python benchmarks/benchmark_streamed_memory.py --samples 2000000 --fuzzy-type t2
+```
