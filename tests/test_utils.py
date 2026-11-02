@@ -125,6 +125,63 @@ def test_partition_shapes_names_and_errors():
         utils.construct_partitions(X, fs.FUZZY_SETS.temporal)
 
 
+def test_breakpoint_partition_follows_the_given_bands_with_shoulders():
+    bands = utils.construct_breakpoint_partition(
+        'NO2', ['Good', 'Fair', 'Poor'], [40, 90], [0, 400], transition=[10, 20], units='ug/m3')
+
+    assert bands.name == 'NO2' and bands.units == 'ug/m3' and bands.domain() == [0.0, 400.0]
+    assert bands.linguistic_variable_names() == ['Good', 'Fair', 'Poor']
+    assert [fuzzy_set.membership_parameters for fuzzy_set in bands] == [
+        [0.0, 0.0, 35.0, 45.0], [35.0, 45.0, 80.0, 100.0], [80.0, 100.0, 400.0, 400.0]]
+    # Plateaus, half membership at each breakpoint, and the shoulders keep their value beyond the domain.
+    values = np.array([-20.0, 0.0, 20.0, 40.0, 60.0, 90.0, 250.0, 900.0])
+    memberships = bands.compute_memberships(values)
+    np.testing.assert_allclose(memberships[0], [1, 1, 1, 0.5, 0, 0, 0, 0], atol=1e-3)
+    np.testing.assert_allclose(memberships[1], [0, 0, 0, 0.5, 1, 0.5, 0, 0], atol=1e-3)
+    np.testing.assert_allclose(memberships[2], [0, 0, 0, 0, 0, 0.5, 1, 1], atol=1e-3)
+    # Along the ramps the neighbouring terms complete each other.
+    np.testing.assert_allclose(bands.compute_memberships(np.linspace(0, 400, 81)).sum(axis=0), 1.0, atol=1e-3)
+
+
+@pytest.mark.parametrize('arguments, message', [
+    (dict(term_names=['a'], breakpoints=[], domain=[0, 1], transition=0.1), 'at least two terms'),
+    (dict(term_names=['a', 'b', 'c'], breakpoints=[0.5], domain=[0, 1], transition=0.1), 'one breakpoint'),
+    (dict(term_names=['a', 'b', 'c'], breakpoints=[0.6, 0.4], domain=[0, 1], transition=0.1), 'increasing'),
+    (dict(term_names=['a', 'b'], breakpoints=[0.5], domain=[0, 1], transition=0), 'positive'),
+    (dict(term_names=['a', 'b'], breakpoints=[0.5], domain=[0, 1], transition=[-1]), 'positive'),
+    (dict(term_names=['a', 'b'], breakpoints=[0.05], domain=[0, 1], transition=0.2), 'inside the domain'),
+    (dict(term_names=['a', 'b'], breakpoints=[0.95], domain=[0, 1], transition=0.2), 'inside the domain'),
+    (dict(term_names=['a', 'b', 'c'], breakpoints=[0.4, 0.5], domain=[0, 1], transition=0.2), 'overlap'),
+    (dict(term_names=['a', 'b'], breakpoints=[0.5], domain=[0, np.inf], transition=0.1), 'finite'),
+    (dict(term_names=['a', 'b'], breakpoints=[np.nan], domain=[0, 1], transition=0.1), 'finite'),
+])
+def test_breakpoint_partition_rejects_inconsistent_bands(arguments, message):
+    with pytest.raises(ValueError, match=message):
+        utils.construct_breakpoint_partition('x', **arguments)
+
+
+def test_breakpoint_partitions_can_be_given_to_the_estimators():
+    rng = np.random.default_rng(0)
+    X = np.column_stack([rng.uniform(0, 100, 150), rng.uniform(0, 1, 150)])
+    y = (X[:, 0] > 50).astype(int)
+    partitions = [
+        utils.construct_breakpoint_partition('a', ['low', 'mid', 'high'], [30, 70], [0, 100], transition=10),
+        utils.construct_breakpoint_partition('b', ['low', 'high'], [0.5], [0, 1], transition=0.2),
+    ]
+
+    classifier = ex_fuzzy.evolutionary_fit.BaseFuzzyRulesClassifier(
+        nRules=4, nAnts=2, linguistic_variables=partitions)
+    classifier.fit(X, y, n_gen=3, pop_size=10, random_state=0)
+    assert classifier.predict(X).shape == (150,)
+    assert classifier.rule_base.antecedents[0].linguistic_variable_names() == ['low', 'mid', 'high']
+
+    regressor = ex_fuzzy.evolutionary_fit_regression.BaseFuzzyRulesRegressor(
+        nRules=4, nAnts=2, linguistic_variables=partitions)
+    regressor.fit(X, X[:, 0] / 100, n_gen=3, pop_size=10, random_state=0)
+    assert regressor.predict(X).shape == (150,)
+    assert regressor.get_rulebase().antecedents[1].linguistic_variable_names() == ['low', 'high']
+
+
 def test_categorical_detection_can_be_disabled_and_ignores_missing_values():
     frame = pd.DataFrame({'missing': [np.nan] * 6, 'flag': [0, 1] * 3, 'x': np.linspace(0, 1, 6)})
     np.testing.assert_array_equal(utils.detect_categorical_mask(frame), [0, 2, 0])

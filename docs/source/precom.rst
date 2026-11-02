@@ -26,6 +26,20 @@ Pass ``categorical_mask`` yourself to decide it instead of the detection, or ``d
 every variable as numerical. ``BaseFuzzyRulesClassifier`` accepts the same two arguments and uses them when it
 optimizes the partitions itself.
 
+---------------------------------
+Partitions from your own bands
+---------------------------------
+Quantile terms say little when the variable has an agreed vocabulary, such as the official bands of an air quality
+index. ``construct_breakpoint_partition`` builds a trapezoidal variable from the boundaries you give: one term per band, shoulders
+at both ends of the domain, and a linear crossover of the width you choose around each boundary, so the two neighbouring
+terms reach 0.5 at the breakpoint::
+
+    no2 = utils.construct_breakpoint_partition(
+        'NO2', ['Good', 'Fair', 'Poor'], breakpoints=[40, 90], domain=[0, 400], transition=10, units='ug/m3')
+
+Pass such variables as ``linguistic_variables`` to any classifier or regressor. The domain is not learned from data, so
+inputs outside it are clipped to it, as with the other partitions.
+
 --------------------------------
 About the precomputed partitions
 --------------------------------

@@ -577,6 +577,62 @@ def construct_partitions(X : np.array, fz_type_studied:fs.FUZZY_SETS=fs.FUZZY_SE
     return precomputed_partitions
 
 
+def construct_breakpoint_partition(name: str, term_names: list[str], breakpoints: list[float], domain: list[float],
+                                   transition, units: str = None) -> fs.fuzzyVariable:
+    """
+    Creates a Type-1 fuzzy variable whose terms follow user-given breakpoints, such as the official bands of an index.
+
+    The terms are trapezoids in order of increasing value. The first and the last are shoulders that
+    extend to the ends of ``domain``. Around each breakpoint two neighbouring terms cross over a linear
+    ramp of width ``transition``, centred on the breakpoint, so both reach 0.5 there and their memberships
+    add up to 1 along the ramp.
+
+    Args:
+        name: name of the fuzzy variable.
+        term_names: names of the terms, from the lowest values to the highest. At least two.
+        breakpoints: strictly increasing boundaries between consecutive terms, one fewer than the terms.
+        domain: [lower, upper] limits of the variable. Inputs outside are clipped to them, so the
+            shoulders keep their membership beyond the limits.
+        transition: width of the crossover ramp: a positive number for all breakpoints or one per breakpoint.
+            Each ramp must stay inside the domain and must not overlap the next one.
+        units: optional units of the variable, for display.
+
+    Returns:
+        a fuzzy variable with one trapezoidal fuzzy set per term, usable as an element of ``linguistic_variables``.
+
+    Raises:
+        ValueError: if the number of terms or breakpoints does not match, the breakpoints are not
+            increasing, or the ramps do not fit.
+
+    Example:
+        >>> bands = construct_breakpoint_partition('NO2', ['Low', 'Medium', 'High'], [40, 90], [0, 400], transition=10)
+        >>> bands.compute_memberships(np.array([20, 40, 200])).round(2).tolist()
+        [[1.0, 0.5, 0.0], [0.0, 0.5, 0.0], [0.0, 0.0, 1.0]]
+    """
+    breakpoints = np.asarray(breakpoints, dtype=float)
+    if len(term_names) < 2 or breakpoints.ndim != 1 or len(breakpoints) != len(term_names) - 1:
+        raise ValueError('There must be at least two terms and exactly one breakpoint between each pair.')
+    if len(domain) != 2 or not np.all(np.isfinite(domain)) or not np.all(np.isfinite(breakpoints)):
+        raise ValueError('The domain must be [lower, upper] and the breakpoints finite.')
+    if np.any(np.diff(breakpoints) <= 0):
+        raise ValueError('The breakpoints must be strictly increasing.')
+    widths = np.broadcast_to(np.asarray(transition, dtype=float), breakpoints.shape)
+    if np.any(~(widths > 0)):
+        raise ValueError('The transition width must be positive.')
+    starts, ends = breakpoints - widths / 2, breakpoints + widths / 2
+    if starts[0] < domain[0] or ends[-1] > domain[1] or np.any(starts[1:] < ends[:-1]):
+        raise ValueError('Each transition must lie inside the domain and not overlap the next one.')
+
+    domain = [float(domain[0]), float(domain[1])]
+    # A shoulder repeats its outer point, as the quantile partitions do.
+    parameters = [[domain[0], domain[0], starts[0], ends[0]]]
+    parameters += [[starts[ix - 1], ends[ix - 1], starts[ix], ends[ix]] for ix in range(1, len(breakpoints))]
+    parameters.append([starts[-1], ends[-1], domain[1], domain[1]])
+    sets = [fs.FS(str(term), [float(value) for value in params], domain)
+            for term, params in zip(term_names, parameters)]
+    return fs.fuzzyVariable(name, sets, units)
+
+
 def construct_crisp_categorical_partition(x: np.array, name: str, fz_type_studied: fs.FUZZY_SETS) -> fs.fuzzyVariable:
     """
     Creates a fuzzy variable for a categorical feature. 
