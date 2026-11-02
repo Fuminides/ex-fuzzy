@@ -131,3 +131,63 @@ partitions takes about as long. With fixed partitions the genetic algorithm can
 also score whole populations at once, which NSGA-II cannot, so it may be faster
 there. ``algorithm='nsga2'`` needs the PyMoo backend and the built-in loss, and
 it ignores ``alpha`` and ``tournament_size``. It works with ``candidate_rules``.
+
+----------------------------------------
+Minibatch fitness for large training sets
+----------------------------------------
+
+Scoring a candidate costs time proportional to the number of training rows, so
+a large training set slows every generation down. ``batch_size`` scores each
+generation on a random batch of rows instead, so the search can use every row
+over its run without paying a full-data evaluation per candidate and there is
+no need to subsample the data before fitting:
+
+.. code-block:: python
+
+   clf = BaseFuzzyRulesClassifier(nRules=60, nAnts=4, batch_size=30000, n_gen=100, pop_size=60)
+   clf.fit(X_train, y_train)  # X_train has a million rows
+
+``batch_size`` is ``None`` by default, which scores every candidate on all the
+rows, exactly as before. It can also be given to ``fit`` for one call. It must be
+an integer with ``n_classes <= batch_size < n_rows``.
+
+**Semantics.**
+
+- *Batches.* Each batch has ``batch_size`` rows drawn without replacement and
+  stratified by class: every class gets a share proportional to its size
+  (largest-remainder rounding) and at least one row, so rare classes are always
+  present. Batches come from a private random generator seeded with
+  ``random_state``; the same seed gives the same batches and the same model, and
+  the global NumPy generator is not used or reseeded.
+- *Generations.* The initial population is scored on the first batch. Before every
+  later generation a new batch is drawn and the current population (the parents)
+  is re-scored on it. Only then are the offspring produced and scored on the same
+  batch, so tournaments and survival compare scores measured on the same rows.
+- *Final choice.* After the last generation the search returns to the full
+  training set and scores the final population exactly on it. The best of that
+  scoring is the model, so ``performance`` is an exact full-training score, and
+  the rules are pruned, weighted and evaluated on all the rows as in any other
+  fit.
+- *Fixed pieces.* The partitions are not affected by the batches: fixed partitions
+  stay as given, and searched partitions are normalized to the domain of the full
+  training set, so a chromosome always decodes to the same fuzzy variables.
+- *Early stopping.* Batch scores of different generations measure different
+  rows, so they cannot be compared and ``patience`` is ignored (with a warning
+  if it is set; pass ``patience=None`` to silence it). The search runs every
+  generation.
+
+**Cost.** A generation scores the offspring on ``batch_size`` rows, plus the
+re-scoring of the parents on the same rows, about two population evaluations per
+generation instead of one, and the logical evaluation count includes the
+re-scorings. The final population is scored once on all the rows, which costs
+about one generation of a full-data fit. Fixed partitions still compute the
+memberships of all the rows once, for that final scoring and the finalization, so
+the memory of the full training set is needed.
+
+**Limits.** Each batch is a noisy estimate of the training objective: a candidate
+can look better or worse on one batch than on all the rows, and a lucky survivor
+is re-scored on the next batch. Use batches large enough for the rarest classes
+to have several rows. Minibatch fitness needs the PyMoo backend and
+``algorithm='ga'``, and cannot be combined with ``candidate_rules`` or
+``checkpoints``. Custom losses and thread runners work; they see the batch as
+their training data.
