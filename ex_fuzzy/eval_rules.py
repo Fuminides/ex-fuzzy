@@ -411,7 +411,7 @@ class evalRuleBase():
 
 
         if self.time_moments is None:
-            winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth, allow_unknown=self.mrule_base.allow_unknown)
+            winning_rules, _winning_association_degrees = self.mrule_base._winning_rules(actual_X, precomputed_truth=self.precomputed_truth)
             preds = self.mrule_base.winning_rule_predict(actual_X, precomputed_truth=self.precomputed_truth)
         else:
 

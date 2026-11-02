@@ -1360,9 +1360,14 @@ class MasterRuleBase():
         pruning_tolerance: the dominance-score threshold of the last purge_rules call, which is the one that
             produced the rules kept by a fitted model. None if the rule base was never purged (or was pickled
             before the attribute existed).
+        class_priors: the share of each consequent in the training data, which a sample that fires no rule falls
+            back to: with allow_unknown=False it is predicted as the most frequent class (the first on ties).
+            The genetic classifier sets it; None (a rule base built by hand, or pickled before the attribute
+            existed) counts every class as equally frequent, so such samples get consequent 0.
     """
 
     pruning_tolerance = None
+    class_priors = None
 
     def __init__(self, rule_base: list[RuleBase], consequent_names: list[str]=None, ds_mode: int = 0, allow_unknown:bool=False) -> None:
         """
@@ -1370,6 +1375,11 @@ class MasterRuleBase():
 
         Args:
             rule_base: list of rule bases.
+            consequent_names: names of the consequents, one per rule base. Defaults to their indexes.
+            ds_mode: inference weighting mode (see resolve_ds_mode).
+            allow_unknown: what a sample that fires no rule is predicted as. If True, -1 ('Unknown'); if False
+                (default), the most frequent training class (see class_priors). Either way its winning rule
+                is -1 and its association degree 0.
         """
         if len(rule_base) == 0:
             raise RuleError('No rule bases given!')
@@ -1584,7 +1594,11 @@ class MasterRuleBase():
         return self.compute_firing_strengths(*args, **kwargs)
 
 
-    def _winning_rules(self, X: np.array, precomputed_truth=None, allow_unknown=True) -> np.array:
+    def _winning_rules(self, X: np.array, precomputed_truth=None) -> np.array:
+        """
+        Returns the index of the winning rule of each sample, -1 where no rule fires (every association
+        degree is 0), and the winner's association degree.
+        """
         # One firing computation serves both the winners and their strengths.
         firing_strengths = self.compute_firing_strengths(X, precomputed_truth=precomputed_truth)
         association_degrees = self.compute_association_degrees(
@@ -1600,11 +1614,20 @@ class MasterRuleBase():
         # The winner's association degree (firing x score or weight), not the largest firing.
         winning_association_degrees = np.max(association_degrees, axis=1)
 
-        if allow_unknown:
-            # If there is no rule that fires, we set the consequent to -1
-            winning_rules[np.max(association_degrees, axis=1) == 0.0] = -1
+        # No rule wins a sample that fires none; allow_unknown decides its prediction.
+        winning_rules[winning_association_degrees == 0.0] = -1
 
         return winning_rules, winning_association_degrees
+
+
+    def _uncovered_consequent(self) -> int:
+        """
+        The consequent predicted for a sample that fires no rule when allow_unknown is False: the most
+        frequent class of class_priors, the first on ties, and consequent 0 without priors.
+        """
+        if self.class_priors is None:
+            return 0
+        return int(np.argmax(self.class_priors))
 
 
     def compute_association_degrees(self, X, precomputed_truth=None, firing_strengths=None) -> np.array:
@@ -1656,23 +1679,22 @@ class MasterRuleBase():
             precomputed_truth: if not None, the antecedent memberships are already computed. (Used for sped up in genetic algorithms)
 
         Returns:
-            array with the winning rule for each sample.
+            array with the consequent of the winning rule for each sample. A sample that fires no rule (every
+            sample, if there are no rules) gets -1 ('Unknown') if allow_unknown is True, and the most frequent
+            training class (see class_priors) otherwise.
         """
-        # Handle empty rule base - return unknown predictions
         if len(self.get_rules()) == 0:
-            if out_class_names:
-                return ['Unknown'] * X.shape[0]
-            else:
-                return np.full(X.shape[0], -1)
+            return self._winning_consequents(np.full(X.shape[0], -1), out_class_names)
 
-        winning_rules, _winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unknown=self.allow_unknown)
+        winning_rules, _winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth)
 
         return self._winning_consequents(winning_rules, out_class_names)
 
 
     def _winning_consequents(self, winning_rules: np.array, out_class_names: bool) -> np.array:
         """
-        Maps winning rule indexes to their consequents; -1 (no rule fired) maps to -1 or 'Unknown'.
+        Maps winning rule indexes to their consequents. -1 (no rule fired) maps to -1 or 'Unknown' if
+        allow_unknown is True, and to the most frequent training class otherwise.
 
         Args:
             winning_rules: array with the index of the winning rule for each sample.
@@ -1682,16 +1704,17 @@ class MasterRuleBase():
             array with the consequent of the winning rule for each sample.
         """
         winning_rules = np.asarray(winning_rules)
+        uncovered = -1 if self.allow_unknown else self._uncovered_consequent()
         if out_class_names:
             consequents = sum([[self.consequent_names[ix]]*len(self[ix].rules)
                           for ix in range(len(self.rule_bases))], [])  # The sum is for flatenning the list
             # The trailing entry is what a -1 winner selects.
             table = np.empty(len(consequents) + 1, dtype=object)
             table[:-1] = consequents
-            table[-1] = 'Unknown'
+            table[-1] = 'Unknown' if uncovered == -1 else self.consequent_names[uncovered]
             return np.array(table[winning_rules].tolist())
 
-        table = np.append(np.asarray(self.get_consequents(), dtype=int), -1)
+        table = np.append(np.asarray(self.get_consequents(), dtype=int), uncovered)
         return table[winning_rules]
 
 
@@ -1708,17 +1731,15 @@ class MasterRuleBase():
             The association degree is a (n_samples, 1) column holding the winning rule's association degree, as
             returned by compute_association_degrees (firing strength times the rule's score or weight, depending on
             ds_mode), and 0 where no rule fires. It is a degree of rule match, not a probability.
+            A sample that fires no rule has winning rule -1 and is predicted as winning_rule_predict says.
         """
-        # Handle empty rule base - return unknown predictions
         if len(self.get_rules()) == 0:
             n_samples = X.shape[0]
-            if out_class_names:
-                preds = np.array(['Unknown'] * n_samples)
-            else:
-                preds = np.full(n_samples, -1)
-            return ExplainedPrediction(preds, np.full(n_samples, -1), np.zeros((n_samples, 1)), np.zeros((n_samples, 1)))
+            no_winner = np.full(n_samples, -1)
+            return ExplainedPrediction(self._winning_consequents(no_winner, out_class_names), no_winner,
+                                       np.zeros((n_samples, 1)), np.zeros((n_samples, 1)))
 
-        winning_rules, winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth, allow_unknown=self.allow_unknown)
+        winning_rules, winning_association_degrees = self._winning_rules(X, precomputed_truth=precomputed_truth)
         try:
             confidence_intervals = np.array([rule.boot_confidence_interval for rule in self.get_rules()])
             # A -1 winner selects the last rule's interval, as list indexing did.
@@ -1939,6 +1960,7 @@ class MasterRuleBase():
             self.allow_unknown
         )
         new_master_rb.pruning_tolerance = self.pruning_tolerance
+        new_master_rb.class_priors = copy.deepcopy(self.class_priors)
 
         return new_master_rb
 

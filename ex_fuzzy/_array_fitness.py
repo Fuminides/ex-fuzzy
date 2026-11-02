@@ -19,7 +19,7 @@ from typing import Optional
 from . import rules
 from ._fitness import (_ClassMaskCache, _FiringCache, _LabelDomain, _as_score, _association,
                        _class_counts, _class_counts_encoded, _dominance, _macro_f1,
-                       _penalized_objective, remap_terms)
+                       _majority_class, _penalized_objective, remap_terms)
 
 class _DecodedCandidate:
     """Effective phenotype of one chromosome, in class-major rule order."""
@@ -191,8 +191,7 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
     scores = _dominance(firing, y, consequents, mask_cache)
     association = _association(firing, scores, weights, ds_mode)
     winners = np.argmax(association, axis=1)
-    eligible = (np.max(association, axis=1) != 0.0 if allow_unknown
-                else np.ones(len(y), dtype=bool))
+    eligible = np.max(association, axis=1) != 0.0
     correct = (consequents[winners] == y) & eligible
     correct_wins = np.bincount(winners[correct], minlength=n_rules)
     wins = np.bincount(winners[eligible], minlength=n_rules)
@@ -210,7 +209,10 @@ def score_candidate(decoded: _DecodedCandidate, truth, X: np.ndarray, y: np.ndar
     association = _association(firing, scores, weights[keep], ds_mode)
     prediction = consequents[np.argmax(association, axis=1)]
     if allow_unknown:
-        prediction[np.max(association, axis=1) == 0.0] = -1
+        uncovered = -1
+    else:
+        uncovered = _majority_class(y, n_classes) if labels is None else labels.majority
+    prediction[np.max(association, axis=1) == 0.0] = uncovered
     counts = (_class_counts(y, prediction, n_classes) if labels is None
               else _class_counts_encoded(prediction, labels))
     covered = np.count_nonzero(np.bincount(consequents, minlength=n_classes))

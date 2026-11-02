@@ -303,12 +303,13 @@ class _LabelDomain:
     while it is in use, exactly like the precomputed memberships.
     """
 
-    __slots__ = ('size', 'shifted_y', 'class_sizes')
+    __slots__ = ('size', 'shifted_y', 'class_sizes', 'majority')
 
     def __init__(self, y: np.ndarray, n_classes: int) -> None:
         self.size = n_classes + 1  # one slot per class, plus unknown at index 0
         self.shifted_y = np.asarray(y) + 1
         self.class_sizes = np.bincount(self.shifted_y, minlength=self.size)[1:]
+        self.majority = int(np.argmax(self.class_sizes))  # what _majority_class returns
 
     @classmethod
     def build(cls, y: np.ndarray, n_classes: int) -> Optional['_LabelDomain']:
@@ -319,6 +320,28 @@ class _LabelDomain:
         if values.min() < -1 or values.max() >= n_classes:
             return None
         return cls(values, n_classes)
+
+
+def _majority_class(y: np.ndarray, n_classes: int) -> int:
+    """
+    The most frequent class among ``0 .. n_classes - 1``, the first on ties.
+
+    A sample that fires no rule (every association degree is 0) is won by no
+    rule; with ``allow_unknown=False`` it is predicted as this class, the
+    training base rate's mode, and otherwise as the unknown ``-1``.
+    """
+    return int(np.argmax([np.count_nonzero(y == k) for k in range(n_classes)]))
+
+
+def _class_priors(y: np.ndarray, n_classes: int) -> np.ndarray:
+    """
+    The share of each class ``0 .. n_classes - 1`` in ``y``, uniform if none occurs.
+
+    Stored as ``MasterRuleBase.class_priors``; its argmax is :func:`_majority_class`.
+    """
+    counts = np.array([np.count_nonzero(y == k) for k in range(n_classes)], dtype=float)
+    total = counts.sum()
+    return counts / total if total else np.full(n_classes, 1.0 / n_classes)
 
 
 def _class_counts(y: np.ndarray, prediction: np.ndarray, n_classes: int) -> tuple:
@@ -405,6 +428,8 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
     indexes.  With ``pareto`` it returns ``(accuracy, compactness)`` instead.
     Pruning uses winners *before* removal. Final predictions select winners
     among surviving rules, preserving class/rule order and first-index ties.
+    A sample that fires no rule counts towards no rule's accuracy and is
+    predicted as :func:`_majority_class`, or as -1 with ``allow_unknown``.
     """
     n_classes = len(rulebase.get_rulebases())
     all_rules = rulebase.get_rules()
@@ -421,8 +446,7 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
     scores = _dominance(firing, y, consequents, mask_cache)
     association = _association(firing, scores, weights, rulebase.ds_mode)
     winners = np.argmax(association, axis=1)
-    eligible = (np.max(association, axis=1) != 0.0 if rulebase.allow_unknown
-                else np.ones(len(y), dtype=bool))
+    eligible = np.max(association, axis=1) != 0.0
     correct = (consequents[winners] == y) & eligible
     correct_wins = np.bincount(winners[correct], minlength=len(all_rules))
     wins = np.bincount(winners[eligible], minlength=len(all_rules))
@@ -446,8 +470,8 @@ def score_rulebase(rulebase, X: np.ndarray, y: np.ndarray, tolerance: float,
         rule.score = score
     association = _association(firing, scores, weights[keep], rulebase.ds_mode)
     prediction = consequents[np.argmax(association, axis=1)]
-    if rulebase.allow_unknown:
-        prediction[np.max(association, axis=1) == 0.0] = -1
+    prediction[np.max(association, axis=1) == 0.0] = (-1 if rulebase.allow_unknown
+                                                      else _majority_class(y, n_classes))
     primary = _macro_f1(*_class_counts(y, prediction, n_classes))
     covered = np.count_nonzero(np.bincount(consequents, minlength=n_classes))
     conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
@@ -478,6 +502,8 @@ def score_rulebase_objects(rulebase, X: np.ndarray, y: np.ndarray, tolerance: fl
         return _as_score(_penalized_objective(0.0, 0, 0, n_classes, max_conditions, alpha, beta,
                                               pareto))
     evaluator.add_rule_weights()
+    # The samples no rule fires on fall back to the base rates of y, as in score_rulebase.
+    rulebase.class_priors = _class_priors(np.asarray(y), n_classes)
     prediction = np.asarray(rulebase.winning_rule_predict(X, precomputed_truth=precomputed_truth))
     primary = _macro_f1(*_class_counts(np.asarray(y), prediction, n_classes))
     covered = sum(1 for rule_base in rulebase.get_rulebases() if len(rule_base) > 0)

@@ -54,6 +54,20 @@ Changed
   ``optimization_result_['algorithm'].problem`` (and ``['res']``) is now
   ``None``. Predictions and fitted rules are unchanged. A classifier still
   stores its training matrix in ``X`` and ``eval_performance``
+- **Samples that fire no rule**: with ``allow_unknown=False`` (the default) a
+  sample whose association degrees are all 0 took the class of the first rule
+  (the argmax of an all-zero row), had winning rule 0 in
+  ``explainable_predict``, and counted as a win of that rule when the genetic
+  search computed rule accuracies for pruning. It is now won by no rule
+  (winning rule -1, association degree 0) and predicted as the most frequent
+  class of the training data, both at prediction and in every evaluator of the
+  genetic objective, and ``predict_proba`` gives it the training class
+  distribution instead of a uniform one. Fitted rule bases keep that
+  distribution in ``MasterRuleBase.class_priors``; ``copy`` and pickling keep
+  it, the text format of ``persistence`` does not, and a rule base without it
+  falls back to consequent 0. ``allow_unknown=True`` still predicts -1 (or
+  ``'Unknown'``). The temporal classifier falls back to the majority class of
+  each time moment. Seeded fits on data with uncovered samples change
 
 Fixed
 -----

@@ -35,20 +35,21 @@ def _reference_firing(master, X):
 
 
 def _reference_predict(master, X, out_class_names):
-    """The former per-sample loops over the winning rules."""
+    """Per-sample loops over the winning rules; a sample no rule fires on takes the majority class or -1."""
     firing = _reference_firing(master, X)
     association = master.compute_association_degrees(X, firing_strengths=firing)
     winners = np.argmax(association, axis=1)
-    if master.allow_unknown:
-        winners[np.max(association, axis=1) == 0.0] = -1
+    winners[np.max(association, axis=1) == 0.0] = -1
+    majority = int(np.argmax(master.class_priors))
     if out_class_names:
         consequents = sum([[master.consequent_names[ix]] * len(master[ix].rules)
                            for ix in range(len(master.rule_bases))], [])
-        return np.array([consequents[w] if w != -1 else 'Unknown' for w in winners]), winners
+        fallback = 'Unknown' if master.allow_unknown else master.consequent_names[majority]
+        return np.array([consequents[w] if w != -1 else fallback for w in winners]), winners
     consequents = master.get_consequents()
     result = np.zeros(X.shape[0])
     for ix, winner in enumerate(winners):
-        result[ix] = consequents[winner] if winner != -1 else -1
+        result[ix] = consequents[winner] if winner != -1 else (-1 if master.allow_unknown else majority)
     return result, winners
 
 
@@ -63,13 +64,17 @@ def test_firing_matches_per_rule_base_reference(kind, frame):
 @pytest.mark.parametrize('kind', KINDS)
 @pytest.mark.parametrize('ds_mode', [0, 1, 2])
 @pytest.mark.parametrize('out_class_names', [False, True])
-def test_predictions_match_reference(kind, ds_mode, out_class_names):
-    master, X, _ = _random_master(kind, ds_mode=ds_mode)
+@pytest.mark.parametrize('allow_unknown', [False, True])
+def test_predictions_match_reference(kind, ds_mode, out_class_names, allow_unknown):
+    master, X, _ = _random_master(kind, ds_mode=ds_mode, allow_unknown=allow_unknown)
     if ds_mode == 2:
         for index, rule in enumerate(master.get_rules()):
             rule.weight = 0.25 + 0.05 * index
     master.rename_cons(['a', 'b', 'c'])
+    # Iris is balanced; skewed priors make the fallback differ from the first class.
+    master.class_priors = np.array([0.2, 0.3, 0.5])
     expected, winners = _reference_predict(master, X, out_class_names)
+    assert np.any(winners == -1)
 
     predicted = master.winning_rule_predict(X, out_class_names=out_class_names)
     np.testing.assert_array_equal(predicted, expected)

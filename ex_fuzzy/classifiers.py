@@ -494,8 +494,10 @@ class FuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 rule.accuracy = float(self._rules['confidence'][row])
                 class_rules.append(rule)
             rule_bases.append(rules.RuleBaseT1(self.linguistic_variables_, class_rules))
-        return rules.MasterRuleBase(rule_bases, [str(label) for label in self.classes_],
-                                    ds_mode=2, allow_unknown=False)
+        rule_base = rules.MasterRuleBase(rule_bases, [str(label) for label in self.classes_],
+                                         ds_mode=2, allow_unknown=False)
+        rule_base.class_priors = self.class_prior_  # uncovered samples take the majority class, as in predict
+        return rule_base
 
     def _scores(self, X):
         check_is_fitted(self, attributes=['classes_', 'selected_features_'])

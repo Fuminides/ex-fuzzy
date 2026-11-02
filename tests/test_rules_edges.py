@@ -245,13 +245,24 @@ def test_master_rulebase_empty_predictions_mutation_and_accessors(capsys):
     winners, strengths = master._winning_rules(X)
     np.testing.assert_array_equal(winners, [-1, -1, -1])
     np.testing.assert_array_equal(strengths, [0.0, 0.0, 0.0])
+    # No rule fires anywhere: allow_unknown=False falls back to the majority class, here the
+    # second one, and allow_unknown=True to the unknown class.
+    master.class_priors = np.array([0.4, 0.6])
+    np.testing.assert_array_equal(master.winning_rule_predict(X), [1, 1, 1])
+    np.testing.assert_array_equal(master.winning_rule_predict(X, out_class_names=True), [1, 1, 1])
+    master.allow_unknown = True
     np.testing.assert_array_equal(master.winning_rule_predict(X), [-1, -1, -1])
-    assert master.winning_rule_predict(X, out_class_names=True) == ['Unknown'] * 3
+    np.testing.assert_array_equal(master.winning_rule_predict(X, out_class_names=True), ['Unknown'] * 3)
 
     explained = master.explainable_predict(X)
     np.testing.assert_array_equal(explained[0], [-1, -1, -1])
+    np.testing.assert_array_equal(explained[1], [-1, -1, -1])
     explained_names = master.explainable_predict(X, out_class_names=True)
     np.testing.assert_array_equal(explained_names[0], ['Unknown'] * 3)
+    master.allow_unknown = False
+    np.testing.assert_array_equal(master.explainable_predict(X)[0], [1, 1, 1])
+    np.testing.assert_array_equal(master.explainable_predict(X)[1], [-1, -1, -1])
+    master.class_priors = None
     assert master.get_scores().size == 0
     assert master.get_weights().size == 0
 

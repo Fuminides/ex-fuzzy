@@ -24,7 +24,7 @@ from typing import Optional, Any
 
 # Import necessary modules
 from ._problem import Integer, Problem
-from ._fitness import (DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT, score_rulebase,
+from ._fitness import (DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT, _class_priors, score_rulebase,
                        score_rulebase_objects)
 from . import fuzzy_sets as fs
 from . import rules
@@ -98,6 +98,8 @@ class ExploreRuleBases(Problem):
         self.y = y
         self.nCons = 1  # This is fixed to MISO rules.
         self.n_classes = n_classes
+        # Every decoded rule base falls back to these when no rule fires, as the objective does.
+        self._class_priors = _class_priors(np.asarray(y), n_classes)
         self.candidate_rules = candidate_rules
         self.nRules = nRules
         self._precomputed_truth = rules.compute_antecedents_memberships(
@@ -172,8 +174,10 @@ class ExploreRuleBases(Problem):
             else:
                 rule_bases.append(rules.RuleBaseGT2(antecedents, rule_list))
 
-        return rules.MasterRuleBase(rule_bases, list(range(len(self.candidate_rules))),
-                                    ds_mode=ds_mode, allow_unknown=allow_unknown)
+        res = rules.MasterRuleBase(rule_bases, list(range(len(self.candidate_rules))),
+                                   ds_mode=ds_mode, allow_unknown=allow_unknown)
+        res.class_priors = self._class_priors
+        return res
 
 
     def _evaluate(self, x: np.array, out: dict, *args, **kwargs):

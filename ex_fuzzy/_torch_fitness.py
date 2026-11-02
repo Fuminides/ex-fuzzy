@@ -277,6 +277,7 @@ class TorchObjective:
         self.y = torch.as_tensor(y, dtype=torch.int64, device=device)
         self.label_size = labels.size
         self.class_sizes = labels.class_sizes
+        self.majority = labels.majority
         self.shifted_y = torch.as_tensor(labels.shifted_y, dtype=torch.int64, device=device)
         self.class_masks = [torch.as_tensor(y == klass, dtype=torch.float64, device=device)
                             for klass in range(self.n_classes)]
@@ -387,11 +388,7 @@ class TorchObjective:
         association = torch.where(active.unsqueeze(2), association, -torch.inf)
         winners = association.argmax(dim=1)
         maxima = association.gather(1, winners.unsqueeze(1)).squeeze(1)
-        if self.allow_unknown:
-            eligible = maxima != 0.0
-        else:
-            eligible = torch.ones((population, n_samples), dtype=torch.bool, device=self.device)
-        eligible &= active.any(dim=1).unsqueeze(1)
+        eligible = (maxima != 0.0) & active.any(dim=1).unsqueeze(1)
         correct = (consequents.gather(1, winners) == self.y) & eligible
         correct_wins = self._winner_counts(winners, correct)
         # prune_bad_rules drops 'score < tolerance or accuracy == 0.0', and a
@@ -410,9 +407,8 @@ class TorchObjective:
         association = torch.where(active.unsqueeze(2), association, -torch.inf)
         winners = association.argmax(dim=1)
         prediction = consequents.gather(1, winners)
-        if self.allow_unknown:
-            maxima = association.gather(1, winners.unsqueeze(1)).squeeze(1)
-            prediction = torch.where(maxima == 0.0, -1, prediction)
+        maxima = association.gather(1, winners.unsqueeze(1)).squeeze(1)
+        prediction = torch.where(maxima == 0.0, -1 if self.allow_unknown else self.majority, prediction)
         return (list(self._class_counts(prediction)) + [survivors, declined]
                 + self._size_counts(effective, consequents, active))
 
