@@ -46,6 +46,7 @@ from . import evolutionary_backends as ev_backends
 from . import fuzzy_sets as fs
 from . import rules
 from . import eval_rules as evr
+from . import rule_mixture
 from . import vis_rules
 from .evolutionary_search import ExploreRuleBases
 from ._fitness import (DEFAULT_COMPACTNESS_WEIGHT, DEFAULT_COVERAGE_WEIGHT, _class_priors, remap_term,
@@ -128,6 +129,13 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     Class that is used as a classifier for a fuzzy rule based system. Supports precomputed and optimization of the linguistic variables.
     """
 
+    # Defaults of the mixture options for classifiers pickled before they existed.
+    inference = 'winning_rule'
+    mixture_C = 1.0
+    mixture_non_negative = False
+    mixture_search = False
+    mixture_ = None
+
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: Union[list, int] = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
                  domain: list[float] = None, n_class: int=None, precomputed_rules: rules.MasterRuleBase=None, runner: int=1, ds_mode: Union[int, str] = 0, allow_unknown:bool=False, backend: str='pymoo',
@@ -135,7 +143,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  min_delta: float = 1e-4, random_state: int = 33, var_prob: float = 0.3, sbx_eta: float = 3.0,
                  mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga',
                  batch_size: Optional[int] = None, initial_data_fraction: Optional[float] = None,
-                 full_data_at: float = 0.5) -> None:
+                 full_data_at: float = 0.5, inference: str = 'winning_rule', mixture_C: float = 1.0,
+                 mixture_non_negative: bool = False, mixture_search: bool = False) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -185,8 +194,25 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 ``candidate_rules``. fit can override it for one call.
             full_data_at: share of ``n_gen``, in (0, 1], after which ``initial_data_fraction`` has grown to all
                 the samples; 0.5 (default) reaches them halfway through the search. fit can override it.
+            inference: how the rules decide. 'winning_rule' (default): the rule with the largest association
+                degree decides (see ``ds_mode``). 'mixture': every rule contributes; the score of class c is
+                ``b_c + sum_r W[r, c] * firing_r``, the prediction is the class with the largest score, and the
+                weights ``W`` and biases ``b`` are fitted on the training samples after the search, by
+                L2-regularised multinomial logistic regression on the rule firing strengths (see
+                ``ex_fuzzy.rule_mixture`` and ``fit_mixture``). The weights are then ``mixture_``. ``ds_mode``
+                still sets the winning-rule association that the search and its pruning use.
+            mixture_C: inverse strength of the L2 penalty on the mixture weights, as in scikit-learn's
+                ``LogisticRegression`` (default 1.0).
+            mixture_non_negative: if True, every mixture weight is >= 0, so that each rule reads "votes for
+                class c with strength w"; if False (default) the weights are unconstrained and relative.
+            mixture_search: if True (needs ``inference='mixture'``), the genetic search scores each candidate
+                rule base by the macro F1 of the mixture fitted on it, instead of its winning-rule macro F1,
+                with the same pruning and penalties. Each candidate then fits a logistic regression, which
+                makes the search much slower. Needs the built-in loss, ``algorithm='ga'``, no ``batch_size``,
+                ``initial_data_fraction`` or ``candidate_rules``.
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
+        rule_mixture.check_inference(inference, mixture_C, mixture_search)
         self.n_gen = n_gen
         self.pop_size = pop_size
         self.patience = patience
@@ -200,6 +226,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.batch_size = batch_size
         self.initial_data_fraction = initial_data_fraction
         self.full_data_at = full_data_at
+        self.inference = inference
+        self.mixture_C = mixture_C
+        self.mixture_non_negative = mixture_non_negative
+        self.mixture_search = mixture_search
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -359,6 +389,15 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError('initial_data_fraction needs the pymoo backend.')
         if initial_data_fraction is not None and candidate_rules is not None:
             raise ValueError('initial_data_fraction cannot be combined with candidate_rules.')
+        rule_mixture.check_inference(self.inference, self.mixture_C, self.mixture_search)
+        if self.mixture_search:
+            conflicts = [name for name, value in (
+                ('a custom loss', self.custom_loss is not None), ("algorithm='nsga2'", pareto),
+                ('batch_size', batch_size is not None), ('initial_data_fraction', initial_data_fraction is not None),
+                ('candidate_rules', candidate_rules is not None)) if value]
+            if conflicts:
+                raise ValueError('mixture_search replaces the built-in objective; it cannot be combined with '
+                                 + ', '.join(conflicts) + '.')
 
         # Detected before X loses its column dtypes below.
         categorical_mask = self.categorical_mask
@@ -388,6 +427,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         # The search works on consequent indexes; predict maps them back.
         y = self._encode_labels(y)
+        # mixture_search scores every candidate as a mixture of rules; the problem is otherwise the same.
+        problem_class = _MixtureSearchProblem if self.mixture_search else FitRuleBase
 
         if candidate_rules is None:
             if initial_rules is not None:
@@ -411,14 +452,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                                   'Setting nAnts to the number of variables. (%d)' % X.shape[1], stacklevel=2)
 
                 # If Fuzzy variables need to be optimized.
-                problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
+                problem = problem_class(X, y, nRules=self.nRules, nAnts=self.nAnts, tolerance=self.tolerance, n_classes=len(np.unique(y)),
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode, categorical_mask=categorical_mask,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
                                     pareto=pareto, batch_size=batch_size)
             else:
                 # If Fuzzy variables are already precomputed.
-                problem = FitRuleBase(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
+                problem = problem_class(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
@@ -431,6 +472,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
+        if self.mixture_search:
+            problem.mixture_objective = rule_mixture.MixtureObjective(
+                self.mixture_C, self.mixture_non_negative, problem._max_conditions)
 
         data_schedule = None
         if initial_data_fraction is not None:
@@ -449,7 +493,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         # the fit-local caches. Keep callbacks, custom losses/backends and
         # workers on their existing evaluation path. EvoX scores whole
         # generations through the same cached routes, so it qualifies as well.
-        cache_enabled = (type(problem) is FitRuleBase and self.custom_loss is None
+        cache_enabled = (type(problem) is FitRuleBase and self.custom_loss is None and not self.mixture_search
                          and type(self.backend) in (ev_backends.PyMooBackend,
                                                     ev_backends.EvoXBackend)
                          and self.thread_runner is None)
@@ -558,6 +602,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             self.p_value_validation(bootstrap_size)
 
         self.rule_base.rename_cons(self.classes_names)
+        self.mixture_ = None
+        if self.inference == 'mixture':
+            self._fit_mixture_indexes(X, y)
         self.pareto_front_ = None
         self.pareto_index_ = None
         if result.get('front') is not None:
@@ -755,6 +802,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         Returns:
             an ExplainedPrediction named tuple: predictions, winning rules, winning association degrees and confidence intervals.
         """
+        if self.inference == 'mixture':
+            raise ValueError("Under inference='mixture' no single rule decides a prediction; "
+                             'use mixture_contributions(X) for the share of each rule in each class score.')
         try:
             X = X.values  # If X was a pandas dataframe
         except AttributeError:
@@ -785,6 +835,16 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             pass
         _check_no_missing(X)
 
+        if self.inference == 'mixture':
+            mixture = self._fitted_mixture()
+            indexes = mixture.predict(rule_mixture.rule_firing(self.rule_base, X),
+                                      allow_unknown=self.rule_base.allow_unknown)
+            if out_class_names:
+                names = np.empty(len(self.rule_base.consequent_names) + 1, dtype=object)
+                names[:-1] = self.rule_base.consequent_names
+                names[-1] = 'Unknown'
+                return np.array(names[indexes].tolist())
+            return self._decode_predictions(indexes)
         if out_class_names:
             return self.rule_base.winning_rule_predict(X, out_class_names=True)
         return self._decode_predictions(self.rule_base.winning_rule_predict(X))
@@ -797,7 +857,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         A fitted classifier predicts the labels it was fitted with (see ``classes_``). Samples where
         no rule fires get the most frequent training class, or, with ``allow_unknown=True``, -1 for
         numeric labels and 'Unknown' otherwise. A classifier built from precomputed rules predicts
-        consequent indexes.
+        consequent indexes. With ``inference='mixture'`` the prediction is the class with the largest
+        mixture score (see ``mixture_scores``); a sample that fires no rule then gets the class of the
+        largest bias, or the unknown class with ``allow_unknown=True``.
 
         Args:
             X: np array samples x features.
@@ -866,12 +928,18 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         Samples where no rule fires get the class distribution of the training data
         (``rule_base.class_priors``), or a uniform one for rule bases without it.
 
+        With ``inference='mixture'`` they are ``softmax(mixture_scores(X))``: the class probabilities of the
+        fitted logistic model on data like its training data. They are not calibrated probabilities, and
+        the class-aware sampling of the training data (if any) shifts them.
+
         Args:
             X: np array samples x features.
 
         Returns:
             np array samples x classes with the predicted class probabilities.
         """
+        if self.inference == 'mixture':
+            return self._fitted_mixture().softmax(self._mixture_firing(X))
         beliefs = self.predict_membership_class(X)
 
         # Normalize beliefs to sum to 1; samples without rule activation get the base rates
@@ -884,6 +952,122 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             beliefs[zero_mask.flatten()] = 1.0 / beliefs.shape[1] if priors is None else priors
 
         return beliefs
+
+
+    def fit_mixture(self, X: np.array, y: np.array) -> 'BaseFuzzyRulesClassifier':
+        """
+        Fits the mixture weights of ``inference='mixture'`` on the current rules, which stay as they are.
+
+        ``fit`` calls it after the search. Call it to give the rules of an already fitted (or loaded)
+        classifier a mixture, after ``set_params(inference='mixture')`` (or ``model.inference = 'mixture'``
+        for a classifier pickled by a version that lacks some constructor arguments, where ``set_params``
+        fails), or again after the rules change (for example after ``select_pareto_solution``). Labels are those the classifier was fitted with
+        (``classes_``), or consequent indexes for a classifier built from precomputed rules. Use the
+        training data only: the weights are fitted parameters of the model.
+
+        Args:
+            X: np array samples x features.
+            y: label of each sample.
+
+        Returns:
+            the classifier.
+        """
+        rule_mixture.check_inference(self.inference, self.mixture_C, self.mixture_search)
+        if self.inference != 'mixture':
+            raise ValueError("fit_mixture fits the weights of inference='mixture'; "
+                             "set it first, e.g. set_params(inference='mixture').")
+        try:
+            X = X.values  # If X was a pandas dataframe
+        except AttributeError:
+            pass
+        _check_no_missing(X)
+        y = np.ravel(np.asarray(y))
+        if len(y) != len(X):
+            raise ValueError(f'X has {len(X)} samples and y {len(y)}.')
+        classes = getattr(self, 'classes_', None)
+        if classes is None:
+            indexes = y
+        else:
+            lookup = {}
+            for index, label in enumerate(np.asarray(classes).tolist()):
+                lookup.setdefault(label, index)
+            try:
+                indexes = np.fromiter((lookup[label] for label in y.tolist()), dtype=int, count=len(y))
+            except KeyError:
+                unknown = sorted({str(label) for label in y.tolist() if label not in lookup})
+                raise ValueError(f'Labels {unknown} are not among the classes {list(classes)}.') from None
+        self._fit_mixture_indexes(np.asarray(X), np.asarray(indexes))
+        return self
+
+
+    def _fit_mixture_indexes(self, X: np.ndarray, y: np.ndarray) -> None:
+        """Fits ``mixture_`` on samples whose labels are consequent indexes."""
+        mixture = rule_mixture.RuleMixture(C=self.mixture_C, non_negative=self.mixture_non_negative)
+        self.mixture_ = mixture.fit(
+            rule_mixture.rule_firing(self.rule_base, X), y, len(self.rule_base.get_rulebases()),
+            keys=rule_mixture.antecedent_keys(self.rule_base), identities=rule_mixture.rule_keys(self.rule_base))
+
+
+    def _fitted_mixture(self) -> rule_mixture.RuleMixture:
+        """The fitted mixture, checked against the current rules."""
+        mixture = getattr(self, 'mixture_', None)
+        if mixture is None:
+            raise ValueError("inference='mixture' needs fitted weights: call fit or fit_mixture.")
+        if mixture.rule_keys_ is not None and mixture.rule_keys_ != rule_mixture.rule_keys(self.rule_base):
+            raise ValueError('The rules changed after the mixture weights were fitted; call fit_mixture again.')
+        return mixture
+
+
+    def _mixture_firing(self, X: np.array) -> np.ndarray:
+        try:
+            X = X.values  # If X was a pandas dataframe
+        except AttributeError:
+            pass
+        _check_no_missing(X)
+        return rule_mixture.rule_firing(self.rule_base, np.asarray(X))
+
+
+    def mixture_scores(self, X: np.array) -> np.array:
+        """
+        The mixture score of every class, ``b_c + sum_r W[r, c] * firing_r`` (``inference='mixture'``).
+
+        Args:
+            X: np array samples x features.
+
+        Returns:
+            np array samples x classes, in consequent order.
+        """
+        return self._fitted_mixture().scores(self._mixture_firing(X))
+
+
+    def mixture_contributions(self, X: np.array) -> np.array:
+        """
+        What each rule adds to each class score, ``W[r, c] * firing_r`` (``inference='mixture'``).
+
+        The contributions of a sample add up, over the rules, to its scores minus the biases. Rules are in
+        ``rule_base.get_rules()`` order and classes in consequent order.
+
+        Args:
+            X: np array samples x features.
+
+        Returns:
+            np array samples x rules x classes.
+        """
+        return self._fitted_mixture().contributions(self._mixture_firing(X))
+
+
+    def print_mixture(self, return_text: bool = False, decimals: int = 2):
+        """
+        Prints the rules with their mixture weight for every class, their strongest class and the biases.
+
+        Args:
+            return_text: if True, the text is returned instead of printed.
+            decimals: decimals of the weights.
+        """
+        text = self._fitted_mixture().describe(self.rule_base, decimals=decimals)
+        if return_text:
+            return text
+        print(text)
 
 
     def print_rules(self, return_rules:bool=False, bootstrap_results:bool=False) -> None:
@@ -2281,6 +2465,23 @@ class FitRuleBase(Problem):
 
         return score_rulebase_objects(ruleBase, X, y, tolerance, alpha, beta, precomputed_truth,
                                       max_conditions=self._max_conditions, pareto=self.pareto)
+
+
+class _MixtureSearchProblem(FitRuleBase):
+    """
+    ``FitRuleBase`` whose candidates are scored by ``rule_mixture.MixtureObjective`` (``mixture_search``).
+
+    Only ``_evaluate`` differs: it decodes the candidate with the object decoder and scores the mixture
+    fitted on it. Not being ``FitRuleBase`` itself, it gets none of the fit-local caches or population
+    routes, which only reproduce the built-in objective.
+    """
+
+    mixture_objective = None
+
+    def _evaluate(self, x, out: dict, *args, **kwargs):
+        rule_base = self._construct_ruleBase(x, self.fuzzy_type)
+        out['F'] = self._objectives(self.mixture_objective.score(
+            rule_base, self.X, self.y, self.tolerance, self.alpha_, self.beta_, self._precomputed_truth))
 
 
 def _population_module():

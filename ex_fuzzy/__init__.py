@@ -14,7 +14,7 @@ _SUBMODULES = (
     'bootstrapping_test', 'centroid', 'classifiers', 'cognitive_maps', 'conformal', 'eval_rules',
     'eval_tools', 'evolutionary_backends', 'evolutionary_fit', 'evolutionary_fit_regression',
     'evolutionary_search', 'ferl', 'ferl_deep', 'ferl_partitions', 'fuzzy_sets', 'pattern_stability',
-    'permutation_test', 'persistence', 'rule_mining', 'rules', 'utils', 'vis_rules',
+    'permutation_test', 'persistence', 'rule_mining', 'rule_mixture', 'rules', 'utils', 'vis_rules',
 )
 
 #: Top-level names and the submodule that defines each of them.

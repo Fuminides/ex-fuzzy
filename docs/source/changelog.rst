@@ -12,6 +12,17 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 Added
 -----
+- **Mixture of rules**: ``BaseFuzzyRulesClassifier(inference='mixture')`` lets every rule contribute to the
+  decision: the score of class c is ``b_c + sum_r W[r, c] * firing_r`` and the prediction its argmax. After
+  the genetic search (unchanged), the weights and biases are fitted on the training samples by L2-regularised
+  multinomial logistic regression on the rule firing strengths (``mixture_C``), unconstrained or
+  non-negative (``mixture_non_negative``). ``fit_mixture`` fits them for the rules of an existing model;
+  ``mixture_scores``, ``mixture_contributions`` and ``print_mixture`` (each rule with its weight per class,
+  its strongest class and the biases) read them; ``predict_proba`` returns the softmax of the scores, the
+  probabilities of a fitted model, not calibrated ones. ``mixture_search=True`` also scores each candidate of
+  the search by the macro F1 of its own fitted mixture (much slower). Pickling keeps the weights. Off by
+  default: the winning-rule path, its objective and every seeded fit are unchanged
+  (``docs/source/rule_mixture.rst``)
 - **Regression**: ``BaseFuzzyRulesRegressor(unique_antecedents=True)`` keeps only
   the first of several rules that share the same antecedents. The genetic search
   often fills part of the ``nRules`` budget with such repeats, which in additive

@@ -264,6 +264,7 @@ Documentation Contents
     gt2
     extending
     persistence
+    rule_mixture
     classifiers
     pattern_stats
 
