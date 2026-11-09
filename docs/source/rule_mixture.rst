@@ -29,14 +29,27 @@ Design
   Non-negative weights read "this rule votes for class *c* with strength *w*", and every rule then has weight
   0 for at least one class.
 * **Search under the mixture** (``mixture_search=True``, optional). Each candidate rule base of the genetic
-  search is pruned as a fitted model would be, gets its own mixture fitted on the training samples, and is
-  scored by that mixture's macro F1 with the usual coverage and compactness penalties. It runs one logistic
-  regression per new candidate, outside the built-in evaluators and their caches, so it is much slower
-  (on 30,000 samples, about 0.1-0.3 s per candidate with single-threaded BLAS; set ``OMP_NUM_THREADS=1``,
+  search is pruned (see below), gets its own mixture fitted on the training samples, and is scored by that
+  mixture's macro F1 with the usual coverage and compactness penalties. It runs one or two logistic
+  regressions per new candidate, outside the built-in evaluators and their caches, so it is much slower
+  (on 30,000 samples, about 0.1-0.3 s per fit with single-threaded BLAS; set ``OMP_NUM_THREADS=1``,
   since multi-threaded BLAS is slower on these small products).
-* **Consequents.** A rule's consequent only matters for the search and for pruning; in the mixture its
-  weights say which classes it supports. Rules with the same antecedents fire identically, so only the first
-  gets weights (``mixture_.duplicate_of_``).
+* **Pruning under the mixture** (``mixture_pruning``, used with ``mixture_search``). A winning-rule model
+  deletes the rules that never win a training sample correctly. In a mixture such a rule can still matter: it
+  can lower the score of a class where that class is unlikely (a suppressor). With
+  ``mixture_pruning='mixture'`` (the default) a candidate, and the final model, are pruned by the rules' role
+  in the mixture instead: the weights are fitted on every rule, a rule is deleted when its *effect*, the
+  largest centred contribution :math:`\max_n \mu_r(x_n) \cdot \max_c |W_{r,c} - \bar W_r|` over the training
+  samples, is at most ``mixture_prune_threshold``, and the weights are fitted again on the survivors
+  (``rule_mixture.prune_by_mixture``). The default threshold, 0.02 log-odds, deletes the rules that never
+  fire, the repeats (a rule with the antecedents of an earlier one gets no weights) and the rules the fit
+  leaves practically without effect: removing such a rule changes no class score difference by more than twice
+  the threshold, so no softmax probability of any training sample by more than about 4 % of its value.
+  ``mixture_pruning='winning_rule'`` keeps the winning-rule pruning (the behaviour before the option existed).
+  Without ``mixture_search`` the search, its pruning and the rules are always those of the winning-rule fit.
+* **Consequents.** A rule's consequent only matters for the search, for the winning-rule pruning and for the
+  class-coverage penalty; in the mixture its weights say which classes it supports. Rules with the same
+  antecedents fire identically, so only the first gets weights (``mixture_.duplicate_of_``).
 * **No rule fires.** The scores are then the biases. With ``allow_unknown=True`` the sample is predicted as
   unknown, as with winning-rule inference; otherwise as the class of the largest bias.
 

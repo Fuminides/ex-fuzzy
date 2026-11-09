@@ -1,4 +1,5 @@
 """Mixture-of-rules inference (``inference='mixture'``): scores, parity of the default path, persistence, edges."""
+import copy
 import pickle
 
 import numpy as np
@@ -7,6 +8,7 @@ from sklearn.base import clone
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 
+from ex_fuzzy import eval_rules as evr
 from ex_fuzzy import evolutionary_fit as evf
 from ex_fuzzy import fuzzy_sets as fs
 from ex_fuzzy import rule_mixture as rm
@@ -118,11 +120,14 @@ def test_a_classifier_pickled_before_the_option_existed_still_predicts(iris):
     X, y = iris
     model = _fit(X, y)
     expected = model.predict(X)
-    for name in ('inference', 'mixture_C', 'mixture_non_negative', 'mixture_search', 'mixture_'):
+    for name in ('inference', 'mixture_C', 'mixture_non_negative', 'mixture_search', 'mixture_pruning',
+                 'mixture_prune_threshold', 'mixture_'):
         model.__dict__.pop(name, None)
     restored = pickle.loads(pickle.dumps(model))
     np.testing.assert_array_equal(restored.predict(X), expected)
     assert restored.get_params()['inference'] == 'winning_rule'
+    # Searches pickled before the option existed pruned their candidates as winning-rule models.
+    assert restored.get_params()['mixture_pruning'] == 'winning_rule'
     restored.set_params(inference='mixture').fit_mixture(X, y)
     assert restored.mixture_.coef_.shape == (len(restored.rule_base.get_rules()), 3)
 
@@ -201,9 +206,10 @@ def test_a_class_without_samples_cannot_be_fitted():
         rm.RuleMixture().fit(np.ones((4, 1)), np.array([0, 0, 1, 1]), 3)
 
 
-def test_mixture_search_scores_candidates_as_the_final_mixture(iris):
+@pytest.mark.parametrize('pruning', ['mixture', 'winning_rule'])
+def test_mixture_search_scores_candidates_as_the_final_mixture(iris, pruning):
     X, y = iris
-    model = _fit(X, y, inference='mixture', mixture_search=True, mixture_non_negative=True)
+    model = _fit(X, y, inference='mixture', mixture_search=True, mixture_non_negative=True, mixture_pruning=pruning)
     prediction = model.mixture_.predict(rm.rule_firing(model.rule_base, X))
     survivors = model.rule_base.get_rules()
     covered = np.count_nonzero(np.bincount(model.rule_base.get_consequents(), minlength=3))
@@ -212,12 +218,96 @@ def test_mixture_search_scores_candidates_as_the_final_mixture(iris):
                                      10 * 2, model.alpha_, model.beta_)
     assert float(np.ravel(model.performance)[0]) == pytest.approx(float(objective), abs=1e-12)
     assert model.mixture_.coef_.min() >= 0
+    if pruning == 'winning_rule':
+        # Every survivor wins some training sample correctly, as in a winning-rule model.
+        assert model.rule_base.pruning_tolerance == model.tolerance
+        assert all(rule.accuracy > 0 for rule in survivors)
+
+
+def _suppression_problem():
+    """
+    Class 0 is small x0, class 1 medium x0 and class 2 large x0, except where x1 is high, where it is class 1.
+
+    Rule 3, 'x1 IS High' with consequent 2, never predicts a training sample correctly, but lowers class 2 in
+    the mixture. Rule 4, 'x1 IS Far away', never fires.
+    """
+    rng = np.random.default_rng(3)
+    X = rng.uniform(0, 1, size=(900, 2))
+    variables = utils.construct_partitions(X, fs.FUZZY_SETS.t1, n_partitions=3)
+    empty = fs.FS('Far away', [5.0, 6.0, 7.0, 8.0], [0.0, 8.0])
+    variables[1] = fs.fuzzyVariable('x1', [*variables[1].linguistic_variables, empty])
+    y = np.digitize(X[:, 0], [1 / 3, 2 / 3])
+    y[(y == 2) & (variables[1][2].membership(X[:, 1]) > 0)] = 1
+    rule_lists = [[rules.RuleSimple([0, -1], 0)], [rules.RuleSimple([1, -1], 1)],
+                  [rules.RuleSimple([2, -1], 2), rules.RuleSimple([-1, 2], 2), rules.RuleSimple([-1, 3], 2)]]
+    master = rules.MasterRuleBase([rules.RuleBaseT1(variables, rule_list) for rule_list in rule_lists], ds_mode=1)
+    return X, y, master
+
+
+def _antecedents(rule_base):
+    return [list(rule.antecedents) for rule in rule_base.get_rules()]
+
+
+@pytest.mark.parametrize('non_negative', [False, True])
+def test_mixture_pruning_keeps_a_rule_that_only_suppresses_and_drops_rules_without_effect(non_negative):
+    X, y, master = _suppression_problem()
+    # The winning-rule pruning deletes the suppressor: it never wins a sample correctly.
+    winning = copy.deepcopy(master)
+    evaluation = evr.evalRuleBase(winning, X, y)
+    evaluation.add_rule_weights()
+    evaluation.add_classification_metrics()
+    assert winning.get_rules()[3].accuracy == 0.0
+    winning.purge_rules(0.0)
+    assert _antecedents(winning) == [[0, -1], [1, -1], [2, -1]]
+
+    pruned = copy.deepcopy(master)
+    mixture, firing = rm.prune_by_mixture(pruned, X, y, 3, 1.0, non_negative)
+    # The suppressor stays; the rule that never fires has no effect and goes.
+    assert _antecedents(pruned) == [[0, -1], [1, -1], [2, -1], [-1, 2]]
+    centred = mixture.coef_ - mixture.coef_.mean(axis=1, keepdims=True)
+    assert np.argmin(centred[3]) == 2 and centred[3, 2] < -1
+    effects = rm.mixture_effects(mixture.coef_, firing)
+    assert np.all(effects > rm.MIXTURE_PRUNE_THRESHOLD)
+    # The survivors' weights are fitted again, from scratch, as fit_mixture would.
+    refit = rm.RuleMixture(non_negative=non_negative).fit(rm.rule_firing(pruned, X), y, 3)
+    np.testing.assert_array_equal(mixture.coef_, refit.coef_)
+    np.testing.assert_array_equal(mixture.intercept_, refit.intercept_)
+    np.testing.assert_array_equal(firing, rm.rule_firing(pruned, X))
+
+
+def test_mixture_effects_are_the_largest_centred_contributions():
+    X, y, master = _suppression_problem()
+    firing = rm.rule_firing(master, X)
+    mixture = rm.RuleMixture().fit(firing, y, 3)
+    centred = mixture.coef_ - mixture.coef_.mean(axis=1, keepdims=True)
+    contributions = firing[:, :, None] * centred[None]
+    np.testing.assert_allclose(rm.mixture_effects(mixture.coef_, firing), np.abs(contributions).max(axis=(0, 2)),
+                               rtol=0, atol=1e-15)
+    assert rm.mixture_effects(mixture.coef_, firing)[4] == 0.0
+
+
+def test_mixture_pruning_threshold_and_duplicates():
+    X, y, master = _suppression_problem()
+    # A rule with the antecedents of an earlier one shares its weight row, so it has no effect of its own.
+    master.get_rulebases()[2].add_rule(rules.RuleSimple([0, -1], 2))
+    pruned = copy.deepcopy(master)
+    rm.prune_by_mixture(pruned, X, y, 3, 1.0, False, threshold=0.0)
+    assert _antecedents(pruned) == [[0, -1], [1, -1], [2, -1], [-1, 2]]
+    # A threshold above every effect deletes every rule.
+    firing = rm.rule_firing(master, X)
+    largest = rm.mixture_effects(rm.RuleMixture().fit(firing, y, 3, keys=rm.antecedent_keys(master)).coef_,
+                                 firing).max()
+    emptied = copy.deepcopy(master)
+    assert rm.prune_by_mixture(emptied, X, y, 3, 1.0, False, threshold=largest) == (None, None)
+    assert emptied.get_rules() == []
 
 
 @pytest.mark.parametrize('kwargs, message', [
     (dict(inference='voting'), 'Unknown inference'),
     (dict(inference='mixture', mixture_C=0), 'mixture_C'),
     (dict(mixture_search=True), "needs inference='mixture'"),
+    (dict(inference='mixture', mixture_pruning='dominance'), 'Unknown mixture_pruning'),
+    (dict(inference='mixture', mixture_prune_threshold=-0.1), 'mixture_prune_threshold'),
 ])
 def test_invalid_options_are_rejected(kwargs, message):
     with pytest.raises(ValueError, match=message):

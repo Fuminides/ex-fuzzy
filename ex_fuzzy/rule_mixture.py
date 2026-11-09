@@ -38,15 +38,30 @@ from . import rules as rl
 #: Inference modes of ``BaseFuzzyRulesClassifier(inference=...)``.
 INFERENCE_MODES = ('winning_rule', 'mixture')
 
+#: How ``mixture_search`` prunes a candidate before its mixture is scored (``mixture_pruning``).
+#: 'mixture': by the rule's role in the mixture fitted on the candidate (``prune_by_mixture``);
+#: 'winning_rule': as a winning-rule model, deleting the rules that never win a training sample correctly.
+MIXTURE_PRUNINGS = ('mixture', 'winning_rule')
 
-def check_inference(inference: str, mixture_C: float, mixture_search: bool) -> None:
-    """Rejects an unknown inference mode, a non-positive ``mixture_C`` or a mixture search without a mixture."""
+#: Default ``mixture_prune_threshold``: a rule whose largest centred contribution, in log-odds, over the
+#: training samples (``mixture_effects``) is at most this is deleted.
+MIXTURE_PRUNE_THRESHOLD = 0.02
+
+
+def check_inference(inference: str, mixture_C: float, mixture_search: bool, mixture_pruning: str = 'mixture',
+                    mixture_prune_threshold: float = MIXTURE_PRUNE_THRESHOLD) -> None:
+    """Rejects an unknown inference mode, a non-positive ``mixture_C``, a mixture search without a mixture,
+    an unknown ``mixture_pruning`` or a negative ``mixture_prune_threshold``."""
     if inference not in INFERENCE_MODES:
         raise ValueError(f'Unknown inference {inference!r}; use one of {list(INFERENCE_MODES)}.')
     if not (np.isscalar(mixture_C) and float(mixture_C) > 0):
         raise ValueError(f'mixture_C must be a positive number, got {mixture_C!r}.')
     if mixture_search and inference != 'mixture':
         raise ValueError("mixture_search scores the search under the mixture; it needs inference='mixture'.")
+    if mixture_pruning not in MIXTURE_PRUNINGS:
+        raise ValueError(f'Unknown mixture_pruning {mixture_pruning!r}; use one of {list(MIXTURE_PRUNINGS)}.')
+    if not (np.isscalar(mixture_prune_threshold) and float(mixture_prune_threshold) >= 0):
+        raise ValueError(f'mixture_prune_threshold must be a number >= 0, got {mixture_prune_threshold!r}.')
 
 
 def rule_firing(rule_base: rl.MasterRuleBase, X: np.ndarray, precomputed_truth=None) -> np.ndarray:
@@ -285,6 +300,85 @@ class RuleMixture:
         return '\n'.join(lines)
 
 
+def mixture_effects(coef: np.ndarray, firing: np.ndarray) -> np.ndarray:
+    """
+    The largest centred contribution of each rule to any class score over the samples of ``firing``.
+
+    The centred weights ``W[r, c] - mean_c W[r, c]`` describe the same decision function as ``W`` (a constant added to
+    every class weight of a rule changes no score difference), so a rule's effect on the class scores of a sample,
+    relative to one another, is ``firing[n, r] * centred[r, c]``. Firing strengths are non-negative, so its largest
+    absolute value over the samples and classes is ``max_n firing[n, r] * max_c |centred[r, c]|``. A rule that
+    never fires, or whose weights are all equal (a duplicate, or a rule the fit left without effect), has effect 0;
+    a rule that only lowers some classes has a positive effect, even if it never wins a sample under winning-rule
+    inference.
+
+    Args:
+        coef: ``(rules, classes)`` mixture weights.
+        firing: ``(samples, rules)`` firing strengths.
+
+    Returns:
+        ``(rules,)`` effects, in log-odds.
+    """
+    coef = np.asarray(coef, dtype=float)
+    if coef.shape[0] == 0:
+        return np.zeros(0)
+    centred = coef - coef.mean(axis=1, keepdims=True)
+    return np.max(np.asarray(firing, dtype=float), axis=0) * np.max(np.abs(centred), axis=1)
+
+
+def remove_rules_at(rule_base: rl.MasterRuleBase, positions) -> None:
+    """Deletes the rules at ``positions`` of ``rule_base.get_rules()`` (class-major order), in place."""
+    positions = set(int(p) for p in positions)
+    offset = 0
+    for class_base in rule_base.get_rulebases():
+        size = len(class_base.get_rules())
+        local = [index - offset for index in range(offset, offset + size) if index in positions]
+        if local:
+            class_base.remove_rules(local)
+        offset += size
+
+
+def prune_by_mixture(rule_base: rl.MasterRuleBase, X: np.ndarray, y: np.ndarray, n_classes: int, C: float,
+                     non_negative: bool, threshold: float = MIXTURE_PRUNE_THRESHOLD, precomputed_truth=None):
+    """
+    Prunes ``rule_base`` by the rules' role in the mixture fitted on it, in place, and fits the survivors' mixture.
+
+    The weights are fitted on every rule of ``rule_base``; the rules whose effect (``mixture_effects``) is at most
+    ``threshold`` are deleted; the weights are fitted again, from scratch, on the survivors. Deleting a rule never
+    depends on whether it wins a sample, so a rule that only suppresses some classes stays. The second fit is
+    the one ``BaseFuzzyRulesClassifier.fit`` gives the final model, so a candidate is scored with the mixture it
+    would get.
+
+    Args:
+        rule_base: the candidate; rules are deleted from it.
+        X: training samples.
+        y: consequent index of each sample.
+        n_classes: number of classes.
+        C: inverse strength of the L2 penalty.
+        non_negative: whether the weights are constrained to be >= 0.
+        threshold: rules with an effect at most this are deleted; 0 deletes only the rules without any effect.
+        precomputed_truth: antecedent memberships of ``X``, if already computed.
+
+    Returns:
+        ``(mixture, firing)`` of the survivors, or ``(None, None)`` when no rule survives.
+    """
+    if not rule_base.get_rules():
+        return None, None
+    firing = rule_firing(rule_base, X, precomputed_truth)
+    mixture = RuleMixture(C=C, non_negative=non_negative).fit(
+        firing, y, n_classes, keys=antecedent_keys(rule_base), warn=False)
+    keep = mixture_effects(mixture.coef_, firing) > threshold
+    if keep.all():
+        return mixture, firing
+    remove_rules_at(rule_base, np.flatnonzero(~keep))
+    if not keep.any():
+        return None, None
+    firing = np.ascontiguousarray(firing[:, keep])
+    mixture = RuleMixture(C=C, non_negative=non_negative).fit(
+        firing, y, n_classes, keys=antecedent_keys(rule_base), warn=False)
+    return mixture, firing
+
+
 def antecedent_text(rule: rl.RuleSimple, antecedents: list) -> str:
     """``IF <variable> IS <term> [(MOD <hedge>)] AND ...``, or ``IF (always)`` for a rule without antecedents."""
     parts = []
@@ -305,19 +399,24 @@ class MixtureObjective:
     Genetic objective of ``mixture_search``: a candidate is scored as the mixture fitted on it.
 
     The search problem (``evolutionary_fit._MixtureSearchProblem``) calls ``score`` for each candidate
-    instead of the built-in evaluators, so their caches and kernels are not involved. ``score`` prunes
-    the rule base as a fitted model is finalised (dominance scores, winning-rule accuracies,
-    ``purge_rules(tolerance)``), fits the mixture weights on the surviving rules and the training
-    samples, and returns their macro F1 minus the same class-coverage and compactness penalties as the
-    built-in objective. Scores are memoised per decoded rule base for the fit (the population repeats
-    many candidates), up to ``capacity`` of them.
+    instead of the built-in evaluators, so their caches and kernels are not involved. ``score`` prunes the
+    candidate, fits the mixture weights on the surviving rules and the training samples, and returns their
+    macro F1 minus the same class-coverage and compactness penalties as the built-in objective. With
+    ``pruning='mixture'`` (the default) the rules are pruned by their role in the mixture (``prune_by_mixture``);
+    with ``pruning='winning_rule'`` as a winning-rule model is finalised (dominance scores, winning-rule
+    accuracies, ``purge_rules(tolerance)``), which deletes every rule that never wins a training sample
+    correctly, also one that only suppresses some classes in the mixture. Scores are memoised per decoded rule
+    base for the fit (the population repeats many candidates), up to ``capacity`` of them.
     """
 
-    def __init__(self, C: float, non_negative: bool, max_conditions: int, capacity: int = 20000) -> None:
+    def __init__(self, C: float, non_negative: bool, max_conditions: int, capacity: int = 20000,
+                 pruning: str = 'mixture', threshold: float = MIXTURE_PRUNE_THRESHOLD) -> None:
         self.C = C
         self.non_negative = non_negative
         self.max_conditions = max_conditions
         self.capacity = capacity
+        self.pruning = pruning
+        self.threshold = threshold
         self.cache = {}
         self.fits = 0
 
@@ -325,7 +424,7 @@ class MixtureObjective:
         """The objective of ``rule_base`` (which is pruned in place) on the training samples ``X``, ``y``."""
         from . import eval_rules
         from . import fuzzy_sets as fs
-        from ._fitness import _class_counts, _macro_f1, _penalized_objective, score_rulebase
+        from ._fitness import score_rulebase
 
         # A short digest of the decoded rules keeps the memo small (a rule base of 60 rules is kilobytes).
         key = hashlib.blake2b(repr(rule_keys(rule_base)).encode(), digest_size=16).digest()
@@ -333,31 +432,42 @@ class MixtureObjective:
             return self.cache[key]
         n_classes = len(rule_base.get_rulebases())
         y = np.asarray(y)
-        if rule_base.get_rules():
-            if y.dtype.kind in 'biu' and rule_base.fuzzy_type() in (fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2):
-                # The built-in scorer prunes exactly as the fitted model is finalised; its score is not used.
-                score_rulebase(rule_base, X, y, tolerance, alpha, beta, precomputed_truth,
-                               max_conditions=self.max_conditions)
-            else:
-                with rule_base._firing_cache_scope():
-                    evaluation = eval_rules.evalRuleBase(rule_base, X, y, precomputed_truth=precomputed_truth)
-                    evaluation.add_rule_weights()
-                    evaluation.add_classification_metrics()
-                    rule_base.purge_rules(tolerance)
-        survivors = rule_base.get_rules()
-        if not survivors:
-            score = float(_penalized_objective(0.0, 0, 0, n_classes, self.max_conditions, alpha, beta))
+        if self.pruning == 'mixture':
+            mixture, firing = prune_by_mixture(rule_base, X, y, n_classes, self.C, self.non_negative,
+                                               self.threshold, precomputed_truth)
         else:
-            firing = rule_firing(rule_base, X, precomputed_truth)
-            mixture = RuleMixture(C=self.C, non_negative=self.non_negative)
-            mixture.fit(firing, y, n_classes, keys=antecedent_keys(rule_base), warn=False)
-            self.fits += 1
-            prediction = mixture.predict(firing, allow_unknown=rule_base.allow_unknown)
-            primary = _macro_f1(*_class_counts(y, prediction, n_classes))
-            covered = np.count_nonzero(np.bincount(rule_base.get_consequents(), minlength=n_classes))
-            conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
-            score = float(_penalized_objective(primary, covered, conditions, n_classes, self.max_conditions,
-                                               alpha, beta))
+            if rule_base.get_rules():
+                if y.dtype.kind in 'biu' and rule_base.fuzzy_type() in (fs.FUZZY_SETS.t1, fs.FUZZY_SETS.t2):
+                    # The built-in scorer prunes exactly as the fitted model is finalised; its score is not used.
+                    score_rulebase(rule_base, X, y, tolerance, alpha, beta, precomputed_truth,
+                                   max_conditions=self.max_conditions)
+                else:
+                    with rule_base._firing_cache_scope():
+                        evaluation = eval_rules.evalRuleBase(rule_base, X, y, precomputed_truth=precomputed_truth)
+                        evaluation.add_rule_weights()
+                        evaluation.add_classification_metrics()
+                        rule_base.purge_rules(tolerance)
+            mixture = firing = None
+            if rule_base.get_rules():
+                firing = rule_firing(rule_base, X, precomputed_truth)
+                mixture = RuleMixture(C=self.C, non_negative=self.non_negative)
+                mixture.fit(firing, y, n_classes, keys=antecedent_keys(rule_base), warn=False)
+        score = self._penalized(rule_base, y, n_classes, mixture, firing, alpha, beta)
         if len(self.cache) < self.capacity:
             self.cache[key] = score
         return score
+
+    def _penalized(self, rule_base, y, n_classes, mixture, firing, alpha, beta) -> float:
+        """Macro F1 of ``mixture`` on ``firing`` minus the penalties; the empty objective without survivors."""
+        from ._fitness import _class_counts, _macro_f1, _penalized_objective
+
+        survivors = rule_base.get_rules()
+        if mixture is None or not survivors:
+            return float(_penalized_objective(0.0, 0, 0, n_classes, self.max_conditions, alpha, beta))
+        self.fits += 1
+        prediction = mixture.predict(firing, allow_unknown=rule_base.allow_unknown)
+        primary = _macro_f1(*_class_counts(y, prediction, n_classes))
+        covered = np.count_nonzero(np.bincount(rule_base.get_consequents(), minlength=n_classes))
+        conditions = sum(np.count_nonzero(np.asarray(rule.antecedents) != -1) for rule in survivors)
+        return float(_penalized_objective(primary, covered, conditions, n_classes, self.max_conditions,
+                                          alpha, beta))

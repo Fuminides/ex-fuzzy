@@ -134,6 +134,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     mixture_C = 1.0
     mixture_non_negative = False
     mixture_search = False
+    # Classifiers pickled before mixture_pruning existed searched with the winning-rule pruning.
+    mixture_pruning = 'winning_rule'
+    mixture_prune_threshold = rule_mixture.MIXTURE_PRUNE_THRESHOLD
     mixture_ = None
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
@@ -144,7 +147,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  mutation_eta: float = 7.0, tournament_size: int = 3, algorithm: str = 'ga',
                  batch_size: Optional[int] = None, initial_data_fraction: Optional[float] = None,
                  full_data_at: float = 0.5, inference: str = 'winning_rule', mixture_C: float = 1.0,
-                 mixture_non_negative: bool = False, mixture_search: bool = False) -> None:
+                 mixture_non_negative: bool = False, mixture_search: bool = False, mixture_pruning: str = 'mixture',
+                 mixture_prune_threshold: float = rule_mixture.MIXTURE_PRUNE_THRESHOLD) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -207,12 +211,23 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 class c with strength w"; if False (default) the weights are unconstrained and relative.
             mixture_search: if True (needs ``inference='mixture'``), the genetic search scores each candidate
                 rule base by the macro F1 of the mixture fitted on it, instead of its winning-rule macro F1,
-                with the same pruning and penalties. Each candidate then fits a logistic regression, which
+                with the same penalties and the pruning chosen by ``mixture_pruning``. Each candidate then fits a logistic regression, which
                 makes the search much slower. Needs the built-in loss, ``algorithm='ga'``, no ``batch_size``,
                 ``initial_data_fraction`` or ``candidate_rules``.
+            mixture_pruning: how ``mixture_search`` prunes each candidate, and the final model, before its mixture
+                is fitted. 'mixture' (default): by the rules' role in the mixture. The weights are fitted on every
+                rule, the rules whose largest centred contribution to a class score on a training sample is at
+                most ``mixture_prune_threshold`` are deleted, and the weights are fitted again on the survivors
+                (``rule_mixture.prune_by_mixture``), so a rule that only lowers some classes stays even though it
+                never wins a sample. 'winning_rule': as a winning-rule model, deleting the rules whose dominance
+                score is below ``tolerance`` or that never win a training sample correctly. Without
+                ``mixture_search`` the rules are always pruned as a winning-rule model.
+            mixture_prune_threshold: largest centred contribution, in log-odds, at which ``mixture_pruning='mixture'``
+                still deletes a rule (default 0.02; 0 deletes only the rules without any effect: those that never fire,
+                repeat the antecedents of an earlier rule, or got equal weights for every class).
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
-        rule_mixture.check_inference(inference, mixture_C, mixture_search)
+        rule_mixture.check_inference(inference, mixture_C, mixture_search, mixture_pruning, mixture_prune_threshold)
         self.n_gen = n_gen
         self.pop_size = pop_size
         self.patience = patience
@@ -230,6 +245,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.mixture_C = mixture_C
         self.mixture_non_negative = mixture_non_negative
         self.mixture_search = mixture_search
+        self.mixture_pruning = mixture_pruning
+        self.mixture_prune_threshold = mixture_prune_threshold
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -389,7 +406,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError('initial_data_fraction needs the pymoo backend.')
         if initial_data_fraction is not None and candidate_rules is not None:
             raise ValueError('initial_data_fraction cannot be combined with candidate_rules.')
-        rule_mixture.check_inference(self.inference, self.mixture_C, self.mixture_search)
+        rule_mixture.check_inference(self.inference, self.mixture_C, self.mixture_search, self.mixture_pruning,
+                                     self.mixture_prune_threshold)
         if self.mixture_search:
             conflicts = [name for name, value in (
                 ('a custom loss', self.custom_loss is not None), ("algorithm='nsga2'", pareto),
@@ -474,7 +492,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             problem.fitness_func = self.custom_loss
         if self.mixture_search:
             problem.mixture_objective = rule_mixture.MixtureObjective(
-                self.mixture_C, self.mixture_non_negative, problem._max_conditions)
+                self.mixture_C, self.mixture_non_negative, problem._max_conditions,
+                pruning=self.mixture_pruning, threshold=self.mixture_prune_threshold)
 
         data_schedule = None
         if initial_data_fraction is not None:
@@ -633,7 +652,13 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 # computed after pruning and is the public final evaluation.
                 evaluation.add_rule_weights()
                 evaluation.add_classification_metrics()
-                rule_base.purge_rules(self.tolerance)
+                if self.mixture_search and self.mixture_pruning == 'mixture':
+                    # The pruning the search scored each candidate with; fit refits the survivors' weights.
+                    rule_mixture.prune_by_mixture(
+                        rule_base, np.asarray(X), y, len(rule_base.get_rulebases()), self.mixture_C,
+                        self.mixture_non_negative, self.mixture_prune_threshold, finalization_truth)
+                else:
+                    rule_base.purge_rules(self.tolerance)
                 evaluation.add_full_evaluation()
         finally:
             evaluation.precomputed_truth = None

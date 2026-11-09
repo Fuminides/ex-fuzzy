@@ -20,7 +20,10 @@ Added
   ``mixture_scores``, ``mixture_contributions`` and ``print_mixture`` (each rule with its weight per class,
   its strongest class and the biases) read them; ``predict_proba`` returns the softmax of the scores, the
   probabilities of a fitted model, not calibrated ones. ``mixture_search=True`` also scores each candidate of
-  the search by the macro F1 of its own fitted mixture (much slower). Pickling keeps the weights. Off by
+  the search by the macro F1 of its own fitted mixture (much slower), after pruning it by the rules' role in
+  that mixture (``mixture_pruning='mixture'``: a rule whose largest centred contribution over the training
+  samples is at most ``mixture_prune_threshold`` is deleted, so a rule that only suppresses some classes stays;
+  ``'winning_rule'`` prunes as a winning-rule model). Pickling keeps the weights. Off by
   default: the winning-rule path, its objective and every seeded fit are unchanged
   (``docs/source/rule_mixture.rst``)
 - **Regression**: ``BaseFuzzyRulesRegressor(unique_antecedents=True)`` keeps only
