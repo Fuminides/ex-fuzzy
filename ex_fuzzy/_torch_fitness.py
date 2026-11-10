@@ -207,8 +207,8 @@ class TorchObjective:
         n_samples, n_features = X.shape
         if problem.lvs is None:
             counts = np.asarray(problem.n_lv_possible, dtype=np.int64)
-            if any(getattr(problem, 'ordinal_variables', ())):
-                return None  # The device builds the plain trapezoids only; ordinal conditions stay on the CPU.
+            if list(problem.n_term_codes) != list(problem.n_lv_possible):
+                return None  # The device builds the plain trapezoids only; extra conditions stay on the CPU.
             categorical = problem.categorical_boolean_mask
             # Categorical variables keep their crisp partitions, and a
             # single-term partition decodes genes beyond its own; both, and

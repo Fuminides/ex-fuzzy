@@ -140,6 +140,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     mixture_ = None
     # Classifiers pickled before ordinal conditions existed searched single terms only.
     ordinal_conditions = False
+    compound_terms = None
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: Union[list, int] = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
@@ -151,7 +152,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  full_data_at: float = 0.5, inference: str = 'winning_rule', mixture_C: float = 1.0,
                  mixture_non_negative: bool = False, mixture_search: bool = False, mixture_pruning: str = 'mixture',
                  mixture_prune_threshold: float = rule_mixture.MIXTURE_PRUNE_THRESHOLD,
-                 ordinal_conditions: bool = False) -> None:
+                 ordinal_conditions: Union[bool, list] = False, compound_terms: Optional[dict] = None) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -234,9 +235,19 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                 above (or below) it and has the bounded-sum membership ``min(1, sum of their memberships)``, which
                 on a strong partition is the shouldered trapezoid of that range. The term gene of the search
                 selects among more options (a variable with n terms offers 3n - 4), so the search space grows.
-                Categorical variables keep single terms. Type-1 and interval Type-2 sets, not combined with
-                ``candidate_rules``. Off by default: encoding, rules, printing and fits are then unchanged
-                (``docs/source/ordinal_conditions.rst``).
+                A collection of features (names or indexes) gives the conditions to those variables only; each
+                must be able to have them (3 or more terms, not categorical), the others keep single terms. With
+                True, categorical variables and variables with fewer than 3 terms keep single terms. Type-1 and
+                interval Type-2 sets, not combined with ``candidate_rules``. Off by default: encoding, rules,
+                printing and fits are then unchanged (``docs/source/ordinal_conditions.rst``).
+            compound_terms: None (default), or a mapping from a feature (name or index) to a list of
+                ``(name, [terms])`` entries (terms by name or index). Each entry adds one condition to that variable,
+                ``x IS <name>``, whose membership is the bounded sum of the listed terms, which need not be
+                contiguous: ``('Night', ['Night', 'Evening', 'Late'])`` over cyclic hours, or a union that wraps
+                around such as ``[last, first]`` (two shoulders, one at each end of the axis). Each entry needs at
+                least 2 distinct terms and not all of the variable's terms, the sets must differ from each other
+                and from the ordinal conditions the variable has, or a ``ValueError`` is raised. They work with or
+                without ``ordinal_conditions``, with the same restrictions.
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
         rule_mixture.check_inference(inference, mixture_C, mixture_search, mixture_pruning, mixture_prune_threshold)
@@ -259,7 +270,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.mixture_search = mixture_search
         self.mixture_pruning = mixture_pruning
         self.mixture_prune_threshold = mixture_prune_threshold
+        fs.check_condition_options(ordinal_conditions, compound_terms)
         self.ordinal_conditions = ordinal_conditions
+        self.compound_terms = compound_terms
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -419,9 +432,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError('initial_data_fraction needs the pymoo backend.')
         if initial_data_fraction is not None and candidate_rules is not None:
             raise ValueError('initial_data_fraction cannot be combined with candidate_rules.')
-        if self.ordinal_conditions and candidate_rules is not None:
-            raise ValueError('ordinal_conditions searches the conditions of the rules; it cannot be combined with '
-                             'candidate_rules, which only chooses among given rules.')
+        conditions_requested = fs.conditions_requested(self.ordinal_conditions, self.compound_terms)
+        if conditions_requested and candidate_rules is not None:
+            raise ValueError('ordinal_conditions and compound_terms search the conditions of the rules; they cannot be '
+                             'combined with candidate_rules, which only chooses among given rules.')
         rule_mixture.check_inference(self.inference, self.mixture_C, self.mixture_search, self.mixture_pruning,
                                      self.mixture_prune_threshold)
         if self.mixture_search:
@@ -461,7 +475,11 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         # The search works on consequent indexes; predict maps them back.
         y = self._encode_labels(y)
-        ordinal = {'ordinal_conditions': True} if self.ordinal_conditions else {}  # passed only when on
+        ordinal = {}  # passed only when asked for, so that the default call is the one of 3.4.0
+        if fs.conditions_requested(self.ordinal_conditions, None):
+            ordinal['ordinal_conditions'] = self.ordinal_conditions
+        if self.compound_terms:
+            ordinal['compound_terms'] = self.compound_terms
         # mixture_search scores every candidate as a mixture of rules; the problem is otherwise the same.
         problem_class = _MixtureSearchProblem if self.mixture_search else FitRuleBase
 
@@ -632,9 +650,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         searched_partitions = self.lvs is None
         self.rule_base, self.eval_performance = self._finalized_rule_base(problem, best_individual, X, y)
-        # With ordinal conditions the rules refer to the variables of the fit (copies that offer them), which
-        # the p-value and bootstrapping tools read from ``lvs``.
-        self.lvs = self.rule_base.rule_bases[0].antecedents if (searched_partitions or self.ordinal_conditions) else self.lvs
+        # With ordinal or compound conditions the rules refer to the variables of the fit (copies that offer
+        # them), which the p-value and bootstrapping tools read from ``lvs``.
+        self.lvs = self.rule_base.rule_bases[0].antecedents if (searched_partitions or conditions_requested) else self.lvs
 
         if p_value_compute:
             self.p_value_validation(bootstrap_size)
@@ -1227,7 +1245,7 @@ class FitRuleBase(Problem):
     """
 
     def _init_optimize_vl(self, fuzzy_type: fs.FUZZY_SETS, n_linguist_variables: int, domain: list[(float, float)] = None, categorical_variables: list[int] = None, X=None,
-                          ordinal_conditions: bool = False):
+                          ordinal_conditions=False, compound_terms=None):
         """
         Inits the corresponding fields if no linguistic partitions were given.
 
@@ -1235,7 +1253,9 @@ class FitRuleBase(Problem):
             fuzzy_type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.
             n_linguistic_variables: number of linguistic variables per antecedent.
             domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
-            ordinal_conditions: if True, every numerical variable also offers ``at least`` / ``at most`` conditions.
+            ordinal_conditions: True for ``at least`` / ``at most`` conditions on every numerical variable, or a
+                collection of features (names or indexes) for those only.
+            compound_terms: mapping from a feature to its named compound terms, or None.
         """
         from . import utils
 
@@ -1262,23 +1282,52 @@ class FitRuleBase(Problem):
 
         # Term codes a gene can select per variable: the terms, and with ordinal conditions the extra
         # ``at least`` / ``at most`` ones of the numerical variables (categories are not ordered).
-        self.ordinal_variables = [bool(ordinal_conditions) and self.categorical_mask[ix] <= 0 and self.n_lv_possible[ix] >= 3
-                                  for ix in range(len(self.n_lv_possible))]
-        self.n_term_codes = [fs.ordinal_alphabet_size(n) if ordinal else n
-                             for n, ordinal in zip(self.n_lv_possible, self.ordinal_variables)]
+        fs.check_condition_options(ordinal_conditions, compound_terms)
+        if isinstance(ordinal_conditions, (bool, np.bool_)) or ordinal_conditions is None:
+            everywhere, chosen = bool(ordinal_conditions), set()
+        else:
+            everywhere, chosen = False, fs.resolve_features(ordinal_conditions, [self.var_names], 'ordinal_conditions')
+        self.ordinal_variables = []
+        for ix, n_terms in enumerate(self.n_lv_possible):
+            eligible = self.categorical_mask[ix] <= 0 and n_terms >= 3
+            if ix in chosen and not eligible:
+                raise ValueError(f'ordinal_conditions: variable {self.var_names[ix]!r} cannot offer at least / at most '
+                                 'conditions (it needs 3 or more terms that are not categorical).')
+            self.ordinal_variables.append(bool((everywhere or ix in chosen) and eligible))
+        self.compound_variables = {}
+        for key, entries in (compound_terms or {}).items():
+            ix = fs._resolve_feature(key, [self.var_names], 'compound_terms')
+            if ix in self.compound_variables:
+                raise ValueError(f'compound_terms: feature {self.var_names[ix]!r} is given twice.')
+            if self.categorical_mask[ix] > 0:
+                term_names = [term.name for term in self.categorical_variables[ix]]
+            else:
+                term_names = list(self.vl_names[ix])
+            ordinal_sets = fs._ordinal_sets(term_names) if self.ordinal_variables[ix] else {}
+            self.compound_variables[ix] = fs.resolve_compound_entries(entries, term_names, self.var_names[ix], ordinal_sets)
+            if self.categorical_mask[ix] > 0:  # the decoded categorical variable is built once
+                self.categorical_variables[ix] = fs.enable_conditions(
+                    [self.categorical_variables[ix]], False, {0: [(name, list(sets)) for name, sets in self.compound_variables[ix]]})[0]
+        self.n_term_codes = [(fs.ordinal_alphabet_size(n) if ordinal else n) + len(self.compound_variables.get(ix, ()))
+                             for ix, (n, ordinal) in enumerate(zip(self.n_lv_possible, self.ordinal_variables))]
 
 
-    def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable], X: np.array, ordinal_conditions: bool = False):
+    def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable], X: np.array, ordinal_conditions=False,
+                             compound_terms=None):
         """
         Inits the corresponding fields if linguistic partitions for each variable are given.
 
         Args:
             linguistic_variables: list of fuzzyVariables type.
             X: np array samples x features.
-            ordinal_conditions: if True, the search works on copies of the variables that offer ``at least`` /
-                ``at most`` conditions (the given variables are not changed).
+            ordinal_conditions: True, or a collection of features, if the search works on copies of the variables
+                that offer ``at least`` / ``at most`` conditions (the given variables are not changed).
+            compound_terms: mapping from a feature to named compound terms the copies also offer, or None.
         """
-        self.lvs = fs.enable_ordinal_conditions(linguist_variables) if ordinal_conditions else linguist_variables
+        if fs.conditions_requested(ordinal_conditions, compound_terms):
+            self.lvs = fs.enable_conditions(linguist_variables, ordinal_conditions, compound_terms, names=[self.var_names])
+        else:
+            self.lvs = linguist_variables
         self.vl_names = [lv.linguistic_variable_names() for lv in self.lvs]
         self.n_lv_possible = [len(lv.linguistic_variable_names()) for lv in self.lvs]
         self.n_term_codes = [fs.condition_count(lv) for lv in self.lvs]
@@ -1298,7 +1347,7 @@ class FitRuleBase(Problem):
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: Optional[Any]=None,
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
                  tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None, pareto: bool = False,
-                 batch_size: Optional[int] = None, ordinal_conditions: bool = False) -> None:
+                 batch_size: Optional[int] = None, ordinal_conditions=False, compound_terms: Optional[dict] = None) -> None:
         """
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -1326,7 +1375,11 @@ class FitRuleBase(Problem):
             ordinal_conditions: if True, a rule may also say ``x IS at least t`` or ``x IS at most t`` for the
                 terms ``t`` of a numerical variable other than its lowest and highest, besides a single term. The
                 term gene then selects among more options (see ``n_term_codes``); categorical variables keep
-                single terms. Type-1 and interval Type-2 sets. Off by default: the encoding is unchanged.
+                single terms. Type-1 and interval Type-2 sets. Off by default: the encoding is unchanged. A collection
+                of features (names or indexes) restricts the conditions to those variables.
+            compound_terms: mapping from a feature (name or index) to ``[(name, [terms])...]``: named conditions
+                whose membership is the bounded sum of the listed terms, coded after the terms and the ordinal
+                conditions (see ``BaseFuzzyRulesClassifier``).
         """
         if var_names is not None:
             self.var_names = var_names
@@ -1360,13 +1413,13 @@ class FitRuleBase(Problem):
             categorical_mask = self.categorical_mask
 
         if linguistic_variables is not None:
-            self._init_precomputed_vl(linguistic_variables, X, ordinal_conditions)
+            self._init_precomputed_vl(linguistic_variables, X, ordinal_conditions, compound_terms)
         else:
             if isinstance(n_linguistic_variables, int):
                 n_linguistic_variables = [n_linguistic_variables] * self.X.shape[1]
             self._init_optimize_vl(
                 fuzzy_type=fuzzy_type, n_linguist_variables=n_linguistic_variables, categorical_variables=categorical_mask, domain=domain, X=X,
-                ordinal_conditions=ordinal_conditions)
+                ordinal_conditions=ordinal_conditions, compound_terms=compound_terms)
 
         self.batch_size = batch_size
         if batch_size is not None:
@@ -1809,6 +1862,8 @@ class FitRuleBase(Problem):
                     linguistic_variable = fs.fuzzyVariable(self.var_names[fuzzy_variable], linguistic_variables)
                     if self.ordinal_variables[fuzzy_variable]:
                         linguistic_variable.ordinal = True  # decoded partitions are sorted: no order check needed
+                    if fuzzy_variable in self.compound_variables:
+                        linguistic_variable.compound = self.compound_variables[fuzzy_variable]
                     antecedents.append(linguistic_variable)
                              
         else:

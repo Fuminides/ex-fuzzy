@@ -30,6 +30,16 @@ Added
   seeded fit are those of 3.4.0 (a test replays nine recorded fits). The search space grows, so give it a larger
   budget when comparing (``docs/source/ordinal_conditions.rst``,
   ``benchmarks/benchmark_ordinal_conditions.py``)
+- **Per-variable ordinal conditions and named compound terms**: ``ordinal_conditions`` also accepts a
+  collection of features (names or indexes) that get ``at least`` / ``at most`` while the others keep single
+  terms, for example to leave a cyclic clock variable out. The new ``compound_terms={feature: [(name,
+  [terms])...]}`` adds one condition per entry, ``x IS <name>``, whose membership is the bounded sum of the
+  listed terms, which need not be contiguous (a union that wraps around midnight is two shoulders). Entries are
+  validated (at least 2 distinct terms, not all of them, no repeated set, no ordinal duplicate, a name that is
+  unique within its variable), work with or without ordinal conditions through the same codes, rows and
+  evaluators, print by their name, are read as ``Condition(operator='any_of', terms=..., name=...)`` and
+  round-trip through the rule and variable text and pickle. Same estimators; refused with ``candidate_rules``.
+  Off by default and then bit-identical to 3.4.0
 
 [3.4.0] - 2026-11-09
 ====================

@@ -196,7 +196,8 @@ def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
 
     Note:
         if the rule base has three different linguistic labels, it will use custom commands for the partitions. You can define these commands (\low, \mid, \hig, \dc) to show colors, figures, etc. Be sure to recheck the DS, ACC values in this case, because 1.0 values of them are also converted to these commands.
-        An ``at least`` / ``at most`` condition of a variable with ordinal conditions is written ``$\geq$ term`` / ``$\leq$ term``.
+        An ``at least`` / ``at most`` condition of a variable with ordinal conditions is written ``$\geq$ term`` / ``$\leq$ term``,
+        and a compound term by its name.
     """
     class proxy_dict():
 
@@ -238,8 +239,10 @@ def rules_to_latex(rule_base:rules.MasterRuleBase) -> str:
         # position counts the antecedent columns; an ordinal condition (a code past the terms) shows its operator.
         if position < len(rule_base.antecedents):
             variable = rule_base.antecedents[position]
-            if getattr(variable, 'ordinal', False) and val >= len(variable):
+            if fs.has_extra_conditions(variable) and val >= len(variable):
                 operator, term = variable.condition(int(val))
+                if operator == 'any_of':
+                    return variable.compound[term][0]
                 return ('$\\geq$ ' if operator == 'at_least' else '$\\leq$ ') + str(variable[term].name)
         return cell_colors[val]
 

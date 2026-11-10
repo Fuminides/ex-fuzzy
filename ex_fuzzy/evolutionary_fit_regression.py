@@ -429,7 +429,11 @@ class FitRuleBaseRegression(Problem):
     With ``ordinal_conditions`` the term genes also select ``at least t_j`` and
     ``at most t_j`` conditions (``j = 1 .. n - 2`` of a variable with ``n``
     terms), coded after the terms (see :func:`fuzzy_sets.ordinal_alphabet_size`),
-    over copies of the given variables.  Off by default, which changes nothing.
+    over copies of the given variables.  ``ordinal_conditions`` may also be a
+    collection of features (names or indexes) to give them to those only, and
+    ``compound_terms`` maps a feature to ``[(name, [terms])...]``, named
+    conditions whose membership is the bounded sum of the listed terms, coded
+    after the ordinal ones.  Off by default, which changes nothing.
     """
 
     def __init__(
@@ -448,7 +452,8 @@ class FitRuleBaseRegression(Problem):
         rule_mode: str = "additive",
         tolerance: float = 0.0,
         unique_antecedents: bool = False,
-        ordinal_conditions: bool = False,
+        ordinal_conditions=False,
+        compound_terms: Optional[dict] = None,
     ) -> None:
         """Initialize the vectorized regression optimization problem."""
         self.X = _as_2d_float_array(X)
@@ -475,7 +480,10 @@ class FitRuleBaseRegression(Problem):
         self.n_output_lvs = int(n_output_lvs)
         self.n_universe_points = int(n_universe_points)
 
-        self.lvs = fs.enable_ordinal_conditions(linguistic_variables) if ordinal_conditions else linguistic_variables
+        if fs.conditions_requested(ordinal_conditions, compound_terms):
+            self.lvs = fs.enable_conditions(linguistic_variables, ordinal_conditions, compound_terms)
+        else:
+            self.lvs = linguistic_variables
         self.nRules = int(nRules)
         self.nAnts = int(nAnts)
         # Term codes per feature: the terms, and with ordinal conditions the extra conditions after them.
@@ -1006,7 +1014,11 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
 
     ``ordinal_conditions`` (default ``False``) lets a rule also state ``x IS at
     least t`` or ``x IS at most t`` for the terms ``t`` of an input other than its
-    lowest and highest, the terms being ordered as listed, low to high.  Such a
+    lowest and highest, the terms being ordered as listed, low to high (``True``
+    for every input that can have them, or a collection of input names or indexes).
+    ``compound_terms`` (default ``None``) maps an input to ``[(name, [terms])...]``,
+    each entry a condition ``x IS <name>`` whose membership is the bounded sum of
+    the listed terms, which need not be contiguous.  Such a
     condition covers ``t`` and every term above (below) it, with the bounded-sum
     membership ``min(1, sum of their memberships)``.  The term genes select among
     ``3n - 4`` conditions for a variable of ``n`` terms, so the search space is
@@ -1022,6 +1034,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
 
     # Regressors pickled before ordinal conditions existed searched single terms only.
     ordinal_conditions = False
+    compound_terms = None
 
     def __init__(
         self,
@@ -1038,7 +1051,8 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         verbose: bool = False,
         backend: str = "pymoo",
         unique_antecedents: bool = False,
-        ordinal_conditions: bool = False,
+        ordinal_conditions=False,
+        compound_terms: Optional[dict] = None,
     ) -> None:
         """Configure the regressor; optimization is performed in :meth:`fit`."""
         self.nRules = nRules
@@ -1055,6 +1069,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
         self.backend = backend
         self.unique_antecedents = unique_antecedents
         self.ordinal_conditions = ordinal_conditions
+        self.compound_terms = compound_terms
 
     def _validate_parameters(self) -> None:
         """Validate estimator hyperparameters without mutating them."""
@@ -1073,8 +1088,7 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
             raise ValueError("consequent_type must be either 'crisp' or 'fuzzy'.")
         _validate_rule_mode(self.rule_mode, self.tolerance)
         _validate_unique_antecedents(self.unique_antecedents)
-        if not isinstance(self.ordinal_conditions, (bool, np.bool_)):
-            raise ValueError("ordinal_conditions must be True or False.")
+        fs.check_condition_options(self.ordinal_conditions, self.compound_terms)
         if self.consequent_type == "fuzzy":
             if not isinstance(self.n_output_lvs, (int, np.integer)) or self.n_output_lvs < 2:
                 raise ValueError("n_output_lvs must be an integer of at least two.")
@@ -1147,7 +1161,9 @@ class BaseFuzzyRulesRegressor(RegressorMixin, BaseEstimator):
             rule_mode=self.rule_mode,
             tolerance=float(self.tolerance),
             unique_antecedents=self.unique_antecedents,
-            **({"ordinal_conditions": True} if self.ordinal_conditions else {}),
+            **({"ordinal_conditions": self.ordinal_conditions}
+               if fs.conditions_requested(self.ordinal_conditions, None) else {}),
+            **({"compound_terms": self.compound_terms} if self.compound_terms else {}),
         )
 
         backend = ev_backends.get_backend(self.backend)

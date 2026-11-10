@@ -145,8 +145,8 @@ def pack_membership_table_from_variables(antecedents: list, X: np.ndarray, tail:
     set works: only the packing changes, not the membership functions.
     """
     sets = [variable.linguistic_variables for variable in antecedents]
-    # A variable with ordinal conditions has more columns than terms: the conditions after the terms.
-    ordinal = [getattr(variable, 'ordinal', False) for variable in antecedents]
+    # A variable with ordinal or compound conditions has more columns than terms: the conditions after the terms.
+    extended = [fs.has_extra_conditions(variable) for variable in antecedents]
     widths = [fs.condition_count(variable) for variable in antecedents]
     total = sum(widths)
     if not total or len(sets) != X.shape[1]:
@@ -168,9 +168,9 @@ def pack_membership_table_from_variables(antecedents: list, X: np.ndarray, tail:
                 return None
             table[:, index] = values
             index += 1
-        if ordinal[feature]:
+        if extended[feature]:
             terms = np.moveaxis(table[:, first:index], 1, 0)
-            table[:, first:first + widths[feature]] = np.moveaxis(fs.ordinal_memberships(terms), 0, 1)
+            table[:, first:first + widths[feature]] = np.moveaxis(antecedents[feature].condition_memberships(terms), 0, 1)
             index = first + widths[feature]
     table[:, -1] = 1.
     table.flags.writeable = False
@@ -403,11 +403,13 @@ class Rule():
 
 #: One condition of a rule, read structurally (no text parsing).
 #:
-#: ``feature`` is the index of the variable, ``variable`` its name, ``operator`` one of ``'is'``, ``'at_least'``
-#: or ``'at_most'``, ``term`` the name of the term the operator refers to, ``term_index`` its index in the
-#: variable, ``terms`` the names of every term the condition covers (low to high) and ``code`` the integer
-#: stored in ``RuleSimple.antecedents``.
-Condition = namedtuple('Condition', ['feature', 'variable', 'operator', 'term', 'term_index', 'terms', 'code'])
+#: ``feature`` is the index of the variable, ``variable`` its name, ``operator`` one of ``'is'``, ``'at_least'``,
+#: ``'at_most'`` or ``'any_of'``, ``term`` the name of the term the operator refers to, ``term_index`` its index in
+#: the variable, ``terms`` the names of every term the condition covers (low to high), ``code`` the integer
+#: stored in ``RuleSimple.antecedents`` and ``name`` the given name of a compound term. For ``'any_of'`` the
+#: ``term`` and ``term_index`` are ``None`` (the condition is the named set ``terms``); for the other operators
+#: ``name`` is ``None``.
+Condition = namedtuple('Condition', ['feature', 'variable', 'operator', 'term', 'term_index', 'terms', 'code', 'name'])
 
 
 def rule_conditions(rule: 'RuleSimple', antecedents: list) -> list:
@@ -429,8 +431,12 @@ def rule_conditions(rule: 'RuleSimple', antecedents: list) -> list:
             continue
         operator, term_index = variable.condition(code)
         names = variable.linguistic_variable_names()
-        out.append(Condition(feature, variable.name, operator, names[term_index], term_index,
-                             [names[ix] for ix in variable.condition_terms(code)], code))
+        covered = [names[ix] for ix in variable.condition_terms(code)]
+        if operator == 'any_of':
+            out.append(Condition(feature, variable.name, operator, None, None, covered, code,
+                                 variable.compound[term_index][0]))
+        else:
+            out.append(Condition(feature, variable.name, operator, names[term_index], term_index, covered, code, None))
     return out
 
 
@@ -2072,7 +2078,8 @@ def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results:
     Generates a string with the rule.
 
     The text is ``IF <variable> IS <label> [(MOD <hedge>)] AND ... WITH DS <score>, ACC <accuracy>, WGHT <weight>``.
-    A condition of a variable with ordinal conditions reads ``IS at least <label>`` or ``IS at most <label>``.
+    A condition of a variable with ordinal conditions reads ``IS at least <label>`` or ``IS at most <label>``,
+    and a compound term ``IS <given name>``.
     The WITH clause lists the statistics the rule has and is omitted when it has none, in which
     case a rule with a consequent prints ``THEN consequent vl is <consequent>`` instead.
 

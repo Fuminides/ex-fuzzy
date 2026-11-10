@@ -194,6 +194,10 @@ for rule in model.rule_base.get_rules():       # the operator without parsing th
         print(c.variable, c.operator, c.term)  # operator: "is", "at_least" or "at_most"
 ```
 
+`ordinal_conditions` also takes a list of features (names or indexes) to give them to some variables only, and
+`compound_terms={"local_hour": [("Night", ["Very High", "Low"])]}` adds a named union of terms, which need not be
+contiguous (a clock that wraps around midnight): `IF local_hour IS Night`; its `Condition.operator` is `"any_of"`.
+
 ## 📊 Visualizations
 
 Ex-Fuzzy provides beautiful visualizations to understand your fuzzy models:

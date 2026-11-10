@@ -801,9 +801,9 @@ class pattern_stabilizer():
 
         colors = dict(zip(label_names, palette))
         for antecedent in antecedents:  # an at-least / at-most condition takes the color of the term it refers to
-            if getattr(antecedent, 'ordinal', False):
+            if fs.has_extra_conditions(antecedent):
                 for code in range(len(antecedent), antecedent.n_conditions()):
-                    colors.setdefault(antecedent.condition_names()[code],
-                                      colors.get(antecedent[antecedent.condition(code)[1]].name, palette[0]))
+                    first = antecedent.condition_terms(code)[0]  # the color of the first term it covers
+                    colors.setdefault(antecedent.condition_names()[code], colors.get(antecedent[first].name, palette[0]))
         return colors
             
