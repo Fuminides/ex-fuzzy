@@ -10,6 +10,37 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+Added
+-----
+- **Ordinal conditions**: ``ordinal_conditions=True`` on ``BaseFuzzyRulesClassifier`` (winning-rule and
+  mixture inference, also with ``mixture_search``) and ``BaseFuzzyRulesRegressor`` (and on ``FitRuleBase`` and
+  ``FitRuleBaseRegression``) lets a rule state ``x IS at least t`` or ``x IS at most t`` over the terms of a
+  variable, ordered as listed from low to high, besides a single term. A variable with ``n`` terms offers the
+  ``n`` single terms plus ``at least t_j`` and ``at most t_j`` for ``j = 1 ... n - 2`` (``3n - 4`` conditions;
+  the vacuous ``at least t_0`` and the duplicates of a single term are not offered). The membership is the
+  bounded sum ``min(1, sum of the memberships of the terms covered)``, a shouldered trapezoid on a strong
+  partition; it works for Type-1 and interval Type-2 sets, categorical variables keep single terms, and general
+  Type-2 sets and ``candidate_rules`` are refused. The search widens the term gene to the condition codes (no
+  gene is added), so mutation, crossover, sampling, the array, population, streamed and PyTorch objectives (on
+  fixed partitions) and duplicate-rule detection handle it, and a set of terms has one code. Rules print
+  ``IS at least Fair`` / ``IS at most Fair``; ``rules.rule_conditions`` (``RuleSimple.conditions``) reads the
+  operator (``is``, ``at_least``, ``at_most``) and term without parsing text; text rules and variables
+  (``persistence``), pickles, ``print_mixture``, the regression rules, ``rules_to_latex`` and the
+  ``pattern_stability`` rule keys handle it. Off by default: the encoding, rules, printing, files and every
+  seeded fit are those of 3.4.0 (a test replays nine recorded fits). The search space grows, so give it a larger
+  budget when comparing (``docs/source/ordinal_conditions.rst``,
+  ``benchmarks/benchmark_ordinal_conditions.py``)
+- **Per-variable ordinal conditions and named compound terms**: ``ordinal_conditions`` also accepts a
+  collection of features (names or indexes) that get ``at least`` / ``at most`` while the others keep single
+  terms, for example to leave a cyclic clock variable out. The new ``compound_terms={feature: [(name,
+  [terms])...]}`` adds one condition per entry, ``x IS <name>``, whose membership is the bounded sum of the
+  listed terms, which need not be contiguous (a union that wraps around midnight is two shoulders). Entries are
+  validated (at least 2 distinct terms, not all of them, no repeated set, no ordinal duplicate, a name that is
+  unique within its variable), work with or without ordinal conditions through the same codes, rows and
+  evaluators, print by their name, are read as ``Condition(operator='any_of', terms=..., name=...)`` and
+  round-trip through the rule and variable text and pickle. Same estimators; refused with ``candidate_rules``.
+  Off by default and then bit-identical to 3.4.0
+
 [3.4.0] - 2026-11-09
 ====================
 

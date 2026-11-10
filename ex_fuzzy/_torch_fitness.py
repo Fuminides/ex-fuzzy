@@ -25,6 +25,7 @@ from typing import Optional
 
 import numpy as np
 
+from .fuzzy_sets import condition_count
 from ._fitness import _macro_f1, _penalized_objective
 from ._population_fitness import _RouteProbe
 
@@ -167,7 +168,7 @@ def _membership_rows(truth, variables, n_samples: int) -> Optional[np.ndarray]:
         if not isinstance(feature, (list, tuple, np.ndarray)):
             return None
         values = np.asarray(feature)
-        if values.dtype.kind not in 'biuf' or values.shape != (len(variable), n_samples):
+        if values.dtype.kind not in 'biuf' or values.shape != (condition_count(variable), n_samples):
             return None
         rows.append(values)
     table = np.empty((sum(len(values) for values in rows) + 1, n_samples))
@@ -206,6 +207,8 @@ class TorchObjective:
         n_samples, n_features = X.shape
         if problem.lvs is None:
             counts = np.asarray(problem.n_lv_possible, dtype=np.int64)
+            if list(problem.n_term_codes) != list(problem.n_lv_possible):
+                return None  # The device builds the plain trapezoids only; extra conditions stay on the CPU.
             categorical = problem.categorical_boolean_mask
             # Categorical variables keep their crisp partitions, and a
             # single-term partition decodes genes beyond its own; both, and
@@ -222,7 +225,7 @@ class TorchObjective:
             table = _membership_rows(problem._precomputed_truth, problem.lvs, n_samples)
             if table is None:
                 return None
-            counts = np.asarray([len(variable) for variable in problem.lvs], dtype=np.int64)
+            counts = np.asarray([condition_count(variable) for variable in problem.lvs], dtype=np.int64)
             columns = None
 
         n_rules = problem.nRules

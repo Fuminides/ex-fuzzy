@@ -266,7 +266,7 @@ def _key_order(key: tuple) -> tuple:
 
 def _variable_names(mrule_base: rl.MasterRuleBase) -> tuple:
     names = [str(var.name) for var in mrule_base.antecedents]
-    term_names = [[str(term) for term in var.linguistic_variable_names()] for var in mrule_base.antecedents]
+    term_names = [[str(term) for term in var.condition_names()] for var in mrule_base.antecedents]
     if len(set(names)) != len(names) or any(len(set(terms)) != len(terms) for terms in term_names):
         raise ValueError('Variable names, and the term names of each variable, must be unique to identify rules.')
     return names, term_names
@@ -563,7 +563,7 @@ class pattern_stabilizer():
                         print(f'Variable {antecedents[jx].name}')
                         initiated = True
 
-                    print(f'{antecedents[jx][key].name} appears %.2f times per experiment.' % float(class_vars[jx][key] / self.n))
+                    print(f'{fs.condition_label(antecedents[jx], key)} appears %.2f times per experiment.' % float(class_vars[jx][key] / self.n))
             if initiated:
                 print()
                 
@@ -681,7 +681,7 @@ class pattern_stabilizer():
 
         for key in var.keys():
             if key != -1 and var[key] > 0:
-                labels.append(antecedents[var_ix][key].name)
+                labels.append(fs.condition_label(antecedents[var_ix], key))
                 sizes.append(var[key])
 
         import matplotlib.pyplot as plt
@@ -711,7 +711,7 @@ class pattern_stabilizer():
             ax1[class_ix].set_title(f'Class {self.classes_names[class_ix]}')
             for key in var.keys():
                 if key != -1 and var[key] > 0:
-                    labels.append(antecedents[var_ix][key].name)
+                    labels.append(fs.condition_label(antecedents[var_ix], key))
                     sizes.append(var[key])
         
             self._plot_usage_pie(
@@ -745,7 +745,7 @@ class pattern_stabilizer():
             ax1[0, plot_ix].set_title(f'Variable {antecedents[var_ix].name}')
             for key in var.keys():
                 if key != -1 and var[key] > 0:
-                    labels.append(antecedents[var_ix][key].name)
+                    labels.append(fs.condition_label(antecedents[var_ix], key))
                     sizes.append(var[key])
 
             self._plot_usage_pie(
@@ -799,5 +799,11 @@ class pattern_stabilizer():
             from matplotlib import colormaps
             palette = [colormaps['coolwarm'](a) for a in np.linspace(0, 1, largest_vl_n)]
 
-        return dict(zip(label_names, palette))
+        colors = dict(zip(label_names, palette))
+        for antecedent in antecedents:  # an at-least / at-most condition takes the color of the term it refers to
+            if fs.has_extra_conditions(antecedent):
+                for code in range(len(antecedent), antecedent.n_conditions()):
+                    first = antecedent.condition_terms(code)[0]  # the color of the first term it covers
+                    colors.setdefault(antecedent.condition_names()[code], colors.get(antecedent[first].name, palette[0]))
+        return colors
             

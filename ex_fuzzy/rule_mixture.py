@@ -33,6 +33,7 @@ from typing import Optional
 
 import numpy as np
 
+from . import fuzzy_sets as fs
 from . import rules as rl
 
 #: Inference modes of ``BaseFuzzyRulesClassifier(inference=...)``.
@@ -387,7 +388,7 @@ def antecedent_text(rule: rl.RuleSimple, antecedents: list) -> str:
         term = rule[index]
         if term == -1:
             continue
-        part = f'{variable.name} IS {variable.linguistic_variable_names()[term]}'
+        part = f'{variable.name} IS {fs.condition_label(variable, term)}'
         if modifiers is not None and modifiers[index] != 1:
             part += f' (MOD {rl.modifiers_names.get(modifiers[index], modifiers[index])})'
         parts.append(part)

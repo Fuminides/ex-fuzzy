@@ -120,7 +120,11 @@ def membership_randomrule(rule, X: np.array, fuzzy_variables: list[fs.fuzzyVaria
     
     for i in range(len(rule[0])):
         if rule[0][i] != -1:
-            membership = membership * fuzzy_variables[i][rule[0][i]].membership(X[:, i])
+            if fs.has_extra_conditions(fuzzy_variables[i]) and rule[0][i] >= len(fuzzy_variables[i]):
+                # An at-least / at-most / compound condition: the bounded sum of the terms it covers.
+                membership = membership * fuzzy_variables[i].compute_memberships(X[:, i])[rule[0][i]]
+            else:
+                membership = membership * fuzzy_variables[i][rule[0][i]].membership(X[:, i])
     
     return membership
 

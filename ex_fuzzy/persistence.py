@@ -23,6 +23,13 @@ modifier_string_pattern = r'\(MOD\s+(\w+)\)'
 _WITH_SPLIT = re.compile(r'\sWITH\s')
 _AND_SPLIT = re.compile(r'\sAND\s')
 _IS_SPLIT = re.compile(r'\sIS\s')
+# A condition over ordered terms reads ``IS at least <term>`` or ``IS at most <term>``.
+_ORDINAL_PREFIX = (('at least ', 'at_least'), ('at most ', 'at_most'))
+_ORDINAL_TEXT = re.compile(r'\sIS\s+at (?:least|most) ')
+# Line after the header of a variable that offers ordinal conditions (written only for those).
+_ORDINAL_LINE = 'Ordinal conditions'
+# ``Compound;<name>;<term index>,<term index>...`` after the header: a named compound term (only if there are any).
+_COMPOUND_PREFIX = 'Compound;'
 _IF_PREFIX = re.compile(r'^IF\s+')
 _THEN_SPLIT = re.compile(r'\sTHEN\s')
 _STATISTIC = {key: re.compile(rf'(?:^|[\s,]){key}\s+([^\s,]+)') for key in ('DS', 'ACC', 'WGHT')}
@@ -35,6 +42,35 @@ def _statistic(text: str, key: str):
 
 from . import fuzzy_sets as fs
 from . import rules
+
+
+def _condition_code(variables: list, index: int, value_names: list, text: str) -> int:
+    """
+    Code of the condition ``text`` (``<term>``, ``at least <term>``, ``at most <term>`` or the name of a compound
+    term of the variable) of variable ``index``.
+
+    A variable without ordinal conditions is replaced in ``variables`` by a copy that has them when an
+    ``at least`` / ``at most`` condition is read, so the rules of a printed model load without its variable
+    file saying so.
+    """
+    if text in value_names:
+        return value_names.index(text)
+    if text in [name for name, _ in variables[index].compound]:
+        return variables[index].condition_code('any_of', text)
+    for prefix, operator in _ORDINAL_PREFIX:
+        if text.startswith(prefix) and text[len(prefix):].strip() in value_names:
+            variable = variables[index]
+            if not variable.ordinal:
+                variable = fs.enable_ordinal_conditions([variable])[0]
+                variables[index] = variable
+            return variable.condition_code(operator, value_names.index(text[len(prefix):].strip()))
+    return value_names.index(text)  # unknown value: the ValueError of a missing term
+
+
+def _compound_lines(fuzzy_variable) -> str:
+    """The ``Compound;name;indexes`` lines of a variable's named compound terms (empty without any)."""
+    return ''.join(f'{_COMPOUND_PREFIX}{name};' + ','.join(str(ix) for ix in indexes) + '\n'
+                   for name, indexes in getattr(fuzzy_variable, 'compound', ()))
 
 
 def _extract_mod_word(text):
@@ -148,11 +184,17 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
     Note:
         The text format supports:
         - Multiple rule bases for different consequent classes
+        - Ordinal conditions ``IS at least term`` / ``IS at most term``; a variable without them is replaced
+          in the returned rule base by a copy that has them
+        - Named compound terms ``IS <name>``, which the given variables must already have (see
+          ``load_fuzzy_variables``)
         - Rule modifiers using (MOD modifier_name) syntax
         - Accuracy and weight information in parentheses
         - Don't care conditions (variables not mentioned in antecedents)
     """
     consequent = 0
+    if _ORDINAL_TEXT.search(rules_printed):
+        fuzzy_variables = list(fuzzy_variables)  # a condition may swap a variable for a copy that has them
     linguistic_variables_names = [linguistic_variable.name for linguistic_variable in fuzzy_variables]
     value_names = {fuzzy_variables[ix].name : [x.name for x in fuzzy_variables[ix]] for ix in range(len(fuzzy_variables))}
     # Named modifiers are printed by name, any other exponent by its value.
@@ -185,7 +227,8 @@ def load_fuzzy_rules(rules_printed: str, fuzzy_variables: list) -> rules.MasterR
                 antecedent_name = antecedent_name.strip()
                 antecedent_value = antecedent_value.strip()
                 antecedent_index = linguistic_variables_names.index(antecedent_name)
-                antecedent_value_index = value_names[antecedent_name].index(antecedent_value)
+                antecedent_value_index = _condition_code(
+                    fuzzy_variables, antecedent_index, value_names[antecedent_name], antecedent_value)
 
                 init_rule_antecedents[antecedent_index] = antecedent_value_index
                 if modifier_word is not None:
@@ -276,14 +319,20 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
 
     fuzzy_variables = []
     active_linguistic_variables = False
+    ordinal_variable = False
+    compound_entries = []
     lines = fuzzy_variables_printed.splitlines()
     for line in lines:
         if line.startswith('$$$') or line.startswith('$Fuzzy') or line.startswith('$Categorical'):
             #New linguistic or categorical variable
             if active_linguistic_variables:
-                fuzzy_variables.append(fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units))
+                fuzzy_variables.append(fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units,
+                                                        ordinal_conditions=ordinal_variable,
+                                                        compound_terms=compound_entries))
 
             linguistic_var_fuzzy_sets = []
+            ordinal_variable = False
+            compound_entries = []
             header = line.split(':')
             linguistic_variable_name = header[1].strip()
             fvar_units = header[2].strip() if len(header) > 2 else None
@@ -291,6 +340,11 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
             active_linguistic_variables = True
         elif line == '':
             pass
+        elif line == _ORDINAL_LINE:
+            ordinal_variable = True
+        elif line.startswith(_COMPOUND_PREFIX) and line.count(';') == 2:
+            _, compound_name, compound_terms = line.split(';')
+            compound_entries.append((compound_name, [int(ix) for ix in compound_terms.split(',')]))
         else:
             processes_line = line.split(';')
             categorical_class = fs.categoricalFS if fuzzy_set_type == fs.FUZZY_SETS.t1 else fs.categoricalIVFS
@@ -332,7 +386,8 @@ def load_fuzzy_variables(fuzzy_variables_printed: str) -> list:
                 linguistic_var_fuzzy_sets.append(constructed_fs)
 
     if active_linguistic_variables:
-        object_fvar = fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units)
+        object_fvar = fs.fuzzyVariable(linguistic_variable_name, linguistic_var_fuzzy_sets, fvar_units,
+                                       ordinal_conditions=ordinal_variable, compound_terms=compound_entries)
         fuzzy_variables.append(object_fvar)
 
     return fuzzy_variables
@@ -366,6 +421,8 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
         The output format varies based on fuzzy set types:
         - Categorical variables use '$Categorical variable:' prefix
         - Regular fuzzy variables use '$$$ Linguistic variable:' prefix
+        - A variable with ordinal conditions has the line ``Ordinal conditions`` after its header, and each
+          named compound term a line ``Compound;<name>;<term index>,...`` (indexes of the covered terms)
         - Type-2 fuzzy sets include additional parameters for upper membership functions
         - Supports trapezoidal, triangular, and gaussian membership functions
     """
@@ -375,6 +432,7 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
         if fuzzy_variable.units is not None:
             fuzzy_variable_printed += ' : ' + fuzzy_variable.units
         fuzzy_variable_printed += '\n'
+        fuzzy_variable_printed += _compound_lines(fuzzy_variable)
 
         fuzzy_variable_printed += 'Categorical ' + cat_type + ';'
         for fuzzy_set in fuzzy_variable:
@@ -385,6 +443,9 @@ def print_fuzzy_variable(fuzzy_variable: fs.fuzzyVariable) -> str:
         if fuzzy_variable.units is not None:
             fuzzy_variable_printed += ' : ' + fuzzy_variable.units
         fuzzy_variable_printed += '\n'
+        if getattr(fuzzy_variable, 'ordinal', False):
+            fuzzy_variable_printed += _ORDINAL_LINE + '\n'
+        fuzzy_variable_printed += _compound_lines(fuzzy_variable)
 
         for fuzzy_set in fuzzy_variable.linguistic_variables:
             if isinstance(fuzzy_set, fs.gaussianIVFS):
