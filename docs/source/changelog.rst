@@ -10,6 +10,9 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[3.5.0] - 2026-11-10
+====================
+
 Added
 -----
 - **Ordinal conditions**: ``ordinal_conditions=True`` on ``BaseFuzzyRulesClassifier`` (winning-rule and
