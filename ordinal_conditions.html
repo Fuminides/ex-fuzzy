@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Ordinal “at least / at most” rules &#8212; Ex-Fuzzy 3.5.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=edfbbfd1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=c1362a89"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=30646c52"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ordinal_conditions';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Advanced classifiers" href="classifiers.html" />
+    <link rel="prev" title="Mixture of rules" href="rule_mixture.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="3.5.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs..."
+         aria-label="Search the docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Ex-Fuzzy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="step4.html">
+    Inspect rules and fuzzy sets
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="rule_mixture.html">
+    Mixture of rules
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Ordinal “at least / at most” rules
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="evox_backend.html">
+    EvoX Backend Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step1.html">
+    Creating fuzzy sets and fuzzy variables
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step2.html">
+    Using Fuzzy Rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step3.html">
+    Optimizing a Fuzzy rule base for a classification problem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="step4.html">
+    Inspect rules and fuzzy sets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="precom.html">
+    Computing fuzzy partitions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="optimize.html">
+    Genetic algorithm details
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="gt2.html">
+    General Type 2
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="extending.html">
+    Extending Ex-Fuzzy
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="persistence.html">
+    Persistence
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="rule_mixture.html">
+    Mixture of rules
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Ordinal “at least / at most” rules
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="classifiers.html">
+    Advanced classifiers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pattern_stats.html">
+    Bootstrapping and rule robustness
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fuminides/ex-fuzzy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/ex-fuzzy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-box fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Ordinal “at least / at most” rules</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="ordinal-at-least-at-most-rules">
+<h1>Ordinal “at least / at most” rules<a class="headerlink" href="#ordinal-at-least-at-most-rules" title="Link to this heading">#</a></h1>
+<p>A condition of a rule is by default one linguistic term: <code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">no2</span> <span class="pre">IS</span> <span class="pre">Fair</span></code>. When the terms of a variable are
+ordered (Low, Medium, High, …) a rule often means a range: “Fair <strong>or worse</strong>”, “Medium <strong>or better</strong>”.
+<code class="docutils literal notranslate"><span class="pre">ordinal_conditions=True</span></code> lets the genetic search write such conditions:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>IF no2_last IS at least Fair AND humidity IS at most Medium WITH DS 0.41, ACC 0.83
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">t</span></code> is the union of <code class="docutils literal notranslate"><span class="pre">t</span></code> and every term above it (up to the highest term).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">at</span> <span class="pre">most</span> <span class="pre">t</span></code> is the union of every term below <code class="docutils literal notranslate"><span class="pre">t</span></code> (from the lowest term) and <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></li>
+</ul>
+<p>The terms of a variable are ordered as they are listed in its partition, from low to high. The partitions the
+library builds (<code class="docutils literal notranslate"><span class="pre">utils.construct_partitions</span></code>) are listed in that order; a partition you give is checked and
+a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> says when its terms are not listed from low to high.</p>
+<p>Two further options select where the conditions apply and add <strong>named compound terms</strong> (see below):
+<code class="docutils literal notranslate"><span class="pre">ordinal_conditions</span></code> also takes a collection of features, so that a cyclic variable such as a clock hour does
+not get <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span> <span class="pre">Medium</span></code>, and <code class="docutils literal notranslate"><span class="pre">compound_terms</span></code> adds named unions of terms that need not be contiguous.</p>
+<p>The option is <strong>off by default</strong>. Off, nothing changes: the gene encoding, the rules, the printed text, the
+saved files and every seeded fit are those of 3.4.0 (a test replays nine fits recorded on that release).</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ex_fuzzy</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFuzzyRulesClassifier</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">nRules</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">nAnts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ordinal_conditions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">n_gen</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">print_rules</span><span class="p">()</span>
+<span class="c1"># Rules for consequent: 2</span>
+<span class="c1"># IF 0 IS at least Medium AND 3 IS at least High WITH DS 0.19, ACC 0.96</span>
+
+<span class="c1"># The operator of every condition, without parsing the text:</span>
+<span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">get_rules</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">condition</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">conditions</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rule_base</span><span class="o">.</span><span class="n">antecedents</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">condition</span><span class="o">.</span><span class="n">variable</span><span class="p">,</span> <span class="n">condition</span><span class="o">.</span><span class="n">operator</span><span class="p">,</span> <span class="n">condition</span><span class="o">.</span><span class="n">term</span><span class="p">,</span> <span class="n">condition</span><span class="o">.</span><span class="n">terms</span><span class="p">)</span>
+<span class="c1"># ...</span>
+<span class="c1"># 3 at_most Medium ['Low', 'Medium']</span>
+<span class="c1"># 0 at_least Medium ['Medium', 'High', 'Very High']</span>
+<span class="c1"># 3 at_least High ['High', 'Very High']</span>
+</pre></div>
+</div>
+<p>The option exists on the three estimators the search runs through: <code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesClassifier</span></code> (winning-rule
+and mixture inference, also with <code class="docutils literal notranslate"><span class="pre">mixture_search</span></code>), <code class="docutils literal notranslate"><span class="pre">BaseFuzzyRulesRegressor</span></code> (crisp and fuzzy
+consequents) and the problems behind them, <code class="docutils literal notranslate"><span class="pre">FitRuleBase</span></code> and <code class="docutils literal notranslate"><span class="pre">FitRuleBaseRegression</span></code>. It works with
+searched partitions and with <code class="docutils literal notranslate"><span class="pre">linguistic_variables</span></code> you give (the given variables are not modified: the
+search uses copies), and with Type-1 and interval Type-2 sets. It is refused for general Type-2 sets and
+together with <code class="docutils literal notranslate"><span class="pre">candidate_rules</span></code> (which only chooses among given rules). Categorical variables keep single
+terms, since their categories are not ordered; so do variables with fewer than 3 terms.</p>
+</section>
+<section id="per-variable-selection">
+<h2>Per-variable selection<a class="headerlink" href="#per-variable-selection" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ordinal_conditions</span></code> accepts <code class="docutils literal notranslate"><span class="pre">True</span></code> (every variable that can have them), <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default) or a
+<strong>collection of features</strong>, by name or by index (a list, tuple, set or array; names are the variable names, or
+the column names of a DataFrame):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">linguistic_variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span> <span class="n">ordinal_conditions</span><span class="o">=</span><span class="p">[</span><span class="s1">'temp'</span><span class="p">,</span> <span class="s1">'level'</span><span class="p">])</span>
+<span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span><span class="n">n_linguistic_variables</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ordinal_conditions</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>   <span class="c1"># by index</span>
+</pre></div>
+</div>
+<p>The other variables keep single terms (and any compound terms). A feature named explicitly must be able to
+have the conditions (3 or more terms, not categorical), otherwise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> names it; an unknown name
+or an index out of range is an error too. A bare string, <code class="docutils literal notranslate"><span class="pre">{'a':</span> <span class="pre">1}</span></code> or a number is rejected: pass a list.
+With <code class="docutils literal notranslate"><span class="pre">True</span></code> the variables that cannot have them are skipped quietly. An empty collection, <code class="docutils literal notranslate"><span class="pre">False</span></code> and
+<code class="docutils literal notranslate"><span class="pre">None</span></code> are off, and then the problem is built exactly as in 3.4.0.</p>
+</section>
+<section id="named-compound-terms">
+<h2>Named compound terms<a class="headerlink" href="#named-compound-terms" title="Link to this heading">#</a></h2>
+<p>Some variables are not ordinal in the way <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span></code> assumes. The terms of a clock hour are cyclic, so a
+useful condition is <code class="docutils literal notranslate"><span class="pre">local_hour</span> <span class="pre">IS</span> <span class="pre">Night</span></code> = the last term <strong>or</strong> the first one. <code class="docutils literal notranslate"><span class="pre">compound_terms</span></code> adds such
+conditions explicitly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">BaseFuzzyRulesClassifier</span><span class="p">(</span>
+    <span class="n">linguistic_variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+    <span class="n">ordinal_conditions</span><span class="o">=</span><span class="p">[</span><span class="s1">'temp'</span><span class="p">],</span>                       <span class="c1"># not the clock</span>
+    <span class="n">compound_terms</span><span class="o">=</span><span class="p">{</span><span class="s1">'local_hour'</span><span class="p">:</span> <span class="p">[(</span><span class="s1">'Night'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'Very High'</span><span class="p">,</span> <span class="s1">'Low'</span><span class="p">]),</span>   <span class="c1"># wraps around midnight</span>
+                                   <span class="p">(</span><span class="s1">'Daytime'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'Medium'</span><span class="p">,</span> <span class="s1">'High'</span><span class="p">])]},</span>
+    <span class="o">...</span><span class="p">)</span>
+<span class="c1"># IF local_hour IS Night AND temp IS at least Medium WITH DS ..., ACC ...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Shape.</strong> <code class="docutils literal notranslate"><span class="pre">compound_terms</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> or a mapping <code class="docutils literal notranslate"><span class="pre">{feature:</span> <span class="pre">[(name,</span> <span class="pre">[term,</span> <span class="pre">...]),</span> <span class="pre">...]}</span></code>. A feature is
+a name or an index (as in <code class="docutils literal notranslate"><span class="pre">ordinal_conditions</span></code>); each term is a term name or a term index. Every entry adds
+one condition <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">&lt;name&gt;</span></code> to that variable, whose membership is the bounded sum of the listed terms. The
+terms need not be contiguous, so a union that wraps around is allowed. The set is kept sorted low to high
+(<code class="docutils literal notranslate"><span class="pre">[last,</span> <span class="pre">first]</span></code> and <code class="docutils literal notranslate"><span class="pre">[first,</span> <span class="pre">last]</span></code> are the same condition).</p></li>
+<li><p><strong>Validation</strong> (<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> with the variable and the compound named): at least 2 distinct terms (a term
+listed twice is an error); not every term of the variable (it would be a don’t care); an unknown term name or
+an index out of range; no two compounds of a variable with the same set; no compound with the set of an
+ordinal condition the variable has (for example <code class="docutils literal notranslate"><span class="pre">[T1,</span> <span class="pre">T2,</span> <span class="pre">T3]</span></code> with <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">T1</span></code>); the <strong>name must be
+unique within its variable</strong>: it cannot be the name of a term, of another compound, or of an ordinal
+condition, and it cannot be empty, contain <code class="docutils literal notranslate"><span class="pre">;</span></code>, line breaks, parentheses or the words <code class="docutils literal notranslate"><span class="pre">AND</span></code>, <code class="docutils literal notranslate"><span class="pre">IS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WITH</span></code>, <code class="docutils literal notranslate"><span class="pre">THEN</span></code>, nor start with <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span></code> / <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span></code> (the rule text must be readable back). Two
+keys for the same feature are an error too.</p></li>
+<li><p><strong>Together or alone.</strong> Compound terms work with or without <code class="docutils literal notranslate"><span class="pre">ordinal_conditions</span></code> on the same variable, with
+searched partitions (terms by name <code class="docutils literal notranslate"><span class="pre">Low</span></code>… or index) or <code class="docutils literal notranslate"><span class="pre">linguistic_variables</span></code>, with Type-1 and interval
+Type-2 sets, and also on categorical variables (any set of categories is a valid union). They are refused for
+general Type-2 sets and with <code class="docutils literal notranslate"><span class="pre">candidate_rules</span></code>. A variable needs 3 or more terms (2 of 2 terms is a don’t
+care). With ordinal conditions on, a contiguous run that touches an end repeats one of them (with 3 terms
+<code class="docutils literal notranslate"><span class="pre">[T0,</span> <span class="pre">T1]</span></code> is <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span> <span class="pre">T1</span></code>) and is refused; <code class="docutils literal notranslate"><span class="pre">[T0,</span> <span class="pre">T2]</span></code> is not and is accepted.</p></li>
+<li><p><strong>Membership.</strong> The bounded sum of the listed terms, as for <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span></code> / <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span></code>. A union that wraps
+around on a linear axis is <strong>two shoulders, one at each end</strong>: for <code class="docutils literal notranslate"><span class="pre">[last,</span> <span class="pre">first]</span></code> it is 1 at both ends of
+the domain, falls over the ramp of the first term, is 0 in the middle and rises over the ramp of the last
+term. On a strong partition it equals one minus the memberships of the other terms. Nothing here knows the
+axis is cyclic: a value just before and just after midnight are the two ends and both are covered.</p></li>
+<li><p><strong>Codes.</strong> After the single terms and the ordinal conditions: with <code class="docutils literal notranslate"><span class="pre">n</span></code> terms, the compounds are
+<code class="docutils literal notranslate"><span class="pre">n_conditions</span> <span class="pre">-</span> <span class="pre">len(compound)</span> <span class="pre">...</span> <span class="pre">n_conditions</span> <span class="pre">-</span> <span class="pre">1</span></code>, in the order given (<code class="docutils literal notranslate"><span class="pre">condition_code('any_of',</span> <span class="pre">name)</span></code>).
+They go through the same machinery (rows of <code class="docutils literal notranslate"><span class="pre">compute_memberships</span></code>, the gather table, the remap, canonical
+codes for duplicates, and the array, <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, population and PyTorch objectives; the latter declines
+with searched partitions).</p></li>
+</ul>
+<p>A variable can be built with them directly: <code class="docutils literal notranslate"><span class="pre">fuzzyVariable(name,</span> <span class="pre">sets,</span> <span class="pre">ordinal_conditions=False,</span>
+<span class="pre">compound_terms=[(name,</span> <span class="pre">[terms])...])</span></code> or <code class="docutils literal notranslate"><span class="pre">fuzzy_sets.enable_conditions(variables,</span> <span class="pre">ordinal_conditions,</span>
+<span class="pre">compound_terms)</span></code>.</p>
+<p>A variable can also offer the conditions on its own, for any code that reads rules:
+<code class="docutils literal notranslate"><span class="pre">fuzzyVariable(name,</span> <span class="pre">sets,</span> <span class="pre">ordinal_conditions=True)</span></code> or <code class="docutils literal notranslate"><span class="pre">fuzzy_sets.enable_ordinal_conditions(variables)</span></code>.</p>
+</section>
+<section id="which-conditions-exist">
+<h2>Which conditions exist<a class="headerlink" href="#which-conditions-exist" title="Link to this heading">#</a></h2>
+<p>For a variable with <code class="docutils literal notranslate"><span class="pre">n</span></code> ordered terms <code class="docutils literal notranslate"><span class="pre">t_0</span> <span class="pre">...</span> <span class="pre">t_(n-1)</span></code>: the <code class="docutils literal notranslate"><span class="pre">n</span></code> single terms, <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_j</span></code> for
+<code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">...</span> <span class="pre">n</span> <span class="pre">-</span> <span class="pre">2</span></code> and <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span> <span class="pre">t_j</span></code> for <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">...</span> <span class="pre">n</span> <span class="pre">-</span> <span class="pre">2</span></code>, that is <code class="docutils literal notranslate"><span class="pre">3n</span> <span class="pre">-</span> <span class="pre">4</span></code> conditions (8 for 4 terms,
+5 for 3). <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_0</span></code> is always true (a don’t care) and <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_(n-1)</span></code> is <code class="docutils literal notranslate"><span class="pre">t_(n-1)</span></code>, and likewise
+<code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span> <span class="pre">t_(n-1)</span></code> and <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">most</span> <span class="pre">t_0</span></code>, so they are not offered. General “between” intervals are not offered.
+No two conditions cover the same set of terms, so a set has exactly one code.</p>
+</section>
+<section id="membership">
+<h2>Membership<a class="headerlink" href="#membership" title="Link to this heading">#</a></h2>
+<p>The membership of a union is the <strong>bounded sum</strong>, the Lukasiewicz t-conorm:</p>
+<div class="math notranslate nohighlight">
+\[\mu_{\text{at least } t_j}(x) = \min\Bigl(1, \sum_{k \ge j} \mu_{t_k}(x)\Bigr), \qquad
+\mu_{\text{at most } t_j}(x) = \min\Bigl(1, \sum_{k \le j} \mu_{t_k}(x)\Bigr)\]</div>
+<ul class="simple">
+<li><p><strong>Strong partitions.</strong> On a strong (Ruspini) partition, where the memberships of a point add up to 1, the
+sum never exceeds 1 and <code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_j</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(memberships</span> <span class="pre">of</span> <span class="pre">t_0</span> <span class="pre">...</span> <span class="pre">t_(j-1))</span></code>: again a
+shouldered trapezoid, with the ramp of the term below <code class="docutils literal notranslate"><span class="pre">t_j</span></code>. The partitions built by
+<code class="docutils literal notranslate"><span class="pre">utils.construct_partitions</span></code> (trapezoidal) and <code class="docutils literal notranslate"><span class="pre">construct_breakpoint_partition</span></code> are strong. The terms of a
+partition found by the search (<code class="docutils literal notranslate"><span class="pre">linguistic_variables=None</span></code>) never add up to more than 1 but can add up to
+less (a point between two terms may belong to neither fully); the bounded sum is then just the sum, and
+<code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_j</span> <span class="pre">+</span> <span class="pre">at</span> <span class="pre">most</span> <span class="pre">t_(j-1)</span></code> is below 1 there.</p></li>
+<li><p><strong>Partitions that are not strong.</strong> Gaussian terms overlap more than a partition of unity: their sum
+exceeds 1 and the bounded sum saturates at 1 there. Nothing else changes.</p></li>
+<li><p><strong>Interval Type-2.</strong> The lower and the upper bound are summed apart (and clipped to 1 each), which is the
+interval-arithmetic image of the bounded sum.</p></li>
+<li><p><strong>t-norm.</strong> A condition is one antecedent with a membership in [0, 1]; the rule still combines its antecedents
+with its t-norm (the product by default), so the union takes part exactly as a single term would. The bounded
+sum is the dual of the Lukasiewicz t-norm, not of the product, so a union is not the De Morgan dual of a
+product intersection of complements; it is chosen because it keeps the trapezoids and
+<code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_j</span> <span class="pre">+</span> <span class="pre">at</span> <span class="pre">most</span> <span class="pre">t_(j-1)</span> <span class="pre">=</span> <span class="pre">1</span></code> on strong partitions.</p></li>
+<li><p>A firing strength is still a degree of match, not a probability, contribution or risk.</p></li>
+</ul>
+</section>
+<section id="how-the-search-encodes-it">
+<h2>How the search encodes it<a class="headerlink" href="#how-the-search-encodes-it" title="Link to this heading">#</a></h2>
+<p>The term gene is widened, no gene is added. Without the option a term gene of slot <code class="docutils literal notranslate"><span class="pre">i</span></code> holds <code class="docutils literal notranslate"><span class="pre">-1</span></code> (don’t
+care) or a value in <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">...</span> <span class="pre">max_terms</span> <span class="pre">-</span> <span class="pre">1</span></code>, which the decoder maps onto the terms of whichever variable the
+slot’s variable gene selected (<code class="docutils literal notranslate"><span class="pre">_fitness.remap_term</span></code>). With the option the gene holds a <strong>condition code</strong>
+in <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">...</span> <span class="pre">max_codes</span> <span class="pre">-</span> <span class="pre">1</span></code>, and the same proportional map is applied to the code count of the variable
+(<code class="docutils literal notranslate"><span class="pre">FitRuleBase.n_term_codes</span></code>; the number of terms when the option is off):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>code</p></th>
+<th class="head"><p>condition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">...</span> <span class="pre">n-1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">t_code</span></code> (single terms)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">...</span> <span class="pre">2n-3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">t_j</span></code>, <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">code</span> <span class="pre">-</span> <span class="pre">n</span> <span class="pre">+</span> <span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">2n-2</span> <span class="pre">...</span> <span class="pre">3n-5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">at</span> <span class="pre">most</span> <span class="pre">t_j</span></code>, <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">code</span> <span class="pre">-</span> <span class="pre">(2n-2)</span> <span class="pre">+</span> <span class="pre">1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">RuleSimple.antecedents</span></code> stores the same code (<code class="docutils literal notranslate"><span class="pre">-1</span></code> for a don’t care), so a rule is identified, compared,
+hashed and de-duplicated by its codes as before; because a set of terms has one code, two rules whose
+conditions are the same sets are duplicates in the decoders (object, array, population and PyTorch), in
+<code class="docutils literal notranslate"><span class="pre">RuleBase</span></code> and in the mixture. Sampling, crossover and mutation work on the gene bounds, which are the
+wider ones, so they need no change. The fitness routes (array, streamed with <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, population and the
+PyTorch objective on fixed partitions) take the extra conditions as extra columns of the same membership
+table and agree with the object decoder bit for bit. With <code class="docutils literal notranslate"><span class="pre">linguistic_variables=None</span></code> the PyTorch objective,
+which builds trapezoids itself, declines and the CPU scores the fit.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fuzzyVariable.condition(code)</span></code> gives <code class="docutils literal notranslate"><span class="pre">(operator,</span> <span class="pre">term_index)</span></code>, <code class="docutils literal notranslate"><span class="pre">condition_code(operator,</span> <span class="pre">term_index)</span></code>
+the inverse, <code class="docutils literal notranslate"><span class="pre">condition_terms(code)</span></code> the terms covered and <code class="docutils literal notranslate"><span class="pre">condition_names()</span></code> the printed names.
+<code class="docutils literal notranslate"><span class="pre">rules.rule_conditions(rule,</span> <span class="pre">antecedents)</span></code> (also <code class="docutils literal notranslate"><span class="pre">rule.conditions(antecedents)</span></code>) returns <code class="docutils literal notranslate"><span class="pre">Condition</span></code>
+tuples <code class="docutils literal notranslate"><span class="pre">(feature,</span> <span class="pre">variable,</span> <span class="pre">operator,</span> <span class="pre">term,</span> <span class="pre">term_index,</span> <span class="pre">terms,</span> <span class="pre">code,</span> <span class="pre">name)</span></code> with <code class="docutils literal notranslate"><span class="pre">operator</span></code> one of <code class="docutils literal notranslate"><span class="pre">'is'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'at_least'</span></code>, <code class="docutils literal notranslate"><span class="pre">'at_most'</span></code> and <code class="docutils literal notranslate"><span class="pre">'any_of'</span></code>. For the first three <code class="docutils literal notranslate"><span class="pre">term</span></code> / <code class="docutils literal notranslate"><span class="pre">term_index</span></code> are the term the
+operator refers to, <code class="docutils literal notranslate"><span class="pre">terms</span></code> the terms covered and <code class="docutils literal notranslate"><span class="pre">name</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>; for <code class="docutils literal notranslate"><span class="pre">'any_of'</span></code> <code class="docutils literal notranslate"><span class="pre">term</span></code> and
+<code class="docutils literal notranslate"><span class="pre">term_index</span></code> are <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">terms</span></code> lists the constituent term names (low to high) and <code class="docutils literal notranslate"><span class="pre">name</span></code> is the given
+name of the compound term. <code class="docutils literal notranslate"><span class="pre">fuzzyVariable.condition(code)</span></code> returns <code class="docutils literal notranslate"><span class="pre">('any_of',</span> <span class="pre">position</span> <span class="pre">in</span>
+<span class="pre">variable.compound)</span></code> for it.</p>
+</section>
+<section id="search-space-and-budget">
+<h2>Search space and budget<a class="headerlink" href="#search-space-and-budget" title="Link to this heading">#</a></h2>
+<p>A variable of <code class="docutils literal notranslate"><span class="pre">n</span></code> terms offers <code class="docutils literal notranslate"><span class="pre">3n</span> <span class="pre">-</span> <span class="pre">4</span></code> conditions instead of <code class="docutils literal notranslate"><span class="pre">n</span></code>: 5 instead of 3, 8 instead of 4. The
+gene length is unchanged but the space is larger, and uniform sampling draws a single term in only <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">/</span> <span class="pre">(3n</span> <span class="pre">-</span> <span class="pre">4)</span></code>
+of the cases (60 % for 3 terms, 50 % for 4). A search with the same <code class="docutils literal notranslate"><span class="pre">n_gen</span></code> and <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> therefore has
+less of its budget on single terms; if the comparison with the default must be fair, give the option a larger
+budget or compare the best of several seeds (see <code class="docutils literal notranslate"><span class="pre">benchmarks/benchmark_ordinal_conditions.py</span></code>). Each
+condition still counts as one in the compactness penalty and in <code class="docutils literal notranslate"><span class="pre">nAnts</span></code>.</p>
+</section>
+<section id="printing-saving-and-loading">
+<h2>Printing, saving and loading<a class="headerlink" href="#printing-saving-and-loading" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">print_rules</span></code> writes <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">Fair</span></code> / <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">at</span> <span class="pre">most</span> <span class="pre">Fair</span></code> and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">&lt;name&gt;</span></code> for a compound term (also <code class="docutils literal notranslate"><span class="pre">print_mixture</span></code>, the regression
+rules and <code class="docutils literal notranslate"><span class="pre">vis_rules.rules_to_latex</span></code>, which writes <code class="docutils literal notranslate"><span class="pre">$\geq$</span> <span class="pre">Fair</span></code> / <code class="docutils literal notranslate"><span class="pre">$\leq$</span> <span class="pre">Fair</span></code>). <code class="docutils literal notranslate"><span class="pre">persistence.load_fuzzy_rules</span></code>
+reads them back: a variable without ordinal conditions in the list you pass is replaced, in the returned rule
+base, by a copy that has them; the name of a compound term needs the variables to carry it, so load the
+variables first. <code class="docutils literal notranslate"><span class="pre">save_fuzzy_variables</span></code> writes the line <code class="docutils literal notranslate"><span class="pre">Ordinal</span> <span class="pre">conditions</span></code> after the header of a
+variable that has them and one line <code class="docutils literal notranslate"><span class="pre">Compound;&lt;name&gt;;&lt;term</span> <span class="pre">indexes&gt;</span></code> per compound term (variables without
+either are written exactly as before), and <code class="docutils literal notranslate"><span class="pre">load_fuzzy_variables</span></code> reads them. Pickles keep the option; a classifier, regressor or variable pickled before
+it existed loads with it off. <code class="docutils literal notranslate"><span class="pre">pattern_stability</span></code> rule keys name the condition (<code class="docutils literal notranslate"><span class="pre">('x',</span> <span class="pre">'at</span> <span class="pre">least</span> <span class="pre">Fair')</span></code>)
+and <code class="docutils literal notranslate"><span class="pre">consensus_rule_base</span></code> rebuilds them.</p>
+</section>
+<section id="not-covered">
+<h2>Not covered<a class="headerlink" href="#not-covered" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FuzzyRulesClassifier</span></code> (fuzzy association rules), <code class="docutils literal notranslate"><span class="pre">RuleMineClassifier</span></code>, <code class="docutils literal notranslate"><span class="pre">RuleFineTuneClassifier</span></code>, the
+FERL learners and the null distribution of the bootstrapped rule p-values (random rules over single terms)
+do not take the option.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#per-variable-selection">Per-variable selection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#named-compound-terms">Named compound terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#which-conditions-exist">Which conditions exist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#membership">Membership</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-search-encodes-it">How the search encodes it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#search-space-and-budget">Search space and budget</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-saving-and-loading">Printing, saving and loading</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#not-covered">Not covered</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/ordinal_conditions.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Javier Fumanal Idocin.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
+  </p>
+</div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

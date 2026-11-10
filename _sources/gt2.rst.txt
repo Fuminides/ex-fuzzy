@@ -1,0 +1,21 @@
+.. _gt2:
+
+General Type 2
+=======================================
+
+General Type 2 Fuzzy sets are fully supported, however, they present a series of additional considerations when used in real domains:
+
+- The resolution of the primary domain function is always capped at 4 significant decimals.
+- When the domain of the secondary function are real numbers, precision is capped at 4 significant decimals.
+
+We believe that this precision can be enough for most applications, but in case it needs to be changed, it is enough to modify the ``fs.gt2.MAX_RES_SUPPORT`` constant to the desired number before instantiating the GT2 fuzzy set.
+
+Computing with the GT2 is more costly than the rest of the sets. Specially, computing the GT2 fuzzy partitions, which are also notably more complex than in the rest of the fuzzy sets.
+Essentially, a GT2 fuzzy partition is a dictionary where each value in the dictionary maps a value in the secondary domain to a fuzzy set.
+When a new value needs to be computed, the closest known value in the secondary membership to the new one is used.
+
+As an example, the function ``utils.gt2_fuzzy_partitions_dataset()`` returns a fuzzy partition using GT2 in the following manner:
+
+1. Computes a IV partition for all the variables.
+2. Discretizes the domain of the secondary membership to an arbitrary precision.
+3. In each of the discretized points, computes a FS using as parameters of the trapezoid function the lower and upper memberships and the central point of them. This results in a triangle for each FS.
