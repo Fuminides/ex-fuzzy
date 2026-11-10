@@ -41,6 +41,9 @@
 **Ex-Fuzzy** is a comprehensive Python library for **explainable artificial intelligence** through fuzzy logic programming. Built with a focus on accessibility and visualization, it enables researchers and practitioners to create interpretable machine learning models using fuzzy association rules.
 
 **New**: Try Ex-Fuzzy labs! Our new plug and play web interface where you can quickly test how Ex-Fuzzy would work in your data: [ExFuzzy Labs](https://fuminides.github.io/exfuzzy-lab/)
+
+**See it on real data**: [ExFuzzy Atlas](https://fuminides.github.io/exfuzzy-atlas/) shows Ex-Fuzzy models on public air quality, river water and taxi demand data: read each rule and see where on the map it decides ([source](https://github.com/Fuminides/exfuzzy-atlas)).
+
 ### Why Ex-Fuzzy?
 
 - 🔍 **Explainable AI**: Create interpretable models that humans can understand. Support for classification and regression problems.
@@ -295,6 +298,7 @@ Seven executed notebooks in [`Demos/`](Demos/README.md) walk through the library
 
 #### Real Applications
   - Ex-Fuzzy in fNIRS data: https://github.com/jjcato9/ex_fuzzy_fnirs_demo
+  - ExFuzzy Atlas, interpretable forecasts on maps of air quality, river water and taxi demand: https://fuminides.github.io/exfuzzy-atlas/
 ### 💻 Code Examples
 
 <details>

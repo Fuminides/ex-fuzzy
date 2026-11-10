@@ -73,6 +73,7 @@ Documentation = "https://fuminides.github.io/ex-fuzzy/"
 Repository = "https://github.com/Fuminides/ex-fuzzy"
 Download = "https://pypi.org/project/ex-fuzzy/"
 Paper = "https://www.sciencedirect.com/science/article/pii/S0925231224008191"
+Demo = "https://fuminides.github.io/exfuzzy-atlas/"
 
 [tool.setuptools]
 packages = ["ex_fuzzy"]
