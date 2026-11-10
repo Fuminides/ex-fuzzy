@@ -265,6 +265,7 @@ Documentation Contents
     extending
     persistence
     rule_mixture
+    ordinal_conditions
     classifiers
     pattern_stats
 

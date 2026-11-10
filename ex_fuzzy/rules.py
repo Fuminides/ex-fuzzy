@@ -145,7 +145,10 @@ def pack_membership_table_from_variables(antecedents: list, X: np.ndarray, tail:
     set works: only the packing changes, not the membership functions.
     """
     sets = [variable.linguistic_variables for variable in antecedents]
-    total = sum(len(group) for group in sets)
+    # A variable with ordinal conditions has more columns than terms: the conditions after the terms.
+    ordinal = [getattr(variable, 'ordinal', False) for variable in antecedents]
+    widths = [fs.condition_count(variable) for variable in antecedents]
+    total = sum(widths)
     if not total or len(sets) != X.shape[1]:
         return None
     table = np.empty((X.shape[0], total + 1) + tail)
@@ -154,6 +157,7 @@ def pack_membership_table_from_variables(antecedents: list, X: np.ndarray, tail:
     offsets, index = [], 0
     for feature, group in enumerate(sets):
         offsets.append(index)
+        first = index
         column = X[:, feature]
         domain = getattr(group[0], 'domain', None)
         if domain is not None:  # fuzzyVariable.compute_memberships clips the same way
@@ -164,9 +168,13 @@ def pack_membership_table_from_variables(antecedents: list, X: np.ndarray, tail:
                 return None
             table[:, index] = values
             index += 1
+        if ordinal[feature]:
+            terms = np.moveaxis(table[:, first:index], 1, 0)
+            table[:, first:first + widths[feature]] = np.moveaxis(fs.ordinal_memberships(terms), 0, 1)
+            index = first + widths[feature]
     table[:, -1] = 1.
     table.flags.writeable = False
-    return table, np.asarray(offsets), np.asarray([len(group) for group in sets])
+    return table, np.asarray(offsets), np.asarray(widths)
 
 
 def _gather_firing_from_arrays(antecedents: np.ndarray, truth, n_samples: int,
@@ -393,6 +401,39 @@ class Rule():
 
 
 
+#: One condition of a rule, read structurally (no text parsing).
+#:
+#: ``feature`` is the index of the variable, ``variable`` its name, ``operator`` one of ``'is'``, ``'at_least'``
+#: or ``'at_most'``, ``term`` the name of the term the operator refers to, ``term_index`` its index in the
+#: variable, ``terms`` the names of every term the condition covers (low to high) and ``code`` the integer
+#: stored in ``RuleSimple.antecedents``.
+Condition = namedtuple('Condition', ['feature', 'variable', 'operator', 'term', 'term_index', 'terms', 'code'])
+
+
+def rule_conditions(rule: 'RuleSimple', antecedents: list) -> list:
+    """
+    The conditions of a rule as :data:`Condition` tuples, in variable order, without the don't-cares.
+
+    A downstream tool can render ``IF x IS at least Fair`` from ``operator == 'at_least'`` and
+    ``term == 'Fair'`` without parsing the printed rule. A rule over variables without ordinal conditions
+    only has ``'is'`` conditions.
+
+    Args:
+        rule: the rule.
+        antecedents: the fuzzy variables of its rule base (``rule_base.antecedents``).
+    """
+    out = []
+    for feature, variable in enumerate(antecedents):
+        code = int(rule[feature])
+        if code == -1:
+            continue
+        operator, term_index = variable.condition(code)
+        names = variable.linguistic_variable_names()
+        out.append(Condition(feature, variable.name, operator, names[term_index], term_index,
+                             [names[ix] for ix in variable.condition_terms(code)], code))
+    return out
+
+
 class RuleSimple():
     """
     Simplified Rule Representation for Optimized Computation.
@@ -532,6 +573,10 @@ class RuleSimple():
             
 
         return aux
+
+    def conditions(self, antecedents: list) -> list:
+        """The rule's conditions as :data:`Condition` tuples (see :func:`rule_conditions`)."""
+        return rule_conditions(self, antecedents)
 
     def __len__(self):
         """
@@ -2027,6 +2072,7 @@ def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results:
     Generates a string with the rule.
 
     The text is ``IF <variable> IS <label> [(MOD <hedge>)] AND ... WITH DS <score>, ACC <accuracy>, WGHT <weight>``.
+    A condition of a variable with ordinal conditions reads ``IS at least <label>`` or ``IS at most <label>``.
     The WITH clause lists the statistics the rule has and is omitted when it has none, in which
     case a rule with a consequent prints ``THEN consequent vl is <consequent>`` instead.
 
@@ -2048,15 +2094,13 @@ def generate_rule_string(rule: RuleSimple, antecedents: list, bootstrap_results:
     initiated = False
     str_rule = 'IF '
     for jx, antecedent in enumerate(antecedents):
-        keys = antecedent.linguistic_variable_names()
-
         if rule[jx] != -1:
             if not initiated:
                 initiated = True
             else:
                 str_rule += ' AND '
 
-            str_rule += str(antecedent.name) + ' IS ' + str(keys[rule[jx]])
+            str_rule += str(antecedent.name) + ' IS ' + str(fs.condition_label(antecedent, rule[jx]))
             
             try:
                 relevant_modifier = rule.modifiers[jx]

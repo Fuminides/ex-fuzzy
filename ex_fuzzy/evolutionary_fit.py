@@ -138,6 +138,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     mixture_pruning = 'winning_rule'
     mixture_prune_threshold = rule_mixture.MIXTURE_PRUNE_THRESHOLD
     mixture_ = None
+    # Classifiers pickled before ordinal conditions existed searched single terms only.
+    ordinal_conditions = False
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: Union[list, int] = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
@@ -148,7 +150,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  batch_size: Optional[int] = None, initial_data_fraction: Optional[float] = None,
                  full_data_at: float = 0.5, inference: str = 'winning_rule', mixture_C: float = 1.0,
                  mixture_non_negative: bool = False, mixture_search: bool = False, mixture_pruning: str = 'mixture',
-                 mixture_prune_threshold: float = rule_mixture.MIXTURE_PRUNE_THRESHOLD) -> None:
+                 mixture_prune_threshold: float = rule_mixture.MIXTURE_PRUNE_THRESHOLD,
+                 ordinal_conditions: bool = False) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -225,6 +228,15 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             mixture_prune_threshold: largest centred contribution, in log-odds, at which ``mixture_pruning='mixture'``
                 still deletes a rule (default 0.02; 0 deletes only the rules without any effect: those that never fire,
                 repeat the antecedents of an earlier rule, or got equal weights for every class).
+            ordinal_conditions: if True, a rule may also state ``x IS at least t`` or ``x IS at most t`` for the
+                terms ``t`` of a numerical variable other than its lowest and highest, besides a single term. The
+                terms of a variable are ordered as listed, low to high. The condition covers ``t`` and every term
+                above (or below) it and has the bounded-sum membership ``min(1, sum of their memberships)``, which
+                on a strong partition is the shouldered trapezoid of that range. The term gene of the search
+                selects among more options (a variable with n terms offers 3n - 4), so the search space grows.
+                Categorical variables keep single terms. Type-1 and interval Type-2 sets, not combined with
+                ``candidate_rules``. Off by default: encoding, rules, printing and fits are then unchanged
+                (``docs/source/ordinal_conditions.rst``).
         """
         rules.resolve_ds_mode(ds_mode)  # Reject unknown modes early; fit resolves the code.
         rule_mixture.check_inference(inference, mixture_C, mixture_search, mixture_pruning, mixture_prune_threshold)
@@ -247,6 +259,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.mixture_search = mixture_search
         self.mixture_pruning = mixture_pruning
         self.mixture_prune_threshold = mixture_prune_threshold
+        self.ordinal_conditions = ordinal_conditions
         # Every constructor argument is kept under its own name, as
         # scikit-learn's get_params, clone and repr require. The attributes
         # below them are the derived state the rest of the library reads.
@@ -406,6 +419,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError('initial_data_fraction needs the pymoo backend.')
         if initial_data_fraction is not None and candidate_rules is not None:
             raise ValueError('initial_data_fraction cannot be combined with candidate_rules.')
+        if self.ordinal_conditions and candidate_rules is not None:
+            raise ValueError('ordinal_conditions searches the conditions of the rules; it cannot be combined with '
+                             'candidate_rules, which only chooses among given rules.')
         rule_mixture.check_inference(self.inference, self.mixture_C, self.mixture_search, self.mixture_pruning,
                                      self.mixture_prune_threshold)
         if self.mixture_search:
@@ -445,6 +461,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         # The search works on consequent indexes; predict maps them back.
         y = self._encode_labels(y)
+        ordinal = {'ordinal_conditions': True} if self.ordinal_conditions else {}  # passed only when on
         # mixture_search scores every candidate as a mixture of rules; the problem is otherwise the same.
         problem_class = _MixtureSearchProblem if self.mixture_search else FitRuleBase
 
@@ -474,14 +491,14 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                                     n_linguistic_variables=self.n_linguist_variables, fuzzy_type=self.fuzzy_type, domain=self.domain, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode, categorical_mask=categorical_mask,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
-                                    pareto=pareto, batch_size=batch_size)
+                                    pareto=pareto, batch_size=batch_size, **ordinal)
             else:
                 # If Fuzzy variables are already precomputed.
                 problem = problem_class(X, y, nRules=self.nRules, nAnts=self.nAnts, n_classes=len(np.unique(y)),
                                     linguistic_variables=self.lvs, domain=self.domain, tolerance=self.tolerance, thread_runner=self.thread_runner,
                                     alpha=self.alpha_, beta=self.beta_, ds_mode=ds_mode,
                                     allow_unknown=self.allow_unknown, backend_name=self.backend.name(), var_names=lvs_names,
-                                    pareto=pareto, batch_size=batch_size)
+                                    pareto=pareto, batch_size=batch_size, **ordinal)
         else:
             self.fuzzy_type = candidate_rules.fuzzy_type()
             self.n_linguist_variables = candidate_rules.n_linguistic_variables()
@@ -615,7 +632,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
 
         searched_partitions = self.lvs is None
         self.rule_base, self.eval_performance = self._finalized_rule_base(problem, best_individual, X, y)
-        self.lvs = self.rule_base.rule_bases[0].antecedents if searched_partitions else self.lvs
+        # With ordinal conditions the rules refer to the variables of the fit (copies that offer them), which
+        # the p-value and bootstrapping tools read from ``lvs``.
+        self.lvs = self.rule_base.rule_bases[0].antecedents if (searched_partitions or self.ordinal_conditions) else self.lvs
 
         if p_value_compute:
             self.p_value_validation(bootstrap_size)
@@ -1207,7 +1226,8 @@ class FitRuleBase(Problem):
     Supports type 1 and iv fs (iv-type 2)
     """
 
-    def _init_optimize_vl(self, fuzzy_type: fs.FUZZY_SETS, n_linguist_variables: int, domain: list[(float, float)] = None, categorical_variables: list[int] = None, X=None):
+    def _init_optimize_vl(self, fuzzy_type: fs.FUZZY_SETS, n_linguist_variables: int, domain: list[(float, float)] = None, categorical_variables: list[int] = None, X=None,
+                          ordinal_conditions: bool = False):
         """
         Inits the corresponding fields if no linguistic partitions were given.
 
@@ -1215,6 +1235,7 @@ class FitRuleBase(Problem):
             fuzzy_type: FUZZY_SET enum type in fuzzy_sets module. The kind of fuzzy set used.
             n_linguistic_variables: number of linguistic variables per antecedent.
             domain: list of the limits for each variable. If None (default) the classifier will compute them empirically.
+            ordinal_conditions: if True, every numerical variable also offers ``at least`` / ``at most`` conditions.
         """
         from . import utils
 
@@ -1239,21 +1260,31 @@ class FitRuleBase(Problem):
             else:
                 self.n_lv_possible.append(n_linguist_variables[ix])
 
+        # Term codes a gene can select per variable: the terms, and with ordinal conditions the extra
+        # ``at least`` / ``at most`` ones of the numerical variables (categories are not ordered).
+        self.ordinal_variables = [bool(ordinal_conditions) and self.categorical_mask[ix] <= 0 and self.n_lv_possible[ix] >= 3
+                                  for ix in range(len(self.n_lv_possible))]
+        self.n_term_codes = [fs.ordinal_alphabet_size(n) if ordinal else n
+                             for n, ordinal in zip(self.n_lv_possible, self.ordinal_variables)]
 
-    def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable], X: np.array):
+
+    def _init_precomputed_vl(self, linguist_variables: list[fs.fuzzyVariable], X: np.array, ordinal_conditions: bool = False):
         """
         Inits the corresponding fields if linguistic partitions for each variable are given.
 
         Args:
             linguistic_variables: list of fuzzyVariables type.
             X: np array samples x features.
+            ordinal_conditions: if True, the search works on copies of the variables that offer ``at least`` /
+                ``at most`` conditions (the given variables are not changed).
         """
-        self.lvs = linguist_variables
+        self.lvs = fs.enable_ordinal_conditions(linguist_variables) if ordinal_conditions else linguist_variables
         self.vl_names = [lv.linguistic_variable_names() for lv in self.lvs]
         self.n_lv_possible = [len(lv.linguistic_variable_names()) for lv in self.lvs]
+        self.n_term_codes = [fs.condition_count(lv) for lv in self.lvs]
         self.fuzzy_type = self.lvs[0].fs_type
         self.domain = None
-        self._precomputed_truth = rules.compute_antecedents_memberships(linguist_variables, X)
+        self._precomputed_truth = rules.compute_antecedents_memberships(self.lvs, X)
 
     vl_names = [  # Linguistic variable names prenamed for some specific cases.
         [],
@@ -1267,7 +1298,7 @@ class FitRuleBase(Problem):
     def __init__(self, X: np.array, y: np.array, nRules: int, nAnts: int, n_classes: int, thread_runner: Optional[Any]=None,
                  linguistic_variables:list[fs.fuzzyVariable]=None, n_linguistic_variables:int=3, fuzzy_type=fs.FUZZY_SETS.t1, domain:list=None, categorical_mask: np.array=None,
                  tolerance:float=0.01, alpha:float=DEFAULT_COMPACTNESS_WEIGHT, beta:float=DEFAULT_COVERAGE_WEIGHT, ds_mode: int =0, allow_unknown:bool=False, backend_name:str='pymoo', var_names:list=None, pareto: bool = False,
-                 batch_size: Optional[int] = None) -> None:
+                 batch_size: Optional[int] = None, ordinal_conditions: bool = False) -> None:
         """
         Cosntructor method. Initializes the classifier with the number of antecedents, linguist variables and the kind of fuzzy set desired.
 
@@ -1292,6 +1323,10 @@ class FitRuleBase(Problem):
             batch_size: None (default) to compute each candidate's firing strengths for all the samples at once, or
                 a number of samples to compute them for at a time. Every candidate is still scored on all the
                 samples and gets the same score; only memory and time change. Type-1 and interval Type-2 sets.
+            ordinal_conditions: if True, a rule may also say ``x IS at least t`` or ``x IS at most t`` for the
+                terms ``t`` of a numerical variable other than its lowest and highest, besides a single term. The
+                term gene then selects among more options (see ``n_term_codes``); categorical variables keep
+                single terms. Type-1 and interval Type-2 sets. Off by default: the encoding is unchanged.
         """
         if var_names is not None:
             self.var_names = var_names
@@ -1325,12 +1360,13 @@ class FitRuleBase(Problem):
             categorical_mask = self.categorical_mask
 
         if linguistic_variables is not None:
-            self._init_precomputed_vl(linguistic_variables, X)
+            self._init_precomputed_vl(linguistic_variables, X, ordinal_conditions)
         else:
             if isinstance(n_linguistic_variables, int):
                 n_linguistic_variables = [n_linguistic_variables] * self.X.shape[1]
             self._init_optimize_vl(
-                fuzzy_type=fuzzy_type, n_linguist_variables=n_linguistic_variables, categorical_variables=categorical_mask, domain=domain, X=X)
+                fuzzy_type=fuzzy_type, n_linguist_variables=n_linguistic_variables, categorical_variables=categorical_mask, domain=domain, X=X,
+                ordinal_conditions=ordinal_conditions)
 
         self.batch_size = batch_size
         if batch_size is not None:
@@ -1346,8 +1382,10 @@ class FitRuleBase(Problem):
         # smaller variable more likely under uniform sampling. Bounding slot j by
         # feature j's count would stop later, larger variables from ever using
         # their extra terms. Equal term counts give the same bounds and the same
-        # decoding as before.
-        max_terms = max(self.n_lv_possible)
+        # decoding as before. With ordinal conditions the gene selects among
+        # ``n_term_codes`` (terms, then ``at least`` / ``at most`` conditions) in
+        # the same way; without them the codes are the terms.
+        max_terms = max(self.n_term_codes)
         vl_antecedent_bounds = np.array(
             [[-1, max_terms - 1] for ax in range(self.nAnts)] * self.nRules) # -1 means not caring
         antecedent_bounds = np.concatenate(
@@ -1650,7 +1688,7 @@ class FitRuleBase(Problem):
             raise ValueError('Encoding a rule base needs one antecedent slot per feature (nAnts equal to the number of features).')
 
         gene = np.zeros((self.single_gen_size,))
-        max_terms = max(self.n_lv_possible)
+        max_terms = max(self.n_term_codes)
         rule_consequents = rule_base.get_consequents()
         nreal_rules = len(rule_consequents)
 
@@ -1671,7 +1709,7 @@ class FitRuleBase(Problem):
             for ax, linguistic_variable in enumerate(rule.antecedents):
                 gene[first_pointer + ax] = ax
                 # Inverse of the decoder's proportional term map.
-                gene[second_pointer + ax] = term_gene(linguistic_variable, self.n_lv_possible[ax], max_terms)
+                gene[second_pointer + ax] = term_gene(linguistic_variable, self.n_term_codes[ax], max_terms)
 
             # Update the fourth section of the gene: consequents using the fourth pointer
             gene[fourth_pointer + i0] = rule_consequents[i0]
@@ -1769,6 +1807,8 @@ class FitRuleBase(Problem):
                             linguistic_variables.append(proper_FS)
 
                     linguistic_variable = fs.fuzzyVariable(self.var_names[fuzzy_variable], linguistic_variables)
+                    if self.ordinal_variables[fuzzy_variable]:
+                        linguistic_variable.ordinal = True  # decoded partitions are sorted: no order check needed
                     antecedents.append(linguistic_variable)
                              
         else:
@@ -1822,7 +1862,7 @@ class FitRuleBase(Problem):
         except AttributeError:
             x = x.astype(int)
 
-        max_terms = max(self.n_lv_possible)
+        max_terms = max(self.n_term_codes)
         for i0 in range(self.nRules):  # Reconstruct the rules
             first_pointer = i0 * self.nAnts
             chosen_ants = x[first_pointer:first_pointer + self.nAnts]
@@ -1834,10 +1874,7 @@ class FitRuleBase(Problem):
             init_rule_antecedents = np.zeros(
                 (self.X.shape[1],)) - 1  # -1 is dont care
             for jx, ant in enumerate(chosen_ants):
-                if self.lvs is not None:
-                    antecedent_parameters[jx] = remap_term(antecedent_parameters[jx], len(self.lvs[ant]), max_terms)
-                else:
-                    antecedent_parameters[jx] = remap_term(antecedent_parameters[jx], self.n_lv_possible[ant], max_terms)
+                antecedent_parameters[jx] = remap_term(antecedent_parameters[jx], self.n_term_codes[ant], max_terms)
 
                 init_rule_antecedents[ant] = antecedent_parameters[jx]
 
@@ -1969,7 +2006,7 @@ class FitRuleBase(Problem):
         if values.ndim != 2 or values.dtype.kind not in 'biuf':
             return None
         integer_values = values.astype(int)
-        term_counts = np.asarray([len(lv) for lv in self.lvs])
+        term_counts = np.asarray(self.n_term_codes)
         return popfit.score_population(
             integer_values, packed, np.asarray(self.y), self.nRules, self.nAnts,
             self.X.shape[1], self.n_classes, term_counts,
@@ -2347,9 +2384,9 @@ class FitRuleBase(Problem):
         from . import _array_fitness as arrfit
 
         if self.lvs is None:
-            term_counts = np.asarray(self.n_lv_possible)
+            term_counts = np.asarray(self.n_term_codes)
         elif isinstance(self.lvs, (list, tuple)):
-            term_counts = np.asarray([len(lv) for lv in self.lvs])
+            term_counts = np.asarray(self.n_term_codes)
         else:
             return None  # Other partition containers keep the object decoder.
         try:

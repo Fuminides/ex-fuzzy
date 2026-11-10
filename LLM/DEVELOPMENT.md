@@ -105,6 +105,13 @@ kernels in `rules.py`, read [SPEED_UP.md](performance/SPEED_UP.md) and
   its score, weight or accuracy. `RuleSimple` equality and hashing, rule-base
   duplicate removal and the array decoder's per-class dedup must agree, and the
   first occurrence keeps its weight.
+- A condition of a rule is an integer code of its variable (`fuzzyVariable.condition`): the term index
+  or, with `ordinal_conditions`, a code past the terms for `at least` / `at most`. The extra conditions
+  are extra rows of `fuzzyVariable.compute_memberships` (and columns of the packed table), and the term
+  gene is remapped onto `FitRuleBase.n_term_codes`, which equals the term counts when the option is off,
+  so every evaluator and decoder handles them without a branch. Code that sizes or indexes by terms
+  (`len(variable)`) must use `fuzzy_sets.condition_count` / `condition_label` instead. Off, the encoding
+  and every seeded fit must equal the recorded ones (`tests/test_ordinal_conditions.py`).
 - Do not present kernel timings as complete-fit gains or benchmark prototypes
   as shipped capabilities.
 

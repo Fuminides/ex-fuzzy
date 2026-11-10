@@ -17,6 +17,7 @@ PyTorch tensors when available, making it suitable for both traditional fuzzy
 logic applications and modern machine learning workflows.
 """
 import enum
+import warnings
 from typing import Generator
 
 import numpy as np
@@ -799,6 +800,129 @@ class gaussianFS(FS):
         return 'gaussian'
 
 
+#: Operators of a condition on a linguistic variable (see :class:`fuzzyVariable`): ``is`` one term, or
+#: ``at_least`` / ``at_most`` a term of the ordered partition.
+CONDITION_OPERATORS = ('is', 'at_least', 'at_most')
+_OPERATOR_TEXT = {'is': '', 'at_least': 'at least ', 'at_most': 'at most '}
+
+
+def ordinal_alphabet_size(n_terms: int) -> int:
+    """
+    Number of conditions a variable with ``n_terms`` ordered terms offers when ordinal conditions are on.
+
+    The ``n_terms`` single terms, then ``at least t_j`` and ``at most t_j`` for ``j = 1 .. n_terms - 2``:
+    ``at least t_0`` is always true (don't care) and ``at least t_(n-1)`` is ``t_(n-1)`` itself, and the same
+    holds for ``at most``, so those are not offered. A variable with fewer than 3 terms keeps its ``n_terms``.
+    """
+    return n_terms + 2 * (n_terms - 2) if n_terms >= 3 else n_terms
+
+
+def decode_ordinal_condition(code: int, n_terms: int) -> tuple:
+    """
+    ``(operator, term_index)`` of a condition code of a variable with ``n_terms`` terms.
+
+    Codes ``0 .. n_terms - 1`` are the single terms (``'is'``); the next ``n_terms - 2`` are ``'at_least'``
+    terms ``1 .. n_terms - 2``; the last ``n_terms - 2`` are ``'at_most'`` terms ``1 .. n_terms - 2``.
+    """
+    if not 0 <= code < ordinal_alphabet_size(n_terms):
+        raise ValueError(f'Condition code {code} is outside 0..{ordinal_alphabet_size(n_terms) - 1} '
+                         f'for a variable with {n_terms} terms.')
+    if code < n_terms:
+        return 'is', int(code)
+    extra = code - n_terms
+    if extra < n_terms - 2:
+        return 'at_least', int(extra + 1)
+    return 'at_most', int(extra - (n_terms - 2) + 1)
+
+
+def encode_ordinal_condition(operator: str, term: int, n_terms: int) -> int:
+    """Inverse of :func:`decode_ordinal_condition`."""
+    if operator not in CONDITION_OPERATORS:
+        raise ValueError(f'Unknown operator {operator!r}; use one of {list(CONDITION_OPERATORS)}.')
+    if operator == 'is':
+        if not 0 <= term < n_terms:
+            raise ValueError(f'Term {term} is outside 0..{n_terms - 1}.')
+        return int(term)
+    if not 1 <= term <= n_terms - 2:
+        raise ValueError(f"'{operator}' is offered for the terms 1..{n_terms - 2} of a variable with {n_terms} "
+                         f'terms; got {term}.')
+    return int(n_terms + (term - 1) + (0 if operator == 'at_least' else n_terms - 2))
+
+
+def ordinal_memberships(terms: np.ndarray) -> np.ndarray:
+    """
+    Memberships of every condition of an ordinal variable, from the memberships of its terms.
+
+    Args:
+        terms: ``(n_terms, ...)`` memberships of the ordered terms; trailing axes (samples, and the
+            lower/upper axis of interval Type-2 sets) are carried along.
+
+    Returns:
+        ``(ordinal_alphabet_size(n_terms), ...)``: the terms, then ``at least t_j`` and ``at most t_j`` for
+        ``j = 1 .. n_terms - 2``. A union of terms has the bounded sum ``min(1, sum of their memberships)``
+        (the Lukasiewicz t-conorm). On a strong partition (memberships adding up to 1) this is the exact
+        complement of the other terms, a shouldered trapezoid; on a partition whose memberships add up to
+        more than 1 it saturates at 1; for interval Type-2 sets the lower and upper bounds are summed apart.
+    """
+    n_terms = terms.shape[0]
+    if n_terms < 3:
+        return terms
+    at_most = np.minimum(1.0, np.cumsum(terms, axis=0)[1:n_terms - 1])
+    at_least = np.minimum(1.0, np.cumsum(terms[::-1], axis=0)[::-1][1:n_terms - 1])
+    return np.concatenate([terms, at_least, at_most], axis=0)
+
+
+def condition_count(variable) -> int:
+    """Number of conditions (term codes) a variable offers: its terms, plus the ordinal ones if it has them."""
+    if getattr(variable, 'ordinal', False):
+        return variable.n_conditions()
+    names = getattr(variable, 'linguistic_variable_names', None)  # also for variable-like objects without __len__
+    return len(names()) if names is not None else len(variable)
+
+
+def condition_label(variable, code: int) -> str:
+    """Text of condition ``code`` of ``variable``: the term name, ``at least <term>`` or ``at most <term>``."""
+    if getattr(variable, 'ordinal', False):
+        return variable.condition_names()[int(code)]
+    return variable.linguistic_variable_names()[code]
+
+
+def _term_position(fuzzy_set):
+    """Where a Type-1 term sits on the axis (centre of its core or mean), or None if unknown."""
+    parameters = getattr(fuzzy_set, 'membership_parameters', None)
+    if parameters is None:
+        return None
+    parameters = np.asarray(parameters, dtype=float).ravel()
+    if isinstance(fuzzy_set, FS) and not isinstance(fuzzy_set, gaussianFS) and len(parameters) == 4:
+        return float((parameters[1] + parameters[2]) / 2)
+    if isinstance(fuzzy_set, gaussianFS):
+        return float(parameters[0])
+    return None
+
+
+def enable_ordinal_conditions(variables: list) -> list:
+    """
+    Copies of ``variables`` that offer ``at least`` / ``at most`` conditions, ready for the search.
+
+    Variables that cannot have them are returned as they are: categorical ones (their categories are not
+    ordered) and those with fewer than 3 terms. A variable that already has them is returned as it is. The
+    originals are never changed (the copies share their fuzzy sets).
+
+    Raises:
+        ValueError: for general Type-2 sets, whose memberships are not a number or an interval per term.
+    """
+    out = []
+    for variable in variables:
+        if getattr(variable, 'ordinal', False) or not variable.ordinal_eligible(strict=True):
+            out.append(variable)
+            continue
+        copy = fuzzyVariable(variable.name, variable.linguistic_variables, variable.units)
+        copy.ordinal = True
+        copy._warn_if_unordered()
+        out.append(copy)
+    return out
+
+
 class fuzzyVariable():
     """
     Fuzzy Variable Container and Management Class.
@@ -826,9 +950,19 @@ class fuzzyVariable():
         
     Note:
         All fuzzy sets in the variable must be of the same type (t1 or t2).
+
+        The terms are ordered as they are listed, from low to high. With ``ordinal_conditions=True`` the
+        variable also offers the conditions ``at least t_j`` and ``at most t_j`` (``j = 1 .. n - 2``), whose
+        membership is the bounded sum ``min(1, sum of the memberships of the terms they cover)``; see
+        :func:`ordinal_alphabet_size`. A condition is named by an integer code: the term index for a single
+        term, then the ``at least`` codes, then the ``at most`` ones (:meth:`condition`). Off by default,
+        and then nothing about the variable changes.
     """
 
-    def __init__(self, name: str, fuzzy_sets: list[FS], units: str = None) -> None:
+    #: Class default, so that variables pickled before ordinal conditions existed load as they were.
+    ordinal = False
+
+    def __init__(self, name: str, fuzzy_sets: list[FS], units: str = None, ordinal_conditions: bool = False) -> None:
         """
         Creates a fuzzy variable with the specified fuzzy sets.
         
@@ -836,9 +970,12 @@ class fuzzyVariable():
             name (str): Name of the fuzzy variable
             fuzzy_sets (list[FS]): List of fuzzy sets that comprise the linguistic variables
             units (str, optional): Units of the fuzzy variable for display purposes
+            ordinal_conditions (bool, optional): offer ``at least`` / ``at most`` conditions over the ordered
+                terms (default False). Needs 3 or more Type-1 or interval Type-2 terms that are not categorical.
             
         Raises:
-            ValueError: If fuzzy_sets is empty or contains mixed types
+            ValueError: If fuzzy_sets is empty or contains mixed types, or ``ordinal_conditions`` is asked
+                of a variable that cannot have them
             
         Example:
             >>> fs1 = gaussianFS([0, 1], "Low", 10)
@@ -853,6 +990,81 @@ class fuzzyVariable():
             self.linguistic_variables.append(fs)
 
         self.fs_type = self.linguistic_variables[0].type()
+
+        if ordinal_conditions:
+            if not self.ordinal_eligible(strict=True):
+                raise ValueError('ordinal_conditions needs at least 3 terms that are not categorical '
+                                 f'(variable {name!r}).')
+            self.ordinal = True
+            self._warn_if_unordered()
+
+
+    def ordinal_eligible(self, strict: bool = False) -> bool:
+        """
+        Whether this variable can offer ordinal conditions: 3 or more ordered, non-categorical Type-1 or
+        interval Type-2 terms. With ``strict`` a general Type-2 variable raises instead of returning False.
+        """
+        if self.fs_type == FUZZY_SETS.gt2:
+            if strict:
+                raise ValueError('Ordinal conditions support Type-1 and interval Type-2 sets, not general Type-2 sets.')
+            return False
+        if isinstance(self.linguistic_variables[0], (categoricalFS, categoricalIVFS)):
+            return False
+        return len(self.linguistic_variables) >= 3
+
+
+    def _warn_if_unordered(self) -> None:
+        """Warn when the terms are not listed from low to high, which is what ``at least`` / ``at most`` read."""
+        positions = [_term_position(term) for term in self.linguistic_variables]
+        if None not in positions and any(b < a for a, b in zip(positions, positions[1:])):
+            warnings.warn(f'The terms of variable {self.name!r} are not listed from low to high; '
+                          "'at least' and 'at most' follow the listed order.", stacklevel=3)
+
+
+    def n_conditions(self) -> int:
+        """Number of conditions (term codes) the variable offers: its terms, plus the ordinal ones if enabled."""
+        n_terms = len(self.linguistic_variables)
+        return ordinal_alphabet_size(n_terms) if self.ordinal else n_terms
+
+
+    def condition(self, code: int) -> tuple:
+        """``(operator, term_index)`` of a condition code; operator is ``'is'``, ``'at_least'`` or ``'at_most'``."""
+        if not self.ordinal:
+            if not 0 <= code < len(self.linguistic_variables):
+                raise ValueError(f'Condition code {code} is outside 0..{len(self.linguistic_variables) - 1}.')
+            return 'is', int(code)
+        return decode_ordinal_condition(code, len(self.linguistic_variables))
+
+
+    def condition_code(self, operator: str, term: int) -> int:
+        """Code of the condition ``operator`` + term index (inverse of :meth:`condition`)."""
+        if not self.ordinal and operator != 'is':
+            raise ValueError(f"Variable {self.name!r} has no ordinal conditions; cannot encode '{operator}'.")
+        return encode_ordinal_condition(operator, term, len(self.linguistic_variables))
+
+
+    def condition_terms(self, code: int) -> list:
+        """Indexes of the terms a condition covers: one for ``is``, ``t_j .. t_(n-1)`` for ``at_least t_j``,
+        ``t_0 .. t_j`` for ``at_most t_j``."""
+        operator, term = self.condition(code)
+        if operator == 'is':
+            return [term]
+        if operator == 'at_least':
+            return list(range(term, len(self.linguistic_variables)))
+        return list(range(term + 1))
+
+
+    def condition_names(self) -> list:
+        """Text of every condition, by code: the term names, then ``at least <term>``, then ``at most <term>``.
+        Without ordinal conditions this is :meth:`linguistic_variable_names`."""
+        names = self.linguistic_variable_names()
+        if not self.ordinal:
+            return names
+        out = list(names)
+        for code in range(len(names), self.n_conditions()):
+            operator, term = self.condition(code)
+            out.append(_OPERATOR_TEXT[operator] + str(names[term]))
+        return out
 
 
     def append(self, fs: FS) -> None:
@@ -893,8 +1105,17 @@ class fuzzyVariable():
             x: numeric value or array. Computes the membership to each of the FS in the fuzzy variables.
 
         Returns:
-            list of floats. Membership to each of the FS in the fuzzy variables.
+            list of floats. Membership to each of the FS in the fuzzy variables. With ordinal conditions
+            there is one more row per extra condition, after the terms (see :func:`ordinal_memberships`).
         """
+        res = self._term_memberships(x)
+        if self.ordinal:
+            res = ordinal_memberships(res)
+        return res
+
+
+    def _term_memberships(self, x: np.array) -> np.ndarray:
+        """Memberships to the terms only, whatever the conditions on offer."""
         res = []
         # Categorical variables, and sets without a domain, are not clipped.
         domain = getattr(self.linguistic_variables[0], 'domain', None)
@@ -984,7 +1205,7 @@ class fuzzyVariable():
             return False
         
         # Get the fuzzy sets memberships
-        memberships = self.compute_memberships(X)
+        memberships = self._term_memberships(X)
         memberships = np.array(memberships)
 
         cond1 = True
@@ -1010,7 +1231,7 @@ class fuzzyVariable():
 
         
         # Property 5: The smallest fuzzy set must be the first one and the biggest fuzzy set must be the last one. The smallest should start at the left of the domain and the biggest should end at the right of the domain.
-        cond5 = (self.compute_memberships(self[0].domain[0])[0] >= 0.99) and (self.compute_memberships(self[0].domain[1])[-1] >= 0.99)
+        cond5 = (self._term_memberships(self[0].domain[0])[0] >= 0.99) and (self._term_memberships(self[0].domain[1])[-1] >= 0.99)
         if not cond5 and verbose:
             print('Property 5 violated: The smallest fuzzy set must be the first one and the biggest fuzzy set must be the last one. The smallest should start at the left of the domain and the biggest should end at the right of the domain.')
 

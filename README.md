@@ -173,6 +173,27 @@ print(f"Test R2: {regressor.score(X_test, y_test):.3f}")
 regressor.print_rules()
 ```
 
+### Ordinal "at least / at most" conditions
+
+With `ordinal_conditions=True` the rules of `BaseFuzzyRulesClassifier` and `BaseFuzzyRulesRegressor` may state a
+range of ordered terms, `IF x IS at least Medium` or `IF x IS at most Low`, besides a single term. The membership
+is the bounded sum of the terms covered; the default (`False`) leaves rules, files and fits unchanged
+([details](docs/source/ordinal_conditions.rst)).
+
+```python
+from ex_fuzzy import BaseFuzzyRulesClassifier
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+model = BaseFuzzyRulesClassifier(nRules=15, nAnts=2, n_linguistic_variables=4, ordinal_conditions=True)
+model.fit(X, y)
+model.print_rules()   # IF 0 IS at least Medium AND 3 IS at least High WITH DS ..., ACC ...
+
+for rule in model.rule_base.get_rules():       # the operator without parsing the text
+    for c in rule.conditions(model.rule_base.antecedents):
+        print(c.variable, c.operator, c.term)  # operator: "is", "at_least" or "at_most"
+```
+
 ## 📊 Visualizations
 
 Ex-Fuzzy provides beautiful visualizations to understand your fuzzy models:
