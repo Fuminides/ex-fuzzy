@@ -189,11 +189,13 @@ def test_the_pareto_front_is_scored_on_every_sample(data):
         np.testing.assert_array_equal(objectives, problem._objectives(score))
 
 
-def test_patience_waits_for_the_full_data(data):
+@pytest.mark.parametrize('algorithm', ['ga', 'nsga2'])
+def test_patience_waits_for_the_full_data(data, algorithm):
     X, y = data
     partitions = utils.construct_partitions(X, fs.FUZZY_SETS.t1)
-    model = _fit(X, y, partitions, initial_data_fraction=0.1, full_data_at=0.5, n_gen=20, patience=1)
-    assert model.n_generations_run_ >= 11  # generation 10 is the first on every sample
+    model = _fit(X, y, partitions, initial_data_fraction=0.1, full_data_at=0.5,
+                 n_gen=20, patience=1, algorithm=algorithm)
+    assert model.n_generations_run_ >= 12  # the first full-data generation sets the baseline
 
 
 def test_a_full_initial_fraction_changes_nothing(data):

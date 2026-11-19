@@ -141,6 +141,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
     # Classifiers pickled before ordinal conditions existed searched single terms only.
     ordinal_conditions = False
     compound_terms = None
+    pareto_min_score_ratio = 0.8
 
     def __init__(self,  nRules: int = 30, nAnts: int = 4, fuzzy_type: fs.FUZZY_SETS = fs.FUZZY_SETS.t1, tolerance: float = 0.0, class_names: list[str] = None,
                  n_linguistic_variables: Union[list, int] = 3, verbose=False, linguistic_variables: list[fs.fuzzyVariable] = None, categorical_mask: list[int] = None,
@@ -152,7 +153,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
                  full_data_at: float = 0.5, inference: str = 'winning_rule', mixture_C: float = 1.0,
                  mixture_non_negative: bool = False, mixture_search: bool = False, mixture_pruning: str = 'mixture',
                  mixture_prune_threshold: float = rule_mixture.MIXTURE_PRUNE_THRESHOLD,
-                 ordinal_conditions: Union[bool, list] = False, compound_terms: Optional[dict] = None) -> None:
+                 ordinal_conditions: Union[bool, list] = False, compound_terms: Optional[dict] = None,
+                 pareto_min_score_ratio: Optional[float] = 0.8) -> None:
         """
         Inits the optimizer with the corresponding parameters.
 
@@ -175,8 +177,12 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             detect_categorical: if True (default) and no categorical_mask is given, the categorical variables are detected from the data with utils.detect_categorical_mask. Ignored when categorical_mask is given or when linguistic_variables are precomputed.
             n_gen: number of generations of the genetic search. fit can override it for one call.
             pop_size: population size of the genetic search. fit can override it for one call.
-            patience: generations without improvement before the search stops early; None runs every generation.
-            min_delta: minimum fitness improvement that resets the patience.
+            patience: generations without improvement before the search stops early. None runs every generation.
+            min_delta: improvement required to reset patience, measured in fitness for GA and in
+                the hypervolume of the accumulated Pareto front for NSGA-II.
+            pareto_min_score_ratio: fraction of the best positive penalized macro F1 used as the
+                lower score bound for NSGA-II stopping. A number in (0, 1), default 0.8. None
+                measures the whole front.
             random_state: random seed of the genetic search.
             var_prob: crossover probability.
             sbx_eta: eta parameter of the SBX crossover.
@@ -261,6 +267,7 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
         self.mutation_eta = mutation_eta
         self.tournament_size = tournament_size
         self.algorithm = algorithm
+        self.pareto_min_score_ratio = pareto_min_score_ratio
         self.batch_size = batch_size
         self.initial_data_fraction = initial_data_fraction
         self.full_data_at = full_data_at
@@ -392,8 +399,9 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             mutation_eta: float. Eta parameter for the polynomial mutation.
             tournament_size: integer. Size of the tournament for the genetic algorithm.
             checkpoint_callback: function. Callback function that get executed at each checkpoint ('checkpoints' must be greater than 0), its arguments are the generation number and the rule_base of the checkpoint.
-            patience: integer. Stop early when the best fitness does not improve for this many generations. Default is 10. Use None to run all generations.
-            min_delta: float. Minimum fitness improvement required to reset patience. Default is 1e-4.
+            patience: integer. Generations without improvement before stopping. Default is 10. Use None to run all generations.
+            min_delta: float. Improvement required to reset patience, measured in fitness for GA and in
+                the hypervolume of the accumulated Pareto front for NSGA-II. Default is 1e-4.
             batch_size: None to compute firing strengths for all the samples at once, or the number of samples to
                 compute them for at a time; see the constructor.
             initial_data_fraction: None, or the share of the samples the first generation is scored on, growing
@@ -424,6 +432,10 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError("algorithm='nsga2' needs the pymoo backend.")
         if pareto and self.custom_loss is not None:
             raise ValueError("algorithm='nsga2' optimizes the built-in objectives; it cannot use a custom loss.")
+        score_ratio = self.pareto_min_score_ratio
+        if pareto and score_ratio is not None and (
+                not isinstance(score_ratio, (int, float, np.integer, np.floating)) or not 0 < score_ratio < 1):
+            raise ValueError('pareto_min_score_ratio must be None or a number in (0, 1).')
         if batch_size is not None and self.custom_loss is not None:
             raise ValueError('batch_size scores the built-in objective; a custom loss sees every sample at once.')
         if batch_size is not None and candidate_rules is not None:
@@ -523,6 +535,8 @@ class BaseFuzzyRulesClassifier(ClassifierMixin, BaseEstimator):
             problem = ExploreRuleBases(X, y, n_classes=len(np.unique(y)), candidate_rules=candidate_rules, thread_runner=self.thread_runner, nRules=self.nRules,
                                        alpha=self.alpha_, beta=self.beta_, pareto=pareto)
 
+        if pareto:
+            problem._pareto_min_score_ratio = score_ratio
         if self.custom_loss is not None:
             problem.fitness_func = self.custom_loss
         if self.mixture_search:
