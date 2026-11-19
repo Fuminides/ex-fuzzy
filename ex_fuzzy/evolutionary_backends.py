@@ -76,6 +76,56 @@ def _tournament_winners(pop, P, **kwargs) -> np.ndarray:
     return P[np.arange(len(P)), np.argmin(fitness, axis=1)][:, None]
 
 
+class _ParetoProgress:
+    """Track gains in the accumulated front within the current region of interest."""
+
+    def __init__(self, problem: Any) -> None:
+        from pymoo.indicators.hv import HV
+        from pymoo.util.nds.non_dominated_sorting import find_non_dominated
+
+        self._indicator = HV
+        self._non_dominated = find_non_dominated
+        self._front = np.empty((0, problem.n_obj))
+        self._baseline = None
+        self._reference = None
+        rule_problem = getattr(problem, 'problem', None)
+        self._min_score_ratio = getattr(rule_problem, '_pareto_min_score_ratio', None)
+        # The wrapped rule searches minimize 1 - penalized macro F1 and
+        # the fraction of conditions used. Leave a margin at both boundaries.
+        beta = getattr(rule_problem, 'beta_', None)
+        if problem.n_obj == 2 and beta is not None:
+            self._reference = np.array([1.05 + max(0.0, beta), 1.05])
+
+    def improved(self, optimum: Any, min_delta: float) -> bool:
+        """Check the gain since the last reset using one reference for both fronts."""
+        objectives = optimum.get('F')[optimum.get('FEAS').ravel()]
+        objectives = objectives[np.all(np.isfinite(objectives), axis=1)]
+        if not len(objectives):
+            return self._baseline is None
+        if self._reference is None:
+            # External problems have no known objective bounds. Set the
+            # reference from the first feasible front and keep it fixed.
+            worst = objectives.max(axis=0)
+            span = np.ptp(objectives, axis=0)
+            margin = 0.1 * np.where(span > 0, span, np.maximum(np.abs(worst), 1.0))
+            self._reference = worst + margin
+        points = np.unique(np.concatenate((self._front, objectives)), axis=0)
+        self._front = points[self._non_dominated(points)]
+        if self._baseline is not None:
+            reference = self._reference
+            best_score = 1 - self._front[:, 0].min()
+            if self._min_score_ratio is not None and best_score > 0:
+                reference = reference.copy()
+                reference[0] = 1 - self._min_score_ratio * best_score
+            # Apply the same cutoff to the baseline so a better best score
+            # cannot erase progress merely by shrinking the measured region.
+            hypervolume = self._indicator(ref_point=reference)
+            if hypervolume(self._front) - hypervolume(self._baseline) <= min_delta:
+                return False
+        self._baseline = self._front
+        return True
+
+
 class PyMooBackend(EvolutionaryBackend):
     """Backend using pymoo for CPU-based evolutionary optimization."""
 
@@ -160,9 +210,9 @@ class PyMooBackend(EvolutionaryBackend):
         """
         Run a pymoo GA loop with optional checkpoints and early stopping.
 
-        With several objectives the first one decides the best individual and the
-        early stopping, ties going to the following ones, and the result also
-        holds the final Pareto front.
+        With several objectives, early stopping tracks the hypervolume of the
+        accumulated fronts. The first objective still selects the fitted model
+        from the final front, with ties broken by the following objectives.
 
         A ``data_schedule`` (``_growing_data.GrowingData``) sets the training
         subset of each generation before it runs. Parents keep the scores of
@@ -181,6 +231,7 @@ class PyMooBackend(EvolutionaryBackend):
         best_fitness = None
         generations_without_improvement = 0
         patience_enabled = patience is not None and patience > 0
+        pareto_progress = _ParetoProgress(problem) if patience_enabled and problem.n_obj > 1 else None
         min_delta = max(0.0, float(min_delta))
         executed_generations = 0
 
@@ -207,22 +258,26 @@ class PyMooBackend(EvolutionaryBackend):
                     float(np.mean(fitness_last_gen)), current_best_fitness
                 ))
 
-            if best_fitness is None or current_best_fitness < (best_fitness - min_delta):
+            improved = best_fitness is None or current_best_fitness < (best_fitness - min_delta)
+            if improved:
                 best_fitness = current_best_fitness
                 best_individual = current_best_individual
-                generations_without_improvement = 0
-            else:
-                generations_without_improvement += 1
+
+            complete = data_schedule is None or data_schedule.complete
+            if patience_enabled and complete:
+                if pareto_progress is not None:
+                    improved = pareto_progress.improved(algorithm.opt, min_delta)
+                generations_without_improvement = 0 if improved else generations_without_improvement + 1
 
             if checkpoint_freq is not None and checkpoint_callback is not None and gen % checkpoint_freq == 0:
                 checkpoint_callback(gen, best_individual.copy())
 
-            complete = data_schedule is None or data_schedule.complete
             if patience_enabled and complete and generations_without_improvement >= patience:
                 if verbose:
+                    metric = 'hypervolume ' if pareto_progress is not None else ''
                     print(
                         f"Early stopping at generation {executed_generations} "
-                        f"(no improvement larger than {min_delta} for {patience} generations)."
+                        f"(no {metric}improvement larger than {min_delta} for {patience} generations)."
                     )
                 break
 

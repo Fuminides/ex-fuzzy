@@ -85,6 +85,86 @@ def test_nsga2_keeps_a_front_from_most_accurate_to_most_compact(nsga2):
         assert solution['rules'] == len(rules)
 
 
+def test_nsga2_patience_tracks_improvements_to_the_accumulated_front(iris, monkeypatch):
+    from pymoo.core.population import Population
+
+    _, problem = _problems(*iris, True)
+    most_accurate = (0.10, 0.80)
+    first_compact = (0.20, 0.40)
+    improved_compact = (0.15, 0.40)
+    smallest = (0.40, 0.30)
+
+    class FrontSequence:
+        def setup(self, *args, **kwargs):
+            self.fronts = iter([
+                [most_accurate, first_compact],
+                [most_accurate, improved_compact],
+                # The current front alone loses area, but this adds a new trade-off.
+                [most_accurate, smallest],
+                [most_accurate, improved_compact],
+            ])
+
+        def next(self):
+            objectives = np.array(next(self.fronts))
+            self.pop = self.opt = Population.new('F', objectives, 'X', np.array([[0], [1]]))
+
+    backend = eb.PyMooBackend()
+    monkeypatch.setattr(backend, '_build_algorithm', lambda *args, **kwargs: FrontSequence())
+    result = backend.optimize(problem, n_gen=6, pop_size=2, random_state=3, verbose=False,
+                              algorithm='nsga2', patience=1)
+
+    assert result['n_gen_run'] == 4
+    assert result['stopped_early']
+    assert result['F'] == most_accurate[0]
+
+
+def test_nsga2_hypervolume_uses_the_same_score_cutoff_for_both_fronts(iris):
+    from pymoo.core.population import Population
+
+    _, problem = _problems(*iris, True)
+    wrapped = eb.as_pymoo_problem(problem)
+    problem._pareto_min_score_ratio = 0.8
+    strict = eb._ParetoProgress(wrapped)
+    problem._pareto_min_score_ratio = 0.5
+    loose = eb._ParetoProgress(wrapped)
+
+    initial = Population.new('F', np.array([[0.20, 0.80], [0.28, 0.50]]))
+    weak_but_small = Population.new('F', np.array([[0.45, 0.20]]))
+    stronger_compact = Population.new('F', np.array([[0.28, 0.40]]))
+    new_best = Population.new('F', np.array([[0.12, 0.80]]))
+
+    assert strict.improved(initial, min_delta=1e-4)
+    assert loose.improved(initial, min_delta=1e-4)
+    assert not strict.improved(weak_but_small, min_delta=1e-4)
+    assert loose.improved(weak_but_small, min_delta=1e-4)
+    assert strict.improved(stronger_compact, min_delta=1e-4)
+    # The best score rises. The new region has less total area than the old
+    # region, but the gain within the new region is positive.
+    assert strict.improved(new_best, min_delta=1e-4)
+    assert not strict.improved(weak_but_small, min_delta=1e-4)
+
+
+@pytest.mark.parametrize('ratio', [0, 1, float('nan'), '0.8'])
+def test_nsga2_rejects_invalid_score_ratios(iris, ratio):
+    classifier = evf.BaseFuzzyRulesClassifier(algorithm='nsga2', pareto_min_score_ratio=ratio)
+    with pytest.raises(ValueError, match='pareto_min_score_ratio'):
+        classifier.fit(*iris)
+
+
+def test_classifier_passes_the_score_cutoff_to_nsga2(iris, monkeypatch):
+    class TrackProgress(eb._ParetoProgress):
+        def __init__(self, problem):
+            super().__init__(problem)
+            ratios.append(self._min_score_ratio)
+
+    ratios = []
+    monkeypatch.setattr(eb, '_ParetoProgress', TrackProgress)
+    classifier = evf.BaseFuzzyRulesClassifier(algorithm='nsga2', nRules=6, nAnts=2, n_gen=2, pop_size=10)
+    classifier.fit(*iris)
+    classifier.set_params(pareto_min_score_ratio=None).fit(*iris)
+    assert ratios == [0.8, None]
+
+
 def test_select_pareto_solution_switches_the_fitted_model(nsga2, iris):
     X, _ = iris
     most_accurate = nsga2.predict(X)

@@ -119,6 +119,21 @@ fuzzy partitions. Each entry holds the training ``fitness``, the number of
 ``rules`` and ``conditions``, the fitted ``rule_base`` and its ``evaluation``.
 Choose among the solutions with held-out data, not with their training fitness.
 
+**Early stopping.** With NSGA-II, ``patience`` counts generations without
+a meaningful increase in the hypervolume of the accumulated non-dominated
+objective pairs. ``pareto_min_score_ratio=0.8`` measures the area above 80%
+of the best positive training score found so far, where the score is the
+macro F1 with the class-coverage penalty. For instance, when the best score
+is 0.85, models scoring below 0.68 contribute no area. The current cutoff
+applies to both the accumulated front and the front at the last patience
+reset. Before a positive score is found, the whole front counts.
+
+``min_delta`` sets the absolute area gain required to reset patience.
+Use ``pareto_min_score_ratio=None`` to measure the whole front throughout
+the search, or ``patience=None`` to run the full generation budget.
+The score cutoff applies to stopping. The classifier can still return
+solutions below the cutoff in ``pareto_front_``.
+
 **What to expect.** Even the most accurate solution on the front is usually
 smaller than the genetic algorithm's rule base. On 61 KEEL datasets, at the same
 search budget and with the objective of an earlier version, it had about half
